@@ -13,3 +13,5 @@
   status = true
   branch = true
   diff = true
+[commit]
+	template = /Users/kusic/.gitmessage

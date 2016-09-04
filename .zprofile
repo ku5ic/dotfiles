@@ -82,6 +82,7 @@ export PATH=/usr/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
 export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH=$PATH:/usr/local/opt/go/libexec/bin
+export PATH="$(brew --prefix homebrew/php/php56)/bin:$PATH"
 
 source "$HOME/.vim/bundle/gruvbox/gruvbox_256palette_osx.sh"
 
@@ -91,6 +92,13 @@ source "$HOME/.vim/bundle/gruvbox/gruvbox_256palette_osx.sh"
 if which rbenv &>/dev/null ; then
   eval "$(rbenv init - --no-rehash)"
 fi
+
+if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+
+# Always load tmux
+#if [[ ! $TERM =~ screen ]]; then
+    #exec tmux
+#fi
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

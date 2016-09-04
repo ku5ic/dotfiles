@@ -1,4 +1,4 @@
 export POW_DST_PORT=88
 export POW_DOMAINS=dev,php
-export POW_EXT_DOMAINS=ngrok.com
+export POW_EXT_DOMAINS=ngrok.io
 export PATH=$(rbenv root)/shims:$PATH
