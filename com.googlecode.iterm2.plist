@@ -546,15 +546,15 @@
 	<key>NSWindow Frame NSColorPanel</key>
 	<string>685 647 228 325 0 0 2560 1440 </string>
 	<key>NSWindow Frame NSFontPanel</key>
-	<string>1622 359 445 103 0 0 2560 1440 </string>
+	<string>1622 107 627 221 0 0 2560 1440 </string>
 	<key>NSWindow Frame Preferences</key>
 	<string>897 942 606 456 0 0 2560 1417 </string>
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>972 768 620 392 0 0 2560 1417 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>269 148 1018 447 0 0 2560 1417 </string>
+	<string>815 94 918 495 0 0 2560 1440 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>151 652 650 502 0 0 2560 1417 </string>
+	<string>125 711 650 502 0 0 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>442 122 650 501 0 0 2560 1440 </string>
 	<key>NeverWarnAboutShortLivedSessions_BA487E7F-25D0-419C-9CE8-C2BFD20A3566</key>
@@ -820,7 +820,7 @@
 			<key>Hide After Opening</key>
 			<false/>
 			<key>Horizontal Spacing</key>
-			<real>1</real>
+			<real>0.95231315888554213</real>
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Text</key>
@@ -1124,11 +1124,11 @@
 			<key>Name</key>
 			<string>Default</string>
 			<key>Non Ascii Font</key>
-			<string>SauceCodePowerline-Regular 13</string>
+			<string>SauceCodePowerline-Regular 14</string>
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>SauceCodePowerline-Regular 14</string>
+			<string>SauceCodePowerline-Regular 15</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Prompt Before Closing 2</key>
@@ -1291,7 +1291,11 @@
 			<true/>
 			<key>Use Canonical Parser</key>
 			<false/>
+			<key>Use HFS Plus Mapping</key>
+			<false/>
 			<key>Use Italic Font</key>
+			<true/>
+			<key>Use Non-ASCII Font</key>
 			<true/>
 			<key>Vertical Spacing</key>
 			<real>1</real>
@@ -1310,7 +1314,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>C2DF4B54-BB58-4292-BAA7-BFD9DC1E3ABF</string>
 	<key>NoSyncLastTipTime</key>
-	<real>494608070.95940799</real>
+	<real>495986449.41423303</real>
 	<key>NoSyncNeverRemindPrefsChangesCopy</key>
 	<true/>
 	<key>NoSyncPermissionToShowTip</key>
@@ -1369,6 +1373,16 @@
 		<string>0042</string>
 		<string>0043</string>
 		<string>0044</string>
+		<string>0045</string>
+		<string>0046</string>
+		<string>0047</string>
+		<string>0048</string>
+		<string>0049</string>
+		<string>0050</string>
+		<string>0051</string>
+		<string>0052</string>
+		<string>0053</string>
+		<string>0054</string>
 	</array>
 	<key>OnlyWhenMoreTabs</key>
 	<true/>
@@ -1438,7 +1452,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2016-08-31T13:00:59Z</date>
+	<date>2016-09-14T16:54:26Z</date>
 	<key>SavePasteHistory</key>
 	<false/>
 	<key>ShowBookmarkName</key>
@@ -1482,7 +1496,7 @@
 	<key>WordCharacters</key>
 	<string>/-+\~_.</string>
 	<key>iTerm Version</key>
-	<string>3.0.7</string>
+	<string>3.0.9</string>
 	<key>kCPKSelectionViewPreferredModeKey</key>
 	<integer>0</integer>
 	<key>kCPKSelectionViewShowHSBTextFieldsKey</key>

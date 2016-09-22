@@ -30,6 +30,7 @@ curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | 
 ln -sfv "$DOTFILES_DIR/.zprofile" ~
 ln -sfv "$DOTFILES_DIR/.gitconfig" ~
 ln -sfv "$DOTFILES_DIR/.gitignore_global" ~
+ln -sfv "$DOTFILES_DIR/.gitmessage" ~
 ln -sfv "$DOTFILES_DIR/.gemrc" ~
 ln -sfv "$DOTFILES_DIR/.powconfig" ~
 ln -sfv "$DOTFILES_DIR/.tmux.conf" ~
@@ -37,17 +38,12 @@ ln -sfv "$DOTFILES_DIR/.vundle.vim" ~
 ln -sfv "$DOTFILES_DIR/.keymappings.vim" ~
 ln -sfv "$DOTFILES_DIR/.vimrc" ~
 ln -sfv "$DOTFILES_DIR/.gvimrc" ~
-sudo ln -sfv "$DOTFILES_DIR/zzz_pow.conf" /etc/apache2/other/zzz_pow.conf
-sudo ln -sfv "$DOTFILES_DIR/phpmyadmin.conf" /etc/apache2/other/phpmyadmin.conf
-sudo ln -sfv "$DOTFILES_DIR/phppgadmin.conf" /etc/apache2/other/phppgadmin.conf
-sudo ln -sfv "$DOTFILES_DIR/httpd-vhosts.conf" /etc/apache2/extra/httpd-vhosts.conf
 
 # Install brew & brew-cask packages
 source "$DOTFILES_DIR/install/brew.sh"
 source "$DOTFILES_DIR/install/brew-cask.sh"
 source "$DOTFILES_DIR/install/tmux-plugin-manager.sh"
 source "$DOTFILES_DIR/install/vundle.sh"
-source "$DOTFILES_DIR/osx/set-defaults.sh"
 
 # Globally install with npm
 npm install -g bower

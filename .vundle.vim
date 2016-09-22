@@ -25,6 +25,8 @@ Plugin 'tpope/vim-surround'
 Plugin 'tomtom/tlib_vim'
 Plugin 'bling/vim-airline'
 Plugin 'editorconfig/editorconfig-vim'
+Plugin 'pangloss/vim-javascript'
+Plugin 'mxw/vim-jsx'
 "Plugin 'godlygeek/csapprox' "Make gvim-only colorschemes work transparently in terminal vim
 "Plugin 'altercation/vim-colors-solarized'
 Plugin 'morhetz/gruvbox'
