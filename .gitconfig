@@ -6,7 +6,7 @@
 [core]
   editor = vim
   whitespace = trailing-space,space-before-tab
-  excludesfile = /Users/kusic/.gitignore_global
+  excludesfile = /Users/ku5ic/.gitignore_global
 [color]
   ui = auto
   interactive = true
@@ -14,4 +14,4 @@
   branch = true
   diff = true
 [commit]
-  template = /Users/kusic/.gitmessage
+  template = /Users/ku5ic/.gitmessage
