@@ -1,9 +1,6 @@
 #!/bin/sh
 
-BUNDLE_DIR=~/.vim/bundle
-
-# Install/update Vundle
-mkdir -p "$BUNDLE_DIR" && (git clone https://github.com/gmarik/Vundle.vim.git "$BUNDLE_DIR/vundle" || (cd "$BUNDLE_DIR/vundle" && git pull origin master))
+git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 
 # Install bundles
 vim +PluginInstall +qall
