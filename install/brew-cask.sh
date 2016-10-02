@@ -11,7 +11,6 @@ brew cask install dropbox
 brew cask install firefox
 brew cask install font-fontawesome
 brew cask install font-sauce-code-powerline
-brew cask install font-source-code-pro-for-powerline
 brew cask install gfxcardstatus
 brew cask install google-chrome
 brew cask install google-drive
