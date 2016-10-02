@@ -43,6 +43,10 @@ source "$DOTFILES_DIR/install/brew-cask.sh"
 source "$DOTFILES_DIR/install/tmux-plugin-manager.sh"
 source "$DOTFILES_DIR/install/vundle.sh"
 
+# Additional completion definitions for Zsh
+git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
+autoload -U compinit && compinit
+
 # Globally install with npm
 npm install -g bower
 npm install -g grunt
