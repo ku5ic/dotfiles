@@ -18,5 +18,6 @@ brew install rbenv-gemset
 brew install ruby-build
 brew install redis
 brew install tmux
+brew install reattach-to-user-namespace
 brew install tree
 brew install vim --with-override-system-vi
