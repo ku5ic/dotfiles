@@ -45,7 +45,8 @@ ZSH_THEME="philips"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git ssh-agent ruby rails bundler gem brew zsh-completions rbenv osx pow)
+plugins=(git ssh-agent ruby rails bundler gem zsh-completions rbenv osx pow)
+autoload -U compinit && compinit
 
 source $ZSH/oh-my-zsh.sh
 
@@ -80,18 +81,10 @@ source $ZSH/oh-my-zsh.sh
 
 export PATH=/usr/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
-export PATH="$HOME/.rbenv/bin:$PATH"
-export PATH=$PATH:/usr/local/opt/go/libexec/bin
-#export PATH="$(brew --prefix homebrew/php/php56)/bin:$PATH"
+export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
+source "$HOME/.vim/bundle/gruvbox/gruvbox_256palette.sh"
 
-source "$HOME/.vim/bundle/gruvbox/gruvbox_256palette_osx.sh"
-
-#eval "$(rbenv init - zsh --no-rehash)"
-
-# load rbenv if available
-if which rbenv &>/dev/null ; then
-  eval "$(rbenv init - --no-rehash)"
-fi
+eval "$(rbenv init - zsh --no-rehash)"
 
 #if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
 

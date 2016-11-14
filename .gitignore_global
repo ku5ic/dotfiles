@@ -103,3 +103,6 @@ bower_components
 ### Sass ###
 .sass-cache
 *.css.map
+
+# ctags
+tags

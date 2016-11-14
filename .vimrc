@@ -66,11 +66,6 @@ let mapleader=","
 source ~/.vundle.vim
 source ~/.keymappings.vim
 
-" ================ Vim Airline Settings ========================
-let g:airline_powerline_fonts = 1
-let g:airline_detect_modified = 1
-"
-
 " ================ Custom Settings ========================
 set background=dark
 colorscheme gruvbox
