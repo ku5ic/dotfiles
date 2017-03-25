@@ -84,7 +84,7 @@ export PATH=/usr/local/bin:$PATH
 export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
 source "$HOME/.vim/bundle/gruvbox/gruvbox_256palette.sh"
 
-eval "$(rbenv init - zsh --no-rehash)"
+eval "$(rbenv init - --no-rehash zsh)"
 
 #if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
 
@@ -92,6 +92,15 @@ eval "$(rbenv init - zsh --no-rehash)"
 #if [[ ! $TERM =~ screen ]]; then
     #exec tmux
 #fi
+
+# RVM settings
+if [[ -s ~/.rvm/scripts/rvm ]] ; then 
+  RPS1="%{$fg[yellow]%}rvm:%{$reset_color%}%{$fg[red]%}\$(~/.rvm/bin/rvm-prompt)%{$reset_color%} $EPS1"
+else
+  if which rbenv &> /dev/null; then
+    RPS1="%{$fg[yellow]%}rbenv:%{$reset_color%}%{$fg[red]%}\$(rbenv version | sed -e 's/ (set.*$//')%{$reset_color%} $EPS1"
+  fi
+fi
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
