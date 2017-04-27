@@ -1,4 +1,4 @@
-set guifont=Sauce\ Code\ Powerline:h14
+set guifont=Monaco:h14
 
 set guioptions-=r
 set guioptions-=L

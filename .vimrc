@@ -17,8 +17,8 @@ set showcmd                     "Show incomplete cmds down the bottom
 set showmode                    "Show current mode down the bottom
 set visualbell                  "No sounds
 set autoread                    "Reload files changed outside vim
-set cursorline                  " Highlight current line
-set cursorcolumn                " Highlight current column
+"set cursorline                  " Highlight current line
+"set cursorcolumn                " Highlight current column
 set cmdheight=2                 " Height of the command bar
 set laststatus=2                " Always show the status line
 set spell
@@ -61,6 +61,7 @@ set ignorecase
 set smartcase
 set incsearch
 set hlsearch
+set shortmess+=c
 let mapleader=","
 
 source ~/.vundle.vim

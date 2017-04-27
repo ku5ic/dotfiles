@@ -1,14 +1,14 @@
 #!/bin/sh
 
 brew update
-brew upgrade --all
+brew upgrade
 
 brew install coreutils
 brew install ssh-copy-id
 brew install wget
 brew install imagemagick
 brew install git
-brew install mysql56
+brew install mysql
 brew install node
 brew install phantomjs
 brew install postgresql
