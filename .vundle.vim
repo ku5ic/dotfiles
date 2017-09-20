@@ -25,12 +25,13 @@ Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'mattn/emmet-vim'
 Plugin 'vim-airline/vim-airline'
 Plugin 'editorconfig/editorconfig-vim'
-Plugin 'craigemery/vim-autotag'
+Plugin 'ervandew/supertab'
+Plugin 'Valloric/YouCompleteMe'
 Plugin 'morhetz/gruvbox'
 Plugin 'godlygeek/tabular'
 Plugin 'jiangmiao/auto-pairs'
 Plugin 'w0rp/ale'
-Plugin 'pangloss/vim-javascript'
+Plugin 'othree/javascript-libraries-syntax.vim'
 
 if filereadable(glob("~/.vundle.local"))
    source ~/.vundle.local
@@ -42,6 +43,9 @@ filetype plugin indent on
 
 " JSX
 let g:jsx_ext_required=0
+
+" JavaScript libraries syntax
+let g:used_javascript_libs = 'underscore,backbone,react,jquery,lodash,d3'
 
 " Airline
 if !exists('g:airline_symbols')
@@ -68,6 +72,8 @@ let NERDTreeDirArrows=1
 let NERDTreeAutoDeleteBuffer=1
 let NERDTreeQuitOnOpen=1
 let NERDTreeIgnore=['\.DS_Store', '\~$', '\.swp']
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 " NERD Commenter
 let g:NERDSpaceDelims=1

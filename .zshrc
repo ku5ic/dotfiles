@@ -24,6 +24,7 @@ export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
 
 source "$HOME/.vim/bundle/gruvbox/gruvbox_256palette_osx.sh"
 export TERM=xterm-256color
+alias tmux="env TERM=xterm-256color tmux"
 
 eval "$(rbenv init - --no-rehash zsh)"
 
