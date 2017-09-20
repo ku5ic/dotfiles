@@ -63,13 +63,22 @@ endif
 call vundle#end()
 filetype plugin indent on
 
+
+" Devicons
+let g:WebDevIconsUnicodeGlyphDoubleWidth=1
+let g:webdevicons_conceal_nerdtree_brackets=1
+let g:WebDevIconsNerdTreeAfterGlyphPadding=''
+let g:WebDevIconsNerdTreeGitPluginForceVAlign=1
+let g:WebDevIconsOS='Darwin'
+
 " JSX
 let g:jsx_ext_required=0
 
 " JavaScript libraries syntax
-let g:used_javascript_libs = 'underscore,backbone,react,jquery,lodash,d3'
+let g:used_javascript_libs='underscore,backbone,react,jquery,lodash,d3'
 
 " Airline
+let g:airline_powerline_fonts=1
 if !exists('g:airline_symbols')
     let g:airline_symbols={}
 endif
@@ -88,6 +97,7 @@ let g:airline_symbols.paste='∥'
 let g:airline_symbols.whitespace='Ξ'
 
 " NERDTree
+let NERDTreeWinSize=50
 let NERDTreeShowHidden=1
 let NERDTreeMinimalUI=1
 let NERDTreeDirArrows=1
