@@ -1,4 +1,4 @@
-set guifont=Hack:h14
+set guifont=Knack\ Nerd\ Font:h14
 
 set guioptions-=r
 set guioptions-=L

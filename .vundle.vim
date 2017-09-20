@@ -5,6 +5,7 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Bundle 'gmarik/Vundle.vim'
 
+" tpope
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-rails'
 Plugin 'tpope/vim-rake'
@@ -14,24 +15,45 @@ Plugin 'tpope/vim-sensible'
 Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-endwise'
 Plugin 'tpope/vim-unimpaired'
+
+" language packs
 Plugin 'sheerun/vim-polyglot'
+Plugin 'othree/javascript-libraries-syntax.vim'
+
+" testing and refactoring
 Plugin 'ecomba/vim-ruby-refactoring'
+Plugin 'janko-m/vim-test'
+
+" file browsing
 Plugin 'scrooloose/nerdtree'
 Plugin 'Xuyuanp/nerdtree-git-plugin'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'ddollar/nerdcommenter'
-Plugin 'janko-m/vim-test'
 Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'mattn/emmet-vim'
+
+" Git
+Plugin 'airblade/vim-gitgutter'
+
+" status lines
 Plugin 'vim-airline/vim-airline'
-Plugin 'editorconfig/editorconfig-vim'
-Plugin 'ervandew/supertab'
+
+" code completion
 Plugin 'Valloric/YouCompleteMe'
-Plugin 'morhetz/gruvbox'
-Plugin 'godlygeek/tabular'
+Plugin 'ervandew/supertab'
+Plugin 'mattn/emmet-vim'
+Plugin 'ddollar/nerdcommenter'
 Plugin 'jiangmiao/auto-pairs'
+
+" text filtering and alignment
+Plugin 'godlygeek/tabular'
+
+" themes
+Plugin 'morhetz/gruvbox'
+
+" linters
 Plugin 'w0rp/ale'
-Plugin 'othree/javascript-libraries-syntax.vim'
+
+" misc
+Plugin 'editorconfig/editorconfig-vim'
+Plugin 'ryanoasis/vim-devicons'
 
 if filereadable(glob("~/.vundle.local"))
    source ~/.vundle.local
