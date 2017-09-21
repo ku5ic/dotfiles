@@ -63,7 +63,6 @@ endif
 call vundle#end()
 filetype plugin indent on
 
-
 " Devicons
 let g:WebDevIconsUnicodeGlyphDoubleWidth=1
 let g:webdevicons_conceal_nerdtree_brackets=1
@@ -75,7 +74,7 @@ let g:WebDevIconsOS='Darwin'
 let g:jsx_ext_required=0
 
 " JavaScript libraries syntax
-let g:used_javascript_libs='underscore,backbone,react,jquery,lodash,d3'
+let g:used_javascript_libs='underscore,backbone,react,jquery,d3,jasmine,chai,vue'
 
 " Airline
 let g:airline_powerline_fonts=1
@@ -112,6 +111,12 @@ let g:NERDSpaceDelims=1
 let g:NERDDefaultAlign='left'
 
 " Asynchronous Lint Engine
+let g:ale_fixers = {
+\   'javascript': ['eslint'],
+\   'ruby': ['rubocop'],
+\}
+let g:ale_fix_on_save=1
+let g:ale_sign_column_always=1
 let g:ale_sign_error='•'
 let g:ale_sign_warning='•'
 let g:airline#extensions#ale#enabled=1

@@ -24,6 +24,11 @@ set visualbell
 " reload file changed outside vim
 set autoread
 
+" wildignore
+set wildignore+=**/node_modules
+set wildignore+=**/spec/reports
+set wildignore+=**/tmp/cache
+
 " status line
 set showcmd
 set showmode
