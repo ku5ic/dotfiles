@@ -74,7 +74,7 @@ let g:WebDevIconsOS='Darwin'
 let g:jsx_ext_required=0
 
 " JavaScript libraries syntax
-let g:used_javascript_libs='underscore,backbone,react,jquery,d3,jasmine,chai,vue'
+let g:used_javascript_libs='underscore,backbone,react,jquery,d3,jasmine,chai,vue,jest'
 
 " Airline
 let g:airline_powerline_fonts=1

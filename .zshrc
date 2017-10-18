@@ -4,7 +4,7 @@ export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="philips"
 COMPLETION_WAITING_DOTS="true"
 
-plugins=(git ssh-agent ruby rails bundler gem zsh-completions rbenv osx pow nodenv)
+plugins=(ruby rails rake gem rbenv bundler osx node npm git ssh-agent colorize)
 
 autoload -U compinit && compinit
 
@@ -55,3 +55,5 @@ export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
