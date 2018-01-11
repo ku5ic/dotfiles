@@ -17,6 +17,9 @@ map <C-n> :NERDTreeToggle<CR>
 map <C-f> :NERDTreeFind<CR>
 map <C-g> :MerginalToggle<CR>
 
+" CtrlP
+map <C-b> :CtrlPBuffer<CR>
+
 " Vim Test
 nmap <silent> <leader>t :TestNearest<CR>
 nmap <silent> <leader>T :TestFile<CR>

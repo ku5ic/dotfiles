@@ -4,7 +4,7 @@ export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="philips"
 COMPLETION_WAITING_DOTS="true"
 
-plugins=(ruby rails rake gem rbenv bundler osx node npm git ssh-agent colorize)
+plugins=(git colorize)
 
 autoload -U compinit && compinit
 
@@ -17,9 +17,7 @@ else
   export EDITOR='mvim'
 fi
 
-
-export PATH=/usr/local/sbin:$PATH
-export PATH=/usr/local/bin:$PATH
+# export PATH="/Users/$HOME/.rbenv/shims:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
 
 source "$HOME/.vim/bundle/gruvbox/gruvbox_256palette_osx.sh"
@@ -37,7 +35,7 @@ eval "$(rbenv init - --no-rehash zsh)"
 
 # nodenv settings
 # export PATH="$HOME/.nodenv/bin:$PATH"
-eval "$(nodenv init -)"
+# eval "$(nodenv init -)"
 
 # RVM settings
 if [[ -s ~/.rvm/scripts/rvm ]] ; then
@@ -49,11 +47,14 @@ else
 fi
 
 # Android
-export ANDROID_HOME=${HOME}/Library/Android/sdk
-export PATH=${PATH}:${ANDROID_HOME}/tools
-export PATH=${PATH}:${ANDROID_HOME}/platform-tools
+# export ANDROID_HOME=${HOME}/Library/Android/sdk
+# export PATH=${PATH}:${ANDROID_HOME}/tools
+# export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+ssh-add -K ~/.ssh/id_rsa &> /dev/null
+ssh-add -A &> /dev/null

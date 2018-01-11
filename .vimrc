@@ -16,7 +16,7 @@ set relativenumber
 set colorcolumn=80
 set cursorline
 set signcolumn=yes
-"set cursorcolumn
+set cursorcolumn
 
 " no sounds
 set visualbell
@@ -25,9 +25,9 @@ set visualbell
 set autoread
 
 " wildignore
-set wildignore+=**/node_modules
-set wildignore+=**/spec/reports
-set wildignore+=**/tmp/cache
+set wildignore+=*/node_modules/**,*/bower_components/**,*/spec/reports/**,*/tmp/**
+set wildignore+=*.png,*.PNG,*.jpg,*.jpeg,*.JPG,*.JPEG,*.pdf
+set wildignore+=*.ttf,*.otf,*.woff,*.woff2,*.eot
 
 " status line
 set showcmd
@@ -44,7 +44,7 @@ set encoding=utf-8
 set termencoding=utf-8
 let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
-set termguicolors
+" set termguicolors
 if !has('gui_running')
   set t_Co=256
 endif
@@ -55,7 +55,6 @@ set clipboard=unnamed
 
 " shell
 let shell="zsh\ -l"
-
 
 set hidden
 
@@ -94,7 +93,7 @@ au BufRead,BufNewFile *.md set filetype=markdown
 au BufRead,BufNewFile *.md.erb set filetype=eruby.markdown.html
 au BufRead,BufNewFile {Capfile,Gemfile,Vagrantfile,Rakefile,Thorfile,config.ru,.caprc,.irbrc,irb_tempfile*} set ft=ruby
 au BufRead,BufNewFile {*.jbuilder,*.rabl,*.rubyxl} setf ruby
-au  BufNewFile,BufRead *.jst set syntax=jst
+au BufNewFile,BufRead *.jst set syntax=jst
 au BufRead,BufNewFile *.go set filetype=go
 
 " ruby

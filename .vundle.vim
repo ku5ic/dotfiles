@@ -64,6 +64,9 @@ call vundle#end()
 filetype plugin indent on
 
 " Devicons
+let g:webdevicons_enable_nerdtree=1
+let g:webdevicons_enable_airline_tabline=1
+let g:webdevicons_enable_airline_statusline=1
 let g:WebDevIconsUnicodeGlyphDoubleWidth=1
 let g:webdevicons_conceal_nerdtree_brackets=1
 let g:WebDevIconsNerdTreeAfterGlyphPadding=''
@@ -81,9 +84,9 @@ let g:airline_powerline_fonts=1
 if !exists('g:airline_symbols')
     let g:airline_symbols={}
 endif
+let g:airline#extensions#tabline#fnamemod=':t'
 let g:airline_detect_modified=1
-let g:airline#extensions#tabline#left_sep=' '
-let g:airline#extensions#tabline#left_alt_sep='|'
+let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#branch#prefix='⤴' "➔, ➥, ⎇
 let g:airline#extensions#readonly#symbol='⊘'
 let g:airline#extensions#linecolumn#prefix='¶'
@@ -110,6 +113,11 @@ autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 let g:NERDSpaceDelims=1
 let g:NERDDefaultAlign='left'
 
+" Ctrl-P
+let g:ctrlp_custom_ignore = {
+      \ 'dir':  '\.git$\|\.hg$\|\.svn$\|bower_components$\|dist$\|node_modules$\|project_files$\|test$',
+      \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$' }
+
 " Asynchronous Lint Engine
 let g:ale_fixers = {
 \   'javascript': ['eslint'],
@@ -125,5 +133,5 @@ let g:ale_echo_msg_warning_str='W'
 let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
 
 " Gruvbox
-let g:gruvbox_contrast_dark='medium'
+let g:gruvbox_contrast_dark='hard'
 let g:gruvbox_improved_strings=0
