@@ -15,6 +15,7 @@ Plugin 'tpope/vim-sensible'
 Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-endwise'
 Plugin 'tpope/vim-unimpaired'
+Plugin 'tpope/vim-vinegar'
 
 " language packs
 Plugin 'sheerun/vim-polyglot'
@@ -25,8 +26,8 @@ Plugin 'ecomba/vim-ruby-refactoring'
 Plugin 'janko-m/vim-test'
 
 " file browsing
-Plugin 'scrooloose/nerdtree'
-Plugin 'Xuyuanp/nerdtree-git-plugin'
+" Plugin 'scrooloose/nerdtree'
+" Plugin 'Xuyuanp/nerdtree-git-plugin'
 Plugin 'ctrlpvim/ctrlp.vim'
 
 " Git
@@ -36,11 +37,9 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'vim-airline/vim-airline'
 
 " code completion
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'ervandew/supertab'
+" Plugin 'Valloric/YouCompleteMe'
 Plugin 'mattn/emmet-vim'
 Plugin 'ddollar/nerdcommenter'
-Plugin 'jiangmiao/auto-pairs'
 
 " text filtering and alignment
 Plugin 'godlygeek/tabular'
@@ -69,9 +68,12 @@ let g:webdevicons_enable_airline_tabline=1
 let g:webdevicons_enable_airline_statusline=1
 let g:WebDevIconsUnicodeGlyphDoubleWidth=1
 let g:webdevicons_conceal_nerdtree_brackets=1
-let g:WebDevIconsNerdTreeAfterGlyphPadding=''
-let g:WebDevIconsNerdTreeGitPluginForceVAlign=1
+let g:WebDevIconsNerdTreeAfterGlyphPadding=' '
+let g:WebDevIconsNerdTreeGitPluginForceVAlign=0
 let g:WebDevIconsOS='Darwin'
+let g:NERDTreeFileExtensionHighlightFullName=1
+let g:WebDevIconsUnicodeDecorateFolderNodes=1
+" let g:DevIconsEnableFoldersOpenClose=1
 
 " JSX
 let g:jsx_ext_required=0
@@ -99,15 +101,29 @@ let g:airline_symbols.paste='∥'
 let g:airline_symbols.whitespace='Ξ'
 
 " NERDTree
-let NERDTreeWinSize=50
-let NERDTreeShowHidden=1
-let NERDTreeMinimalUI=1
-let NERDTreeDirArrows=1
-let NERDTreeAutoDeleteBuffer=1
-let NERDTreeQuitOnOpen=1
-let NERDTreeIgnore=['\.DS_Store', '\~$', '\.swp']
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+" let NERDTreeWinSize=50
+" let NERDTreeShowHidden=1
+" let NERDTreeMinimalUI=1
+" let NERDTreeDirArrows=1
+" let NERDTreeAutoDeleteBuffer=1
+" let NERDTreeQuitOnOpen=1
+" let NERDTreeIgnore=['\.DS_Store', '\~$', '\.swp']
+" let g:NERDTreeDirArrowExpandable=""
+" let g:NERDTreeDirArrowCollapsible=""
+" let g:NERDTreeIndicatorMapCustom = {
+    " \ "Modified"  : "✹",
+    " \ "Staged"    : "✚",
+    " \ "Untracked" : "✭",
+    " \ "Renamed"   : "➜",
+    " \ "Unmerged"  : "═",
+    " \ "Deleted"   : "✖",
+    " \ "Dirty"     : "✗",
+    " \ "Clean"     : "✔︎",
+    " \ 'Ignored'   : "☒",
+    " \ "Unknown"   : "?"
+    " \ }
+" autocmd StdinReadPre * let s:std_in=1
+" autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 " NERD Commenter
 let g:NERDSpaceDelims=1
@@ -131,7 +147,15 @@ let g:airline#extensions#ale#enabled=1
 let g:ale_echo_msg_error_str='E'
 let g:ale_echo_msg_warning_str='W'
 let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
+" let g:ale_lint_on_text_changed='never'
 
 " Gruvbox
 let g:gruvbox_contrast_dark='hard'
 let g:gruvbox_improved_strings=0
+nnoremap <silent> [oh :call gruvbox#hls_show()<CR>
+nnoremap <silent> ]oh :call gruvbox#hls_hide()<CR>
+nnoremap <silent> coh :call gruvbox#hls_toggle()<CR>
+
+nnoremap * :let @/ = ""<CR>:call gruvbox#hls_show()<CR>*
+nnoremap / :let @/ = ""<CR>:call gruvbox#hls_show()<CR>/
+nnoremap ? :let @/ = ""<CR>:call gruvbox#hls_show()<CR>?

@@ -13,9 +13,9 @@ noremap <leader>ss :call StripWhitespace()<CR>
 noremap <leader>W :w !sudo tee % > /dev/null<CR>
 
 " The NERD Tree
-map <C-n> :NERDTreeToggle<CR>
-map <C-f> :NERDTreeFind<CR>
-map <C-g> :MerginalToggle<CR>
+" map <C-n> :NERDTreeToggle<CR>
+" map <C-f> :NERDTreeFind<CR>
+" map <C-g> :MerginalToggle<CR>
 
 " CtrlP
 map <C-b> :CtrlPBuffer<CR>

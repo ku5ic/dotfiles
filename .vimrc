@@ -12,11 +12,12 @@ set history=1000
 
 " numbers and rulers
 set number
-set relativenumber
+" set relativenumber
 set colorcolumn=80
 set cursorline
 set signcolumn=yes
 set cursorcolumn
+set lazyredraw
 
 " no sounds
 set visualbell
@@ -45,9 +46,7 @@ set termencoding=utf-8
 let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
 " set termguicolors
-if !has('gui_running')
-  set t_Co=256
-endif
+set t_Co=256
 
 " mouse and clipboard
 set mouse=a
