@@ -14,9 +14,9 @@ set history=1000
 set number
 " set relativenumber
 set colorcolumn=80
-set cursorline
+" set cursorline
 set signcolumn=yes
-set cursorcolumn
+" set cursorcolumn
 set lazyredraw
 
 " no sounds
@@ -43,10 +43,10 @@ set encoding=utf-8
 
 " term colors
 set termencoding=utf-8
-let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
-let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
-" set termguicolors
-set t_Co=256
+" let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
+" let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
+set termguicolors
+" set t_Co=256
 
 " mouse and clipboard
 set mouse=a
