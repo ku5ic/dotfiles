@@ -20,7 +20,7 @@ fi
 # export PATH="/Users/$HOME/.rbenv/shims:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
 
-source "$HOME/.vim/bundle/gruvbox/gruvbox_256palette.sh"
+# source "$HOME/.vim/bundle/gruvbox/gruvbox_256palette.sh"
 export TERM=xterm-256color
 alias tmux="env TERM=xterm-256color tmux"
 

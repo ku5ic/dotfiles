@@ -35,6 +35,7 @@ Plugin 'airblade/vim-gitgutter'
 
 " status lines
 Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 
 " code completion
 Plugin 'Valloric/YouCompleteMe'
@@ -46,6 +47,9 @@ Plugin 'godlygeek/tabular'
 
 " themes
 Plugin 'morhetz/gruvbox'
+Plugin 'nanotech/jellybeans.vim'
+Plugin 'tomasr/molokai'
+Plugin 'sjl/badwolf'
 
 " linters
 Plugin 'w0rp/ale'
