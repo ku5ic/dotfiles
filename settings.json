@@ -1,0 +1,53 @@
+
+{
+    "workbench.iconTheme": "seti",
+    "workbench.colorTheme": "Gruvbox Dark (Hard)",
+    // Controls the font size in pixels.
+    "editor.fontSize": 12,
+    // The number of spaces a tab is equal to. This setting is overriden based on the file contents when `editor.detectIndentation` is on.
+    "editor.tabSize": 2,
+    "workbench.startupEditor": "newUntitledFile",
+    "eslint.autoFixOnSave": true,
+    "terminal.external.osxExec": "iTerm.app",
+    "window.zoomLevel": 0,
+    "emmet.showExpandedAbbreviation": "never",
+    "vim.useSystemClipboard": true,
+    "vim.hlsearch": true,
+    "vim.leader": ",",
+    "vim.useCtrlKeys": true,
+    "vim.otherModesKeyBindingsNonRecursive": [
+        {
+            "before": [
+                "leader",
+                "w"
+            ],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.files.save",
+                    "args": []
+                }
+            ]
+        }
+    ],
+    "cSpell.userWords": [
+        "CSRF",
+        "Dropzone",
+        "Subheader",
+        "Unfollow",
+        "Unmount",
+        "datetime",
+        "dropdown",
+        "followee",
+        "followees",
+        "followership",
+        "gaggleamp",
+        "keyframes",
+        "pubsub",
+        "scroller",
+        "skusic",
+        "turbolinks",
+        "unvote",
+        "urijs"
+    ]
+}

@@ -81,6 +81,7 @@ source ~/.vundle.vim
 source ~/.keymappings.vim
 
 " theme
+set background=dark
 colorscheme gruvbox
 
 " custom file types

@@ -10,6 +10,7 @@ endfunction
 noremap <leader>ss :call StripWhitespace()<CR>
 
 " Save a file as root (,W)
+noremap <leader>w :w<CR>
 noremap <leader>W :w !sudo tee % > /dev/null<CR>
 
 " The NERD Tree

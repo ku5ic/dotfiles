@@ -16,6 +16,9 @@ Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-endwise'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'tpope/vim-vinegar'
+Plugin 'tpope/vim-commentary'
+Plugin 'tpope/vim-dotenv'
+Plugin 'tpope/vim-markdown'
 
 " language packs
 Plugin 'sheerun/vim-polyglot'
@@ -26,8 +29,8 @@ Plugin 'ecomba/vim-ruby-refactoring'
 Plugin 'janko-m/vim-test'
 
 " file browsing
-" Plugin 'scrooloose/nerdtree'
-" Plugin 'Xuyuanp/nerdtree-git-plugin'
+Plugin 'scrooloose/nerdtree'
+Plugin 'Xuyuanp/nerdtree-git-plugin'
 Plugin 'ctrlpvim/ctrlp.vim'
 
 " Git
@@ -40,7 +43,6 @@ Plugin 'vim-airline/vim-airline-themes'
 " code completion
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'mattn/emmet-vim'
-Plugin 'ddollar/nerdcommenter'
 
 " text filtering and alignment
 Plugin 'godlygeek/tabular'
@@ -105,33 +107,29 @@ let g:airline_symbols.paste='∥'
 let g:airline_symbols.whitespace='Ξ'
 
 " NERDTree
-" let NERDTreeWinSize=50
-" let NERDTreeShowHidden=1
-" let NERDTreeMinimalUI=1
-" let NERDTreeDirArrows=1
-" let NERDTreeAutoDeleteBuffer=1
-" let NERDTreeQuitOnOpen=1
-" let NERDTreeIgnore=['\.DS_Store', '\~$', '\.swp']
-" let g:NERDTreeDirArrowExpandable=""
-" let g:NERDTreeDirArrowCollapsible=""
-" let g:NERDTreeIndicatorMapCustom = {
-    " \ "Modified"  : "✹",
-    " \ "Staged"    : "✚",
-    " \ "Untracked" : "✭",
-    " \ "Renamed"   : "➜",
-    " \ "Unmerged"  : "═",
-    " \ "Deleted"   : "✖",
-    " \ "Dirty"     : "✗",
-    " \ "Clean"     : "✔︎",
-    " \ 'Ignored'   : "☒",
-    " \ "Unknown"   : "?"
-    " \ }
-" autocmd StdinReadPre * let s:std_in=1
-" autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-
-" NERD Commenter
-let g:NERDSpaceDelims=1
-let g:NERDDefaultAlign='left'
+let NERDTreeWinSize=50
+let NERDTreeShowHidden=1
+let NERDTreeMinimalUI=1
+let NERDTreeDirArrows=1
+let NERDTreeAutoDeleteBuffer=1
+let NERDTreeQuitOnOpen=1
+let NERDTreeIgnore=['\.DS_Store', '\~$', '\.swp']
+let g:NERDTreeDirArrowExpandable=""
+let g:NERDTreeDirArrowCollapsible=""
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : "☒",
+    \ "Unknown"   : "?"
+    \ }
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 " Ctrl-P
 let g:ctrlp_custom_ignore = {
@@ -163,3 +161,9 @@ nnoremap <silent> coh :call gruvbox#hls_toggle()<CR>
 nnoremap * :let @/ = ""<CR>:call gruvbox#hls_show()<CR>*
 nnoremap / :let @/ = ""<CR>:call gruvbox#hls_show()<CR>/
 nnoremap ? :let @/ = ""<CR>:call gruvbox#hls_show()<CR>?
+
+" YouCOmpleteMe
+" Don't show YCM's preview window [ I find it really annoying ]
+set completeopt-=preview
+let g:ycm_add_preview_to_completeopt=0
+let g:ycm_collect_identifiers_from_tags_files=1
