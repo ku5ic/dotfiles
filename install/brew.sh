@@ -30,3 +30,5 @@ brew install tmux
 brew install reattach-to-user-namespace
 brew install vim --with-override-system-vi
 brew install ctags
+
+brew cleanup

@@ -23,6 +23,7 @@ Plugin 'tpope/vim-markdown'
 " language packs
 Plugin 'sheerun/vim-polyglot'
 Plugin 'othree/javascript-libraries-syntax.vim'
+Plugin 'jelera/vim-javascript-syntax'
 
 " testing and refactoring
 Plugin 'ecomba/vim-ruby-refactoring'

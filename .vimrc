@@ -84,12 +84,12 @@ source ~/.keymappings.vim
 set background=dark
 colorscheme gruvbox
 
+" folding
+set foldmethod=indent
+
 " custom file types
-au BufRead,BufNewFile *.md set filetype=markdown
-au BufRead,BufNewFile *.md.erb set filetype=eruby.markdown.html
 au BufRead,BufNewFile {Capfile,Gemfile,Vagrantfile,Rakefile,Thorfile,config.ru,.caprc,.irbrc,irb_tempfile*} set ft=ruby
 au BufRead,BufNewFile {*.jbuilder,*.rabl,*.rubyxl} setf ruby
-au BufNewFile,BufRead *.jst set syntax=jst
 au BufRead,BufNewFile *.go set filetype=go
 
 " ruby

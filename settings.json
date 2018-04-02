@@ -9,6 +9,7 @@
     "workbench.startupEditor": "newUntitledFile",
     "eslint.autoFixOnSave": true,
     "terminal.external.osxExec": "iTerm.app",
+    "terminal.explorerKind": "external",
     "window.zoomLevel": 0,
     "emmet.showExpandedAbbreviation": "never",
     "vim.useSystemClipboard": true,
