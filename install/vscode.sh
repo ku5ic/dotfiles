@@ -16,7 +16,7 @@ EXTENSIONS=(
  "robinbentley.sass-indented" \
  "streetsidesoftware.code-spell-checker" \
  "tomphilbin.gruvbox-themes" \
- "vscodevim.vim" \" \
+ "vscodevim.vim" \
 )
 
  echo "Installing VS Code exstensions"
