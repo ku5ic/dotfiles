@@ -22,8 +22,6 @@ Plugin 'tpope/vim-markdown'
 
 " language packs
 Plugin 'sheerun/vim-polyglot'
-Plugin 'othree/javascript-libraries-syntax.vim'
-Plugin 'jelera/vim-javascript-syntax'
 
 " testing and refactoring
 Plugin 'ecomba/vim-ruby-refactoring'
@@ -80,7 +78,7 @@ let g:WebDevIconsNerdTreeGitPluginForceVAlign=0
 let g:WebDevIconsOS='Darwin'
 let g:NERDTreeFileExtensionHighlightFullName=1
 let g:WebDevIconsUnicodeDecorateFolderNodes=1
-" let g:DevIconsEnableFoldersOpenClose=1
+let g:DevIconsEnableFoldersOpenClose=1
 
 " JSX
 let g:jsx_ext_required=0
