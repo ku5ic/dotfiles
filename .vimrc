@@ -1,4 +1,3 @@
-" This must be first, because it changes other options as a side effect.
 set nocompatible
 
 " syntax
@@ -42,6 +41,8 @@ set spl=en_us
 set encoding=utf-8
 
 " term colors
+set t_Co=256
+set term=xterm-256color
 set termencoding=utf-8
 set termguicolors
 
@@ -77,7 +78,7 @@ set hlsearch
 set shortmess+=c
 let mapleader=","
 
-source ~/.vundle.vim
+source ~/.plugins.vim
 source ~/.keymappings.vim
 
 " theme
@@ -96,5 +97,5 @@ au BufRead,BufNewFile *.go set filetype=go
 let g:ruby_path=system('echo $HOME/.rbenv/shims')
 
 if filereadable(glob("~/.vimrc.local"))
-   source ~/.vimrc.local
+  source ~/.vimrc.local
 endif

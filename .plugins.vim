@@ -1,71 +1,77 @@
-filetype off
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-
-" let Vundle manage Vundle, required
-Bundle 'gmarik/Vundle.vim'
+call plug#begin('~/.vim/plugged')
 
 " tpope
-Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-rails'
-Plugin 'tpope/vim-rake'
-Plugin 'tpope/vim-rbenv'
-Plugin 'tpope/vim-eunuch'
-Plugin 'tpope/vim-sensible'
-Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-endwise'
-Plugin 'tpope/vim-unimpaired'
-Plugin 'tpope/vim-vinegar'
-Plugin 'tpope/vim-commentary'
-Plugin 'tpope/vim-dotenv'
-Plugin 'tpope/vim-markdown'
+Plug 'tpope/vim-git'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rails'
+Plug 'tpope/vim-rake'
+Plug 'tpope/vim-rbenv'
+Plug 'tpope/vim-eunuch'
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-vinegar'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-dotenv'
+Plug 'tpope/vim-markdown'
 
 " language packs
-Plugin 'sheerun/vim-polyglot'
+Plug 'sheerun/vim-polyglot'
 
 " testing and refactoring
-Plugin 'ecomba/vim-ruby-refactoring'
-Plugin 'janko-m/vim-test'
+Plug 'ecomba/vim-ruby-refactoring'
+Plug 'janko-m/vim-test'
 
 " file browsing
-Plugin 'scrooloose/nerdtree'
-Plugin 'Xuyuanp/nerdtree-git-plugin'
-Plugin 'ctrlpvim/ctrlp.vim'
+Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'ctrlpvim/ctrlp.vim'
 
 " Git
-Plugin 'airblade/vim-gitgutter'
+Plug 'airblade/vim-gitgutter'
 
 " status lines
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 " code completion
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'mattn/emmet-vim'
+function! BuildYCM(info)
+  " info is a dictionary with 3 fields
+  " - name:   name of the plugin
+  " - status: 'installed', 'updated', or 'unchanged'
+  " - force:  set on PlugInstall! or PlugUpdate!
+  if a:info.status == 'installed' || a:info.force
+    !./install.py
+    execute 'cd' fnameescape('~/.vim/plugged/YouCompleteMe/third_party/ycmd/third_party/tern_runtime')
+    !npm install --production
+  endif
+endfunction
+
+Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+Plug 'mattn/emmet-vim'
 
 " text filtering and alignment
-Plugin 'godlygeek/tabular'
+Plug 'godlygeek/tabular'
 
 " themes
-Plugin 'morhetz/gruvbox'
-Plugin 'nanotech/jellybeans.vim'
-Plugin 'tomasr/molokai'
-Plugin 'sjl/badwolf'
+Plug 'morhetz/gruvbox'
+Plug 'nanotech/jellybeans.vim'
+Plug 'tomasr/molokai'
+Plug 'sjl/badwolf'
 
 " linters
-Plugin 'w0rp/ale'
+Plug 'w0rp/ale'
 
 " misc
-Plugin 'editorconfig/editorconfig-vim'
-Plugin 'ryanoasis/vim-devicons'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'ryanoasis/vim-devicons'
 
-if filereadable(glob("~/.vundle.local"))
-   source ~/.vundle.local
+if filereadable(glob("~/.plugins.local"))
+   source ~/.plugins.local
 endif
 
-" All of your Plugins must be added before the following line
-call vundle#end()
-filetype plugin indent on
+call plug#end()
 
 " Devicons
 let g:webdevicons_enable_nerdtree=1
@@ -73,18 +79,12 @@ let g:webdevicons_enable_airline_tabline=1
 let g:webdevicons_enable_airline_statusline=1
 let g:WebDevIconsUnicodeGlyphDoubleWidth=1
 let g:webdevicons_conceal_nerdtree_brackets=1
-let g:WebDevIconsNerdTreeAfterGlyphPadding=' '
-let g:WebDevIconsNerdTreeGitPluginForceVAlign=0
+" let g:WebDevIconsNerdTreeAfterGlyphPadding=''
+let g:WebDevIconsNerdTreeGitPlugForceVAlign=1
 let g:WebDevIconsOS='Darwin'
 let g:NERDTreeFileExtensionHighlightFullName=1
 let g:WebDevIconsUnicodeDecorateFolderNodes=1
 let g:DevIconsEnableFoldersOpenClose=1
-
-" JSX
-let g:jsx_ext_required=0
-
-" JavaScript libraries syntax
-let g:used_javascript_libs='underscore,backbone,react,jquery,d3,jasmine,chai,vue,jest'
 
 " Airline
 let g:airline_powerline_fonts=1

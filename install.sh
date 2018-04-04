@@ -42,7 +42,7 @@ ln -sfv "$DOTFILES_DIR/settings.json" "~/Library/Application Support/Code/User/"
 source "$DOTFILES_DIR/install/brew.sh"
 source "$DOTFILES_DIR/install/brew-cask.sh"
 source "$DOTFILES_DIR/install/tmux-plugin-manager.sh"
-source "$DOTFILES_DIR/install/vundle.sh"
+source "$DOTFILES_DIR/install/plug.sh"
 source "$DOTFILES_DIR/install/vscode.sh"
 
 # Additional completion definitions for Zsh
