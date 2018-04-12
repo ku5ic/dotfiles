@@ -968,7 +968,7 @@
 	<key>NSWindow Frame SessionsPreferences</key>
 	<string>269 139 606 469 0 0 1440 900 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>135 464 918 401 0 0 1440 900 </string>
+	<string>122 429 918 401 0 0 1440 900 </string>
 	<key>NSWindow Frame com.apple.typography_panel_Nadeem</key>
 	<string>479 645 260 134 0 0 2560 1440 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
@@ -985,7 +985,7 @@
 			<key>ASCII Anti Aliased</key>
 			<true/>
 			<key>ASCII Ligatures</key>
-			<false/>
+			<true/>
 			<key>AWDS Pane Directory</key>
 			<string></string>
 			<key>AWDS Pane Option</key>
@@ -1908,7 +1908,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2018-04-02T16:57:29Z</date>
+	<date>2018-04-06T13:54:44Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SavePasteHistory</key>

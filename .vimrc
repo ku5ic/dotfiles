@@ -1,7 +1,7 @@
 set nocompatible
 
 " syntax
-syntax on
+syntax enable
 
 " backup and history
 set noswapfile
@@ -35,16 +35,14 @@ set showmode
 set cmdheight=1
 set laststatus=2
 
-" spelling and encoding
-set spell
-set spl=en_us
-set encoding=utf-8
-
 " term colors
-set t_Co=256
-set term=xterm-256color
+if (has("term"))
+  set term=xterm-256color
+endif
 set termencoding=utf-8
-set termguicolors
+if (has("termguicolors"))
+  set termguicolors
+endif
 
 " mouse and clipboard
 set mouse=a
@@ -63,7 +61,8 @@ set shiftwidth=2
 set softtabstop=2
 set tabstop=2
 set expandtab
-set list listchars=tab:\ \ ,trail:·
+set listchars=eol:¬,trail:~,
+set list
 set nowrap
 set linebreak
 set scrolloff=8
@@ -83,15 +82,33 @@ source ~/.keymappings.vim
 
 " theme
 set background=dark
-colorscheme gruvbox
+" let ayucolor="mirage"
+colorscheme OceanicNext
+
+" spelling and encoding
+set spell
+set spl=en_us
+set encoding=utf-8
+hi clear SpellBad
+hi clear SpellCap
+hi clear SpellRare
+hi clear SpellLocal
+hi SpellBad cterm=underline,bold
+hi SpellCap cterm=underline,bold
+hi SpellRare cterm=underline,bold
+hi SpellLocal cterm=underline,bold
 
 " folding
 set foldmethod=indent
+set foldnestmax=10
+set nofoldenable
+set foldlevel=2
 
 " custom file types
 au BufRead,BufNewFile {Capfile,Gemfile,Vagrantfile,Rakefile,Thorfile,config.ru,.caprc,.irbrc,irb_tempfile*} set ft=ruby
 au BufRead,BufNewFile {*.jbuilder,*.rabl,*.rubyxl} setf ruby
 au BufRead,BufNewFile *.go set filetype=go
+au BufRead,BufNewFile *.snap set filetype=javasript.jsx
 
 " ruby
 let g:ruby_path=system('echo $HOME/.rbenv/shims')

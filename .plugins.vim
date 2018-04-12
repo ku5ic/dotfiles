@@ -17,7 +17,10 @@ Plug 'tpope/vim-dotenv'
 Plug 'tpope/vim-markdown'
 
 " language packs
-Plug 'sheerun/vim-polyglot'
+" Plug 'sheerun/vim-polyglot'
+Plug 'othree/yajs.vim'
+Plug 'othree/javascript-libraries-syntax.vim'
+Plug 'mxw/vim-jsx'
 
 " testing and refactoring
 Plug 'ecomba/vim-ruby-refactoring'
@@ -59,6 +62,8 @@ Plug 'morhetz/gruvbox'
 Plug 'nanotech/jellybeans.vim'
 Plug 'tomasr/molokai'
 Plug 'sjl/badwolf'
+Plug 'mhartington/oceanic-next'
+Plug 'ayu-theme/ayu-vim'
 
 " linters
 Plug 'w0rp/ale'
@@ -148,21 +153,27 @@ let g:airline#extensions#ale#enabled=1
 let g:ale_echo_msg_error_str='E'
 let g:ale_echo_msg_warning_str='W'
 let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
+let g:ale_set_highlights=0
 " let g:ale_lint_on_text_changed='never'
 
 " Gruvbox
-let g:gruvbox_contrast_dark='hard'
-let g:gruvbox_improved_strings=0
-nnoremap <silent> [oh :call gruvbox#hls_show()<CR>
-nnoremap <silent> ]oh :call gruvbox#hls_hide()<CR>
-nnoremap <silent> coh :call gruvbox#hls_toggle()<CR>
+" let g:gruvbox_contrast_dark='hard'
+" let g:gruvbox_improved_strings=0
+" nnoremap <silent> [oh :call gruvbox#hls_show()<CR>
+" nnoremap <silent> ]oh :call gruvbox#hls_hide()<CR>
+" nnoremap <silent> coh :call gruvbox#hls_toggle()<CR>
 
-nnoremap * :let @/ = ""<CR>:call gruvbox#hls_show()<CR>*
-nnoremap / :let @/ = ""<CR>:call gruvbox#hls_show()<CR>/
-nnoremap ? :let @/ = ""<CR>:call gruvbox#hls_show()<CR>?
+" nnoremap * :let @/ = ""<CR>:call gruvbox#hls_show()<CR>*
+" nnoremap / :let @/ = ""<CR>:call gruvbox#hls_show()<CR>/
+" nnoremap ? :let @/ = ""<CR>:call gruvbox#hls_show()<CR>?
 
 " YouCOmpleteMe
 " Don't show YCM's preview window [ I find it really annoying ]
 set completeopt-=preview
 let g:ycm_add_preview_to_completeopt=0
 let g:ycm_collect_identifiers_from_tags_files=1
+
+" JavaScript
+let g:javascript_plugin_jsdoc=1
+let g:javascript_plugin_ngdoc=1
+let g:javascript_plugin_flow=1
