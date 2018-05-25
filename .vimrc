@@ -11,6 +11,7 @@ set history=1000
 
 " numbers and rulers
 set number
+set numberwidth=2
 " set relativenumber
 set colorcolumn=80
 " set cursorline
@@ -36,13 +37,11 @@ set cmdheight=1
 set laststatus=2
 
 " term colors
-if (has("term"))
-  set term=xterm-256color
-endif
+let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
+let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
+set term=xterm-256color
 set termencoding=utf-8
-if (has("termguicolors"))
-  set termguicolors
-endif
+set termguicolors
 
 " mouse and clipboard
 set mouse=a
@@ -61,7 +60,7 @@ set shiftwidth=2
 set softtabstop=2
 set tabstop=2
 set expandtab
-set listchars=eol:¬,trail:~,
+set listchars=eol:¬,tab:»·,trail:·,nbsp:·,
 set list
 set nowrap
 set linebreak

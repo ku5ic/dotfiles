@@ -45,7 +45,7 @@ function! BuildYCM(info)
   " - status: 'installed', 'updated', or 'unchanged'
   " - force:  set on PlugInstall! or PlugUpdate!
   if a:info.status == 'installed' || a:info.force
-    !./install.py
+    !python2.7 ./install.py
     execute 'cd' fnameescape('~/.vim/plugged/YouCompleteMe/third_party/ycmd/third_party/tern_runtime')
     !npm install --production
   endif
@@ -90,6 +90,9 @@ let g:WebDevIconsOS='Darwin'
 let g:NERDTreeFileExtensionHighlightFullName=1
 let g:WebDevIconsUnicodeDecorateFolderNodes=1
 let g:DevIconsEnableFoldersOpenClose=1
+if exists('g:loaded_webdevicons')
+  call webdevicons#refresh()
+endif
 
 " Airline
 let g:airline_powerline_fonts=1

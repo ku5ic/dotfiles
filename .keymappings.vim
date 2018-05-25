@@ -14,8 +14,8 @@ noremap <leader>w :w<CR>
 noremap <leader>W :w !sudo tee % > /dev/null<CR>
 
 " The NERD Tree
-" map <C-n> :NERDTreeToggle<CR>
-" map <C-f> :NERDTreeFind<CR>
+map <C-n> :NERDTreeToggle<CR>
+map <C-f> :NERDTreeFind<CR>
 " map <C-g> :MerginalToggle<CR>
 
 " CtrlP
@@ -40,5 +40,5 @@ vnoremap <leader>rriv :RRenameInstanceVariable<cr>
 vnoremap <leader>rem  :RExtractMethod<cr>
 
 if filereadable(glob("~/.keymappings.local"))
-   source ~/.keymappings.local
+ source ~/.keymappings.local
 endif

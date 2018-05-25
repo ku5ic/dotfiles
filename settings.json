@@ -1,15 +1,20 @@
 
 {
+    "editor.fontFamily": "MesloLGMDZ Nerd Font",
     "workbench.iconTheme": "seti",
     "workbench.colorTheme": "Gruvbox Dark (Hard)",
     // Controls the font size in pixels.
-    "editor.fontSize": 12,
+    "editor.fontSize": 14,
     // The number of spaces a tab is equal to. This setting is overriden based on the file contents when `editor.detectIndentation` is on.
     "editor.tabSize": 2,
-    "workbench.startupEditor": "newUntitledFile",
-    "eslint.autoFixOnSave": true,
+    // terminal settings
+    "terminal.integrated.fontFamily": "MesloLGMDZ Nerd Font",
+    "terminal.integrated.fontSize": 14,
+    "terminal.integrated.shell.osx": "/usr/local/bin/zsh",
     "terminal.external.osxExec": "iTerm.app",
     "terminal.explorerKind": "external",
+    "workbench.startupEditor": "newUntitledFile",
+    "eslint.autoFixOnSave": true,
     "window.zoomLevel": 0,
     "emmet.showExpandedAbbreviation": "never",
     "vim.useSystemClipboard": true,
