@@ -19,13 +19,10 @@ brew install rbenv
 brew install ruby
 brew install rbenv-gemset
 brew install ruby-build
-brew install node
-brew install node-build
-brew install nodenv
-brew install yarn
+brew install nvm
+brew install yarn --without-node
 brew install phantomjs
 brew install python
-brew install python3
 brew install tmux
 brew install reattach-to-user-namespace
 brew install vim --with-override-system-vi
