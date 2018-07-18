@@ -39,7 +39,9 @@ set laststatus=2
 " term colors
 let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
 let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
-set term=xterm-256color
+if !has('nvim')
+  set term=xterm-256color
+endif
 set termencoding=utf-8
 set termguicolors
 
@@ -86,7 +88,8 @@ colorscheme OceanicNext
 
 " spelling and encoding
 set spell
-set spl=en_us
+syntax spell toplevel
+set spl=en_us,hr
 set encoding=utf-8
 hi clear SpellBad
 hi clear SpellCap

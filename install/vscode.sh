@@ -17,6 +17,7 @@ EXTENSIONS=(
  "streetsidesoftware.code-spell-checker" \
  "tomphilbin.gruvbox-themes" \
  "vscodevim.vim" \
+ "HookyQR.beautify" \
 )
 
  echo "Installing VS Code exstensions"

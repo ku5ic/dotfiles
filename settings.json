@@ -1,7 +1,7 @@
 
 {
     "editor.fontFamily": "MesloLGMDZ Nerd Font",
-    "workbench.iconTheme": "seti",
+    "workbench.iconTheme": "material-icon-theme",
     "workbench.colorTheme": "Gruvbox Dark (Hard)",
     // Controls the font size in pixels.
     "editor.fontSize": 14,
@@ -21,27 +21,23 @@
     "vim.hlsearch": true,
     "vim.leader": ",",
     "vim.useCtrlKeys": true,
-    "vim.otherModesKeyBindingsNonRecursive": [
-        {
-            "before": [
-                "leader",
-                "w"
-            ],
-            "after": [],
-            "commands": [
-                {
-                    "command": "workbench.action.files.save",
-                    "args": []
-                }
-            ]
-        }
-    ],
+    "vim.easymotion": true,
+    "vim.statusBarColorControl": true,
+    "vim.statusBarColors": {
+        "normal": ["#5db2b1", "#ffffff"],
+        "insert": "#97c796",
+        "visual": "#fc935f",
+        "visualline": "#B48EAD",
+        "visualblock": "#A3BE8C",
+        "replace": "#D08770"
+    },
     "cSpell.userWords": [
         "CSRF",
         "Dropzone",
         "Subheader",
         "Unfollow",
         "Unmount",
+        "commentable",
         "datepicker",
         "datetime",
         "dropdown",
@@ -50,11 +46,26 @@
         "followership",
         "gaggleamp",
         "keyframes",
+        "playsinline",
         "pubsub",
         "scroller",
         "skusic",
+        "smiley",
         "turbolinks",
         "unvote",
         "urijs"
-    ]
+    ],
+    "editor.minimap.enabled": false,
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "editor.lineNumbers": "relative",
+    "workbench.sideBar.location": "right",
+    "workbench.editor.tabSizing": "shrink",
+    "workbench.colorCustomizations": {
+        "statusBar.background": "#5db2b1",
+        "statusBar.noFolderBackground": "#5db2b1",
+        "statusBar.debuggingBackground": "#5db2b1",
+        "statusBar.foreground": "#ffffff"
+    },
+    "eslint.packageManager": "yarn",
 }

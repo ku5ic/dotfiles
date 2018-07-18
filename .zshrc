@@ -17,7 +17,13 @@ else
   export EDITOR='mvim'
 fi
 
-# export PATH="/Users/$HOME/.rbenv/shims:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+export PATH="/Users/$HOME/.rbenv/shims:$PATH"
+export PATH="/Users/$HOME/.pyenv:$PATH"
+export PATH="/Users/$HOME/.local/bin:$PATH"
+
 export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
 
 source "$HOME/.vim/plugged/gruvbox/gruvbox_256palette.sh"
@@ -25,6 +31,7 @@ export TERM="xterm-256color"
 alias tmux="env TERM=xterm-256color tmux"
 
 eval "$(rbenv init - --no-rehash zsh)"
+eval "$(pyenv init -)"
 
 #if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
 
