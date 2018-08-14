@@ -2,7 +2,7 @@
 
 # Get current dir (so run this script from anywhere)
 
-export DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export DOTFILES_DIR="/Users/ku5ic/.dotfiles"
 
 # Update dotfiles itself first
 
@@ -50,6 +50,9 @@ source "$DOTFILES_DIR/install/vscode.sh"
 # Additional completion definitions for Zsh
 git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
 autoload -U compinit && compinit
+
+# install lts version of node
+nvm install --lts
 
 # Globally install with npm
 npm install -g bower

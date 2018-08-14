@@ -26,7 +26,6 @@ export PATH="/Users/$HOME/.local/bin:$PATH"
 
 export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
 
-source "$HOME/.vim/plugged/gruvbox/gruvbox_256palette.sh"
 export TERM="xterm-256color"
 alias tmux="env TERM=xterm-256color tmux"
 
