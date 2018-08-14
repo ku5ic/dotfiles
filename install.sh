@@ -36,6 +36,7 @@ ln -sfv "$DOTFILES_DIR/.vundle.vim" ~
 ln -sfv "$DOTFILES_DIR/.keymappings.vim" ~
 ln -sfv "$DOTFILES_DIR/.vimrc" ~
 ln -sfv "$DOTFILES_DIR/.gvimrc" ~
+ln -sfv "$DOTFILES_DIR/.plugins" ~
 ln -sfv "$DOTFILES_DIR/settings.json" "~/Library/Application Support/Code/User/"
 
 # Install brew & brew-cask packages
