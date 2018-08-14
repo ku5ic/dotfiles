@@ -14,7 +14,7 @@ brew install postgresql
 brew install mysql
 brew install redis
 brew install sqlite
-brew install puma-dev
+brew install puma/puma/puma-dev
 brew install rbenv
 brew install ruby
 brew install rbenv-gemset
@@ -26,6 +26,8 @@ brew install python
 brew install tmux
 brew install reattach-to-user-namespace
 brew install vim --with-override-system-vi
+brew install cmake
 brew install ctags
+brew install libidn
 
 brew cleanup
