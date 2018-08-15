@@ -31,6 +31,20 @@
         "visualblock": "#A3BE8C",
         "replace": "#D08770"
     },
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            "before":["<C-n>"],
+            "commands": [
+                ":nohl",
+            ]
+        },
+        {
+            "before": ["leader", "w"],
+            "commands": [
+                "workbench.action.files.save",
+            ]
+        }
+    ],
     "cSpell.userWords": [
         "CSRF",
         "Dropzone",
