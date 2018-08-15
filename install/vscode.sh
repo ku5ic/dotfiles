@@ -1,23 +1,24 @@
 #!/bin/sh
 
 EXTENSIONS=(
- "EditorConfig.EditorConfig" \
  "asvetliakov.snapshot-tools" \
  "bung87.rails" \
+ "bung87.vscode-gemfile" \
  "castwide.solargraph" \
  "dbaeumer.vscode-eslint" \
+ "EditorConfig.EditorConfig" \
  "glen-84.sass-lint" \
+ "HookyQR.beautify" \
  "mikestead.dotenv" \
  "misogi.ruby-rubocop" \
  "ms-python.python" \
  "msjsdiag.debugger-for-chrome" \
- "qinjia.seti-icons" \
- "rebornix.Ruby" \
+ "PKief.material-icon-theme" \
+ "rebornix.ruby" \
  "robinbentley.sass-indented" \
  "streetsidesoftware.code-spell-checker" \
  "tomphilbin.gruvbox-themes" \
  "vscodevim.vim" \
- "HookyQR.beautify" \
 )
 
  echo "Installing VS Code exstensions"
