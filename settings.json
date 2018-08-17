@@ -1,4 +1,3 @@
-
 {
     "editor.fontFamily": "MesloLGMDZ Nerd Font",
     "workbench.iconTheme": "material-icon-theme",
@@ -23,14 +22,6 @@
     "vim.useCtrlKeys": true,
     "vim.easymotion": true,
     "vim.statusBarColorControl": true,
-    "vim.statusBarColors": {
-        "normal": ["#5db2b1", "#ffffff"],
-        "insert": "#97c796",
-        "visual": "#fc935f",
-        "visualline": "#B48EAD",
-        "visualblock": "#A3BE8C",
-        "replace": "#D08770"
-    },
     "vim.normalModeKeyBindingsNonRecursive": [
         {
             "before":["<C-n>"],
@@ -82,10 +73,16 @@
     "workbench.sideBar.location": "right",
     "workbench.editor.tabSizing": "shrink",
     "workbench.colorCustomizations": {
-        "statusBar.background": "#5db2b1",
-        "statusBar.noFolderBackground": "#5db2b1",
-        "statusBar.debuggingBackground": "#5db2b1",
-        "statusBar.foreground": "#ffffff"
+        "statusBar.background": "#005f5f",
+        "statusBar.noFolderBackground": "#005f5f",
+        "statusBar.debuggingBackground": "#005f5f"
     },
     "eslint.packageManager": "yarn",
+    "breadcrumbs.enabled": true,
+    "editor.accessibilitySupport": "off",
+    "editor.dragAndDrop": false,
+    "workbench.tips.enabled": false,
+    "window.newWindowDimensions": "fullscreen",
+    "window.restoreFullscreen": true,
+    "ruby.interpreter.commandPath": "/Users/ku5ic/.rbenv/shims/ruby",
 }
