@@ -141,13 +141,7 @@
     },
     "workbench.statusBar.feedback.visible": false,
     "liveshare.audio.startCallOnShare": true,
-    "ruby.interpreter.commandPath": "/Users/ku5ic/.rbenv/shims/ruby",
     "ruby.pathToBundler": "/Users/ku5ic/.rbenv/shims/bundle",
-    "ruby.useBundler": true,
-    "ruby.useLanguageServer": true,
-    "ruby.format": "rubocop",
-    "ruby.rubocop.executePath": "/Users/ku5ic/.rbenv/shims/",
-    "ruby.rubocop.onSave": false,
     "githubPullRequests.hosts": [
         {
             "host": "https://github.com",
@@ -158,4 +152,5 @@
     "diffEditor.ignoreTrimWhitespace": false,
     "materialTheme.accent": "Yellow",
     "solargraph.formatting": true,
+    "ruby.interpreter.commandPath": "/Users/ku5ic/.rbenv/shims/ruby",
 }
