@@ -24,6 +24,11 @@ export PATH="/Users/$HOME/.rbenv/shims:$PATH"
 export PATH="/Users/$HOME/.pyenv:$PATH"
 export PATH="/Users/$HOME/.local/bin:$PATH"
 
+export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/mysql@5.7/lib"
+export CPPFLAGS="-I/usr/local/opt/mysql@5.7/include"
+export PKG_CONFIG_PATH="/usr/local/opt/mysql@5.7/lib/pkgconfig"
+
 export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
 
 export TERM="xterm-256color"

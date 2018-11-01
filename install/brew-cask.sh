@@ -19,9 +19,7 @@ brew cask install coconutbattery
 brew cask install firefox
 brew cask install font-open-sans
 brew cask install google-backup-and-sync
-brew cask install launchrocket
-brew cask install plex-media-server
-brew cask install smcfancontrol
+brew cask install macs-fan-controll
 brew cask install visual-studio-code
 brew cask install db-browser-for-sqlite
 brew cask install font-hack

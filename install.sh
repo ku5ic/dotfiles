@@ -30,9 +30,7 @@ ln -sfv "$DOTFILES_DIR/.gitconfig" ~
 ln -sfv "$DOTFILES_DIR/.gitignore_global" ~
 ln -sfv "$DOTFILES_DIR/.gitmessage" ~
 ln -sfv "$DOTFILES_DIR/.gemrc" ~
-ln -sfv "$DOTFILES_DIR/.powconfig" ~
 ln -sfv "$DOTFILES_DIR/.tmux.conf" ~
-ln -sfv "$DOTFILES_DIR/.vundle.vim" ~
 ln -sfv "$DOTFILES_DIR/.keymappings.vim" ~
 ln -sfv "$DOTFILES_DIR/.vimrc" ~
 ln -sfv "$DOTFILES_DIR/.gvimrc" ~

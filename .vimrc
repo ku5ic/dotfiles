@@ -3,6 +3,9 @@ set nocompatible
 " syntax
 syntax enable
 
+" fix backspace
+set bs=2
+
 " backup and history
 set noswapfile
 set nobackup
@@ -12,7 +15,7 @@ set history=1000
 " numbers and rulers
 set number
 set numberwidth=2
-" set relativenumber
+set relativenumber
 set colorcolumn=80
 " set cursorline
 set signcolumn=yes
@@ -50,7 +53,7 @@ set mouse=a
 set clipboard=unnamed
 
 " shell
-let shell="zsh\ -l"
+let shell="/usr/bin/env zsh\ -l"
 
 set hidden
 
@@ -84,12 +87,12 @@ source ~/.keymappings.vim
 " theme
 set background=dark
 " let ayucolor="mirage"
-colorscheme OceanicNext
+colorscheme vim-material
 
 " spelling and encoding
 set spell
 syntax spell toplevel
-set spl=en_us,hr
+set spl=en_us
 set encoding=utf-8
 hi clear SpellBad
 hi clear SpellCap

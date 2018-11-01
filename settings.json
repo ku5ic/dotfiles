@@ -1,7 +1,35 @@
 {
     "editor.fontFamily": "MesloLGMDZ Nerd Font",
-    "workbench.iconTheme": "material-icon-theme",
-    "workbench.colorTheme": "Gruvbox Dark (Hard)",
+    "workbench.colorTheme": "Material Theme",
+    "workbench.iconTheme": "eq-material-theme-icons",
+    "workbench.colorCustomizations": {
+        "statusBar.background": "#263238",
+        "statusBar.noFolderBackground": "#263238",
+        "statusBar.debuggingForeground": "#ffffff",
+        "statusBar.debuggingBackground": "#263238",
+        "statusBar.foreground": "#ffffff",
+        "editorLineNumber.foreground": "#607a86",
+        "editorLineNumber.activeForeground": "#F78C6C",
+        "activityBarBadge.background": "#FFA000",
+        "list.activeSelectionForeground": "#FFA000",
+        "list.inactiveSelectionForeground": "#FFA000",
+        "list.highlightForeground": "#FFA000",
+        "scrollbarSlider.activeBackground": "#FFA00050",
+        "editorSuggestWidget.highlightForeground": "#FFA000",
+        "textLink.foreground": "#FFA000",
+        "progressBar.background": "#FFA000",
+        "pickerGroup.foreground": "#FFA000",
+        "tab.activeBorder": "#FFA000",
+        "notificationLink.foreground": "#FFA000",
+        "editorWidget.resizeBorder": "#FFA000",
+        "editorWidget.border": "#FFA000",
+        "settings.modifiedItemIndicator": "#FFA000",
+        "settings.headerForeground": "#FFA000",
+        "panelTitle.activeBorder": "#FFA000",
+        "breadcrumb.activeSelectionForeground": "#FFA000",
+        "menu.selectionForeground": "#FFA000",
+        "menubar.selectionForeground": "#FFA000"
+    },
     // Controls the font size in pixels.
     "editor.fontSize": 14,
     // The number of spaces a tab is equal to. This setting is overriden based on the file contents when `editor.detectIndentation` is on.
@@ -22,6 +50,12 @@
     "vim.useCtrlKeys": true,
     "vim.easymotion": true,
     "vim.statusBarColorControl": true,
+    "vim.statusBarColors.normal": ["#263238", "#ffffff"],
+    "vim.statusBarColors.insert": ["#fb4934", "#ffffff"],
+    "vim.statusBarColors.visual": ["#d65d0e", "#ffffff"],
+    "vim.statusBarColors.visualline": ["#d65d0e", "#ffffff"],
+    "vim.statusBarColors.visualblock": ["#fe8019", "#ffffff"],
+    "vim.statusBarColors.replace": ["#fabd2f", "#ffffff"],
     "vim.normalModeKeyBindingsNonRecursive": [
         {
             "before":["<C-n>"],
@@ -34,6 +68,23 @@
             "commands": [
                 "workbench.action.files.save",
             ]
+        },
+        {
+            "before": ["u"],
+            "after": [],
+            "commands": [{
+                    "command": "undo",
+                    "args": []
+                }
+
+            ]
+        }, {
+            "before": ["<C-r>"],
+            "after": [],
+            "commands": [{
+                "command": "redo",
+                "args": []
+            }]
         }
     ],
     "cSpell.userWords": [
@@ -47,6 +98,7 @@
         "datepicker",
         "datetime",
         "dropdown",
+        "embedly",
         "followee",
         "followees",
         "followership",
@@ -56,10 +108,14 @@
         "playsinline",
         "polyfill",
         "pubsub",
+        "schedulable",
         "scroller",
+        "selectable",
         "skusic",
         "smiley",
+        "stylesheets",
         "turbolinks",
+        "unhighlight",
         "unvote",
         "urijs",
         "webm",
@@ -72,11 +128,6 @@
     "editor.lineNumbers": "relative",
     "workbench.sideBar.location": "right",
     "workbench.editor.tabSizing": "shrink",
-    "workbench.colorCustomizations": {
-        "statusBar.background": "#005f5f",
-        "statusBar.noFolderBackground": "#005f5f",
-        "statusBar.debuggingBackground": "#005f5f"
-    },
     "eslint.packageManager": "yarn",
     "breadcrumbs.enabled": true,
     "editor.accessibilitySupport": "off",
@@ -84,5 +135,27 @@
     "workbench.tips.enabled": false,
     "window.newWindowDimensions": "fullscreen",
     "window.restoreFullscreen": true,
+    "vim.visualstar": true,
+    "files.exclude": {
+        "**/.bundle": true
+    },
+    "workbench.statusBar.feedback.visible": false,
+    "liveshare.audio.startCallOnShare": true,
     "ruby.interpreter.commandPath": "/Users/ku5ic/.rbenv/shims/ruby",
+    "ruby.pathToBundler": "/Users/ku5ic/.rbenv/shims/bundle",
+    "ruby.useBundler": true,
+    "ruby.useLanguageServer": true,
+    "ruby.format": "rubocop",
+    "ruby.rubocop.executePath": "/Users/ku5ic/.rbenv/shims/",
+    "ruby.rubocop.onSave": false,
+    "githubPullRequests.hosts": [
+        {
+            "host": "https://github.com",
+            "username": "oauth",
+            "token": "system"
+        }
+    ],
+    "diffEditor.ignoreTrimWhitespace": false,
+    "materialTheme.accent": "Yellow",
+    "solargraph.formatting": true,
 }

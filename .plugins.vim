@@ -1,82 +1,134 @@
 call plug#begin('~/.vim/plugged')
 
-" tpope
-Plug 'tpope/vim-git'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-rails'
-Plug 'tpope/vim-rake'
-Plug 'tpope/vim-rbenv'
-Plug 'tpope/vim-eunuch'
-Plug 'tpope/vim-sensible'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-endwise'
-Plug 'tpope/vim-unimpaired'
-Plug 'tpope/vim-vinegar'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-dotenv'
-Plug 'tpope/vim-markdown'
-
-" language packs
-" Plug 'sheerun/vim-polyglot'
-Plug 'othree/yajs.vim'
-Plug 'othree/javascript-libraries-syntax.vim'
-Plug 'mxw/vim-jsx'
-
-" testing and refactoring
-Plug 'ecomba/vim-ruby-refactoring'
-Plug 'janko-m/vim-test'
-
-" file browsing
+" basic
 Plug 'scrooloose/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'ctrlpvim/ctrlp.vim'
-
-" Git
-Plug 'airblade/vim-gitgutter'
-
-" status lines
+Plug 'jistr/vim-nerdtree-tabs'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-fugitive'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-
-" code completion
-function! BuildYCM(info)
-  " info is a dictionary with 3 fields
-  " - name:   name of the plugin
-  " - status: 'installed', 'updated', or 'unchanged'
-  " - force:  set on PlugInstall! or PlugUpdate!
-  if a:info.status == 'installed' || a:info.force
-    !python2.7 ./install.py
-    execute 'cd' fnameescape('~/.vim/plugged/YouCompleteMe/third_party/ycmd/third_party/tern_runtime')
-    !npm install --production
-  endif
-endfunction
-
-Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
-Plug 'mattn/emmet-vim'
-
-" text filtering and alignment
-Plug 'godlygeek/tabular'
-
-" themes
-Plug 'morhetz/gruvbox'
-Plug 'nanotech/jellybeans.vim'
-Plug 'tomasr/molokai'
-Plug 'sjl/badwolf'
-Plug 'mhartington/oceanic-next'
-Plug 'ayu-theme/ayu-vim'
-
-" linters
+Plug 'airblade/vim-gitgutter'
+Plug 'vim-scripts/grep.vim'
+Plug 'vim-scripts/CSApprox'
+Plug 'bronson/vim-trailing-whitespace'
+Plug 'Raimondi/delimitMate'
+Plug 'majutsushi/tagbar'
+Plug 'scrooloose/syntastic'
+Plug 'Yggdroot/indentLine'
+Plug 'avelino/vim-bootstrap-updater'
+Plug 'sheerun/vim-polyglot'
+Plug 'tpope/vim-dotenv'
+Plug 'tpope/vim-surround'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'w0rp/ale'
-
-" misc
+Plug 'mattn/emmet-vim'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'ryanoasis/vim-devicons'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'janko-m/vim-test'
+" themes
+Plug 'morhetz/gruvbox'
+Plug 'hzchirs/vim-material'
+
+"*****************************************************************************
+"" Custom bundles
+"*****************************************************************************
+
+" c
+Plug 'vim-scripts/c.vim', {'for': ['c', 'cpp']}
+Plug 'ludwig/split-manpage.vim'
+
+" elixir
+Plug 'elixir-lang/vim-elixir'
+Plug 'carlosgaldino/elixir-snippets'
+Plug 'mxw/vim-jsx'
+
+" elm
+"" Elm Bundle
+Plug 'elmcast/elm-vim'
+
+" erlang
+Plug 'jimenezrick/vimerl'
+
+" go
+"" Go Lang Bundle
+Plug 'fatih/vim-go', {'do': ':GoInstallBinaries'}
+
+" haskell
+"" Haskell Bundle
+Plug 'eagletmt/neco-ghc'
+Plug 'dag/vim2hs'
+Plug 'pbrisbin/vim-syntax-shakespeare'
+
+" html
+"" HTML Bundle
+Plug 'hail2u/vim-css3-syntax'
+Plug 'gorodinskiy/vim-coloresque'
+Plug 'tpope/vim-haml'
+Plug 'mattn/emmet-vim'
+
+" javascript
+"" Javascript Bundle
+Plug 'jelera/vim-javascript-syntax'
+
+" lisp
+"" Lisp Bundle
+Plug 'vim-scripts/slimv.vim'
+
+" lua
+"" Lua Bundle
+" Plug 'xolox/vim-lua-ftplugin'
+" Plug 'xolox/vim-lua-inspect'
+
+" ocaml
+"" OCaml Bundle
+Plug 'def-lkb/ocp-indent-vim'
+
+" perl
+"" Perl Bundle
+Plug 'vim-perl/vim-perl'
+Plug 'c9s/perlomni.vim'
+
+" php
+"" PHP Bundle
+Plug 'arnaud-lb/vim-php-namespace'
+
+" python
+"" Python Bundle
+Plug 'davidhalter/jedi-vim'
+Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
+
+" ruby
+Plug 'tpope/vim-rbenv'
+Plug 'tpope/vim-rails'
+Plug 'tpope/vim-rake'
+Plug 'tpope/vim-projectionist'
+Plug 'thoughtbot/vim-rspec'
+Plug 'ecomba/vim-ruby-refactoring'
+
+" rust
+" Vim racer
+Plug 'racer-rust/vim-racer'
+
+" Rust.vim
+Plug 'rust-lang/rust.vim'
+
+
+" scala
+if has('python')
+    " sbt-vim
+    Plug 'ktvoelker/sbt-vim'
+endif
+" vim-scala
+Plug 'derekwyatt/vim-scala'
 
 if filereadable(glob("~/.plugins.local"))
    source ~/.plugins.local
 endif
 
 call plug#end()
+filetype plugin indent on
 
 " Devicons
 let g:webdevicons_enable_nerdtree=1
@@ -160,21 +212,15 @@ let g:ale_set_highlights=0
 " let g:ale_lint_on_text_changed='never'
 
 " Gruvbox
-" let g:gruvbox_contrast_dark='hard'
-" let g:gruvbox_improved_strings=0
-" nnoremap <silent> [oh :call gruvbox#hls_show()<CR>
-" nnoremap <silent> ]oh :call gruvbox#hls_hide()<CR>
-" nnoremap <silent> coh :call gruvbox#hls_toggle()<CR>
+let g:gruvbox_contrast_dark='hard'
+let g:gruvbox_improved_strings=0
+nnoremap <silent> [oh :call gruvbox#hls_show()<CR>
+nnoremap <silent> ]oh :call gruvbox#hls_hide()<CR>
+nnoremap <silent> coh :call gruvbox#hls_toggle()<CR>
 
-" nnoremap * :let @/ = ""<CR>:call gruvbox#hls_show()<CR>*
-" nnoremap / :let @/ = ""<CR>:call gruvbox#hls_show()<CR>/
-" nnoremap ? :let @/ = ""<CR>:call gruvbox#hls_show()<CR>?
-
-" YouCOmpleteMe
-" Don't show YCM's preview window [ I find it really annoying ]
-set completeopt-=preview
-let g:ycm_add_preview_to_completeopt=0
-let g:ycm_collect_identifiers_from_tags_files=1
+nnoremap * :let @/ = ""<CR>:call gruvbox#hls_show()<CR>*
+nnoremap / :let @/ = ""<CR>:call gruvbox#hls_show()<CR>/
+nnoremap ? :let @/ = ""<CR>:call gruvbox#hls_show()<CR>?
 
 " JavaScript
 let g:javascript_plugin_jsdoc=1
