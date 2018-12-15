@@ -37,9 +37,7 @@
     // terminal settings
     "terminal.integrated.fontFamily": "MesloLGMDZ Nerd Font",
     "terminal.integrated.fontSize": 14,
-    "terminal.integrated.shell.osx": "/usr/local/bin/zsh",
     "terminal.external.osxExec": "iTerm.app",
-    "terminal.explorerKind": "external",
     "workbench.startupEditor": "newUntitledFile",
     "eslint.autoFixOnSave": true,
     "window.zoomLevel": 0,
@@ -56,6 +54,7 @@
     "vim.statusBarColors.visualline": ["#d65d0e", "#ffffff"],
     "vim.statusBarColors.visualblock": ["#fe8019", "#ffffff"],
     "vim.statusBarColors.replace": ["#fabd2f", "#ffffff"],
+    "vim.visualstar": true,
     "vim.normalModeKeyBindingsNonRecursive": [
         {
             "before":["<C-n>"],
@@ -118,6 +117,7 @@
         "unhighlight",
         "unvote",
         "urijs",
+        "walkthrough",
         "webm",
         "webp",
         "woff"
@@ -135,22 +135,17 @@
     "workbench.tips.enabled": false,
     "window.newWindowDimensions": "fullscreen",
     "window.restoreFullscreen": true,
-    "vim.visualstar": true,
     "files.exclude": {
         "**/.bundle": true
     },
     "workbench.statusBar.feedback.visible": false,
     "liveshare.audio.startCallOnShare": true,
     "ruby.pathToBundler": "/Users/ku5ic/.rbenv/shims/bundle",
-    "githubPullRequests.hosts": [
-        {
-            "host": "https://github.com",
-            "username": "oauth",
-            "token": "system"
-        }
-    ],
     "diffEditor.ignoreTrimWhitespace": false,
     "materialTheme.accent": "Yellow",
     "solargraph.formatting": true,
     "ruby.interpreter.commandPath": "/Users/ku5ic/.rbenv/shims/ruby",
+    "solargraph.commandPath": "/usr/local/bin/solargraph",
+    "terminal.explorerKind": "external",
+    "terminal.integrated.rendererType": "canvas",
 }

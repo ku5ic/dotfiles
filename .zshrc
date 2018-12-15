@@ -29,6 +29,11 @@ export LDFLAGS="-L/usr/local/opt/mysql@5.7/lib"
 export CPPFLAGS="-I/usr/local/opt/mysql@5.7/include"
 export PKG_CONFIG_PATH="/usr/local/opt/mysql@5.7/lib/pkgconfig"
 
+export PATH="/usr/local/opt/ruby/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/ruby/lib"
+export CPPFLAGS="-I/usr/local/opt/ruby/include"
+export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
+
 export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
 
 export TERM="xterm-256color"

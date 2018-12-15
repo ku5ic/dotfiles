@@ -39,15 +39,6 @@ set showmode
 set cmdheight=1
 set laststatus=2
 
-" term colors
-let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
-let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
-if !has('nvim')
-  set term=xterm-256color
-endif
-set termencoding=utf-8
-set termguicolors
-
 " mouse and clipboard
 set mouse=a
 set clipboard=unnamed
@@ -84,24 +75,30 @@ let mapleader=","
 source ~/.plugins.vim
 source ~/.keymappings.vim
 
+" term colors
+" let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+" let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+set term=xterm-256color
+set termguicolors
+set termencoding=utf-8
+
 " theme
 set background=dark
-" let ayucolor="mirage"
-colorscheme vim-material
+colorscheme material
 
 " spelling and encoding
 set spell
 syntax spell toplevel
-set spl=en_us
+set spelllang=en_us
 set encoding=utf-8
-hi clear SpellBad
-hi clear SpellCap
-hi clear SpellRare
-hi clear SpellLocal
-hi SpellBad cterm=underline,bold
-hi SpellCap cterm=underline,bold
-hi SpellRare cterm=underline,bold
-hi SpellLocal cterm=underline,bold
+" hi clear SpellBad
+" hi clear SpellCap
+" hi clear SpellRare
+" hi clear SpellLocal
+" hi SpellBad cterm=underline,bold
+" hi SpellCap cterm=underline,bold
+" hi SpellRare cterm=underline,bold
+" hi SpellLocal cterm=underline,bold
 
 " folding
 set foldmethod=indent

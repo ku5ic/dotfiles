@@ -13,7 +13,6 @@ Plug 'vim-scripts/CSApprox'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'Raimondi/delimitMate'
 Plug 'majutsushi/tagbar'
-Plug 'scrooloose/syntastic'
 Plug 'Yggdroot/indentLine'
 Plug 'avelino/vim-bootstrap-updater'
 Plug 'sheerun/vim-polyglot'
@@ -29,7 +28,7 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'janko-m/vim-test'
 " themes
 Plug 'morhetz/gruvbox'
-Plug 'hzchirs/vim-material'
+Plug 'kaicataldo/material.vim'
 
 "*****************************************************************************
 "" Custom bundles
@@ -210,17 +209,6 @@ let g:ale_echo_msg_warning_str='W'
 let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
 let g:ale_set_highlights=0
 " let g:ale_lint_on_text_changed='never'
-
-" Gruvbox
-let g:gruvbox_contrast_dark='hard'
-let g:gruvbox_improved_strings=0
-nnoremap <silent> [oh :call gruvbox#hls_show()<CR>
-nnoremap <silent> ]oh :call gruvbox#hls_hide()<CR>
-nnoremap <silent> coh :call gruvbox#hls_toggle()<CR>
-
-nnoremap * :let @/ = ""<CR>:call gruvbox#hls_show()<CR>*
-nnoremap / :let @/ = ""<CR>:call gruvbox#hls_show()<CR>/
-nnoremap ? :let @/ = ""<CR>:call gruvbox#hls_show()<CR>?
 
 " JavaScript
 let g:javascript_plugin_jsdoc=1
