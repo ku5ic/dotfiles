@@ -35,8 +35,8 @@ ln -sfv "$DOTFILES_DIR/.keymappings.vim" ~
 ln -sfv "$DOTFILES_DIR/.vimrc" ~
 ln -sfv "$DOTFILES_DIR/.gvimrc" ~
 ln -sfv "$DOTFILES_DIR/.plugins" ~
-rm ~/Library/Application \Support/Code/User/settings.json
-ln -sfv "$DOTFILES_DIR/settings.json" "~/Library/Application Support/Code/User/"
+rm -rf ~/Library/Application \Support/Code/User/
+ln -sfv "$DOTFILES_DIR/Code/User/" "~/Library/Application Support/Code/"
 
 # Install brew & brew-cask packages
 source "$DOTFILES_DIR/install/brew.sh"
