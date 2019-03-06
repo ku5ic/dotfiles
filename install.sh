@@ -24,6 +24,13 @@ chsh -s /usr/local/bin/zsh
 
 curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
 
+# Install brew & brew-cask packages
+source "$DOTFILES_DIR/install/brew.sh"
+source "$DOTFILES_DIR/install/brew-cask.sh"
+source "$DOTFILES_DIR/install/tmux-plugin-manager.sh"
+source "$DOTFILES_DIR/install/plug.sh"
+source "$DOTFILES_DIR/install/vscode.sh"
+
 # Bunch of symlinks
 ln -sfv "$DOTFILES_DIR/.zshrc" ~
 ln -sfv "$DOTFILES_DIR/.gitconfig" ~
@@ -37,13 +44,7 @@ ln -sfv "$DOTFILES_DIR/.gvimrc" ~
 ln -sfv "$DOTFILES_DIR/.plugins" ~
 rm -rf ~/Library/Application \Support/Code/User/
 ln -sfv "$DOTFILES_DIR/Code/User/" "~/Library/Application Support/Code/"
-
-# Install brew & brew-cask packages
-source "$DOTFILES_DIR/install/brew.sh"
-source "$DOTFILES_DIR/install/brew-cask.sh"
-source "$DOTFILES_DIR/install/tmux-plugin-manager.sh"
-source "$DOTFILES_DIR/install/plug.sh"
-source "$DOTFILES_DIR/install/vscode.sh"
+ln -sfv "$DOTFILES_DIR/oh-my-zsh/themes/bullet-train.zsh-theme" "~/.oh-my-zsh/themes"
 
 # Additional completion definitions for Zsh
 git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions

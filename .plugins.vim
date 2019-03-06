@@ -97,6 +97,7 @@ Plug 'arnaud-lb/vim-php-namespace'
 "" Python Bundle
 Plug 'davidhalter/jedi-vim'
 Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
+Plug 'glench/vim-jinja2-syntax'
 
 " ruby
 Plug 'tpope/vim-rbenv'
