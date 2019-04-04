@@ -1655,13 +1655,15 @@
 	<key>NSWindow Frame NSFontPanel</key>
 	<string>902 541 592 187 0 0 1680 1028 </string>
 	<key>NSWindow Frame SUUpdateAlert</key>
-	<string>530 476 620 392 0 0 1680 1027 </string>
+	<string>970 768 620 392 0 0 2560 1417 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>1279 646 937 514 0 0 2560 1440 </string>
+	<string>1279 680 918 452 0 0 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>132 96 650 527 0 0 2560 1440 </string>
+	<string>311 548 970 527 0 0 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>393 172 650 527 0 0 2560 1418 </string>
+	<string>885 375 730 527 0 0 2560 1417 </string>
+	<key>NSWindow Frame iTerm Window 2</key>
+	<string>364 158 810 527 0 0 2560 1417 </string>
 	<key>NeverWarnAboutShortLivedSessions_BA487E7F-25D0-419C-9CE8-C2BFD20A3566</key>
 	<true/>
 	<key>New Bookmarks</key>
@@ -1957,7 +1959,7 @@
 			<key>Close Sessions On End</key>
 			<true/>
 			<key>Columns</key>
-			<integer>80</integer>
+			<integer>120</integer>
 			<key>Command</key>
 			<string></string>
 			<key>Cursor Boost</key>
@@ -2583,7 +2585,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-02-14T19:06:49Z</date>
+	<date>2019-04-01T08:58:03Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SavePasteHistory</key>
@@ -2643,7 +2645,7 @@
 	<key>findRegex_iTerm</key>
 	<false/>
 	<key>iTerm Version</key>
-	<string>3.2.7</string>
+	<string>3.2.8</string>
 	<key>kCPKSelectionViewPreferredModeKey</key>
 	<integer>7</integer>
 	<key>kCPKSelectionViewShowHSBTextFieldsKey</key>

@@ -1,37 +1,8 @@
 {
     "editor.fontFamily": "MesloLGMDZ Nerd Font",
-    "workbench.colorTheme": "Material Theme",
-    "workbench.iconTheme": "eq-material-theme-icons",
-    "workbench.colorCustomizations": {
-        "statusBar.debuggingForeground": "#ffffff",
-        "editorLineNumber.foreground": "#607a86",
-        "editorLineNumber.activeForeground": "#F78C6C",
-        "activityBarBadge.background": "#FFA000",
-        "list.activeSelectionForeground": "#FFA000",
-        "list.inactiveSelectionForeground": "#FFA000",
-        "list.highlightForeground": "#FFA000",
-        "scrollbarSlider.activeBackground": "#FFA00050",
-        "editorSuggestWidget.highlightForeground": "#FFA000",
-        "textLink.foreground": "#FFA000",
-        "progressBar.background": "#FFA000",
-        "pickerGroup.foreground": "#FFA000",
-        "tab.activeBorder": "#FFA000",
-        "notificationLink.foreground": "#FFA000",
-        "editorWidget.resizeBorder": "#FFA000",
-        "editorWidget.border": "#FFA000",
-        "settings.modifiedItemIndicator": "#FFA000",
-        "settings.headerForeground": "#FFA000",
-        "panelTitle.activeBorder": "#FFA000",
-        "breadcrumb.activeSelectionForeground": "#FFA000",
-        "menu.selectionForeground": "#FFA000",
-        "menubar.selectionForeground": "#FFA000",
-        "statusBar.background": "#263238",
-        "statusBar.noFolderBackground": "#263238",
-        "statusBar.debuggingBackground": "#263238",
-        "statusBar.foreground": "#ffffff"
-    },
-    // Controls the font size in pixels.
-    "editor.fontSize": 14,
+    "workbench.colorTheme": "Material Theme Darker",
+    "workbench.iconTheme": "vs-seti",
+    "materialTheme.accent": "Orange",
     // The number of spaces a tab is equal to. This setting is overriden based on the file contents when `editor.detectIndentation` is on.
     "editor.tabSize": 2,
     // terminal settings
@@ -41,7 +12,7 @@
     "workbench.startupEditor": "newUntitledFile",
     "eslint.autoFixOnSave": true,
     "window.zoomLevel": 0,
-    "emmet.showExpandedAbbreviation": "never",
+    "emmet.showExpandedAbbreviation": "always",
     "vim.useSystemClipboard": true,
     "vim.hlsearch": true,
     "vim.leader": ",",
@@ -68,23 +39,6 @@
                 "workbench.action.files.save",
             ]
         },
-        {
-            "before": ["u"],
-            "after": [],
-            "commands": [{
-                    "command": "undo",
-                    "args": []
-                }
-
-            ]
-        }, {
-            "before": ["<C-r>"],
-            "after": [],
-            "commands": [{
-                "command": "redo",
-                "args": []
-            }]
-        }
     ],
     "cSpell.userWords": [
         "CSRF",
@@ -104,18 +58,25 @@
         "followees",
         "followership",
         "gaggleamp",
+        "glassdoor",
+        "influxive",
         "javascripts",
         "keyframes",
         "keyline",
         "loadimage",
+        "mailchimp",
         "noninteractive",
+        "pinterest",
         "playsinline",
         "polyfill",
         "pubsub",
+        "quora",
         "schedulable",
+        "scrollable",
         "scroller",
         "selectable",
         "skusic",
+        "slideshare",
         "smiley",
         "stylesheets",
         "turbolinks",
@@ -126,32 +87,49 @@
         "walkthrough",
         "webm",
         "webp",
-        "woff"
+        "woff",
+        "xing",
+        "youtube"
     ],
     "editor.minimap.enabled": false,
     "files.insertFinalNewline": true,
     "files.trimTrailingWhitespace": true,
     "editor.lineNumbers": "relative",
     "workbench.sideBar.location": "right",
-    "workbench.editor.tabSizing": "shrink",
     "eslint.packageManager": "yarn",
     "breadcrumbs.enabled": true,
     "editor.accessibilitySupport": "off",
     "editor.dragAndDrop": false,
-    "workbench.tips.enabled": false,
     "window.newWindowDimensions": "fullscreen",
     "window.restoreFullscreen": true,
     "files.exclude": {
         "**/.bundle": true
     },
-    "workbench.statusBar.feedback.visible": false,
     "liveshare.audio.startCallOnShare": true,
     "ruby.pathToBundler": "/Users/ku5ic/.rbenv/shims/bundle",
     "diffEditor.ignoreTrimWhitespace": false,
-    "materialTheme.accent": "Yellow",
     "solargraph.formatting": true,
     "ruby.interpreter.commandPath": "/Users/ku5ic/.rbenv/shims/ruby",
-    "solargraph.commandPath": "/usr/local/bin/solargraph",
+    "solargraph.commandPath": "/Users/ku5ic/.rbenv/shims/solargraph",
     "terminal.explorerKind": "external",
-    "terminal.integrated.rendererType": "canvas",
+    "terminal.integrated.rendererType": "auto",
+    "solargraph.bundlerPath": "/Users/ku5ic/.rbenv/shims/bundle",
+    "workbench.colorCustomizations": {
+        "statusBar.background": "#263238",
+        "statusBar.noFolderBackground": "#263238",
+        "statusBar.debuggingBackground": "#263238",
+        "statusBar.foreground": "#ffffff"
+    },
+    "workbench.fontAliasing": "antialiased",
+    "workbench.tips.enabled": false,
+    "editor.fontLigatures": false,
+    "workbench.statusBar.feedback.visible": false,
+    "workbench.tree.indent": 12,
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.highlightModifiedTabs": true,
+    "workbench.editor.labelFormat": "default",
+    "workbench.settings.editor": "ui",
+    "workbench.editor.tabSizing": "shrink",
+    "workbench.settings.useSplitJSON": false,
+    "editor.fontSize": 14,
 }

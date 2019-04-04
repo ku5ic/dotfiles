@@ -44,7 +44,7 @@ set mouse=a
 set clipboard=unnamed
 
 " shell
-let shell="/usr/bin/env zsh\ -l"
+let shell="/usr/local/bin/zsh\ -l"
 
 set hidden
 

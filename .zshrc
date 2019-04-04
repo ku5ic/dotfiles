@@ -21,9 +21,10 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-export PATH="/Users/$HOME/.rbenv/shims:$PATH"
+export PATH="/Users/$HOME/.rbenv/bin:$PATH"
 # export PATH="/Users/$HOME/.pyenv:$PATH"
 export PATH="/Users/$HOME/.local/bin:$PATH"
+export PATH="/usr/local/sbin:$PATH"
 
 export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
 export LDFLAGS="-L/usr/local/opt/mysql@5.7/lib"
@@ -39,6 +40,9 @@ export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
 
 export TERM="xterm-256color"
 alias tmux="env TERM=xterm-256color tmux"
+
+
+export MALLOC_ARENA_MAX=2
 
 eval "$(rbenv init - --no-rehash zsh)"
 # eval "$(pyenv init -)"
