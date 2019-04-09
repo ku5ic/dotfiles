@@ -44,6 +44,7 @@ ln -sfv "$DOTFILES_DIR/.gvimrc" ~
 ln -sfv "$DOTFILES_DIR/.plugins" ~
 rm -rf ~/Library/Application \Support/Code/User/
 ln -sfv "$DOTFILES_DIR/Code/User/" "~/Library/Application Support/Code/"
+ln -sfv "$DOTFILES_DIR/.vscode/" ~
 ln -sfv "$DOTFILES_DIR/oh-my-zsh/themes/bullet-train.zsh-theme" "~/.oh-my-zsh/themes"
 
 # Additional completion definitions for Zsh

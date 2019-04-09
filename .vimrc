@@ -76,15 +76,17 @@ source ~/.plugins.vim
 source ~/.keymappings.vim
 
 " term colors
-" let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-" let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+if (has("termguicolors"))
+  set termguicolors
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
 set term=xterm-256color
-set termguicolors
 set termencoding=utf-8
 
 " theme
 set background=dark
-colorscheme material
+colorscheme hybrid_material
 
 " spelling and encoding
 set spell

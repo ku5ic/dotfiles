@@ -1657,11 +1657,11 @@
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>970 768 620 392 0 0 2560 1417 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>1279 680 918 452 0 0 2560 1417 </string>
+	<string>1279 743 916 423 0 0 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
 	<string>311 548 970 527 0 0 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>885 375 730 527 0 0 2560 1417 </string>
+	<string>885 375 970 527 0 0 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
 	<string>364 158 810 527 0 0 2560 1417 </string>
 	<key>NeverWarnAboutShortLivedSessions_BA487E7F-25D0-419C-9CE8-C2BFD20A3566</key>
@@ -1936,7 +1936,7 @@
 			<key>Blink Allowed</key>
 			<true/>
 			<key>Blinking Cursor</key>
-			<false/>
+			<true/>
 			<key>Blur</key>
 			<false/>
 			<key>Blur Radius</key>
@@ -2004,7 +2004,7 @@
 				<real>0.44058024883270264</real>
 			</dict>
 			<key>Cursor Type</key>
-			<integer>2</integer>
+			<integer>0</integer>
 			<key>Custom Command</key>
 			<string>No</string>
 			<key>Custom Directory</key>
@@ -2585,7 +2585,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-04-01T08:58:03Z</date>
+	<date>2019-04-04T12:23:01Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SavePasteHistory</key>

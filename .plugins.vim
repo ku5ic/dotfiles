@@ -30,7 +30,8 @@ Plug 'janko-m/vim-test'
 "
 " themes
 Plug 'morhetz/gruvbox'
-Plug 'kaicataldo/material.vim'
+" Plug 'kaicataldo/material.vim'
+Plug 'kristijanhusak/vim-hybrid-material'
 
 "*****************************************************************************
 "" Custom bundles

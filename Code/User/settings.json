@@ -18,13 +18,13 @@
     "vim.leader": ",",
     "vim.useCtrlKeys": true,
     "vim.easymotion": true,
-    "vim.statusBarColorControl": true,
-    "vim.statusBarColors.normal": ["#263238", "#ffffff"],
-    "vim.statusBarColors.insert": ["#fb4934", "#ffffff"],
-    "vim.statusBarColors.visual": ["#d65d0e", "#ffffff"],
-    "vim.statusBarColors.visualline": ["#d65d0e", "#ffffff"],
-    "vim.statusBarColors.visualblock": ["#fe8019", "#ffffff"],
-    "vim.statusBarColors.replace": ["#fabd2f", "#ffffff"],
+    "vim.statusBarColorControl": false,
+    // "vim.statusBarColors.normal": ["#263238", "#ffffff"],
+    // "vim.statusBarColors.insert": ["#fb4934", "#ffffff"],
+    // "vim.statusBarColors.visual": ["#d65d0e", "#ffffff"],
+    // "vim.statusBarColors.visualline": ["#d65d0e", "#ffffff"],
+    // "vim.statusBarColors.visualblock": ["#fe8019", "#ffffff"],
+    // "vim.statusBarColors.replace": ["#fabd2f", "#ffffff"],
     "vim.visualstar": true,
     "vim.normalModeKeyBindingsNonRecursive": [
         {
@@ -42,6 +42,7 @@
     ],
     "cSpell.userWords": [
         "CSRF",
+        "Callout",
         "Dropzone",
         "Subheader",
         "Truthy",
@@ -49,6 +50,7 @@
         "Unmount",
         "blueimp",
         "commentable",
+        "copyhistory",
         "datepicker",
         "datetime",
         "dropdown",
@@ -71,6 +73,7 @@
         "polyfill",
         "pubsub",
         "quora",
+        "resizable",
         "schedulable",
         "scrollable",
         "scroller",
@@ -115,10 +118,10 @@
     "terminal.integrated.rendererType": "auto",
     "solargraph.bundlerPath": "/Users/ku5ic/.rbenv/shims/bundle",
     "workbench.colorCustomizations": {
-        "statusBar.background": "#263238",
-        "statusBar.noFolderBackground": "#263238",
-        "statusBar.debuggingBackground": "#263238",
-        "statusBar.foreground": "#ffffff"
+    //     "statusBar.background": "#d65d0e",
+    //     "statusBar.noFolderBackground": "#d65d0e",
+    //     "statusBar.debuggingBackground": "#d65d0e",
+        "statusBar.foreground": "#ffffff",
     },
     "workbench.fontAliasing": "antialiased",
     "workbench.tips.enabled": false,
@@ -132,4 +135,10 @@
     "workbench.editor.tabSizing": "shrink",
     "workbench.settings.useSplitJSON": false,
     "editor.fontSize": 14,
+    "editor.cursorStyle": "underline",
+    "[javascript]": {
+        "editor.defaultFormatter": "HookyQR.beautify"
+    },
+    "terminal.integrated.cursorStyle": "underline",
+    "npm.packageManager": "yarn",
 }
