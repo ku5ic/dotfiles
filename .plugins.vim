@@ -2,6 +2,7 @@ call plug#begin('~/.vim/plugged')
 
 " basic
 Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
@@ -32,6 +33,7 @@ Plug 'janko-m/vim-test'
 Plug 'morhetz/gruvbox'
 " Plug 'kaicataldo/material.vim'
 Plug 'kristijanhusak/vim-hybrid-material'
+Plug 'hzchirs/vim-material'
 
 "*****************************************************************************
 "" Custom bundles

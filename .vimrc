@@ -86,10 +86,10 @@ set termencoding=utf-8
 
 " theme
 set background=dark
-colorscheme hybrid_material
+colorscheme vim-material
 
 " spelling and encoding
-set spell
+set nospell
 syntax spell toplevel
 set spelllang=en_us
 set encoding=utf-8

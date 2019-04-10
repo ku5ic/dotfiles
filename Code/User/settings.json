@@ -122,6 +122,8 @@
     //     "statusBar.noFolderBackground": "#d65d0e",
     //     "statusBar.debuggingBackground": "#d65d0e",
         "statusBar.foreground": "#ffffff",
+        "editorLineNumber.foreground": "#666",
+        "editorLineNumber.activeForeground": "#d65d0e"
     },
     "workbench.fontAliasing": "antialiased",
     "workbench.tips.enabled": false,

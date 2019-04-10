@@ -10,6 +10,9 @@ autoload -U compinit && compinit
 
 source $ZSH/oh-my-zsh.sh
 
+export CLICOLOR=1
+export LS_COLORS
+
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
@@ -20,9 +23,7 @@ fi
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 export PATH="/Users/$HOME/.rbenv/bin:$PATH"
-# export PATH="/Users/$HOME/.pyenv:$PATH"
 export PATH="/Users/$HOME/.local/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
 
@@ -45,6 +46,7 @@ alias tmux="env TERM=xterm-256color tmux"
 export MALLOC_ARENA_MAX=2
 
 eval "$(rbenv init - --no-rehash zsh)"
+
 # eval "$(pyenv init -)"
 
 #if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
