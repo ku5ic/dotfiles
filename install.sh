@@ -29,7 +29,6 @@ source "$DOTFILES_DIR/install/brew.sh"
 source "$DOTFILES_DIR/install/brew-cask.sh"
 source "$DOTFILES_DIR/install/tmux-plugin-manager.sh"
 source "$DOTFILES_DIR/install/plug.sh"
-source "$DOTFILES_DIR/install/vscode.sh"
 
 # Bunch of symlinks
 ln -sfv "$DOTFILES_DIR/.zshrc" ~
