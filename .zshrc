@@ -46,10 +46,16 @@ alias tmux="env TERM=xterm-256color tmux"
 export MALLOC_ARENA_MAX=2
 
 eval "$(rbenv init - --no-rehash zsh)"
+eval "$(pipenv --completion)"
+export PIPENV_VENV_IN_PROJECT=1
+export PYTHONDONTWRITEBYTECODE=1
+eval "$(pyenv init -)"
+if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+export PYTHON_CONFIGURE_OPTS="--enable-framework"
 
-# eval "$(pyenv init -)"
-
-#if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+pyclean () {
+  find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
+}
 
 # Always load tmux
 #if [[ ! $TERM =~ screen ]]; then

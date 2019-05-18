@@ -1,29 +1,37 @@
 #!/bin/sh
-brew cask install battery-guardian
-brew cask install diffmerge
-brew cask install font-hack-nerd-font
-brew cask install font-sourcecodepro-nerd-font
-brew cask install iterm2
-brew cask install ngrok
-brew cask install sketch
-brew cask install transmission
-brew cask install caffeine
-brew cask install dropbox
-brew cask install font-meslo-nerd-font
-brew cask install gfxcardstatus
-brew cask install java
-brew cask install onyx
-brew cask install slack
-brew cask install virtualbox
-brew cask install coconutbattery
-brew cask install firefox
-brew cask install font-open-sans
-brew cask install google-backup-and-sync
-brew cask install macs-fan-controll
-brew cask install visual-studio-code
-brew cask install db-browser-for-sqlite
-brew cask install font-hack
-brew cask install font-source-sans-pro
-brew cask install google-chrome
-brew cask install macvim
-brew cask install postman
+
+casks=(
+  abstract
+  diffmerge
+  iterm2
+  onyx
+  transmission
+  battery-guardian
+  etcher
+  java
+  postman
+  upwork
+  firefox
+  kindle
+  send-to-kindle
+  virtualbox
+  chromedriver
+  font-meslo-nerd-font
+  macs-fan-control
+  sketch
+  visual-studio-code
+  coconutbattery
+  font-open-sans
+  macvim
+  slack
+  vlc
+  db-browser-for-sqlite
+  google-chrome
+  ngrok
+  timemachineeditor
+)
+
+for cask in "${casks[@]}"
+do
+  brew cask install $cask
+done

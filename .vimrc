@@ -114,6 +114,9 @@ au BufRead,BufNewFile {*.jbuilder,*.rabl,*.rubyxl} setf ruby
 au BufRead,BufNewFile *.go set filetype=go
 au BufRead,BufNewFile *.snap set filetype=javasript.jsx
 
+" set spell for commit messages
+au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
+
 " ruby
 let g:ruby_path=system('echo $HOME/.rbenv/shims')
 

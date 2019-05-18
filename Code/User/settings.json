@@ -1,6 +1,6 @@
 {
     "editor.fontFamily": "MesloLGMDZ Nerd Font",
-    "workbench.colorTheme": "Material Theme Darker",
+    "workbench.colorTheme": "Material Theme",
     "workbench.iconTheme": "vs-seti",
     "materialTheme.accent": "Orange",
     // The number of spaces a tab is equal to. This setting is overriden based on the file contents when `editor.detectIndentation` is on.
@@ -44,11 +44,13 @@
         "CSRF",
         "Callout",
         "Dropzone",
+        "RECAPTCHA",
         "Subheader",
         "Truthy",
         "Unfollow",
         "Unmount",
         "blueimp",
+        "chromedriver",
         "commentable",
         "copyhistory",
         "datepicker",
@@ -65,6 +67,7 @@
         "javascripts",
         "keyframes",
         "keyline",
+        "linkedin",
         "loadimage",
         "mailchimp",
         "noninteractive",
@@ -78,11 +81,13 @@
         "scrollable",
         "scroller",
         "selectable",
+        "setstate",
         "skusic",
         "slideshare",
         "smiley",
         "stylesheets",
         "turbolinks",
+        "tzinfo",
         "unhighlight",
         "unvote",
         "urijs",
@@ -90,7 +95,9 @@
         "walkthrough",
         "webm",
         "webp",
+        "webpacker",
         "woff",
+        "wtforms",
         "xing",
         "youtube"
     ],
@@ -143,4 +150,9 @@
     },
     "terminal.integrated.cursorStyle": "underline",
     "npm.packageManager": "yarn",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "[html]": {
+        "editor.defaultFormatter": "HookyQR.beautify"
+    },
+    "liveshare.featureSet": "insiders",
 }

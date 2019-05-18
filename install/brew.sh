@@ -3,31 +3,39 @@
 brew update
 brew upgrade
 
-brew install git
-brew install coreutils
-brew install openssl
-brew install ssh-copy-id
-brew install wget
-brew install tree
-brew install imagemagick
-brew install postgresql
-brew install mysql
-brew install redis
-brew install sqlite
-brew install puma/puma/puma-dev
-brew install rbenv
-brew install ruby
-brew install rbenv-gemset
-brew install ruby-build
-brew install nvm
-brew install yarn --without-node
-brew install phantomjs
-brew install python
-brew install tmux
-brew install reattach-to-user-namespace
-brew install vim --with-override-system-vi
-brew install cmake
-brew install ctags
-brew install libidn
+brews=(
+  git
+  coreutils
+  openssl
+  ssh-copy-id
+  wget
+  tree
+  imagemagick
+  postgresql
+  mysql
+  redis
+  sqlite
+  puma/puma/puma-dev
+  rbenv
+  ruby
+  rbenv-gemset
+  ruby-build
+  nvm
+  'yarn --without-node'
+  python
+  tmux
+  reattach-to-user-namespace
+  'vim --with-override-system-vi'
+  cmake
+  ctags
+  libidn
+  pyenv
+  pipenv
+)
+
+for brew in "${brews[@]}"
+do
+  brew install $brew
+done
 
 brew cleanup

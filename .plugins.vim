@@ -28,9 +28,13 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'janko-m/vim-test'
-"
+
+" autocompletion
+Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer --ts-completer' }
+
 " themes
 Plug 'morhetz/gruvbox'
+
 " Plug 'kaicataldo/material.vim'
 Plug 'kristijanhusak/vim-hybrid-material'
 Plug 'hzchirs/vim-material'
