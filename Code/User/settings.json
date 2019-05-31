@@ -1,10 +1,8 @@
 {
     "editor.fontFamily": "MesloLGMDZ Nerd Font",
     "workbench.colorTheme": "Material Theme",
-    "workbench.iconTheme": "vs-seti",
+    "workbench.iconTheme": "material-icon-theme",
     "materialTheme.accent": "Orange",
-    // The number of spaces a tab is equal to. This setting is overriden based on the file contents when `editor.detectIndentation` is on.
-    "editor.tabSize": 2,
     // terminal settings
     "terminal.integrated.fontFamily": "MesloLGMDZ Nerd Font",
     "terminal.integrated.fontSize": 14,
@@ -49,6 +47,7 @@
         "Truthy",
         "Unfollow",
         "Unmount",
+        "allowtransparency",
         "blueimp",
         "chromedriver",
         "commentable",
@@ -155,4 +154,12 @@
         "editor.defaultFormatter": "HookyQR.beautify"
     },
     "liveshare.featureSet": "insiders",
+    "python.autoComplete.addBrackets": true,
+    "python.autoComplete.showAdvancedMembers": false,
+    "python.terminal.activateEnvironment": false,
+    "editor.tabSize": 2,
+    "[python]": {
+        "editor.tabSize": 4
+    },
+    "material-icon-theme.folders.theme": "specific"
 }

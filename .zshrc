@@ -51,6 +51,7 @@ export PIPENV_VENV_IN_PROJECT=1
 export PYTHONDONTWRITEBYTECODE=1
 eval "$(pyenv init -)"
 if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+alias brew="env PATH=${PATH//$(pyenv root)\/shims:/} brew"
 export PYTHON_CONFIGURE_OPTS="--enable-framework"
 
 pyclean () {

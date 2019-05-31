@@ -3,7 +3,6 @@ call plug#begin('~/.vim/plugged')
 " basic
 Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'jistr/vim-nerdtree-tabs'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rbenv'
@@ -28,9 +27,6 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'janko-m/vim-test'
-
-" autocompletion
-Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer --ts-completer' }
 
 " themes
 Plug 'morhetz/gruvbox'
@@ -139,21 +135,9 @@ endif
 call plug#end()
 filetype plugin indent on
 
-" Devicons
-let g:webdevicons_enable_nerdtree=1
-let g:webdevicons_enable_airline_tabline=1
-let g:webdevicons_enable_airline_statusline=1
-let g:WebDevIconsUnicodeGlyphDoubleWidth=1
-let g:webdevicons_conceal_nerdtree_brackets=1
-" let g:WebDevIconsNerdTreeAfterGlyphPadding=''
-let g:WebDevIconsNerdTreeGitPlugForceVAlign=1
-let g:WebDevIconsOS='Darwin'
-let g:NERDTreeFileExtensionHighlightFullName=1
-let g:WebDevIconsUnicodeDecorateFolderNodes=1
-let g:DevIconsEnableFoldersOpenClose=1
-if exists('g:loaded_webdevicons')
-  call webdevicons#refresh()
-endif
+" Vim Devicons
+let g:WebDevIconsUnicodeGlyphDoubleWidth=0
+let g:WebDevIconsNerdTreeAfterGlyphPadding=''
 
 " Airline
 let g:airline_powerline_fonts=1
@@ -178,26 +162,6 @@ let g:airline_symbols.whitespace='Ξ'
 let NERDTreeWinSize=50
 let NERDTreeShowHidden=1
 let NERDTreeMinimalUI=1
-let NERDTreeDirArrows=1
-let NERDTreeAutoDeleteBuffer=1
-let NERDTreeQuitOnOpen=1
-let NERDTreeIgnore=['\.DS_Store', '\~$', '\.swp']
-let g:NERDTreeDirArrowExpandable=""
-let g:NERDTreeDirArrowCollapsible=""
-let g:NERDTreeIndicatorMapCustom = {
-    \ "Modified"  : "✹",
-    \ "Staged"    : "✚",
-    \ "Untracked" : "✭",
-    \ "Renamed"   : "➜",
-    \ "Unmerged"  : "═",
-    \ "Deleted"   : "✖",
-    \ "Dirty"     : "✗",
-    \ "Clean"     : "✔︎",
-    \ 'Ignored'   : "☒",
-    \ "Unknown"   : "?"
-    \ }
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 " Ctrl-P
 let g:ctrlp_custom_ignore = {
