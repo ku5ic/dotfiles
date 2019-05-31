@@ -29,6 +29,7 @@ source "$DOTFILES_DIR/install/brew.sh"
 source "$DOTFILES_DIR/install/brew-cask.sh"
 source "$DOTFILES_DIR/install/tmux-plugin-manager.sh"
 source "$DOTFILES_DIR/install/plug.sh"
+source "$DOTFILES_DIR/install/vscode.sh"
 
 # Bunch of symlinks
 ln -sfv "$DOTFILES_DIR/.zshrc" ~
@@ -43,7 +44,6 @@ ln -sfv "$DOTFILES_DIR/.gvimrc" ~
 ln -sfv "$DOTFILES_DIR/.plugins" ~
 rm -rf ~/Library/Application \Support/Code/User/
 ln -sfv "$DOTFILES_DIR/Code/User/" "~/Library/Application Support/Code/"
-ln -sfv "$DOTFILES_DIR/.vscode/" ~
 ln -sfv "$DOTFILES_DIR/oh-my-zsh/themes/bullet-train.zsh-theme" "~/.oh-my-zsh/themes"
 
 # Additional completion definitions for Zsh

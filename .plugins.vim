@@ -137,7 +137,7 @@ filetype plugin indent on
 
 " Vim Devicons
 let g:WebDevIconsUnicodeGlyphDoubleWidth=0
-let g:WebDevIconsNerdTreeAfterGlyphPadding=''
+let g:WebDevIconsNerdTreeAfterGlyphPadding=' '
 
 " Airline
 let g:airline_powerline_fonts=1
