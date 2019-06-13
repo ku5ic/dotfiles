@@ -102,3 +102,6 @@ bower_components
 
 # ctags
 tags
+
+# solograph
+.solargraph.yml

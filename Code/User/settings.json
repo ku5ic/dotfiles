@@ -1,28 +1,73 @@
 {
+    // editor
+    "editor.minimap.enabled": false,
     "editor.fontFamily": "MesloLGMDZ Nerd Font",
+    "editor.lineNumbers": "relative",
+    "editor.accessibilitySupport": "off",
+    "editor.dragAndDrop": false,
+    "editor.fontLigatures": false,
+    "editor.fontSize": 14,
+    "editor.tabSize": 2,
+    "editor.cursorStyle": "underline",
+
+    // files
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.exclude": {
+        "**/.bundle": true
+    },
+    "files.associations": {
+        "*.csvbuilder": "ruby"
+    },
+
+    // breadcrumbs
+    "breadcrumbs.enabled": true,
+
+    // workbench
     "workbench.colorTheme": "Material Theme",
+    "workbench.sideBar.location": "right",
     "workbench.iconTheme": "material-icon-theme",
+    "workbench.startupEditor": "newUntitledFile",
+    "workbench.fontAliasing": "antialiased",
+    "workbench.tips.enabled": false,
+    "workbench.statusBar.feedback.visible": false,
+    "workbench.tree.indent": 14,
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.highlightModifiedTabs": true,
+    "workbench.editor.labelFormat": "default",
+    "workbench.settings.editor": "ui",
+    "workbench.editor.tabSizing": "shrink",
+    "workbench.settings.useSplitJSON": false,
+    "workbench.colorCustomizations": {
+        "statusBar.foreground": "#ffffff",
+        "editorLineNumber.foreground": "#666",
+        "editorLineNumber.activeForeground": "#d65d0e"
+    },
+
+    // window
+    "window.newWindowDimensions": "fullscreen",
+    "window.restoreFullscreen": true,
+    "window.zoomLevel": 0,
+
+    // theme
     "materialTheme.accent": "Orange",
+    "material-icon-theme.folders.theme": "specific",
+
     // terminal settings
     "terminal.integrated.fontFamily": "MesloLGMDZ Nerd Font",
     "terminal.integrated.fontSize": 14,
     "terminal.external.osxExec": "iTerm.app",
-    "workbench.startupEditor": "newUntitledFile",
-    "eslint.autoFixOnSave": true,
-    "window.zoomLevel": 0,
-    "emmet.showExpandedAbbreviation": "always",
+    "terminal.explorerKind": "external",
+    "terminal.integrated.rendererType": "dom",
+    "terminal.integrated.cursorStyle": "underline",
+
+    // vim
     "vim.useSystemClipboard": true,
     "vim.hlsearch": true,
     "vim.leader": ",",
     "vim.useCtrlKeys": true,
     "vim.easymotion": true,
     "vim.statusBarColorControl": false,
-    // "vim.statusBarColors.normal": ["#263238", "#ffffff"],
-    // "vim.statusBarColors.insert": ["#fb4934", "#ffffff"],
-    // "vim.statusBarColors.visual": ["#d65d0e", "#ffffff"],
-    // "vim.statusBarColors.visualline": ["#d65d0e", "#ffffff"],
-    // "vim.statusBarColors.visualblock": ["#fe8019", "#ffffff"],
-    // "vim.statusBarColors.replace": ["#fabd2f", "#ffffff"],
     "vim.visualstar": true,
     "vim.normalModeKeyBindingsNonRecursive": [
         {
@@ -38,128 +83,54 @@
             ]
         },
     ],
-    "cSpell.userWords": [
-        "CSRF",
-        "Callout",
-        "Dropzone",
-        "RECAPTCHA",
-        "Subheader",
-        "Truthy",
-        "Unfollow",
-        "Unmount",
-        "allowtransparency",
-        "blueimp",
-        "chromedriver",
-        "commentable",
-        "copyhistory",
-        "datepicker",
-        "datetime",
-        "dropdown",
-        "embedly",
-        "endblock",
-        "followee",
-        "followees",
-        "followership",
-        "gaggleamp",
-        "glassdoor",
-        "influxive",
-        "javascripts",
-        "keyframes",
-        "keyline",
-        "linkedin",
-        "loadimage",
-        "mailchimp",
-        "noninteractive",
-        "pinterest",
-        "playsinline",
-        "polyfill",
-        "pubsub",
-        "quora",
-        "resizable",
-        "schedulable",
-        "scrollable",
-        "scroller",
-        "selectable",
-        "setstate",
-        "skusic",
-        "slideshare",
-        "smiley",
-        "stylesheets",
-        "turbolinks",
-        "tzinfo",
-        "unhighlight",
-        "unvote",
-        "urijs",
-        "vkontakte",
-        "walkthrough",
-        "webm",
-        "webp",
-        "webpacker",
-        "woff",
-        "wtforms",
-        "xing",
-        "youtube"
-    ],
-    "editor.minimap.enabled": false,
-    "files.insertFinalNewline": true,
-    "files.trimTrailingWhitespace": true,
-    "editor.lineNumbers": "relative",
-    "workbench.sideBar.location": "right",
+
+    // eslint
+    "eslint.autoFixOnSave": true,
     "eslint.packageManager": "yarn",
-    "breadcrumbs.enabled": true,
-    "editor.accessibilitySupport": "off",
-    "editor.dragAndDrop": false,
-    "window.newWindowDimensions": "fullscreen",
-    "window.restoreFullscreen": true,
-    "files.exclude": {
-        "**/.bundle": true
-    },
-    "liveshare.audio.startCallOnShare": true,
-    "ruby.pathToBundler": "/Users/ku5ic/.rbenv/shims/bundle",
+
+    // diff editor
     "diffEditor.ignoreTrimWhitespace": false,
+
+    // liveshare
+    "liveshare.audio.startCallOnShare": true,
+    "liveshare.featureSet": "insiders",
+
+    // solargraph
     "solargraph.formatting": true,
-    "ruby.interpreter.commandPath": "/Users/ku5ic/.rbenv/shims/ruby",
+    "solargraph.autoformat": true,
+    "solargraph.diagnostics": true,
+    "solargraph.references": true,
+    "solargraph.symbols": true,
+    "solargraph.definitions": true,
+    "solargraph.rename": true,
+    "solargraph.folding": true,
     "solargraph.commandPath": "/Users/ku5ic/.rbenv/shims/solargraph",
-    "terminal.explorerKind": "external",
-    "terminal.integrated.rendererType": "auto",
     "solargraph.bundlerPath": "/Users/ku5ic/.rbenv/shims/bundle",
-    "workbench.colorCustomizations": {
-    //     "statusBar.background": "#d65d0e",
-    //     "statusBar.noFolderBackground": "#d65d0e",
-    //     "statusBar.debuggingBackground": "#d65d0e",
-        "statusBar.foreground": "#ffffff",
-        "editorLineNumber.foreground": "#666",
-        "editorLineNumber.activeForeground": "#d65d0e"
-    },
-    "workbench.fontAliasing": "antialiased",
-    "workbench.tips.enabled": false,
-    "editor.fontLigatures": false,
-    "workbench.statusBar.feedback.visible": false,
-    "workbench.tree.indent": 12,
-    "workbench.editor.enablePreview": false,
-    "workbench.editor.highlightModifiedTabs": true,
-    "workbench.editor.labelFormat": "default",
-    "workbench.settings.editor": "ui",
-    "workbench.editor.tabSizing": "shrink",
-    "workbench.settings.useSplitJSON": false,
-    "editor.fontSize": 14,
-    "editor.cursorStyle": "underline",
-    "[javascript]": {
-        "editor.defaultFormatter": "HookyQR.beautify"
-    },
-    "terminal.integrated.cursorStyle": "underline",
+
+    // ruby
+    "ruby.pathToBundler": "/Users/ku5ic/.rbenv/shims/bundle",
+    "ruby.interpreter.commandPath": "/Users/ku5ic/.rbenv/shims/ruby",
+    "ruby.intellisense": false,
+
+    // npm/yarn
     "npm.packageManager": "yarn",
+
+    // javascript
     "javascript.updateImportsOnFileMove.enabled": "always",
+
+    // emmet
+    "emmet.showExpandedAbbreviation": "inMarkupAndStylesheetFilesOnly",
+
+    // html
     "[html]": {
         "editor.defaultFormatter": "HookyQR.beautify"
     },
-    "liveshare.featureSet": "insiders",
+
+    // python
     "python.autoComplete.addBrackets": true,
     "python.autoComplete.showAdvancedMembers": false,
     "python.terminal.activateEnvironment": false,
-    "editor.tabSize": 2,
     "[python]": {
         "editor.tabSize": 4
     },
-    "material-icon-theme.folders.theme": "specific"
 }

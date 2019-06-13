@@ -100,7 +100,7 @@ Plug 'arnaud-lb/vim-php-namespace'
 
 " python
 "" Python Bundle
-Plug 'davidhalter/jedi-vim'
+" Plug 'davidhalter/jedi-vim'
 Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
 Plug 'glench/vim-jinja2-syntax'
 
@@ -162,6 +162,7 @@ let g:airline_symbols.whitespace='Ξ'
 let NERDTreeWinSize=50
 let NERDTreeShowHidden=1
 let NERDTreeMinimalUI=1
+let NERDTreeRespectWildIgnore=1
 
 " Ctrl-P
 let g:ctrlp_custom_ignore = {

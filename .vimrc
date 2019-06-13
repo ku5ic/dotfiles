@@ -32,6 +32,7 @@ set autoread
 set wildignore+=*/node_modules/**,*/bower_components/**,*/spec/reports/**,*/tmp/**
 set wildignore+=*.png,*.PNG,*.jpg,*.jpeg,*.JPG,*.JPEG,*.pdf
 set wildignore+=*.ttf,*.otf,*.woff,*.woff2,*.eot
+set wildignore+=*.pyc,*.o,*.obj,*.svn,*.swp,*.class,*.hg,*.DS_Store,*.min.*
 
 " status line
 set showcmd
