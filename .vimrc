@@ -87,7 +87,7 @@ set termencoding=utf-8
 
 " theme
 set background=dark
-colorscheme vim-material
+colorscheme hybrid_material
 
 " spelling and encoding
 set nospell

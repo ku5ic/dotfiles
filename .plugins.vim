@@ -5,33 +5,23 @@ Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-rbenv'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'airblade/vim-gitgutter'
 Plug 'vim-scripts/grep.vim'
-Plug 'vim-scripts/CSApprox'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'Raimondi/delimitMate'
-Plug 'majutsushi/tagbar'
 Plug 'Yggdroot/indentLine'
-Plug 'avelino/vim-bootstrap-updater'
 Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-dotenv'
 Plug 'tpope/vim-surround'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
 Plug 'w0rp/ale'
-Plug 'mattn/emmet-vim'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'janko-m/vim-test'
 
 " themes
-Plug 'morhetz/gruvbox'
-
-" Plug 'kaicataldo/material.vim'
 Plug 'kristijanhusak/vim-hybrid-material'
 Plug 'hzchirs/vim-material'
 
@@ -158,11 +148,20 @@ let g:airline_symbols.paste='Þ'
 let g:airline_symbols.paste='∥'
 let g:airline_symbols.whitespace='Ξ'
 
+let g:airline_theme = "hybrid"
+
 " NERDTree
 let NERDTreeWinSize=50
 let NERDTreeShowHidden=1
 let NERDTreeMinimalUI=1
 let NERDTreeRespectWildIgnore=1
+
+" If previous buffer was NERDTree, go back to it.
+autocmd BufEnter * if bufname('#') =~# "^NERD_tree_" | b# | endif
+
+" close NERDTree window after opening a file in it
+autocmd BufEnter NERD_tree_* nmap  d<CR> <CR> :NERDTreeToggle <CR>
+autocmd BufLeave NERD_tree_* unmap d<CR>
 
 " Ctrl-P
 let g:ctrlp_custom_ignore = {

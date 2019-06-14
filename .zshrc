@@ -47,23 +47,9 @@ pyclean () {
   find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 }
 
-# Always load tmux
-#if [[ ! $TERM =~ screen ]]; then
-    #exec tmux
-#fi
-
 # nvm settings
 export NVM_DIR="$HOME/.nvm"
   . "/usr/local/opt/nvm/nvm.sh"
-
-# RVM settings
-# if [[ -s ~/.rvm/scripts/rvm ]] ; then
-#   RPS1="%{$fg[yellow]%}rvm:%{$reset_color%}%{$fg[red]%}\$(~/.rvm/bin/rvm-prompt)%{$reset_color%} $EPS1"
-# else
-#   if which rbenv &> /dev/null; then
-#     RPS1="%{$fg[yellow]%}rbenv:%{$reset_color%}%{$fg[red]%}\$(rbenv version | sed -e 's/ (set.*$//')%{$reset_color%} $EPS1"
-#   fi
-# fi
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
