@@ -25,7 +25,7 @@ brews=(
   python
   tmux
   reattach-to-user-namespace
-  'vim --with-override-system-vi'
+  vim
   cmake
   ctags
   libidn

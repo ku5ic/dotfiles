@@ -111,9 +111,10 @@ set foldlevel=2
 
 " custom file types
 au BufRead,BufNewFile {Capfile,Gemfile,Vagrantfile,Rakefile,Thorfile,config.ru,.caprc,.irbrc,irb_tempfile*} set ft=ruby
-au BufRead,BufNewFile {*.jbuilder,*.rabl,*.rubyxl} setf ruby
-au BufRead,BufNewFile *.go set filetype=go
-au BufRead,BufNewFile *.snap set filetype=javasript.jsx
+au BufRead,BufNewFile {*.jbuilder,*.rabl,*.rubyxl} set ft=ruby
+au BufRead,BufNewFile *.go set ft=go
+au BufRead,BufNewFile *.snap set ft=javascript.jsx
+au BufRead,BufNewFile .babelrc set ft=javascript
 
 " set spell for commit messages
 au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
