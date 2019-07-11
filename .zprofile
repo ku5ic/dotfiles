@@ -1,28 +1,20 @@
+zmodload zsh/zprof
+# Define the environment variable ZPLUG_HOME
 export ZPLUG_HOME=/usr/local/opt/zplug
+
+# Loads zplug
 source $ZPLUG_HOME/init.zsh
 
-fpath=(/usr/local/share/zsh-completions $fpath)
+# Clear packages
+zplug clear
 
-zmodload zsh/complist
-autoload -U compinit && compinit
-
-zplug "zsh-users/zsh-history-substring-search"
+# Packages
 zplug "zsh-users/zsh-completions"
 zplug "zsh-users/zsh-autosuggestions"
-zplug "plugins/git", from:oh-my-zsh
-zplug "plugins/github", from:oh-my-zsh
-zplug "plugins/lein", from:oh-my-zsh
-zplug "plugins/command-not-found", from:oh-my-zsh
-zplug "plugins/compleat", from:oh-my-zsh
-zplug "plugins/ssh-agent", from:oh-my-zsh
-zplug "plugins/ruby", from:oh-my-zsh
-zplug "plugins/node", from:oh-my-zsh
-zplug "plugins/python", from:oh-my-zsh
-zplug "lib/clipboard", from:oh-my-zsh
 zplug "oz/safe-paste"
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
-# Load theme file ########################################
+# Theme
 zplug denysdovhan/spaceship-prompt, use:spaceship.zsh, from:github, as:theme
 
 if ! zplug check --verbose; then
@@ -55,12 +47,15 @@ export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
 export TERM="xterm-256color"
 alias tmux="env TERM=xterm-256color tmux"
 
-export MALLOC_ARENA_MAX=2
 
-eval "$(rbenv init - --no-rehash zsh)"
-eval "$(pipenv --completion)"
+# Ruby
+export MALLOC_ARENA_MAX=2
+eval "$(rbenv init - --no-rehash)"
+
+# Python
 export PIPENV_VENV_IN_PROJECT=1
 export PYTHONDONTWRITEBYTECODE=1
+eval "$(pipenv --completion)"
 eval "$(pyenv init -)"
 if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
 alias brew="env PATH=${PATH//$(pyenv root)\/shims:/} brew"
@@ -70,14 +65,21 @@ pyclean () {
   find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 }
 
-# nvm settings
+# Node
 export NVM_DIR="$HOME/.nvm"
-  . "/usr/local/opt/nvm/nvm.sh"
+  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh" --no-use # This loads nvm
+  [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+autoload -Uz compinit
+if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
+  compinit
+else
+  compinit -C
+fi
+
 
 ssh-add -K ~/.ssh/id_rsa &> /dev/null
 ssh-add -A &> /dev/null

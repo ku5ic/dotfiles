@@ -54,11 +54,10 @@
     "material-icon-theme.folders.theme": "specific",
 
     // terminal settings
-    "terminal.integrated.fontFamily": "MesloLGLDZ Nerd Font",
+    "terminal.integrated.fontFamily": "MesloLGM Nerd Font",
     "terminal.integrated.fontSize": 14,
     "terminal.external.osxExec": "iTerm.app",
     "terminal.explorerKind": "external",
-    "terminal.integrated.rendererType": "dom",
     "terminal.integrated.cursorStyle": "underline",
 
     // vim
@@ -134,4 +133,5 @@
         "editor.tabSize": 4
     },
     "terminal.integrated.shell.osx": "/usr/local/bin/zsh",
+    "terminal.integrated.experimentalRefreshOnResume": true,
 }
