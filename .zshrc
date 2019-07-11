@@ -1,17 +1,40 @@
-# Path to your oh-my-zsh installation.
-export ZSH=$HOME/.oh-my-zsh
+export ZPLUG_HOME=/usr/local/opt/zplug
+source $ZPLUG_HOME/init.zsh
 
-ZSH_THEME="bullet-train"
-COMPLETION_WAITING_DOTS="true"
+fpath=(/usr/local/share/zsh-completions $fpath)
 
-plugins=(git colorize)
-
+zmodload zsh/complist
 autoload -U compinit && compinit
 
-source $ZSH/oh-my-zsh.sh
+zplug "zsh-users/zsh-history-substring-search"
+zplug "zsh-users/zsh-completions"
+zplug "zsh-users/zsh-autosuggestions"
+zplug "plugins/git", from:oh-my-zsh
+zplug "plugins/github", from:oh-my-zsh
+zplug "plugins/lein", from:oh-my-zsh
+zplug "plugins/command-not-found", from:oh-my-zsh
+zplug "plugins/compleat", from:oh-my-zsh
+zplug "plugins/ssh-agent", from:oh-my-zsh
+zplug "plugins/ruby", from:oh-my-zsh
+zplug "plugins/node", from:oh-my-zsh
+zplug "plugins/python", from:oh-my-zsh
+zplug "lib/clipboard", from:oh-my-zsh
+zplug "oz/safe-paste"
+zplug "zsh-users/zsh-syntax-highlighting", defer:2
+
+# Load theme file ########################################
+zplug denysdovhan/spaceship-prompt, use:spaceship.zsh, from:github, as:theme
+
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
+
+zplug load
 
 export CLICOLOR=1
-export LS_COLORS
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then

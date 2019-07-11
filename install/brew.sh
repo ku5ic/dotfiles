@@ -5,7 +5,6 @@ brew upgrade
 
 brews=(
   git
-  coreutils
   openssl
   ssh-copy-id
   wget
@@ -31,6 +30,9 @@ brews=(
   libidn
   pyenv
   pipenv
+  zplug
+  zsh
+  zsh-completions
 )
 
 for brew in "${brews[@]}"
