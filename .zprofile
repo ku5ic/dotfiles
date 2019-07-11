@@ -1,4 +1,3 @@
-zmodload zsh/zprof
 # Define the environment variable ZPLUG_HOME
 export ZPLUG_HOME=/usr/local/opt/zplug
 
@@ -67,7 +66,7 @@ pyclean () {
 
 # Node
 export NVM_DIR="$HOME/.nvm"
-  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh" --no-use # This loads nvm
+  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh" # This loads nvm
   [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
 
 # Local config
@@ -79,7 +78,6 @@ if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
 else
   compinit -C
 fi
-
 
 ssh-add -K ~/.ssh/id_rsa &> /dev/null
 ssh-add -A &> /dev/null
