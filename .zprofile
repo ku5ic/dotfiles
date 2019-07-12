@@ -46,19 +46,29 @@ export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
 export TERM="xterm-256color"
 alias tmux="env TERM=xterm-256color tmux"
 
+# Zsh completions
+SAVEHIST=1000
+HISTFILE=~/.zsh_history
+
+bindkey '\e[A' history-search-backward
+bindkey '\e[B' history-search-forward
+
+autoload -U compinit && compinit
+
+fpath=(/usr/local/share/zsh-completions $fpath)
 
 # Ruby
 export MALLOC_ARENA_MAX=2
 eval "$(rbenv init - --no-rehash)"
 
 # Python
-export PIPENV_VENV_IN_PROJECT=1
 export PYTHONDONTWRITEBYTECODE=1
-eval "$(pipenv --completion)"
-eval "$(pyenv init -)"
-if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
-alias brew="env PATH=${PATH//$(pyenv root)\/shims:/} brew"
 export PYTHON_CONFIGURE_OPTS="--enable-framework"
+# export PIPENV_VENV_IN_PROJECT=1
+# eval "$(pipenv --completion)"
+# eval "$(pyenv init -)"
+# if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+# alias brew="env PATH=${PATH//$(pyenv root)\/shims:/} brew"
 
 pyclean () {
   find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
@@ -71,13 +81,6 @@ export NVM_DIR="$HOME/.nvm"
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
-
-autoload -Uz compinit
-if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
-  compinit
-else
-  compinit -C
-fi
 
 ssh-add -K ~/.ssh/id_rsa &> /dev/null
 ssh-add -A &> /dev/null

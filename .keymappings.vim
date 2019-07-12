@@ -13,11 +13,6 @@ noremap <leader>ss :call StripWhitespace()<CR>
 noremap <leader>w :w<CR>
 noremap <leader>W :w !sudo tee % > /dev/null<CR>
 
-" The NERD Tree
-map <C-n> :NERDTreeToggle<CR>
-map <C-f> :NERDTreeFind<CR>
-" map <C-g> :MerginalToggle<CR>
-
 " CtrlP
 map <C-b> :CtrlPBuffer<CR>
 
@@ -39,6 +34,26 @@ vnoremap <leader>rrlv :RRenameLocalVariable<cr>
 vnoremap <leader>rriv :RRenameInstanceVariable<cr>
 vnoremap <leader>rem  :RExtractMethod<cr>
 
+" Netrw
+" Toggle Vexplore with Ctrl-E
+let g:NetrwIsOpen=0
+function! ToggleExplorer()
+  if g:NetrwIsOpen
+    let i = bufnr("$")
+    while (i >= 1)
+      if (getbufvar(i, "&filetype") == "netrw")
+        silent exe "bwipeout " . i
+      endif
+      let i-=1
+    endwhile
+    let g:NetrwIsOpen=0
+  else
+    let g:NetrwIsOpen=1
+    silent Lexplore
+  endif
+endfunction
+map <silent> <C-E> :call ToggleExplorer()<CR>
+
 if filereadable(glob("~/.keymappings.local"))
- source ~/.keymappings.local
+  source ~/.keymappings.local
 endif
