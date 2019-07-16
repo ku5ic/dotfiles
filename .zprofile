@@ -46,9 +46,13 @@ export HOMEBREW_GITHUB_API_TOKEN=4070edd134a475df161bc5be0f5246198c17ffe6
 export TERM="xterm-256color"
 alias tmux="env TERM=xterm-256color tmux"
 
-# Zsh completions
-SAVEHIST=1000
-HISTFILE=~/.zsh_history
+# Zsh history & completions
+HISTSIZE=5000             # How many lines of history to keep in memory
+HISTFILE=~/.zsh_history   # Where to save history to disk
+SAVEHIST=5000             # Number of history entries to save to disk
+setopt appendhistory      # Append history to the history file (no overwriting)
+setopt sharehistory       # Share history across terminals
+setopt incappendhistory   # Immediately append to the history file, not just when a term is killed
 
 bindkey '\e[A' history-search-backward
 bindkey '\e[B' history-search-forward
