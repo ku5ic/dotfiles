@@ -15,6 +15,7 @@ zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
 # Theme
 zplug denysdovhan/spaceship-prompt, use:spaceship.zsh, from:github, as:theme
+SPACESHIP_VI_MODE_SHOW=false
 
 if ! zplug check --verbose; then
     printf "Install? [y/N]: "
