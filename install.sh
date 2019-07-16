@@ -30,6 +30,7 @@ source "$DOTFILES_DIR/install/plug.sh"
 source "$DOTFILES_DIR/install/vscode.sh"
 
 # Bunch of symlinks
+ln -sfv "$DOTFILES_DIR/.zshrc" ~
 ln -sfv "$DOTFILES_DIR/.zprofile" ~
 ln -sfv "$DOTFILES_DIR/.gitconfig" ~
 ln -sfv "$DOTFILES_DIR/.gitignore_global" ~

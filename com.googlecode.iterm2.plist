@@ -1659,11 +1659,11 @@
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>970 768 620 392 0 0 2560 1417 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>1261 651 796 486 0 0 2560 1417 </string>
+	<string>1261 714 796 486 0 0 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
 	<string>251 639 970 527 0 0 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>0 833 1274 527 0 0 2560 1417 </string>
+	<string>0 833 970 527 0 0 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
 	<string>364 158 810 527 0 0 2560 1417 </string>
 	<key>NeverWarnAboutShortLivedSessions_BA487E7F-25D0-419C-9CE8-C2BFD20A3566</key>
@@ -1690,7 +1690,7 @@
 			<key>Allow Title Reporting</key>
 			<false/>
 			<key>Ambiguous Double Width</key>
-			<true/>
+			<false/>
 			<key>Ansi 0 Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -2601,7 +2601,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-07-15T11:46:31Z</date>
+	<date>2019-07-16T12:59:49Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SavePasteHistory</key>
