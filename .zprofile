@@ -15,7 +15,41 @@ zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
 # Theme
 zplug denysdovhan/spaceship-prompt, use:spaceship.zsh, from:github, as:theme
-SPACESHIP_VI_MODE_SHOW=false
+SPACESHIP_PROMPT_ORDER=(
+  time          # Time stamps section
+  user          # Username section
+  dir           # Current directory section
+  host          # Hostname section
+  git           # Git section (git_branch + git_status)
+  # hg            # Mercurial section (hg_branch  + hg_status)
+  # package       # Package version
+  node          # Node.js section
+  ruby          # Ruby section
+  # elixir        # Elixir section
+  # xcode         # Xcode section
+  # swift         # Swift section
+  # golang        # Go section
+  # php           # PHP section
+  # rust          # Rust section
+  # haskell       # Haskell Stack section
+  # julia         # Julia section
+  # docker        # Docker section
+  # aws           # Amazon Web Services section
+  venv          # virtualenv section
+  conda         # conda virtualenv section
+  pyenv         # Pyenv section
+  # dotnet        # .NET section
+  # ember         # Ember.js section
+  # kubecontext   # Kubectl context section
+  # terraform     # Terraform workspace section
+  exec_time     # Execution time
+  line_sep      # Line break
+  battery       # Battery level and status
+  # vi_mode       # Vi-mode indicator
+  jobs          # Background jobs indicator
+  exit_code     # Exit code section
+  char          # Prompt character
+)
 
 if ! zplug check --verbose; then
     printf "Install? [y/N]: "
@@ -48,17 +82,29 @@ export TERM="xterm-256color"
 alias tmux="env TERM=xterm-256color tmux"
 
 # Zsh history & completions
-HISTSIZE=5000             # How many lines of history to keep in memory
-HISTFILE=~/.zsh_history   # Where to save history to disk
-SAVEHIST=5000             # Number of history entries to save to disk
-setopt appendhistory      # Append history to the history file (no overwriting)
-setopt sharehistory       # Share history across terminals
-setopt incappendhistory   # Immediately append to the history file, not just when a term is killed
+HISTSIZE=5000               # How many lines of history to keep in memory
+HISTFILE=~/.zsh_history     # Where to save history to disk
+SAVEHIST=$HISTSIZE          # Number of history entries to save to disk
+
+setopt appendhistory        # Append history to the history file (no overwriting)
+setopt sharehistory         # Share history across terminals
+setopt incappendhistory     # Immediately append to the history file, not just when a term is killed
+setopt hist_ignore_all_dups # remove older duplicate entries from history
+setopt hist_reduce_blanks   # remove superfluous blanks from history items
+setopt correct_all          # autocorrect commands
+setopt auto_list            # automatically list choices on ambiguous completion
+setopt auto_menu            # automatically use menu completion
+setopt always_to_end        # move cursor to end if word had one match
+
+zstyle ':completion:*' menu select # select completions with arrow keys
+zstyle ':completion:*' group-name '' # group results by category
+zstyle ':completion:*' completer _expand _complete _correct _approximate # enable approximate matches for completion
 
 bindkey '\e[A' history-search-backward
 bindkey '\e[B' history-search-forward
+bindkey '^ ' autosuggest-accept
 
-autoload -U compinit && compinit
+autoload -U compinit colors && compinit colors
 
 fpath=(/usr/local/share/zsh-completions $fpath)
 
