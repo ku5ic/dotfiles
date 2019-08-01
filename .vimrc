@@ -73,6 +73,9 @@ set hlsearch
 set shortmess+=c
 let mapleader=","
 
+" update time
+set updatetime=100
+
 source ~/.plugins.vim
 source ~/.keymappings.vim
 
