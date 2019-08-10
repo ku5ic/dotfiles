@@ -34,25 +34,30 @@ vnoremap <leader>rrlv :RRenameLocalVariable<cr>
 vnoremap <leader>rriv :RRenameInstanceVariable<cr>
 vnoremap <leader>rem  :RExtractMethod<cr>
 
+" The NERD Tree
+map <C-n> :NERDTreeToggle<CR>
+map <C-f> :NERDTreeFind<CR>
+map <C-g> :MerginalToggle<CR>
+
 " Netrw
 " Toggle Vexplore with Ctrl-E
-let g:NetrwIsOpen=0
-function! ToggleExplorer()
-  if g:NetrwIsOpen
-    let i = bufnr("$")
-    while (i >= 1)
-      if (getbufvar(i, "&filetype") == "netrw")
-        silent exe "bwipeout " . i
-      endif
-      let i-=1
-    endwhile
-    let g:NetrwIsOpen=0
-  else
-    let g:NetrwIsOpen=1
-    silent Lexplore
-  endif
-endfunction
-map <silent> <C-E> :call ToggleExplorer()<CR>
+" let g:NetrwIsOpen=0
+" function! ToggleExplorer()
+"   if g:NetrwIsOpen
+"     let i = bufnr("$")
+"     while (i >= 1)
+"       if (getbufvar(i, "&filetype") == "netrw")
+"         silent exe "bwipeout " . i
+"       endif
+"       let i-=1
+"     endwhile
+"     let g:NetrwIsOpen=0
+"   else
+"     let g:NetrwIsOpen=1
+"     silent Lexplore
+"   endif
+" endfunction
+" map <silent> <C-E> :call ToggleExplorer()<CR>
 
 if filereadable(glob("~/.keymappings.local"))
   source ~/.keymappings.local

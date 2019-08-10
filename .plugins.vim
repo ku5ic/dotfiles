@@ -1,6 +1,8 @@
 call plug#begin('~/.vim/plugged')
 
 " basic
+Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-dotenv'
@@ -36,9 +38,15 @@ endif
 call plug#end()
 filetype plugin indent on
 
+" NERDTree
+let g:NERDTreeDirArrowExpandable = '+'
+let g:NERDTreeDirArrowCollapsible = '-'
+
 " Vim Devicons
-let g:WebDevIconsUnicodeGlyphDoubleWidth=0
+let g:WebDevIconsOS='Darwin'
+let g:WebDevIconsUnicodeGlyphDoubleWidth=1
 let g:WebDevIconsNerdTreeAfterGlyphPadding=' '
+let g:WebDevIconsNerdTreeGitPluginForceVAlign=0
 
 " Airline
 let g:airline_powerline_fonts=1
