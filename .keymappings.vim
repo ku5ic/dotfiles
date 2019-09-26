@@ -1,4 +1,4 @@
-" Strip trailing whitespace (,ss)
+" Strip trailing white space (,ss)
 function! StripWhitespace()
   let save_cursor = getpos(".")
   let old_query = getreg('/')
@@ -23,7 +23,7 @@ nmap <silent> <leader>a :TestSuite<CR>
 nmap <silent> <leader>l :TestLast<CR>
 nmap <silent> <leader>g :TestVisit<CR>
 
-" Ruby refactory
+" Ruby refactoring
 nnoremap <leader>rap  :RAddParameter<cr>
 nnoremap <leader>rcpc :RConvertPostConditional<cr>
 nnoremap <leader>rel  :RExtractLet<cr>
@@ -58,6 +58,9 @@ map <C-g> :MerginalToggle<CR>
 "   endif
 " endfunction
 " map <silent> <C-E> :call ToggleExplorer()<CR>
+
+" Toggle spell checking on and off with (,s)
+nmap <silent> <leader>s :set spell!<CR>
 
 if filereadable(glob("~/.keymappings.local"))
   source ~/.keymappings.local
