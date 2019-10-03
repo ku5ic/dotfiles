@@ -74,7 +74,7 @@ set shortmess+=c
 let mapleader=","
 
 " update time
-set updatetime=100
+set updatetime=300
 
 source ~/.plugins.vim
 source ~/.keymappings.vim
