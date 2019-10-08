@@ -46,15 +46,14 @@ ln -sfv "$DOTFILES_DIR/Code/User/" "~/Library/Application Support/Code/"
 ln -sfv "$DOTFILES_DIR/oh-my-zsh/themes/bullet-train.zsh-theme" "~/.oh-my-zsh/themes"
 
 # Additional completion definitions for Zsh
-git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
 autoload -U compinit && compinit
 
 # install lts version of node
 nvm install --lts
 
 # Globally install with npm
-npm install -g bower
-npm install -g grunt
-npm install -g gulp
-npm install -g http-server
-npm install -g nodemon
+# npm install -g bower
+# npm install -g grunt
+# npm install -g gulp
+# npm install -g http-server
+# npm install -g nodemon

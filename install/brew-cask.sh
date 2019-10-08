@@ -1,34 +1,37 @@
 #!/bin/sh
 
 casks=(
-  abstract
-  diffmerge
-  iterm2
-  onyx
-  transmission
-  battery-guardian
-  etcher
-  java
-  postman
-  upwork
+  1password
+  deezer
   firefox
-  kindle
-  send-to-kindle
-  virtualbox
-  chromedriver
-  font-meslo-nerd-font
-  macs-fan-control
-  sketch
-  visual-studio-code
-  coconutbattery
-  font-open-sans
-  macvim
-  slack
-  vlc
-  db-browser-for-sqlite
   google-chrome
+  kindle
   ngrok
+  react-native-debugger
+  slack
+  upwork
+  visual-studio-code
+  abstract
+  chromedriver
+  diffmerge
+  font-meslo-nerd-font
+  iterm2
+  macs-fan-control
+  onyx
+  send-to-kindle
   timemachineeditor
+  vagrant
+  vlc
+  battery-guardian
+  coconutbattery
+  etcher
+  font-open-sans
+  java
+  macvim
+  postman
+  sketch
+  transmission
+  virtualbox
 )
 
 for cask in "${casks[@]}"

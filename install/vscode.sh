@@ -10,15 +10,13 @@ extensions=(
   dbaeumer.vscode-eslint
   EditorConfig.EditorConfig
   Equinusocio.vsc-material-theme
-  gencer.html-slim-scss-css-class-completion
   GitHub.vscode-pull-request-github
   glen-84.sass-lint
   HookyQR.beautify
+  Hridoy.rails-snippets
   mikestead.dotenv
-  misogi.ruby-rubocop
   ms-python.python
   ms-vsliveshare.vsliveshare
-  ms-vsliveshare.vsliveshare-audio
   msjsdiag.debugger-for-chrome
   PKief.material-icon-theme
   rebornix.ruby
