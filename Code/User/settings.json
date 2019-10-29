@@ -30,7 +30,6 @@
     "workbench.startupEditor": "newUntitledFile",
     "workbench.fontAliasing": "antialiased",
     "workbench.tips.enabled": false,
-    "workbench.statusBar.feedback.visible": false,
     "workbench.tree.indent": 14,
     "workbench.editor.enablePreview": false,
     "workbench.editor.highlightModifiedTabs": true,
@@ -95,11 +94,8 @@
     // diff editor
     "diffEditor.ignoreTrimWhitespace": false,
 
-    // liveshare
-    "liveshare.audio.startCallOnShare": true,
-    "liveshare.featureSet": "insiders",
-
     // solargraph
+    "solargraph.useBundler": true,
     "solargraph.formatting": true,
     "solargraph.autoformat": true,
     "solargraph.diagnostics": true,
@@ -108,8 +104,6 @@
     "solargraph.definitions": true,
     "solargraph.rename": true,
     "solargraph.folding": true,
-    "solargraph.commandPath": "/Users/ku5ic/.rbenv/shims/solargraph",
-    "solargraph.bundlerPath": "/Users/ku5ic/.rbenv/shims/bundle",
 
     // ruby
     "ruby.pathToBundler": "/Users/ku5ic/.rbenv/shims/bundle",

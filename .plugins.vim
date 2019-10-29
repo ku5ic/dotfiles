@@ -90,6 +90,7 @@ let g:ale_echo_msg_warning_str='W'
 let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
 let g:ale_set_highlights=0
 " let g:ale_lint_on_text_changed='never'
+let g:ale_ruby_rubocop_executable = '/Users/ku5ic/.rbenv/shims/bundle'
 
 " Coc
 " use <tab> for trigger completion and navigate to the next complete item

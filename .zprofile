@@ -2,6 +2,7 @@
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+export PATH="/usr/local/opt/ruby/bin:$PATH"
 
 # Ruby
 export MALLOC_ARENA_MAX=2
