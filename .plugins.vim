@@ -27,6 +27,7 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'janko-m/vim-test'
 Plug 'thoughtbot/vim-rspec'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'mattn/emmet-vim'
 
 " themes
 Plug 'kristijanhusak/vim-hybrid-material'
