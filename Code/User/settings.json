@@ -62,7 +62,7 @@
     "terminal.integrated.experimentalRefreshOnResume": true,
     "terminal.integrated.cursorBlinking": true,
     "terminal.integrated.fontWeight": "bold",
-    "terminal.integrated.rendererType": "dom",
+    "terminal.integrated.rendererType": "experimentalWebgl",
 
     // vim
     "vim.useSystemClipboard": true,
@@ -130,5 +130,8 @@
     "python.terminal.activateEnvironment": false,
     "[python]": {
         "editor.tabSize": 4
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
     },
 }
