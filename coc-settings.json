@@ -1,0 +1,22 @@
+{
+  "suggest.autoTrigger": "none",
+
+  "diagnostic.displayByAle": true,
+  "diagnostic.errorSign": "•",
+  "diagnostic.warningSign": "•",
+  "diagnostic.infoSign": "•",
+
+  "css.validate": true,
+  "scss.validate": true,
+
+  // solargraph
+  "solargraph.useBundler": true,
+  "solargraph.formatting": true,
+  "solargraph.autoformat": true,
+  "solargraph.diagnostics": true,
+  "solargraph.references": true,
+  "solargraph.symbols": true,
+  "solargraph.definitions": true,
+  "solargraph.rename": true,
+  "solargraph.folding": true,
+}

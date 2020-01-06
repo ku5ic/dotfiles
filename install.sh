@@ -43,13 +43,16 @@ ln -sfv "$DOTFILES_DIR/.gvimrc" ~
 ln -sfv "$DOTFILES_DIR/.plugins" ~
 rm -rf ~/Library/Application \Support/Code/User/
 ln -sfv "$DOTFILES_DIR/Code/User/" "~/Library/Application Support/Code/"
-ln -sfv "$DOTFILES_DIR/oh-my-zsh/themes/bullet-train.zsh-theme" "~/.oh-my-zsh/themes"
+ln -sfv "$DOTFILES_DIR/coc-settings.json" "~/.vim/coc-settings.json"
 
 # Additional completion definitions for Zsh
 autoload -U compinit && compinit
 
 # install lts version of node
 nvm install --lts
+
+# install vim CoC plugins
+vim -c 'CocInstall -sync coc-json coc-html coc-eslint coc-css coc-python coc-solargraph coc-tsserver coc-yaml|q'
 
 # Globally install with npm
 # npm install -g bower
