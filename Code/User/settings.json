@@ -24,7 +24,7 @@
     "breadcrumbs.enabled": true,
 
     // workbench
-    "workbench.colorTheme": "Material Theme",
+    "workbench.colorTheme": "Material Theme Palenight",
     "workbench.sideBar.location": "right",
     "workbench.iconTheme": "eq-material-theme-icons",
     "workbench.startupEditor": "newUntitledFile",

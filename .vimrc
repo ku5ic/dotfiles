@@ -90,7 +90,7 @@ source ~/.keymappings.vim
 
 " theme
 set background=dark
-colorscheme hybrid_material
+colorscheme material
 
 " spelling and encoding
 set nospell

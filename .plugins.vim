@@ -11,8 +11,8 @@ Plug 'tpope/vim-rails'
 Plug 'tpope/vim-rake'
 Plug 'tpope/vim-projectionist'
 Plug 'tpope/vim-surround'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'itchyny/lightline.vim'
+Plug 'maximbaz/lightline-ale'
 Plug 'airblade/vim-gitgutter'
 Plug 'vim-scripts/grep.vim'
 Plug 'bronson/vim-trailing-whitespace'
@@ -29,8 +29,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'mattn/emmet-vim'
 
 " themes
-Plug 'kristijanhusak/vim-hybrid-material'
-Plug 'hzchirs/vim-material'
+Plug 'kaicataldo/material.vim'
 
 if filereadable(glob("~/.plugins.local"))
    source ~/.plugins.local
@@ -49,26 +48,41 @@ let g:WebDevIconsUnicodeGlyphDoubleWidth=1
 let g:WebDevIconsNerdTreeAfterGlyphPadding=' '
 let g:WebDevIconsNerdTreeGitPluginForceVAlign=0
 
-" Airline
-let g:airline_powerline_fonts=1
-if !exists('g:airline_symbols')
-    let g:airline_symbols={}
-endif
-let g:airline#extensions#tabline#fnamemod=':t'
-let g:airline_detect_modified=1
-let g:airline#extensions#tabline#enabled=1
-let g:airline#extensions#branch#prefix='⤴' "➔, ➥, ⎇
-let g:airline#extensions#readonly#symbol='⊘'
-let g:airline#extensions#linecolumn#prefix='¶'
-let g:airline#extensions#paste#symbol='ρ'
-let g:airline_symbols.linenr='␊'
-let g:airline_symbols.branch='⎇'
-let g:airline_symbols.paste='ρ'
-let g:airline_symbols.paste='Þ'
-let g:airline_symbols.paste='∥'
-let g:airline_symbols.whitespace='Ξ'
+" Lightline
+let g:lightline = {
+      \   'colorscheme': 'material_vim',
+      \   'active': {
+      \     'left':[ [ 'mode', 'paste' ],
+      \              [ 'cocstatus', 'gitbranch', 'readonly', 'filename', 'modified' ]
+      \     ]
+      \   },
+      \   'component': {
+      \     'lineinfo': ' %3l:%-2v',
+      \   },
+      \   'component_function': {
+      \     'gitbranch': 'fugitive#head',
+      \     'cocstatus': 'coc#status',
+      \   }
+      \ }
 
-let g:airline_theme = "hybrid"
+let g:lightline.component_expand = {
+      \  'linter_checking': 'lightline#ale#checking',
+      \  'linter_warnings': 'lightline#ale#warnings',
+      \  'linter_errors': 'lightline#ale#errors',
+      \  'linter_ok': 'lightline#ale#ok',
+      \ }
+
+let g:lightline.component_type = {
+      \     'linter_checking': 'left',
+      \     'linter_warnings': 'warning',
+      \     'linter_errors': 'error',
+      \     'linter_ok': 'left',
+      \ }
+
+let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]] }
+
+" Matherial Theme
+let g:material_theme_style='palenight'
 
 " Ctrl-P
 let g:ctrlp_custom_ignore = {
