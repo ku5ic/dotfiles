@@ -93,9 +93,6 @@
 
     // diff editor
     "diffEditor.ignoreTrimWhitespace": false,
-
-    // solargraph
-    "solargraph.useBundler": true,
     "solargraph.formatting": true,
     "solargraph.autoformat": true,
     "solargraph.diagnostics": true,

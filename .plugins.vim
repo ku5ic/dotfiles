@@ -29,7 +29,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'mattn/emmet-vim'
 
 " themes
-Plug 'kaicataldo/material.vim'
+Plug 'kristijanhusak/vim-hybrid-material'
 
 if filereadable(glob("~/.plugins.local"))
    source ~/.plugins.local
@@ -50,11 +50,12 @@ let g:WebDevIconsNerdTreeGitPluginForceVAlign=0
 
 " Lightline
 let g:lightline = {
-      \   'colorscheme': 'material_vim',
+      \   'colorscheme': 'material',
       \   'active': {
       \     'left':[ [ 'mode', 'paste' ],
-      \              [ 'cocstatus', 'gitbranch', 'readonly', 'filename', 'modified' ]
-      \     ]
+      \              [ 'gitbranch', 'cocstatus', 'readonly', 'filename', 'modified' ]
+      \     ],
+      \     'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]]
       \   },
       \   'component': {
       \     'lineinfo': ' %3l:%-2v',
@@ -62,27 +63,28 @@ let g:lightline = {
       \   'component_function': {
       \     'gitbranch': 'fugitive#head',
       \     'cocstatus': 'coc#status',
+      \     'linter_checking': 'lightline#ale#checking',
+      \     'linter_warnings': 'lightline#ale#warnings',
+      \     'linter_errors': 'lightline#ale#errors',
+      \     'linter_ok': 'lightline#ale#ok',
       \   }
       \ }
 
-let g:lightline.component_expand = {
-      \  'linter_checking': 'lightline#ale#checking',
-      \  'linter_warnings': 'lightline#ale#warnings',
-      \  'linter_errors': 'lightline#ale#errors',
-      \  'linter_ok': 'lightline#ale#ok',
-      \ }
+" let g:lightline.component_expand = {
+"       \  'linter_checking': 'lightline#ale#checking',
+"       \  'linter_warnings': 'lightline#ale#warnings',
+"       \  'linter_errors': 'lightline#ale#errors',
+"       \  'linter_ok': 'lightline#ale#ok',
+"       \ }
 
-let g:lightline.component_type = {
-      \     'linter_checking': 'left',
-      \     'linter_warnings': 'warning',
-      \     'linter_errors': 'error',
-      \     'linter_ok': 'left',
-      \ }
+" let g:lightline.component_type = {
+"       \     'linter_checking': 'left',
+"       \     'linter_warnings': 'warning',
+"       \     'linter_errors': 'error',
+"       \     'linter_ok': 'left',
+"       \ }
 
-let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]] }
-
-" Matherial Theme
-let g:material_theme_style='palenight'
+" let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]] }
 
 " Ctrl-P
 let g:ctrlp_custom_ignore = {
@@ -90,17 +92,16 @@ let g:ctrlp_custom_ignore = {
       \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$' }
 
 " Asynchronous Lint Engine
+let g:ale_sign_error = '◉'
+let g:ale_sign_warning = '◉'
+let g:ale_echo_msg_error_str='◉'
+let g:ale_echo_msg_warning_str='◉'
 let g:ale_fixers = {
 \   'javascript': ['eslint'],
 \   'ruby': ['rubocop'],
 \}
 let g:ale_fix_on_save=1
 let g:ale_sign_column_always=1
-let g:ale_sign_error='•'
-let g:ale_sign_warning='•'
-let g:airline#extensions#ale#enabled=1
-let g:ale_echo_msg_error_str='•'
-let g:ale_echo_msg_warning_str='•'
 let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
 let g:ale_set_highlights=0
 " let g:ale_lint_on_text_changed='never'

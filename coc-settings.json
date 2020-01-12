@@ -5,12 +5,13 @@
   "diagnostic.errorSign": "•",
   "diagnostic.warningSign": "•",
   "diagnostic.infoSign": "•",
+  "diagnostic.hintSign": "•",
 
   "css.validate": true,
   "scss.validate": true,
 
   // solargraph
-  "solargraph.useBundler": true,
+  "solargraph.useBundler": false,
   "solargraph.formatting": true,
   "solargraph.autoformat": true,
   "solargraph.diagnostics": true,

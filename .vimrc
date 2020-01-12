@@ -90,21 +90,21 @@ source ~/.keymappings.vim
 
 " theme
 set background=dark
-colorscheme material
+colorscheme hybrid_material
 
 " spelling and encoding
 set nospell
 syntax spell toplevel
 set spelllang=en_us
 set encoding=utf-8
-" hi clear SpellBad
-" hi clear SpellCap
-" hi clear SpellRare
-" hi clear SpellLocal
-" hi SpellBad cterm=underline,bold
-" hi SpellCap cterm=underline,bold
-" hi SpellRare cterm=underline,bold
-" hi SpellLocal cterm=underline,bold
+hi clear SpellBad
+hi clear SpellCap
+hi clear SpellRare
+hi clear SpellLocal
+hi SpellBad cterm=underline,bold
+hi SpellCap cterm=underline,bold
+hi SpellRare cterm=underline,bold
+hi SpellLocal cterm=underline,bold
 
 " folding
 set foldmethod=indent
