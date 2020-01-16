@@ -1189,7 +1189,7 @@
 	<key>NSWindow Frame SharedPreferences</key>
 	<string>1261 777 918 423 0 0 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>1272 586 970 542 0 0 2560 1417 </string>
+	<string>1272 661 970 467 0 0 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>1487 612 970 542 0 0 2560 1440 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
@@ -1806,7 +1806,7 @@
 			<key>Non-ASCII Ligatures</key>
 			<false/>
 			<key>Normal Font</key>
-			<string>MesloLGMNerdFontComplete-Regular 14</string>
+			<string>InputMonoNarrow-Regular 14</string>
 			<key>Only The Default BG Color Uses Transparency</key>
 			<true/>
 			<key>Open Toolbelt</key>
@@ -2012,14 +2012,19 @@
 	<key>NoSyncAllAppVersions</key>
 	<array>
 		<string>3.3.6</string>
-		<string>3.2.9</string>
+		<string>3.3.4</string>
 		<string>3.3.1</string>
 		<string>3.3.3</string>
 		<string>3.3.5</string>
 		<string>3.3.7</string>
+		<string>3.2.9</string>
 		<string>3.3.0</string>
 		<string>3.3.2</string>
-		<string>3.3.4</string>
+	</array>
+	<key>NoSyncBFPRecents</key>
+	<array>
+		<string>Input Mono Narrow</string>
+		<string>Input Mono</string>
 	</array>
 	<key>NoSyncFrame_SharedPreferences</key>
 	<dict>
@@ -2037,7 +2042,7 @@
 	<key>NoSyncLastTipTime</key>
 	<real>560004899.31617296</real>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>206</integer>
+	<integer>207</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -2841,7 +2846,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-01-14T08:55:55Z</date>
+	<date>2020-01-16T09:21:40Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>
