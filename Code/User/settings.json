@@ -1,7 +1,7 @@
 {
     // editor
     "editor.minimap.enabled": false,
-    "editor.fontFamily": "MesloLGM Nerd Font",
+    "editor.fontFamily": "InputMonoNarrow-Regular",
     "editor.fontSize": 14,
     "editor.lineNumbers": "relative",
     "editor.accessibilitySupport": "off",

@@ -1,4 +1,4 @@
-set guifont=Meslo\ LG\ M\ Regular\ Nerd\ Font\ Complete:h14
+set guifont=InputMonoNarrow-Regular:h14
 set guioptions-=r
 set guioptions-=L
 set guicursor+=a:blinkon0

@@ -15,6 +15,7 @@ casks=(
   chromedriver
   diffmerge
   font-meslo-nerd-font
+  font-input
   iterm2
   macs-fan-control
   onyx

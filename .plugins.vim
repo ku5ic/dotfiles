@@ -21,7 +21,7 @@ Plug 'Yggdroot/indentLine'
 Plug 'sheerun/vim-polyglot'
 Plug 'w0rp/ale'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'ryanoasis/vim-devicons'
+" Plug 'ryanoasis/vim-devicons'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'janko-m/vim-test'
 Plug 'thoughtbot/vim-rspec'
@@ -43,10 +43,10 @@ let g:NERDTreeDirArrowExpandable = '+'
 let g:NERDTreeDirArrowCollapsible = '-'
 
 " Vim Devicons
-let g:WebDevIconsOS='Darwin'
-let g:WebDevIconsUnicodeGlyphDoubleWidth=1
-let g:WebDevIconsNerdTreeAfterGlyphPadding=' '
-let g:WebDevIconsNerdTreeGitPluginForceVAlign=0
+" let g:WebDevIconsOS='Darwin'
+" let g:WebDevIconsUnicodeGlyphDoubleWidth=1
+" let g:WebDevIconsNerdTreeAfterGlyphPadding=' '
+" let g:WebDevIconsNerdTreeGitPluginForceVAlign=0
 
 " Lightline
 let g:lightline = {
