@@ -51,9 +51,6 @@
     // theme
     "materialTheme.accent": "Orange",
     "material-icon-theme.folders.theme": "specific",
-
-    // terminal settings
-    "terminal.integrated.fontFamily": "MesloLGM Nerd Font",
     "terminal.integrated.fontSize": 14,
     "terminal.external.osxExec": "iTerm.app",
     "terminal.explorerKind": "external",
@@ -131,4 +128,5 @@
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
+    "terminal.integrated.fontWeightBold": "normal",
 }
