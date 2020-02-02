@@ -78,6 +78,13 @@ export TERM="xterm-256color"
 alias tmux="env TERM=xterm-256color tmux"
 
 # Zsh history & completions
+autoload -Uz compinit
+if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
+  compinit
+else
+  compinit -C
+fi
+
 HISTSIZE=5000               # How many lines of history to keep in memory
 HISTFILE=~/.zsh_history     # Where to save history to disk
 SAVEHIST=$HISTSIZE          # Number of history entries to save to disk
@@ -99,8 +106,6 @@ zstyle ':completion:*' completer _expand _complete _correct _approximate # enabl
 bindkey '\e[A' history-search-backward
 bindkey '\e[B' history-search-forward
 bindkey '^ ' autosuggest-accept
-
-autoload -U compinit colors && compinit colors
 
 fpath=(/usr/local/share/zsh-completions $fpath)
 
