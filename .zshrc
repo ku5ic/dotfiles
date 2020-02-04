@@ -79,21 +79,21 @@ alias tmux="env TERM=xterm-256color tmux"
 
 # Zsh history & completions
 autoload -Uz compinit
-if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
-  compinit
+typeset -i updated_at=$(date +'%j' -r ~/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null)
+if [ $(date +'%j') != $updated_at ]; then
+  compinit -i
 else
-  compinit -C
+  compinit -C -i
 fi
 
-HISTSIZE=5000               # How many lines of history to keep in memory
-HISTFILE=~/.zsh_history     # Where to save history to disk
-SAVEHIST=$HISTSIZE          # Number of history entries to save to disk
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=100000
+SAVEHIST=$HISTSIZE
 
-setopt appendhistory        # Append history to the history file (no overwriting)
-setopt sharehistory         # Share history across terminals
-setopt incappendhistory     # Immediately append to the history file, not just when a term is killed
 setopt hist_ignore_all_dups # remove older duplicate entries from history
 setopt hist_reduce_blanks   # remove superfluous blanks from history items
+setopt inc_append_history   # save history entries as soon as they are entered
+setopt share_history        # share history between different instances of the shell
 setopt correct_all          # autocorrect commands
 setopt auto_list            # automatically list choices on ambiguous completion
 setopt auto_menu            # automatically use menu completion
