@@ -36,7 +36,7 @@ SPACESHIP_PROMPT_ORDER=(
   # docker        # Docker section
   # aws           # Amazon Web Services section
   venv          # virtualenv section
-  conda         # conda virtualenv section
+  # conda         # conda virtualenv section
   pyenv         # Pyenv section
   # dotnet        # .NET section
   # ember         # Ember.js section
@@ -78,13 +78,15 @@ export TERM="xterm-256color"
 alias tmux="env TERM=xterm-256color tmux"
 
 # Zsh history & completions
-autoload -Uz compinit
-typeset -i updated_at=$(date +'%j' -r ~/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null)
-if [ $(date +'%j') != $updated_at ]; then
-  compinit -i
+autoload -Uz compinit 
+setopt EXTENDEDGLOB
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+	compinit
+  echo "Initializing Completions..."
 else
-  compinit -C -i
-fi
+	compinit -C
+fi;
+unsetopt EXTENDEDGLOB
 
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=100000

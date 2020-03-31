@@ -19,5 +19,5 @@
   "solargraph.symbols": true,
   "solargraph.definitions": true,
   "solargraph.rename": true,
-  "solargraph.folding": true,
+  "solargraph.folding": true
 }
