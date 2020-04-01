@@ -10,6 +10,8 @@
   "css.validate": true,
   "scss.validate": true,
 
+  "cSpell.language": "en",
+
   // solargraph
   "solargraph.useBundler": false,
   "solargraph.formatting": true,
@@ -19,5 +21,11 @@
   "solargraph.symbols": true,
   "solargraph.definitions": true,
   "solargraph.rename": true,
-  "solargraph.folding": true
+  "solargraph.folding": true,
+  "cSpell.userWords": [
+    "autoformat",
+    "pubsub",
+    "solargraph",
+    "urijs"
+  ]
 }

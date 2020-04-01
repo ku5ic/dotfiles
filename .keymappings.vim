@@ -58,6 +58,7 @@ map <C-g> :MerginalToggle<CR>
 "   endif
 " endfunction
 " map <silent> <C-E> :call ToggleExplorer()<CR>
+"
 
 " Toggle spell checking on and off with (,s)
 nmap <silent> <leader>s :set spell!<CR>

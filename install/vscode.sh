@@ -2,29 +2,22 @@
 
 extensions=(
   asvetliakov.snapshot-tools
-  bigonesystems.django
-  bung87.rails
   bung87.vscode-gemfile
   castwide.solargraph
   codezombiech.gitignore
   dbaeumer.vscode-eslint
   EditorConfig.EditorConfig
   Equinusocio.vsc-material-theme
-  GitHub.vscode-pull-request-github
+  equinusocio.vsc-material-theme-icons
   glen-84.sass-lint
-  HookyQR.beautify
-  Hridoy.rails-snippets
   mikestead.dotenv
   ms-python.python
   ms-vsliveshare.vsliveshare
   msjsdiag.debugger-for-chrome
-  PKief.material-icon-theme
   rebornix.ruby
-  robinbentley.sass-indented
-  sianglim.slim
   streetsidesoftware.code-spell-checker
   vscodevim.vim
-  wholroyd.jinja
+  wingrunr21.vscode-ruby
 )
 
 for extension in "${extensions[@]}"
