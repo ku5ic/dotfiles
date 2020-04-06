@@ -33,6 +33,8 @@ brews=(
   zplug
   zsh
   zsh-completions
+  ansible
+  timuxinator
 )
 
 for brew in "${brews[@]}"

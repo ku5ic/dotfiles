@@ -24,8 +24,14 @@
   "solargraph.folding": true,
   "cSpell.userWords": [
     "autoformat",
+    "dotfiles",
+    "dropdowns",
+    "flexbox",
     "pubsub",
+    "softwareupdate",
     "solargraph",
-    "urijs"
+    "urijs",
+    "woff",
+    "xcode"
   ]
 }
