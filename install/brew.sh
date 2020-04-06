@@ -34,7 +34,7 @@ brews=(
   zsh
   zsh-completions
   ansible
-  timuxinator
+  tmuxinator
 )
 
 for brew in "${brews[@]}"

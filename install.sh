@@ -38,8 +38,8 @@ ln -sfv "$DOTFILES_DIR/.vimrc" ~
 ln -sfv "$DOTFILES_DIR/.gvimrc" ~
 ln -sfv "$DOTFILES_DIR/.plugins.vim" ~
 rm -rf ~/Library/Application\ Support/Code/User
-ln -sfv "$DOTFILES_DIR/Code/User/" "~/Library/Application Support/Code/"
-ln -sfv "$DOTFILES_DIR/coc-settings.json" "~/.vim/coc-settings.json"
+ln -sfv "$DOTFILES_DIR/Code/User" ~/Library/Application\ Support/Code
+ln -sfv "$DOTFILES_DIR/coc-settings.json" ~/.vim/coc-settings.json
 
 # Install vscode plugins
 source "$DOTFILES_DIR/install/vscode.sh"
