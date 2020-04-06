@@ -10,11 +10,8 @@ export DOTFILES_DIR="/Users/ku5ic/.dotfiles"
 
 # Install Homebrew & brew-cask
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-brew tap caskroom/cask
-brew tap caskroom/fonts
-brew tap homebrew/versions
-brew tap homebrew/dupes
 brew install brew-cask
+brew tap homebrew/cask-fonts
 
 # Install zsh
 brew install zsh
@@ -27,7 +24,6 @@ source "$DOTFILES_DIR/install/brew.sh"
 source "$DOTFILES_DIR/install/brew-cask.sh"
 source "$DOTFILES_DIR/install/tmux-plugin-manager.sh"
 source "$DOTFILES_DIR/install/plug.sh"
-source "$DOTFILES_DIR/install/vscode.sh"
 
 # Bunch of symlinks
 ln -sfv "$DOTFILES_DIR/.zshrc" ~
@@ -40,10 +36,13 @@ ln -sfv "$DOTFILES_DIR/.tmux.conf" ~
 ln -sfv "$DOTFILES_DIR/.keymappings.vim" ~
 ln -sfv "$DOTFILES_DIR/.vimrc" ~
 ln -sfv "$DOTFILES_DIR/.gvimrc" ~
-ln -sfv "$DOTFILES_DIR/.plugins" ~
-rm -rf ~/Library/Application \Support/Code/User/
+ln -sfv "$DOTFILES_DIR/.plugins.vim" ~
+rm -rf ~/Library/Application\ Support/Code/User
 ln -sfv "$DOTFILES_DIR/Code/User/" "~/Library/Application Support/Code/"
 ln -sfv "$DOTFILES_DIR/coc-settings.json" "~/.vim/coc-settings.json"
+
+# Install vscode plugins
+source "$DOTFILES_DIR/install/vscode.sh"
 
 # Additional completion definitions for Zsh
 autoload -U compinit && compinit

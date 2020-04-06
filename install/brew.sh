@@ -20,7 +20,7 @@ brews=(
   rbenv-gemset
   ruby-build
   nvm
-  'yarn --without-node'
+  yarn
   python
   tmux
   reattach-to-user-namespace
