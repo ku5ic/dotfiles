@@ -13,7 +13,7 @@ set termencoding=utf-8
 syntax enable
 
 " fix backspace
-set bs=2
+set backspace=indent,eol,start
 
 " backup and history
 set noswapfile

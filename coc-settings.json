@@ -7,9 +7,6 @@
   "diagnostic.infoSign": "•",
   "diagnostic.hintSign": "•",
 
-  "css.validate": true,
-  "scss.validate": true,
-
   "cSpell.language": "en",
 
   // solargraph
@@ -27,6 +24,7 @@
     "dotfiles",
     "dropdowns",
     "flexbox",
+    "gaggleamp",
     "pubsub",
     "softwareupdate",
     "solargraph",

@@ -80,7 +80,7 @@ export TERM="xterm-256color"
 alias tmux="env TERM=xterm-256color tmux"
 
 # Zsh history & completions
-autoload -Uz compinit 
+autoload -Uz compinit
 setopt EXTENDEDGLOB
 if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
 	compinit
@@ -112,6 +112,10 @@ bindkey '\e[B' history-search-forward
 bindkey '^ ' autosuggest-accept
 
 fpath=(/usr/local/share/zsh-completions $fpath)
+
+# aliases
+
+source ~/.aliases.zsh
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

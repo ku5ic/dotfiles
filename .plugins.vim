@@ -50,6 +50,7 @@ filetype plugin indent on
 " NERDTree
 let g:NERDTreeDirArrowExpandable = '+'
 let g:NERDTreeDirArrowCollapsible = '-'
+let g:NERDTreeWinSize = 50
 
 " Vim Devicons
 " let g:WebDevIconsOS='Darwin'
