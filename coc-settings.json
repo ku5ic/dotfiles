@@ -19,6 +19,12 @@
   "solargraph.definitions": true,
   "solargraph.rename": true,
   "solargraph.folding": true,
+
+  // python
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+
+  // spelling
   "cSpell.userWords": [
     "autoformat",
     "dotfiles",
@@ -28,6 +34,7 @@
     "pubsub",
     "softwareupdate",
     "solargraph",
+    "sqlite",
     "urijs",
     "woff",
     "xcode"

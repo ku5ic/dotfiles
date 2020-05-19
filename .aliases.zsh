@@ -9,3 +9,5 @@ alias gr="git rebase"
 
 # tmuxinator
 alias mux=tmuxinator
+
+alias la="ls -la"

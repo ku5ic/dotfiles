@@ -119,4 +119,7 @@
   "[html.erb]": {
     "editor.defaultFormatter": ""
   },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
 }

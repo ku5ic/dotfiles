@@ -5,9 +5,7 @@ casks=(
   deezer
   firefox
   google-chrome
-  kindle
   ngrok
-  react-native-debugger
   slack
   upwork
   visual-studio-code
@@ -18,9 +16,7 @@ casks=(
   iterm2
   macs-fan-control
   onyx
-  send-to-kindle
   timemachineeditor
-  vagrant
   vlc
   battery-guardian
   coconutbattery

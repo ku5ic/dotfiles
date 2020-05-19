@@ -13,6 +13,9 @@ noremap <leader>ss :call StripWhitespace()<CR>
 noremap <leader>w :w<CR>
 noremap <leader>W :w !sudo tee % > /dev/null<CR>
 
+" only
+noremap <leader>O :only<CR>
+
 " CtrlP
 map <C-b> :CtrlPBuffer<CR>
 
