@@ -11,3 +11,6 @@ alias gr="git rebase"
 alias mux=tmuxinator
 
 alias la="ls -la"
+
+# brew
+alias brewall="brew update; brew upgrade; brew cask upgrade; brew cleanup; brew doctor;"
