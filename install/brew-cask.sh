@@ -28,6 +28,7 @@ casks=(
   sketch
   transmission
   virtualbox
+  beekeeper-studio
 )
 
 for cask in "${casks[@]}"
