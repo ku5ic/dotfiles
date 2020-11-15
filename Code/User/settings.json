@@ -12,6 +12,7 @@
   "editor.fontLigatures": false,
   "editor.cursorStyle": "underline",
   "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   // files
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
@@ -65,22 +66,13 @@
   "vim.visualstar": true,
   "vim.normalModeKeyBindingsNonRecursive": [
     {
-      "before": [
-        "<C-n>"
-      ],
-      "commands": [
-        ":nohl",
-      ]
+      "before": ["<C-n>"],
+      "commands": [":nohl"]
     },
     {
-      "before": [
-        "leader",
-        "w"
-      ],
-      "commands": [
-        "workbench.action.files.save",
-      ]
-    },
+      "before": ["leader", "w"],
+      "commands": ["workbench.action.files.save"]
+    }
   ],
   "eslint.packageManager": "yarn",
   "eslint.format.enable": true,
@@ -116,13 +108,10 @@
     "source.fixAll": true
   },
   "terminal.integrated.fontWeightBold": "normal",
-  "[html.erb]": {
-    "editor.defaultFormatter": ""
-  },
   "[javascriptreact]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-  },
+  }
 }

@@ -23,6 +23,7 @@ brews=(
   yarn
   python
   tmux
+  tmate
   reattach-to-user-namespace
   vim
   cmake
