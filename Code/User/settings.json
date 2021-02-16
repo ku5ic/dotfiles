@@ -11,8 +11,9 @@
   "editor.dragAndDrop": false,
   "editor.fontLigatures": false,
   "editor.cursorStyle": "underline",
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
   // files
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
@@ -21,6 +22,9 @@
   },
   "files.associations": {
     "*.csvbuilder": "ruby"
+  },
+  "files.associations": {
+    "*.erb": "erb"
   },
   // breadcrumbs
   "breadcrumbs.enabled": true,
@@ -56,6 +60,7 @@
   "terminal.integrated.cursorBlinking": true,
   "terminal.integrated.fontWeight": "bold",
   "terminal.integrated.rendererType": "experimentalWebgl",
+  "terminal.integrated.fontWeightBold": "normal",
   // vim
   "vim.useSystemClipboard": true,
   "vim.hlsearch": true,
@@ -66,12 +71,21 @@
   "vim.visualstar": true,
   "vim.normalModeKeyBindingsNonRecursive": [
     {
-      "before": ["<C-n>"],
-      "commands": [":nohl"]
+      "before": [
+        "<C-n>"
+      ],
+      "commands": [
+        ":nohl"
+      ]
     },
     {
-      "before": ["leader", "w"],
-      "commands": ["workbench.action.files.save"]
+      "before": [
+        "leader",
+        "w"
+      ],
+      "commands": [
+        "workbench.action.files.save"
+      ]
     }
   ],
   "eslint.packageManager": "yarn",
@@ -95,6 +109,15 @@
   "npm.packageManager": "yarn",
   // javascript
   "javascript.updateImportsOnFileMove.enabled": "always",
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
   // emmet
   "emmet.showExpandedAbbreviation": "inMarkupAndStylesheetFilesOnly",
   // python
@@ -104,14 +127,4 @@
   "[python]": {
     "editor.tabSize": 4
   },
-  "editor.codeActionsOnSave": {
-    "source.fixAll": true
-  },
-  "terminal.integrated.fontWeightBold": "normal",
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-  }
 }

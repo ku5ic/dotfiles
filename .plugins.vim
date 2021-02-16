@@ -12,7 +12,6 @@ Plug 'tpope/vim-rake'
 Plug 'tpope/vim-projectionist'
 Plug 'tpope/vim-surround'
 Plug 'itchyny/lightline.vim'
-Plug 'maximbaz/lightline-ale'
 Plug 'airblade/vim-gitgutter'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'sheerun/vim-polyglot'
@@ -22,20 +21,10 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'janko-m/vim-test'
 Plug 'thoughtbot/vim-rspec'
 Plug 'mattn/emmet-vim'
+Plug 'maximbaz/lightline-ale'
 
 " CoC
-Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-prettier', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-eslint', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-css', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-highlight', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-json', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-html', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-yaml', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-python', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-solargraph', {'do': 'yarn install --frozen-lockfile'}
-Plug 'iamcco/coc-spell-checker', {'do': 'yarn install && yarn build'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " themes
 Plug 'kristijanhusak/vim-hybrid-material'
@@ -52,12 +41,6 @@ let g:NERDTreeDirArrowExpandable = '+'
 let g:NERDTreeDirArrowCollapsible = '-'
 let g:NERDTreeWinSize = 50
 
-" Vim Devicons
-" let g:WebDevIconsOS='Darwin'
-" let g:WebDevIconsUnicodeGlyphDoubleWidth=1
-" let g:WebDevIconsNerdTreeAfterGlyphPadding=' '
-" let g:WebDevIconsNerdTreeGitPluginForceVAlign=0
-
 " Lightline
 let g:lightline = {
       \   'colorscheme': 'material',
@@ -65,7 +48,7 @@ let g:lightline = {
       \     'left':[ [ 'mode', 'paste' ],
       \              [ 'gitbranch', 'cocstatus', 'readonly', 'filename', 'modified' ]
       \     ],
-      \     'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]]
+      \    'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ]]
       \   },
       \   'component': {
       \     'lineinfo': ' %3l:%-2v',
@@ -74,27 +57,20 @@ let g:lightline = {
       \     'gitbranch': 'fugitive#head',
       \     'cocstatus': 'coc#status',
       \     'linter_checking': 'lightline#ale#checking',
+      \     'linter_infos': 'lightline#ale#infos',
       \     'linter_warnings': 'lightline#ale#warnings',
       \     'linter_errors': 'lightline#ale#errors',
       \     'linter_ok': 'lightline#ale#ok',
       \   }
       \ }
 
-" let g:lightline.component_expand = {
-"       \  'linter_checking': 'lightline#ale#checking',
-"       \  'linter_warnings': 'lightline#ale#warnings',
-"       \  'linter_errors': 'lightline#ale#errors',
-"       \  'linter_ok': 'lightline#ale#ok',
-"       \ }
-
-" let g:lightline.component_type = {
-"       \     'linter_checking': 'left',
-"       \     'linter_warnings': 'warning',
-"       \     'linter_errors': 'error',
-"       \     'linter_ok': 'left',
-"       \ }
-
-" let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]] }
+let g:lightline.component_type = {
+      \     'linter_checking': 'right',
+      \     'linter_infos': 'right',
+      \     'linter_warnings': 'warning',
+      \     'linter_errors': 'error',
+      \     'linter_ok': 'right',
+      \ }
 
 " Ctrl-P
 let g:ctrlp_custom_ignore = {
@@ -104,8 +80,8 @@ let g:ctrlp_custom_ignore = {
 " Asynchronous Lint Engine
 let g:ale_sign_error = '◉'
 let g:ale_sign_warning = '◉'
-let g:ale_echo_msg_error_str='◉'
-let g:ale_echo_msg_warning_str='◉'
+let g:ale_echo_msg_error_str='E'
+let g:ale_echo_msg_warning_str='W'
 let g:ale_fixers = {
 \   'javascript': ['eslint'],
 \   'ruby': ['rubocop'],

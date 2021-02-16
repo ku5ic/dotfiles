@@ -51,7 +51,7 @@ autoload -U compinit && compinit
 nvm install --lts
 
 # install vim CoC plugins
-vim -c 'CocInstall -sync coc-json coc-html coc-eslint coc-css coc-python coc-solargraph coc-tsserver coc-yaml|q'
+vim -c 'CocInstall -sync coc-prettier coc-highlight coc-spell-checker coc-json coc-html coc-eslint coc-css coc-python coc-solargraph coc-tsserver coc-yaml|q'
 
 # Globally install with npm
 # npm install -g bower

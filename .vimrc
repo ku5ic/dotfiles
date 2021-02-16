@@ -9,6 +9,13 @@ endif
 set term=xterm-256color
 set termencoding=utf-8
 
+" disable arrow keys
+" for key in ['<Up>', '<Down>', '<Left>', '<Right>']
+"   exec 'noremap' key '<Nop>'
+"   exec 'inoremap' key '<Nop>'
+"   exec 'cnoremap' key '<Nop>'
+" endfor
+
 " syntax
 syntax enable
 
@@ -38,7 +45,7 @@ set visualbell
 set autoread
 
 " wildignore
-set wildignore+=*/node_modules/**,*/bower_components/**,*/spec/reports/**,*/tmp/**
+set wildignore+=*/node_modules/**,*/bower_components/**,*/spec/reports/**,*/tmp/**,*/public/packs/**
 set wildignore+=*.png,*.PNG,*.jpg,*.jpeg,*.JPG,*.JPEG,*.pdf
 set wildignore+=*.ttf,*.otf,*.woff,*.woff2,*.eot
 set wildignore+=*.pyc,*.o,*.obj,*.svn,*.swp,*.class,*.hg,*.DS_Store,*.min.*
@@ -108,6 +115,11 @@ hi SpellBad cterm=underline,bold
 hi SpellCap cterm=underline,bold
 hi SpellRare cterm=underline,bold
 hi SpellLocal cterm=underline,bold
+
+" highlighting
+hi Visual guibg=Orange guifg=LightYellow
+hi CursorLine guibg=Gray10 guifg=NONE
+hi Search guibg=Orange guifg=Gray10
 
 " folding
 set foldmethod=indent

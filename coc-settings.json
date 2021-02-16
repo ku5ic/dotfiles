@@ -1,4 +1,6 @@
 {
+  "coc.preferences.diagnostic.enable": false,
+
   "suggest.autoTrigger": "none",
 
   "diagnostic.displayByAle": true,
@@ -11,14 +13,13 @@
 
   // solargraph
   "solargraph.useBundler": false,
-  "solargraph.formatting": true,
-  "solargraph.autoformat": true,
   "solargraph.diagnostics": true,
   "solargraph.references": true,
   "solargraph.symbols": true,
   "solargraph.definitions": true,
   "solargraph.rename": true,
   "solargraph.folding": true,
+  "solargraph.commandPath": "/Users/ku5ic/.rbenv/shims/solargraph",
 
   // python
   "python.linting.pylintEnabled": false,
