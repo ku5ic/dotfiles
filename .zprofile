@@ -1,5 +1,3 @@
-# Paths
-export PATH="$HOME/.local/bin:$PATH"
 export PATH="/usr/local/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/opt/python/libexec/bin:$PATH"
@@ -39,4 +37,10 @@ create_git_branch_from_jira() {
   story_title="${story_title//-/}"
 
   git checkout -b  "${story_type}/${story_id}_${story_title/ /_}"
+}
+
+tmux_gaggleamp() {
+  tmuxinator start rails-project workspace=~/Projects/Gaggleamp/Code/Amplify -n Amplify
+  tmuxinator start rails-project workspace=~/Projects/Gaggleamp/Code/sso -n sso
+  tmuxinator start rails-project workspace=~/Projects/Gaggleamp/Code/Engage -n Engage
 }

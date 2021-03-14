@@ -4,9 +4,6 @@ export ZPLUG_HOME=/usr/local/opt/zplug
 # Loads zplug
 source $ZPLUG_HOME/init.zsh
 
-# Clear packages
-zplug clear
-
 # Packages
 zplug "zsh-users/zsh-completions"
 zplug "zsh-users/zsh-autosuggestions"
@@ -22,7 +19,7 @@ SPACESHIP_PROMPT_ORDER=(
   host          # Hostname section
   git           # Git section (git_branch + git_status)
   # hg            # Mercurial section (hg_branch  + hg_status)
-  # package       # Package version
+  package       # Package version
   node          # Node.js section
   ruby          # Ruby section
   # elixir        # Elixir section
@@ -37,7 +34,7 @@ SPACESHIP_PROMPT_ORDER=(
   # aws           # Amazon Web Services section
   venv          # virtualenv section
   # conda         # conda virtualenv section
-  pyenv         # Pyenv section
+  # pyenv         # Pyenv section
   # dotnet        # .NET section
   # ember         # Ember.js section
   # kubecontext   # Kubectl context section
@@ -51,12 +48,12 @@ SPACESHIP_PROMPT_ORDER=(
   char          # Prompt character
 )
 
-if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
-    fi
-fi
+# if ! zplug check --verbose; then
+#     printf "Install? [y/N]: "
+#     if read -q; then
+#         echo; zplug install
+#     fi
+# fi
 
 zplug load
 
@@ -78,15 +75,13 @@ export TERM="xterm-256color"
 alias tmux="env TERM=xterm-256color tmux"
 
 # Zsh history & completions
-autoload -Uz compinit
-setopt EXTENDEDGLOB
-if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
-	compinit
-  echo "Initializing Completions..."
-else
-	compinit -C
-fi;
-unsetopt EXTENDEDGLOB
+# autoload -Uz compinit
+# if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
+#   compinit
+#   echo "Initializing Completions..."
+# else
+#   compinit -C
+# fi
 
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=100000

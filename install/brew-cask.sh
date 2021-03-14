@@ -33,5 +33,5 @@ casks=(
 
 for cask in "${casks[@]}"
 do
-  brew cask install $cask
+  brew install $cask
 done

@@ -15,5 +15,5 @@ Install the dotfiles with either Git or curl:
 
 ### Clone with Git
 
-    git clone git@github.com:ku5ic/dotfiles.git
-    source dotfiles/install.sh
+    git clone git@github.com:ku5ic/dotfiles.git ~/.dotfiles
+    source ~/.dotfiles/install.sh
