@@ -24,7 +24,6 @@ brews=(
   python
   tmux
   tmate
-  reattach-to-user-namespace
   vim
   cmake
   ctags

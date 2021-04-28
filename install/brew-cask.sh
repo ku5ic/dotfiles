@@ -8,7 +8,6 @@ casks=(
   ngrok
   slack
   upwork
-  visual-studio-code
   abstract
   chromedriver
   diffmerge
@@ -17,14 +16,12 @@ casks=(
   macs-fan-control
   onyx
   timemachineeditor
-  vlc
   battery-guardian
   coconutbattery
   etcher
   font-open-sans
   java
   macvim
-  postman
   sketch
   transmission
   virtualbox
