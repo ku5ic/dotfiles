@@ -23,7 +23,6 @@ brews=(
   yarn
   python
   tmux
-  tmate
   vim
   cmake
   ctags
