@@ -71,8 +71,6 @@ export LC_ALL=en_US.UTF-8
 
 export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
 
-export TERM="xterm-256color"
-alias tmux="env TERM=xterm-256color tmux"
 
 # Zsh history & completions
 # autoload -Uz compinit
@@ -100,12 +98,15 @@ zstyle ':completion:*' menu select # select completions with arrow keys
 zstyle ':completion:*' group-name '' # group results by category
 zstyle ':completion:*' completer _expand _complete _correct _approximate # enable approximate matches for completion
 
-bindkey '\e[A' history-search-backward
-bindkey '\e[B' history-search-forward
-bindkey '^ ' autosuggest-accept
-
 fpath=(/usr/local/share/zsh-completions $fpath)
 
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
+bindkey '^[[3~' delete-char
+bindkey '^[b' backward-word
+bindkey '^[f' forward-word
+bindkey '^[d' kill-word
+bindkey '^[^?' backward-kill-word
 # aliases
 
 source ~/.aliases.zsh
