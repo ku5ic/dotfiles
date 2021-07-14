@@ -30,7 +30,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'kristijanhusak/vim-hybrid-material'
 
 if filereadable(glob("~/.plugins.local"))
-   source ~/.plugins.local
+  source ~/.plugins.local
 endif
 
 call plug#end()
@@ -45,24 +45,24 @@ let g:NERDTreeWinSize = 50
 let g:lightline = {
       \   'colorscheme': 'material',
       \   'active': {
-      \     'left':[ [ 'mode', 'paste' ],
-      \              [ 'gitbranch', 'cocstatus', 'readonly', 'filename', 'modified' ]
-      \     ],
-      \    'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ]]
-      \   },
-      \   'component': {
-      \     'lineinfo': ' %3l:%-2v',
-      \   },
-      \   'component_function': {
-      \     'gitbranch': 'fugitive#head',
-      \     'cocstatus': 'coc#status',
-      \     'linter_checking': 'lightline#ale#checking',
-      \     'linter_infos': 'lightline#ale#infos',
-      \     'linter_warnings': 'lightline#ale#warnings',
-      \     'linter_errors': 'lightline#ale#errors',
-      \     'linter_ok': 'lightline#ale#ok',
-      \   }
-      \ }
+        \     'left':[ [ 'mode', 'paste' ],
+        \              [ 'gitbranch', 'cocstatus', 'readonly', 'filename', 'modified' ]
+        \     ],
+        \    'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ]]
+        \   },
+        \   'component': {
+          \     'lineinfo': ' %3l:%-2v',
+          \   },
+          \   'component_function': {
+            \     'gitbranch': 'fugitive#head',
+            \     'cocstatus': 'coc#status',
+            \     'linter_checking': 'lightline#ale#checking',
+            \     'linter_infos': 'lightline#ale#infos',
+            \     'linter_warnings': 'lightline#ale#warnings',
+            \     'linter_errors': 'lightline#ale#errors',
+            \     'linter_ok': 'lightline#ale#ok',
+            \   }
+            \ }
 
 let g:lightline.component_type = {
       \     'linter_checking': 'right',
@@ -83,9 +83,9 @@ let g:ale_sign_warning = '◉'
 let g:ale_echo_msg_error_str='E'
 let g:ale_echo_msg_warning_str='W'
 let g:ale_fixers = {
-\   'javascript': ['eslint'],
-\   'ruby': ['rubocop'],
-\}
+      \   'javascript': ['eslint'],
+      \   'ruby': ['rubocop'],
+      \}
 let g:ale_fix_on_save=1
 let g:ale_sign_column_always=1
 let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
@@ -110,3 +110,10 @@ inoremap <silent><expr> <c-space> coc#refresh()
 
 " Use <cr> to confirm completion
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" hybrid material
+let g:enable_bold_font = 1
+let g:enable_italic_font = 1
+if (!has("gui_running"))
+  let g:hybrid_transparent_background = 1
+endif

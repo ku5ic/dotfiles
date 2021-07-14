@@ -6,7 +6,11 @@ if (has("termguicolors"))
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
-set term=xterm-256color
+
+if !has("gui_running")
+  set term=xterm-256color
+endif
+
 set termencoding=utf-8
 
 " disable arrow keys
@@ -90,7 +94,8 @@ set smartcase
 set incsearch
 set hlsearch
 set shortmess+=c
-let mapleader=","
+nnoremap <SPACE> <Nop>
+let mapleader=" "
 
 " update time
 set updatetime=300

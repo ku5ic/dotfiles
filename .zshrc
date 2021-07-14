@@ -107,6 +107,7 @@ bindkey '^[b' backward-word
 bindkey '^[f' forward-word
 bindkey '^[d' kill-word
 bindkey '^[^?' backward-kill-word
+bindkey "\e[3~" delete-char
 # aliases
 
 source ~/.aliases.zsh

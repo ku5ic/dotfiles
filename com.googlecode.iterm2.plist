@@ -1135,7 +1135,7 @@
 			<key>ASCII Anti Aliased</key>
 			<true/>
 			<key>ASCII Ligatures</key>
-			<true/>
+			<false/>
 			<key>AWDS Pane Directory</key>
 			<string></string>
 			<key>AWDS Pane Option</key>
@@ -1971,7 +1971,7 @@
 			<key>Non-ASCII Ligatures</key>
 			<false/>
 			<key>Normal Font</key>
-			<string>InputMonoNarrow-Regular 14</string>
+			<string>HackNerdFontCompleteM-Regular 14</string>
 			<key>Only The Default BG Color Uses Transparency</key>
 			<true/>
 			<key>Open Toolbelt</key>

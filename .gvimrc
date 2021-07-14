@@ -1,4 +1,4 @@
-set guifont=InputMonoNarrow-Regular:h14
+set guifont=Hack\ Regular\ Nerd\ Font\ Complete\ Mono:h14
 set guioptions-=r
 set guioptions-=L
 set guicursor+=a:blinkon0
