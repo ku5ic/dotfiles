@@ -43,6 +43,7 @@ set signcolumn=yes
 set lazyredraw
 
 " no sounds
+set noerrorbells visualbell t_vb=
 set visualbell
 
 " reload file changed outside vim
