@@ -2,30 +2,38 @@
 
 casks=(
   1password
-  deezer
-  firefox
-  google-chrome
-  ngrok
-  slack
-  upwork
-  abstract
+  battery-guardian
   chromedriver
+  firefox
+  font-open-sans
+  java
+  ngrok
+  postman
+  spotify
+  timemachineeditor
+  vagrant
+  abstract
+  beekeeper-studio
+  coconutbattery
+  font-hack-nerd-font
+  google-chrome
+  macs-fan-control
+  onyx
+  sketch
+  sublime-text
+  transmission
+  virtualbox
+  authy
+  caffeine
   diffmerge
   font-input
   iterm2
-  macs-fan-control
-  onyx
-  timemachineeditor
-  battery-guardian
-  coconutbattery
-  etcher
-  font-open-sans
-  java
   macvim
-  sketch
-  transmission
-  virtualbox
-  beekeeper-studio
+  phantomjs
+  slack
+  the-unarchiver
+  upwork
+  vlc
 )
 
 for cask in "${casks[@]}"

@@ -45,3 +45,7 @@ tmux_gaggleamp() {
   tmuxinator start rails-project workspace=~/Projects/Gaggleamp/Code/sso -n sso
   tmuxinator start rails-project workspace=~/Projects/Gaggleamp/Code/Engage -n Engage
 }
+
+fix_chromedriver() {
+  xattr -d com.apple.quarantine $(which chromedriver)
+}

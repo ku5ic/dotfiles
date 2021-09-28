@@ -34,6 +34,7 @@ brews=(
   zsh-completions
   ansible
   tmuxinator
+  reattach-to-user-namespace
 )
 
 for brew in "${brews[@]}"

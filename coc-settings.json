@@ -1,25 +1,25 @@
 {
   "coc.preferences.diagnostic.enable": false,
-
-  "suggest.autoTrigger": "none",
-
-  "diagnostic.displayByAle": true,
+  "coc.preferences.diagnostic.displayByAle": true,
   "diagnostic.errorSign": "•",
   "diagnostic.warningSign": "•",
   "diagnostic.infoSign": "•",
   "diagnostic.hintSign": "•",
 
+  "suggest.autoTrigger": "none",
+
   "cSpell.language": "en",
 
   // solargraph
-  "solargraph.useBundler": false,
+  // "solargraph.useBundler": true,
+  // "solargraph.bundlerPath": "/Users/ku5ic/.rbenv/shims/bundle",
   "solargraph.diagnostics": true,
   "solargraph.references": true,
   "solargraph.symbols": true,
   "solargraph.definitions": true,
   "solargraph.rename": true,
   "solargraph.folding": true,
-  "solargraph.commandPath": "/Users/ku5ic/.rbenv/shims/solargraph",
+  // "solargraph.commandPath": "/Users/ku5ic/.rbenv/shims/solargraph",
 
   // python
   "python.linting.pylintEnabled": false,
