@@ -1,6 +1,7 @@
 {
   "coc.preferences.diagnostic.enable": false,
   "coc.preferences.diagnostic.displayByAle": true,
+  "coc.preferences.jumpCommand": "vsplit",
   "diagnostic.errorSign": "•",
   "diagnostic.warningSign": "•",
   "diagnostic.infoSign": "•",
@@ -11,33 +12,14 @@
   "cSpell.language": "en",
 
   // solargraph
-  "solargraph.useBundler": true,
-  "solargraph.bundlerPath": "/Users/ku5ic/.rbenv/shims/bundle",
   "solargraph.diagnostics": true,
   "solargraph.references": true,
   "solargraph.symbols": true,
   "solargraph.definitions": true,
   "solargraph.rename": true,
   "solargraph.folding": true,
-  // "solargraph.commandPath": "/Users/ku5ic/.rbenv/shims/solargraph",
 
   // python
   "python.linting.pylintEnabled": false,
   "python.linting.flake8Enabled": true,
-
-  // spelling
-  "cSpell.userWords": [
-    "autoformat",
-    "dotfiles",
-    "dropdowns",
-    "flexbox",
-    "gaggleamp",
-    "pubsub",
-    "softwareupdate",
-    "solargraph",
-    "sqlite",
-    "urijs",
-    "woff",
-    "xcode"
-  ]
 }

@@ -35,6 +35,9 @@ brews=(
   ansible
   tmuxinator
   reattach-to-user-namespace
+  fzf
+  ripgrep
+  bat
 )
 
 for brew in "${brews[@]}"

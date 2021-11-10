@@ -14,11 +14,11 @@ endif
 set termencoding=utf-8
 
 " disable arrow keys
-for key in ['<Up>', '<Down>', '<Left>', '<Right>']
-  exec 'noremap' key '<Nop>'
-  exec 'inoremap' key '<Nop>'
-  exec 'cnoremap' key '<Nop>'
-endfor
+" for key in ['<Up>', '<Down>', '<Left>', '<Right>']
+"   exec 'noremap' key '<Nop>'
+"   exec 'inoremap' key '<Nop>'
+"   exec 'cnoremap' key '<Nop>'
+" endfor
 
 " syntax
 syntax enable

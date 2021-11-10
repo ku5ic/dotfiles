@@ -118,3 +118,8 @@ source ~/.aliases.zsh
 ssh-add -K ~/.ssh/id_rsa &> /dev/null
 ssh-add -A &> /dev/null
 
+export FZF_DEFAULT_OPTS="--height=70% --preview='bat --color=always --style=numbers --line-range=:500 {}'"
+export FZF_DEFAULT_COMMAND="rg --files --hidden --no-require-git"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
