@@ -14,11 +14,11 @@ endif
 set termencoding=utf-8
 
 " disable arrow keys
-" for key in ['<Up>', '<Down>', '<Left>', '<Right>']
-"   exec 'noremap' key '<Nop>'
-"   exec 'inoremap' key '<Nop>'
-"   exec 'cnoremap' key '<Nop>'
-" endfor
+for key in ['<Up>', '<Down>', '<Left>', '<Right>']
+  exec 'noremap' key '<Nop>'
+  exec 'inoremap' key '<Nop>'
+  exec 'cnoremap' key '<Nop>'
+endfor
 
 " syntax
 syntax enable
@@ -48,6 +48,9 @@ set visualbell
 
 " reload file changed outside vim
 set autoread
+
+" wildmenu
+set wildmenu
 
 " wildignore
 set wildignore+=*/node_modules/**,*/bower_components/**,*/spec/reports/**,*/tmp/**,*/public/packs/**
@@ -139,6 +142,7 @@ au BufRead,BufNewFile {*.jbuilder,*.rabl,*.rubyxl} set ft=ruby
 au BufRead,BufNewFile *.go set ft=go
 au BufRead,BufNewFile *.snap set ft=javascript.jsx
 au BufRead,BufNewFile .babelrc set ft=javascript
+au BufRead,BufNewFile {*.conf,*.cnf} setf dosini
 
 " set spell for commit messages
 au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
