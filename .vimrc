@@ -39,7 +39,7 @@ set relativenumber
 set colorcolumn=80
 set cursorline
 set signcolumn=yes
-" set cursorcolumn
+set cursorcolumn
 set lazyredraw
 
 " no sounds
@@ -75,6 +75,10 @@ set clipboard=unnamed
 let shell="/usr/local/bin/zsh\ -l"
 
 set hidden
+
+" splits
+set splitright
+set splitbelow
 
 " indentation and tabs
 set autoindent
