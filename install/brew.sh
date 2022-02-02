@@ -4,40 +4,41 @@ brew update
 brew upgrade
 
 brews=(
-  git
-  openssl
-  ssh-copy-id
-  wget
-  tree
-  imagemagick
-  postgresql
-  mysql
-  redis
-  sqlite
-  puma/puma/puma-dev
-  rbenv
-  ruby
-  rbenv-gemset
-  ruby-build
-  nvm
-  yarn
-  python
-  tmux
-  vim
+  ansible
+  bat
   cmake
   ctags
+  fzf
+  git
+  grep
+  imagemagick
   libidn
-  pyenv
+  mysql
+  nvm
+  openssl
   pipenv
+  postgresql
+  puma/puma/puma-dev
+  pyenv
+  python
+  rbenv
+  rbenv-gemset
+  reattach-to-user-namespace
+  redis
+  ripgrep
+  ruby
+  ruby-build
+  sqlite
+  ssh-copy-id
+  tmux
+  tmuxinator
+  tree
+  vim
+  wget
+  yarn
   zplug
   zsh
   zsh-completions
-  ansible
-  tmuxinator
-  reattach-to-user-namespace
-  fzf
-  ripgrep
-  bat
 )
 
 for brew in "${brews[@]}"

@@ -100,14 +100,16 @@ zstyle ':completion:*' completer _expand _complete _correct _approximate # enabl
 
 fpath=(/usr/local/share/zsh-completions $fpath)
 
-bindkey '^[[H' beginning-of-line
-bindkey '^[[F' end-of-line
-bindkey '^[[3~' delete-char
-bindkey '^[b' backward-word
-bindkey '^[f' forward-word
-bindkey '^[d' kill-word
-bindkey '^[^?' backward-kill-word
-bindkey "\e[3~" delete-char
+set -o vi
+
+# bindkey '^[[H' beginning-of-line
+# bindkey '^[[F' end-of-line
+# bindkey '^[[3~' delete-char
+# bindkey '^[b' backward-word
+# bindkey '^[f' forward-word
+# bindkey '^[d' kill-word
+# bindkey '^[^?' backward-kill-word
+# bindkey "\e[3~" delete-char
 
 # aliases
 source ~/.aliases.zsh

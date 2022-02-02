@@ -2154,7 +2154,9 @@
 	<key>TmuxDashboardLimit</key>
 	<integer>10</integer>
 	<key>TmuxUsesDedicatedProfile</key>
-	<true/>
+	<false/>
+	<key>TmuxWarnBeforePausing</key>
+	<false/>
 	<key>ToolbeltTools</key>
 	<array>
 		<string>Profiles</string>
@@ -2170,7 +2172,7 @@
 	<key>UseLionStyleFullscreen</key>
 	<true/>
 	<key>UseTmuxStatusBar</key>
-	<true/>
+	<false/>
 	<key>VisualIndicatorForEsc</key>
 	<false/>
 	<key>WebKitDefaultFontSize</key>
