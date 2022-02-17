@@ -100,7 +100,8 @@ zstyle ':completion:*' completer _expand _complete _correct _approximate # enabl
 
 fpath=(/usr/local/share/zsh-completions $fpath)
 
-set -o vi
+# Enable vi mode
+bindkey -v
 
 # bindkey '^[[H' beginning-of-line
 # bindkey '^[[F' end-of-line
