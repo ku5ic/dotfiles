@@ -7,6 +7,7 @@ Plug 'tpope/vim-rbenv'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-rake'
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-vinegar'
 Plug 'itchyny/lightline.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'bronson/vim-trailing-whitespace'
@@ -20,7 +21,6 @@ Plug 'maximbaz/lightline-ale'
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'kyazdani42/nvim-web-devicons'
-Plug 'kyazdani42/nvim-tree.lua'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " themes
@@ -116,19 +116,6 @@ let g:ruby_path=system('echo $HOME/.rbenv/shims')
 " netrw
 let g:netrw_preview=1
 let g:netrw_banner=0
-let g:netrw_liststyle=3
+let g:netrw_liststyle=0
 " let g:netrw_altv=1
 let g:netrw_winsize=25
-
-" nvim-tree
-lua require'nvim-tree'.setup {
-      \  view={
-      \width=50
-      \}
-      \}
-
-let g:lua_tree_size=40
-nnoremap <C-n> :NvimTreeToggle<CR>
-nnoremap <C-f> :NvimTreeFindFileToggle<CR>
-nnoremap <leader>r :NvimTreeRefresh<CR>
-nnoremap <leader>n :NvimTreeFindFile<CR>

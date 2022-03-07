@@ -16,9 +16,6 @@ noremap <leader>W :w !sudo tee % > /dev/null<CR>
 " only
 noremap <leader>O :only<CR>
 
-" CtrlP
-map <C-b> :CtrlPBuffer<CR>
-
 " Vim Test
 nmap <silent> <leader>t :TestNearest<CR>
 nmap <silent> <leader>T :TestFile<CR>
