@@ -33,11 +33,11 @@ ln -sfv "$DOTFILES_DIR/.gitignore_global" ~
 ln -sfv "$DOTFILES_DIR/.gitmessage" ~
 ln -sfv "$DOTFILES_DIR/.gemrc" ~
 ln -sfv "$DOTFILES_DIR/.tmux.conf" ~
-ln -sfv "$DOTFILES_DIR/.keymappings.vim" ~
-ln -sfv "$DOTFILES_DIR/.vimrc" ~
-ln -sfv "$DOTFILES_DIR/.gvimrc" ~
-ln -sfv "$DOTFILES_DIR/.plugins.vim" ~
-ln -sfv "$DOTFILES_DIR/coc-settings.json" ~/.vim/coc-settings.json
+mkdir -p ~/.config/nvim
+ln -sfv "$DOTFILES_DIR/config/init.vimrc" '~/.config/nvim/init.vim'
+ln -sfv "$DOTFILES_DIR/keymappings.vim" '~/.config/nvim/keymappings.vim'
+ln -sfv "$DOTFILES_DIR/plugins.vim" '~/.config/nvim/plugins.vim'
+ln -sfv "$DOTFILES_DIR/coc-settings.json" '~/.config/nvim/coc-settings.json'
 
 # install lts version of node
 nvm install --lts

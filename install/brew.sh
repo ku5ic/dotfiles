@@ -33,7 +33,6 @@ brews=(
   tmux
   tmuxinator
   tree
-  vim
   wget
   yarn
   zplug

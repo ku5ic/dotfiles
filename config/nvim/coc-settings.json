@@ -1,7 +1,7 @@
 {
   "coc.preferences.diagnostic.enable": false,
   "coc.preferences.diagnostic.displayByAle": true,
-  "coc.preferences.jumpCommand": "vsplit",
+  // "coc.preferences.jumpCommand": "vsplit",
   "diagnostic.errorSign": "•",
   "diagnostic.warningSign": "•",
   "diagnostic.infoSign": "•",

@@ -7,7 +7,7 @@ if (has("termguicolors"))
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
 
-if !has("gui_running")
+if !has("gui_running") && !has('nvim')
   set term=xterm-256color
 endif
 
@@ -74,7 +74,7 @@ set clipboard=unnamed
 " shell
 let shell="/usr/local/bin/zsh\ -l"
 
-set hidden
+" set hidden
 
 " splits
 set splitright
@@ -108,8 +108,8 @@ let mapleader=" "
 " update time
 set updatetime=300
 
-source ~/.plugins.vim
-source ~/.keymappings.vim
+source ~/.config/nvim/plugins.vim
+source ~/.config/nvim/keymappings.vim
 
 " theme
 set background=dark
@@ -150,16 +150,6 @@ au BufRead,BufNewFile {*.conf,*.cnf} setf dosini
 
 " set spell for commit messages
 au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
-
-" ruby
-let g:ruby_path=system('echo $HOME/.rbenv/shims')
-
-" netrw
-let g:netrw_banner=0
-let g:netrw_liststyle=3
-let g:netrw_browse_split=4
-let g:netrw_altv=1
-let g:netrw_winsize=25
 
 if filereadable(glob("~/.vimrc.local"))
   source ~/.vimrc.local

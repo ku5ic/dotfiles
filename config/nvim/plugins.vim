@@ -1,15 +1,11 @@
-call plug#begin('~/.vim/plugged')
+call plug#begin()
 
 " basic
-Plug 'scrooloose/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-dotenv'
 Plug 'tpope/vim-rbenv'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-rake'
-Plug 'tpope/vim-projectionist'
 Plug 'tpope/vim-surround'
 Plug 'itchyny/lightline.vim'
 Plug 'airblade/vim-gitgutter'
@@ -17,13 +13,14 @@ Plug 'bronson/vim-trailing-whitespace'
 Plug 'sheerun/vim-polyglot'
 Plug 'w0rp/ale'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'janko-m/vim-test'
 Plug 'thoughtbot/vim-rspec'
 Plug 'mattn/emmet-vim'
 Plug 'maximbaz/lightline-ale'
-
-" CoC
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'kyazdani42/nvim-tree.lua'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " themes
@@ -35,11 +32,6 @@ endif
 
 call plug#end()
 filetype plugin indent on
-
-" NERDTree
-let g:NERDTreeDirArrowExpandable = '+'
-let g:NERDTreeDirArrowCollapsible = '-'
-let g:NERDTreeWinSize = 50
 
 " Lightline
 let g:lightline = {
@@ -71,11 +63,6 @@ let g:lightline.component_type = {
       \     'linter_errors': 'error',
       \     'linter_ok': 'right',
       \ }
-
-" Ctrl-P
-let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\.git$\|\.hg$\|\.svn$\|bower_components$\|dist$\|node_modules$\|project_files$\|test$',
-      \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$' }
 
 " Asynchronous Lint Engine
 let g:ale_sign_error = '•'
@@ -122,3 +109,26 @@ endif
 if (!has("gui_running"))
   let g:hybrid_transparent_background = 1
 endif
+
+" ruby
+let g:ruby_path=system('echo $HOME/.rbenv/shims')
+
+" netrw
+let g:netrw_preview=1
+let g:netrw_banner=0
+let g:netrw_liststyle=3
+" let g:netrw_altv=1
+let g:netrw_winsize=25
+
+" nvim-tree
+lua require'nvim-tree'.setup {
+      \  view={
+      \width=50
+      \}
+      \}
+
+let g:lua_tree_size=40
+nnoremap <C-n> :NvimTreeToggle<CR>
+nnoremap <C-f> :NvimTreeFindFileToggle<CR>
+nnoremap <leader>r :NvimTreeRefresh<CR>
+nnoremap <leader>n :NvimTreeFindFile<CR>

@@ -2,37 +2,34 @@
 
 casks=(
   1password
-  battery-guardian
-  chromedriver
-  firefox
-  font-open-sans
-  java
-  ngrok
-  postman
-  spotify
-  timemachineeditor
-  vagrant
   abstract
-  beekeeper-studio
-  coconutbattery
-  font-hack-nerd-font
-  google-chrome
-  macs-fan-control
-  onyx
-  sketch
-  sublime-text
-  transmission
-  virtualbox
   authy
-  caffeine
+  battery-guardian
+  beekeeper-studio
+  chromedriver
+  coconutbattery
   diffmerge
+  firefox
+  font-hack-nerd-font
   font-input
+  font-open-sans
+  google-chrome
   iterm2
-  macvim
+  java
+  macs-fan-control
+  ngrok
+  onyx
   phantomjs
+  postman
+  sketch
   slack
+  spotify
   the-unarchiver
+  timemachineeditor
+  transmission
   upwork
+  vagrant
+  virtualbox
   vlc
 )
 
