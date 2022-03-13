@@ -8,39 +8,33 @@ Plug 'tpope/vim-rails'
 Plug 'tpope/vim-rake'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-vinegar'
-Plug 'itchyny/lightline.vim'
+Plug 'tpope/vim-rhubarb'
 Plug 'airblade/vim-gitgutter'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'sheerun/vim-polyglot'
-Plug 'w0rp/ale'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'janko-m/vim-test'
 Plug 'thoughtbot/vim-rspec'
 Plug 'mattn/emmet-vim'
-Plug 'maximbaz/lightline-ale'
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'kyazdani42/nvim-web-devicons'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-" themes
 Plug 'kristijanhusak/vim-hybrid-material'
-
-if filereadable(glob("~/.plugins.local"))
-  source ~/.plugins.local
-endif
+Plug 'dense-analysis/ale'
+Plug 'itchyny/lightline.vim'
+Plug 'maximbaz/lightline-ale'
 
 call plug#end()
 filetype plugin indent on
 
 " Lightline
 let g:lightline = {
-      \   'colorscheme': 'material',
+      \   'colorscheme': 'one',
       \   'active': {
         \     'left':[ [ 'mode', 'paste' ],
         \              [ 'gitbranch', 'cocstatus', 'readonly', 'filename', 'modified' ]
         \     ],
-        \    'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ]]
+        \    'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok', 'lineinfo' ]]
         \   },
         \   'component': {
           \     'lineinfo': ' %3l:%-2v',
@@ -73,31 +67,13 @@ let g:ale_fixers = {
       \   'javascript': ['eslint'],
       \   'ruby': ['rubocop'],
       \}
-let g:ale_fix_on_save=1
+let g:ale_fix_on_save=0
 let g:ale_sign_column_always=1
 let g:ale_change_sign_column_color=1
 let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
 let g:ale_set_highlights=1
 " let g:ale_lint_on_text_changed='never'
 let g:ale_ruby_rubocop_executable = '/Users/ku5ic/.rbenv/shims/bundle'
-
-" Coc
-" use <tab> for trigger completion and navigate to the next complete item
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
-
-inoremap <silent><expr> <Tab>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<Tab>" :
-      \ coc#refresh()
-
-" use <c-space>for trigger completion
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use <cr> to confirm completion
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 " hybrid material
 let g:enable_bold_font = 1
@@ -119,3 +95,21 @@ let g:netrw_banner=0
 let g:netrw_liststyle=0
 " let g:netrw_altv=1
 let g:netrw_winsize=25
+
+" Coc
+" use <tab> for trigger completion and navigate to the next complete item
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <Tab>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<Tab>" :
+      \ coc#refresh()
+
+" use <c-space>for trigger completion
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" Use <cr> to confirm completion
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
