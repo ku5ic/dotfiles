@@ -1,7 +1,44 @@
 {
-  "coc.preferences.diagnostic.enable": false,
-  "coc.preferences.diagnostic.displayByAle": true,
-  // "coc.preferences.jumpCommand": "vsplit",
+  // diagnostic-languageserver
+  "diagnostic-languageserver.filetypes": {
+    "ruby": "rubocop",
+  },
+
+  "diagnostic-languageserver.linters": {
+    "rubocop": {
+      "command": "bundle",
+      "sourceName": "rubocop",
+      "debounce": 100,
+      "args": [
+        "exec",
+        "rubocop",
+        "--format",
+        "json",
+        "--force-exclusion",
+        "--stdin",
+        "%filepath"
+      ],
+      "parseJson": {
+        "errorsRoot": "files[0].offenses",
+        "line": "location.start_line",
+        "endLine": "location.last_line",
+        "column": "location.start_column",
+        "endColumn": "location.end_column",
+        "message": "[${cop_name}] ${message}",
+        "security": "severity"
+      },
+      "securities": {
+        "fatal": "error",
+        "error": "error",
+        "warning": "warning",
+        "convention": "info",
+        "refactor": "info",
+        "info": "info"
+      }
+    }
+  },
+
+  "diagnostic.enable": true,
   "diagnostic.errorSign": "•",
   "diagnostic.warningSign": "•",
   "diagnostic.infoSign": "•",
@@ -18,8 +55,9 @@
   "solargraph.definitions": true,
   "solargraph.rename": true,
   "solargraph.folding": true,
+  "solargraph.hover": true,
 
   // python
   "python.linting.pylintEnabled": false,
-  "python.linting.flake8Enabled": true,
+  "python.linting.flake8Enabled": true
 }

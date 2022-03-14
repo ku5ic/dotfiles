@@ -20,9 +20,9 @@ Plug 'junegunn/fzf.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'kristijanhusak/vim-hybrid-material'
-Plug 'dense-analysis/ale'
 Plug 'itchyny/lightline.vim'
-Plug 'maximbaz/lightline-ale'
+Plug 'dense-analysis/ale'
+
 
 call plug#end()
 filetype plugin indent on
@@ -31,10 +31,8 @@ filetype plugin indent on
 let g:lightline = {
       \   'colorscheme': 'one',
       \   'active': {
-        \     'left':[ [ 'mode', 'paste' ],
-        \              [ 'gitbranch', 'cocstatus', 'readonly', 'filename', 'modified' ]
-        \     ],
-        \    'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok', 'lineinfo' ]]
+        \     'left':[ [ 'mode', 'paste' ], [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
+        \     'right': [ ['coctatus'], [ 'lineinfo' ] ]
         \   },
         \   'component': {
           \     'lineinfo': ' %3l:%-2v',
@@ -42,38 +40,19 @@ let g:lightline = {
           \   'component_function': {
             \     'gitbranch': 'fugitive#head',
             \     'cocstatus': 'coc#status',
-            \     'linter_checking': 'lightline#ale#checking',
-            \     'linter_infos': 'lightline#ale#infos',
-            \     'linter_warnings': 'lightline#ale#warnings',
-            \     'linter_errors': 'lightline#ale#errors',
-            \     'linter_ok': 'lightline#ale#ok',
             \   }
             \ }
-
-let g:lightline.component_type = {
-      \     'linter_checking': 'right',
-      \     'linter_infos': 'right',
-      \     'linter_warnings': 'warning',
-      \     'linter_errors': 'error',
-      \     'linter_ok': 'right',
-      \ }
 
 " Asynchronous Lint Engine
 let g:ale_sign_error = '•'
 let g:ale_sign_warning = '•'
 let g:ale_echo_msg_error_str='E'
 let g:ale_echo_msg_warning_str='W'
-let g:ale_fixers = {
-      \   'javascript': ['eslint'],
-      \   'ruby': ['rubocop'],
-      \}
 let g:ale_fix_on_save=0
 let g:ale_sign_column_always=1
 let g:ale_change_sign_column_color=1
 let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
 let g:ale_set_highlights=1
-" let g:ale_lint_on_text_changed='never'
-let g:ale_ruby_rubocop_executable = '/Users/ku5ic/.rbenv/shims/bundle'
 
 " hybrid material
 let g:enable_bold_font = 1
