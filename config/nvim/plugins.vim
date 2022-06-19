@@ -16,10 +16,11 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'janko-m/vim-test'
 Plug 'thoughtbot/vim-rspec'
 Plug 'mattn/emmet-vim'
-Plug 'junegunn/fzf.vim'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'kristijanhusak/vim-hybrid-material'
+Plug 'kaicataldo/material.vim', { 'branch': 'main' }
 Plug 'itchyny/lightline.vim'
 Plug 'dense-analysis/ale'
 
@@ -29,7 +30,7 @@ filetype plugin indent on
 
 " Lightline
 let g:lightline = {
-      \   'colorscheme': 'one',
+      \   'colorscheme': 'material_vim',
       \   'active': {
         \     'left':[ [ 'mode', 'paste' ], [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
         \     'right': [ ['coctatus'], [ 'lineinfo' ] ]
@@ -38,7 +39,7 @@ let g:lightline = {
           \     'lineinfo': ' %3l:%-2v',
           \   },
           \   'component_function': {
-            \     'gitbranch': 'fugitive#head',
+            \     'gitbranch': 'FugitiveHead',
             \     'cocstatus': 'coc#status',
             \   }
             \ }
@@ -92,3 +93,16 @@ inoremap <silent><expr> <c-space> coc#refresh()
 
 " Use <cr> to confirm completion
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" material
+let g:material_theme_style = 'palenight-community'
+let g:material_terminal_italics = 1
+if (has('nvim'))
+  let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
+endif
+
+" Telescope
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>

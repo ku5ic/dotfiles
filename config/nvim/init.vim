@@ -148,5 +148,5 @@ source ~/.config/nvim/plugins.vim
 source ~/.config/nvim/keymappings.vim
 
 " theme
-set background=dark
-colorscheme hybrid_material
+" set background=dark
+colorscheme material

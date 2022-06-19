@@ -4,7 +4,7 @@
   name = Sinisa Kusic
   email = contact.sinisa@gmail.com
 [core]
-  editor = vim
+  editor = nvim
   whitespace = trailing-space,space-before-tab
   excludesfile = /Users/ku5ic/.gitignore_global
   ignorecase = false
