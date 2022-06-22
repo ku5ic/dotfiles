@@ -4,6 +4,7 @@ PATH="/usr/local/opt/python/libexec/bin:$PATH"
 PATH="/usr/local/opt/ruby/bin:$PATH"
 PATH="/usr/local/opt/ncurses/bin:$PATH"
 PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"
+export PATH="$(yarn global bin):$PATH"
 export PATH
 
 # Ruby
