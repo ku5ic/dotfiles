@@ -33,21 +33,12 @@ ln -sfv "$DOTFILES_DIR/.gitignore_global" ~
 ln -sfv "$DOTFILES_DIR/.gitmessage" ~
 ln -sfv "$DOTFILES_DIR/.gemrc" ~
 ln -sfv "$DOTFILES_DIR/.tmux.conf" ~
+
 mkdir -p ~/.config/nvim
+
 ln -sfv "$DOTFILES_DIR/config/init.vimrc" '~/.config/nvim/init.vim'
 ln -sfv "$DOTFILES_DIR/keymappings.vim" '~/.config/nvim/keymappings.vim'
 ln -sfv "$DOTFILES_DIR/plugins.vim" '~/.config/nvim/plugins.vim'
-ln -sfv "$DOTFILES_DIR/coc-settings.json" '~/.config/nvim/coc-settings.json'
 
 # install lts version of node
 nvm install --lts
-
-# install vim CoC plugins
-vim -c 'CocInstall -sync coc-prettier coc-highlight coc-spell-checker coc-json coc-html coc-eslint coc-css coc-python coc-solargraph coc-tsserver coc-yaml|q'
-
-# Globally install with npm
-# npm install -g bower
-# npm install -g grunt
-# npm install -g gulp
-# npm install -g http-server
-# npm install -g nodemon

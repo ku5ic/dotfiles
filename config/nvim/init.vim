@@ -38,7 +38,7 @@ set numberwidth=2
 set relativenumber
 set colorcolumn=80
 set cursorline
-set signcolumn=yes
+set signcolumn=number
 set cursorcolumn
 set lazyredraw
 
@@ -108,10 +108,15 @@ let mapleader=" "
 " update time
 set updatetime=300
 
+" sourcing plugins and keymappings
+source ~/.config/nvim/plugins.vim
+source ~/.config/nvim/keymappings.vim
+
 " spelling and encoding
 set nospell
 " syntax spell toplevel
 set spelllang=en_us
+set spellsuggest=best,9
 set encoding=utf-8
 hi clear SpellBad
 hi clear SpellCap
@@ -144,9 +149,6 @@ au BufRead,BufNewFile {*.conf,*.cnf} setf dosini
 " set spell for commit messages
 au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
 
-source ~/.config/nvim/plugins.vim
-source ~/.config/nvim/keymappings.vim
-
 " theme
-" set background=dark
-colorscheme material
+set background=dark
+colorscheme hybrid_material

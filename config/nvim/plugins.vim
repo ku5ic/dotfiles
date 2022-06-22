@@ -18,7 +18,6 @@ Plug 'thoughtbot/vim-rspec'
 Plug 'mattn/emmet-vim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'kristijanhusak/vim-hybrid-material'
 Plug 'kaicataldo/material.vim', { 'branch': 'main' }
 Plug 'itchyny/lightline.vim'
@@ -30,19 +29,31 @@ filetype plugin indent on
 
 " Lightline
 let g:lightline = {
-      \   'colorscheme': 'material_vim',
+      \   'colorscheme': 'one',
       \   'active': {
         \     'left':[ [ 'mode', 'paste' ], [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
-        \     'right': [ ['coctatus'], [ 'lineinfo' ] ]
+        \    'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok', 'lineinfo' ]]
         \   },
         \   'component': {
           \     'lineinfo': ' %3l:%-2v',
           \   },
           \   'component_function': {
             \     'gitbranch': 'FugitiveHead',
-            \     'cocstatus': 'coc#status',
+            \     'linter_checking': 'lightline#ale#checking',
+             \     'linter_infos': 'lightline#ale#infos',
+             \     'linter_warnings': 'lightline#ale#warnings',
+             \     'linter_errors': 'lightline#ale#errors',
+             \     'linter_ok': 'lightline#ale#ok',
             \   }
             \ }
+
+let g:lightline.component_type = {
+       \     'linter_checking': 'right',
+       \     'linter_infos': 'right',
+       \     'linter_warnings': 'warning',
+       \     'linter_errors': 'error',
+       \     'linter_ok': 'right',
+       \ }
 
 " Asynchronous Lint Engine
 let g:ale_sign_error = '•'
@@ -53,18 +64,12 @@ let g:ale_fix_on_save=0
 let g:ale_sign_column_always=1
 let g:ale_change_sign_column_color=1
 let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
-let g:ale_set_highlights=1
-
-" hybrid material
-let g:enable_bold_font = 1
-
-if !exists('$TMUX')
-  let g:enable_italic_font = 1
-endif
-
-if (!has("gui_running"))
-  let g:hybrid_transparent_background = 1
-endif
+let g:ale_set_highlights=0
+let g:ale_ruby_rubocop_executable = '/Users/ku5ic/.rbenv/shims/bundle'
+let g:ale_linters = {
+\   'javascript': ['eslint'],
+\   'ruby': ['rubocop'],
+\}
 
 " ruby
 let g:ruby_path=system('echo $HOME/.rbenv/shims')
@@ -76,29 +81,15 @@ let g:netrw_liststyle=0
 " let g:netrw_altv=1
 let g:netrw_winsize=25
 
-" Coc
-" use <tab> for trigger completion and navigate to the next complete item
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
+" hybrid material
+let g:enable_bold_font = 1
 
-inoremap <silent><expr> <Tab>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<Tab>" :
-      \ coc#refresh()
+if !exists('$TMUX')
+  let g:enable_italic_font = 1
+endif
 
-" use <c-space>for trigger completion
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use <cr> to confirm completion
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-" material
-let g:material_theme_style = 'palenight-community'
-let g:material_terminal_italics = 1
-if (has('nvim'))
-  let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
+if (!has("gui_running"))
+  let g:hybrid_transparent_background = 1
 endif
 
 " Telescope
