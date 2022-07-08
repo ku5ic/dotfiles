@@ -38,7 +38,7 @@ set numberwidth=2
 set relativenumber
 set colorcolumn=80
 set cursorline
-set signcolumn=number
+set signcolumn=yes
 set cursorcolumn
 set lazyredraw
 
@@ -112,6 +112,10 @@ set updatetime=300
 source ~/.config/nvim/plugins.vim
 source ~/.config/nvim/keymappings.vim
 
+" theme
+set background=dark
+colorscheme hybrid_material
+
 " spelling and encoding
 set nospell
 " syntax spell toplevel
@@ -131,6 +135,9 @@ hi SpellLocal cterm=underline ctermfg=NONE gui=underline guifg=NONE
 hi Visual guibg=Orange guifg=LightYellow
 hi CursorLine guibg=Gray10 guifg=NONE
 hi Search guibg=Orange guifg=Gray10
+highlight LineNr guifg=Grey15 guibg=NONE
+hi clear SignColumn
+hi clear Error
 
 " folding
 set foldmethod=indent
@@ -148,7 +155,3 @@ au BufRead,BufNewFile {*.conf,*.cnf} setf dosini
 
 " set spell for commit messages
 au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
-
-" theme
-set background=dark
-colorscheme hybrid_material

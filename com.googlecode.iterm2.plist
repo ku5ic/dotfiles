@@ -939,9 +939,9 @@
 	<key>Default Bookmark Guid</key>
 	<string>BA487E7F-25D0-419C-9CE8-C2BFD20A3566</string>
 	<key>DimBackgroundWindows</key>
-	<false/>
+	<true/>
 	<key>DimInactiveSplitPanes</key>
-	<false/>
+	<true/>
 	<key>DimOnlyText</key>
 	<false/>
 	<key>DisableFullscreenTransparency</key>
@@ -1274,7 +1274,7 @@
 			<key>Blur</key>
 			<true/>
 			<key>Blur Radius</key>
-			<real>9.870331355641941</real>
+			<real>15</real>
 			<key>Bold Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -2023,7 +2023,7 @@
 			<key>Thin Strokes</key>
 			<integer>0</integer>
 			<key>Transparency</key>
-			<real>0.076647763324873094</real>
+			<real>0.050000000000000003</real>
 			<key>Triggers</key>
 			<array/>
 			<key>Unicode Normalization</key>
@@ -2136,7 +2136,7 @@
 	<key>SoundForEsc</key>
 	<false/>
 	<key>SplitPaneDimmingAmount</key>
-	<real>0.2155799338450799</real>
+	<real>0.10676998013698674</real>
 	<key>StatusBarPosition</key>
 	<integer>0</integer>
 	<key>StretchTabsToFillBar</key>
@@ -2148,7 +2148,7 @@
 	<key>TabStyle</key>
 	<integer>1</integer>
 	<key>TabStyleWithAutomaticOption</key>
-	<integer>5</integer>
+	<integer>6</integer>
 	<key>TabViewType</key>
 	<integer>0</integer>
 	<key>ThreeFingerEmulates</key>
@@ -2172,7 +2172,7 @@
 	<key>UseCompactLabel</key>
 	<true/>
 	<key>UseLionStyleFullscreen</key>
-	<true/>
+	<false/>
 	<key>UseTmuxStatusBar</key>
 	<false/>
 	<key>VisualIndicatorForEsc</key>
