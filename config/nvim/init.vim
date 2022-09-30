@@ -1,10 +1,10 @@
 set nocompatible
 
 " term colors
-if (has("termguicolors"))
-  set termguicolors
+if exists('+termguicolors')
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
 endif
 
 if !has("gui_running") && !has('nvim')
@@ -37,10 +37,9 @@ set number
 set numberwidth=2
 set relativenumber
 set colorcolumn=80
-set cursorline
+" set cursorline
+" set cursorcolumn
 set signcolumn=yes
-set cursorcolumn
-set lazyredraw
 
 " no sounds
 set noerrorbells visualbell t_vb=
@@ -114,7 +113,7 @@ source ~/.config/nvim/keymappings.vim
 
 " theme
 set background=dark
-colorscheme hybrid_material
+colorscheme gruvbox-baby
 
 " spelling and encoding
 set nospell
@@ -135,9 +134,10 @@ hi SpellLocal cterm=underline ctermfg=NONE gui=underline guifg=NONE
 hi Visual guibg=Orange guifg=LightYellow
 hi CursorLine guibg=Gray10 guifg=NONE
 hi Search guibg=Orange guifg=Gray10
-highlight LineNr guifg=Grey15 guibg=NONE
-hi clear SignColumn
-hi clear Error
+" hi Normal guibg=NONE ctermbg=NONE
+hi LineNr guibg=NONE ctermbg=NONE
+hi SignColumn guibg=NONE ctermbg=NONE
+hi EndOfBuffer guibg=NONE ctermbg=NONE
 
 " folding
 set foldmethod=indent

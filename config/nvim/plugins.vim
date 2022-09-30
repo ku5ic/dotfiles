@@ -18,17 +18,24 @@ Plug 'thoughtbot/vim-rspec'
 Plug 'mattn/emmet-vim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
-Plug 'kristijanhusak/vim-hybrid-material'
-Plug 'kaicataldo/material.vim', { 'branch': 'main' }
 Plug 'itchyny/lightline.vim'
 Plug 'dense-analysis/ale'
+
+" themes
+" Plug 'kristijanhusak/vim-hybrid-material'
+Plug 'mhartington/oceanic-next'
+" Plug 'kaicataldo/material.vim', { 'branch': 'main' }
+" Plug 'sonph/onehalf', { 'rtp': 'vim' }
+" Plug 'jacoborus/tender.vim'
+" Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+Plug 'luisiacc/gruvbox-baby', {'branch': 'main'}
 
 call plug#end()
 filetype plugin indent on
 
 " Lightline
 let g:lightline = {
-      \   'colorscheme': 'one',
+      \   'colorscheme': 'solarized',
       \   'active': {
         \     'left':[ [ 'mode', 'paste' ], [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
         \    'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok', 'lineinfo' ]]
@@ -81,18 +88,30 @@ let g:netrw_liststyle=0
 let g:netrw_winsize=25
 
 " hybrid material
-let g:enable_bold_font = 1
+" let g:enable_bold_font = 1
 
-if !exists('$TMUX')
-  let g:enable_italic_font = 1
-endif
+" if !exists('$TMUX')
+"   let g:enable_italic_font = 1
+" endif
 
-if (!has("gui_running"))
-  let g:hybrid_transparent_background = 1
+" if (!has("gui_running"))
+"   let g:hybrid_transparent_background = 1
+" endif
+
+" OceanicNext
+" let g:oceanic_next_terminal_bold = 1
+" let g:oceanic_next_terminal_italic = 1
+
+" Gruvbox Baby
+let g:gruvbox_baby_function_style = "NONE"
+let g:gruvbox_baby_keyword_style = "italic"
+let g:gruvbox_baby_telescope_theme = 1
+if !has("gui_running")
+  let g:gruvbox_baby_transparent_mode = 1
 endif
 
 " Telescope
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
-nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+nnoremap <leader>fh <cmd>Telescope help_oags<cr>
