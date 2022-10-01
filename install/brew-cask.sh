@@ -22,6 +22,7 @@ casks=(
   the-unarchiver
   transmission
   visual-studio-code
+  vimr
 )
 
 for cask in "${casks[@]}"
