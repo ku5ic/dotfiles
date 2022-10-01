@@ -38,6 +38,10 @@ brews=(
   zplug
   zsh
   zsh-completions
+  nvim
+  asdf
+  gpg
+  gawk
 )
 
 for brew in "${brews[@]}"

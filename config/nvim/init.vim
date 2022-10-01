@@ -71,7 +71,7 @@ set mouse=a
 set clipboard=unnamed
 
 " shell
-let shell="/usr/local/bin/zsh\ -l"
+let shell="/opt/homebrew/bin/zsh\ -l"
 
 " set hidden
 

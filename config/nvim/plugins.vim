@@ -78,7 +78,7 @@ let g:ale_linters = {
 \}
 
 " ruby
-let g:ruby_path=system('echo $HOME/.rbenv/shims')
+let g:ruby_path=system('echo $HOME/.adsf/shims/ruby')
 
 " netrw
 let g:netrw_preview=1

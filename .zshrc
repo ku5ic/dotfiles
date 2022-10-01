@@ -1,5 +1,5 @@
 # Define the environment variable ZPLUG_HOME
-export ZPLUG_HOME=/usr/local/opt/zplug
+export ZPLUG_HOME=/opt/homebrew/opt/zplug
 
 # Loads zplug
 source $ZPLUG_HOME/init.zsh
@@ -115,6 +115,9 @@ bindkey -v
 # aliases
 source ~/.aliases.zsh
 
+# adsf
+. /opt/homebrew/opt/asdf/libexec/asdf.sh
+
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
@@ -126,3 +129,4 @@ export FZF_DEFAULT_COMMAND="rg --files --hidden --no-require-git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+

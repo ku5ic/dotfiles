@@ -2,12 +2,9 @@
 
 casks=(
   1password
-  abstract
   authy
-  battery-guardian
   beekeeper-studio
   chromedriver
-  coconutbattery
   diffmerge
   firefox
   font-hack-nerd-font
@@ -19,18 +16,12 @@ casks=(
   macs-fan-control
   ngrok
   onyx
-  phantomjs
   postman
-  sketch
   slack
   spotify
   the-unarchiver
-  timemachineeditor
   transmission
-  upwork
-  vagrant
-  virtualbox
-  vlc
+  visual-studio-code
 )
 
 for cask in "${casks[@]}"
