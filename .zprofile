@@ -1,6 +1,11 @@
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+export PATH="/opt/homebrew/bin:$PATH"
 export PATH="$(yarn global bin):$PATH"
+export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
 export PATH
+
+# export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
+# export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
+# export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig"
 
 # Ruby
 export DISABLE_SPRING=true
@@ -19,6 +24,9 @@ pyclean () {
 }
 
 # Node
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
 # create_git_branch_from_jira() {
 #   declare -l story_type
@@ -33,12 +41,15 @@ pyclean () {
 #   git checkout -b  "${story_type}/${story_id}_${story_title/ /_}"
 # }
 
-# tmux_gaggleamp() {
-#   tmuxinator start rails-project workspace=~/Projects/Gaggleamp/Code/Amplify -n Amplify
-#   tmuxinator start rails-project workspace=~/Projects/Gaggleamp/Code/sso -n sso
-#   tmuxinator start rails-project workspace=~/Projects/Gaggleamp/Code/Engage -n Engage
-# }
+tmux_2e-systems_eeBook() {
+   tmuxinator start 2e-eebook project=eeBook/eebkgweb -n core
+   tmuxinator start 2e-eebook project=eeBook/eebkgweb-aee-custom  -n aee
+   tmuxinator start 2e-eebook project=eeBook/eebkgweb-bwa-custom -n bwa
+}
 
 fix_chromedriver() {
   xattr -d com.apple.quarantine $(which chromedriver)
 }
+
+# homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"

@@ -40,5 +40,7 @@ ln -sfv ~/.dotfiles/config/nvim/init.vim ~/.config/nvim/
 ln -sfv ~/.dotfiles/config/nvim/keymappings.vim ~/.config/nvim/
 ln -sfv ~/.dotfiles/config/nvim/plugins.vim ~/.config/nvim/
 
+nvim -c 'CocInstall -sync coc-prettier coc-highlight coc-spell-checker coc-json coc-html coc-eslint coc-css coc-python coc-solargraph coc-tsserver coc-yaml|q'
+
 # install lts version of node
 nvm install --lts

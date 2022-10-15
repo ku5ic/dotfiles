@@ -113,7 +113,7 @@ source ~/.config/nvim/keymappings.vim
 
 " theme
 set background=dark
-colorscheme gruvbox-baby
+colorscheme onedark
 
 " spelling and encoding
 set nospell
@@ -134,10 +134,14 @@ hi SpellLocal cterm=underline ctermfg=NONE gui=underline guifg=NONE
 hi Visual guibg=Orange guifg=LightYellow
 hi CursorLine guibg=Gray10 guifg=NONE
 hi Search guibg=Orange guifg=Gray10
-" hi Normal guibg=NONE ctermbg=NONE
-hi LineNr guibg=NONE ctermbg=NONE
-hi SignColumn guibg=NONE ctermbg=NONE
-hi EndOfBuffer guibg=NONE ctermbg=NONE
+" hi clear Normal
+" hi clear LineNr
+" hi clear SignColumn
+" hi clear EndOfBuffer
+" autocmd ColorScheme * highlight! link SignColumn LineNr
+
+" hi clear ALEErrorSign
+" hi clear ALEWarningSign
 
 " folding
 set foldmethod=indent

@@ -18,7 +18,7 @@ SPACESHIP_PROMPT_ORDER=(
   dir           # Current directory section
   host          # Hostname section
   git           # Git section (git_branch + git_status)
-  # hg            # Mercurial section (hg_branch  + hg_status)
+  hg            # Mercurial section (hg_branch  + hg_status)
   package       # Package version
   node          # Node.js section
   ruby          # Ruby section
@@ -26,11 +26,11 @@ SPACESHIP_PROMPT_ORDER=(
   # xcode         # Xcode section
   # swift         # Swift section
   # golang        # Go section
-  # php           # PHP section
+  php           # PHP section
   # rust          # Rust section
   # haskell       # Haskell Stack section
   # julia         # Julia section
-  # docker        # Docker section
+  docker        # Docker section
   # aws           # Amazon Web Services section
   venv          # virtualenv section
   # conda         # conda virtualenv section
@@ -48,12 +48,12 @@ SPACESHIP_PROMPT_ORDER=(
   char          # Prompt character
 )
 
-# if ! zplug check --verbose; then
-#     printf "Install? [y/N]: "
-#     if read -q; then
-#         echo; zplug install
-#     fi
-# fi
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
 
 zplug load
 
@@ -61,9 +61,9 @@ export CLICOLOR=1
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='vim'
+  export EDITOR='nvim'
 else
-  export EDITOR='vim'
+  export EDITOR='nvim'
 fi
 
 export LANG=en_US.UTF-8
@@ -98,7 +98,12 @@ zstyle ':completion:*' menu select # select completions with arrow keys
 zstyle ':completion:*' group-name '' # group results by category
 zstyle ':completion:*' completer _expand _complete _correct _approximate # enable approximate matches for completion
 
-fpath=(/usr/local/share/zsh-completions $fpath)
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+
+  autoload -Uz compinit
+  compinit
+fi
 
 # Enable vi mode
 bindkey -v
@@ -115,9 +120,6 @@ bindkey -v
 # aliases
 source ~/.aliases.zsh
 
-# adsf
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
-
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
@@ -125,8 +127,15 @@ ssh-add -K ~/.ssh/id_rsa &> /dev/null
 ssh-add -A &> /dev/null
 
 export FZF_DEFAULT_OPTS="--height=70% --preview='bat --color=always --style=numbers --line-range=:500 {}'"
-export FZF_DEFAULT_COMMAND="rg --files --hidden --no-require-git"
+export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*" --glob "!node_modules/*" --glob "!vendor/*" 2> /dev/null'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# rbenv
+eval "$(rbenv init - zsh)"
+
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
