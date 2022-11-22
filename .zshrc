@@ -11,7 +11,7 @@ zplug "oz/safe-paste"
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
 # Theme
-zplug denysdovhan/spaceship-prompt, use:spaceship.zsh, from:github, as:theme
+zplug "spaceship-prompt/spaceship-prompt", use:spaceship.zsh, from:github, as:theme
 
 SPACESHIP_PROMPT_ORDER=(
   time          # Time stamps section
@@ -23,27 +23,12 @@ SPACESHIP_PROMPT_ORDER=(
   package       # Package version
   node          # Node.js section
   ruby          # Ruby section
-  # elixir        # Elixir section
-  # xcode         # Xcode section
-  # swift         # Swift section
-  # golang        # Go section
   php           # PHP section
-  # rust          # Rust section
-  # haskell       # Haskell Stack section
-  # julia         # Julia section
   docker        # Docker section
-  # aws           # Amazon Web Services section
   venv          # virtualenv section
-  # conda         # conda virtualenv section
-  # pyenv         # Pyenv section
-  # dotnet        # .NET section
-  # ember         # Ember.js section
-  # kubecontext   # Kubectl context section
-  # terraform     # Terraform workspace section
   exec_time     # Execution time
   line_sep      # Line break
-  # battery       # Battery level and status
-  # vi_mode       # Vi-mode indicator
+  battery       # Battery level and status
   jobs          # Background jobs indicator
   exit_code     # Exit code section
   char          # Prompt character
@@ -141,5 +126,7 @@ export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
-# gruvbox
-source "$HOME/.local/share/nvim/plugged/gruvbox"
+# Node
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion

@@ -23,11 +23,6 @@ pyclean () {
   find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 }
 
-# Node
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-
 # create_git_branch_from_jira() {
 #   declare -l story_type
 #   declare -u stroy_id

@@ -1,6 +1,3 @@
-# neovim
-alias vim="nvim"
-
 # git
 alias gp="git pull"
 alias gc="git commit"

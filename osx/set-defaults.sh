@@ -44,7 +44,7 @@ defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
 
 # Change the computer name
 sudo scutil --set ComputerName "Sanctuary"
-sudo scutil --set LocalHostName "sanctuary"
+sudo scutil --set LocalHostName "Sanctuary"
 sudo scutil --set HostName "Sanctuary"
 
 dscacheutil -flushcache

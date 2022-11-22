@@ -1,26 +1,26 @@
 [push]
-  default = current
+	default = current
 [user]
-  name = Sinisa Kusic
-  email = contact.sinisa@gmail.com
+	name = Sinisa Kusic
+	email = contact.sinisa@gmail.com
 [core]
-  editor = nvim
-  whitespace = trailing-space,space-before-tab
+	editor = nvim
+	whitespace = trailing-space,space-before-tab
 	excludesfile = /Users/ku5ic/.gitignore_global
-  ignorecase = false
+	ignorecase = false
 [color]
-  ui = auto
-  interactive = true
-  status = true
-  branch = true
-  diff = true
+	ui = auto
+	interactive = true
+	status = true
+	branch = true
+	diff = true
 [commit]
-  template = /Users/ku5ic/.gitmessage
+	template = /Users/ku5ic/.gitmessage
 [filter "lfs"]
-  clean = git-lfs clean -- %f
-  smudge = git-lfs smudge -- %f
-  process = git-lfs filter-process
-  required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
 [merge]
 	tool = vimdiff
 	conflictstyle = diff3
