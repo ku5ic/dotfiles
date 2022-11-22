@@ -12,6 +12,7 @@ zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
 # Theme
 zplug denysdovhan/spaceship-prompt, use:spaceship.zsh, from:github, as:theme
+
 SPACESHIP_PROMPT_ORDER=(
   time          # Time stamps section
   user          # Username section
@@ -139,3 +140,6 @@ eval "$(rbenv init - zsh)"
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
+
+# gruvbox
+source "$HOME/.local/share/nvim/plugged/gruvbox"

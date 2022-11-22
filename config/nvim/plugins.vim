@@ -25,6 +25,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Themes
 Plug 'kaicataldo/material.vim', { 'branch': 'main' }
 Plug 'navarasu/onedark.nvim'
+Plug 'morhetz/gruvbox'
 Plug 'shinchu/lightline-gruvbox.vim'
 
 " Improved syntax highlight
@@ -101,6 +102,9 @@ let g:material_terminal_italics = 1
 let g:onedark_config = {
     \ 'style': 'cool',
 \}
+
+" Gruvbox
+let g:gruvbox_italic = 1
 
 " Telescope
 nnoremap <leader>ff <cmd>Telescope find_files<cr>

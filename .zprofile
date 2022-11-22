@@ -41,10 +41,22 @@ export NVM_DIR="$HOME/.nvm"
 #   git checkout -b  "${story_type}/${story_id}_${story_title/ /_}"
 # }
 
+ jira_to_git_branch() {
+   declare -u stroy_id
+   declare -l story_title
+   story_id="$1"
+   story_title="$2"
+   story_title="${story_title// /_}"
+   story_title="${story_title//-/}"
+
+   git checkout -b  "${story_id}/${story_title/ /_}"
+ }
+
 tmux_2e-systems_eeBook() {
    tmuxinator start 2e-eebook project=eeBook/eebkgweb -n core
    tmuxinator start 2e-eebook project=eeBook/eebkgweb-aee-custom  -n aee
    tmuxinator start 2e-eebook project=eeBook/eebkgweb-bwa-custom -n bwa
+   tmuxinator start 2e-eebook project=eePay/eepayweb -n eePayweb
 }
 
 fix_chromedriver() {

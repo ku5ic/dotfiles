@@ -6,7 +6,7 @@
 [core]
   editor = nvim
   whitespace = trailing-space,space-before-tab
-  excludesfile = /Users/ku5ic/.gitignore_global
+	excludesfile = /Users/ku5ic/.gitignore_global
   ignorecase = false
 [color]
   ui = auto
@@ -27,3 +27,9 @@
 [mergetool]
 	prompt = false
 	keepBackup = false
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true

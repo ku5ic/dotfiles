@@ -113,7 +113,7 @@ source ~/.config/nvim/keymappings.vim
 
 " theme
 set background=dark
-colorscheme onedark
+colorscheme gruvbox
 
 " spelling and encoding
 set nospell
@@ -156,6 +156,9 @@ au BufRead,BufNewFile *.go set ft=go
 au BufRead,BufNewFile *.snap set ft=javascript.jsx
 au BufRead,BufNewFile .babelrc set ft=javascript
 au BufRead,BufNewFile {*.conf,*.cnf} setf dosini
+
+" fix vim-commentary for apache files
+autocmd FileType apache setlocal commentstring=#\ %s
 
 " set spell for commit messages
 au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
