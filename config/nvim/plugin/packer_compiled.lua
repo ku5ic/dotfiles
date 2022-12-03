@@ -149,11 +149,6 @@ _G.packer_plugins = {
     path = "/Users/ku5ic/.local/share/nvim/site/pack/packer/start/mason.nvim",
     url = "https://github.com/williamboman/mason.nvim"
   },
-  ["move.nvim"] = {
-    loaded = true,
-    path = "/Users/ku5ic/.local/share/nvim/site/pack/packer/start/move.nvim",
-    url = "https://github.com/fedepujol/move.nvim"
-  },
   ["null-ls.nvim"] = {
     loaded = true,
     path = "/Users/ku5ic/.local/share/nvim/site/pack/packer/start/null-ls.nvim",
@@ -215,11 +210,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/Users/ku5ic/.local/share/nvim/site/pack/packer/start/telescope.nvim",
     url = "https://github.com/nvim-telescope/telescope.nvim"
-  },
-  ["typescript.nvim"] = {
-    loaded = true,
-    path = "/Users/ku5ic/.local/share/nvim/site/pack/packer/start/typescript.nvim",
-    url = "https://github.com/jose-elias-alvarez/typescript.nvim"
   },
   ["vim-ReplaceWithRegister"] = {
     loaded = true,

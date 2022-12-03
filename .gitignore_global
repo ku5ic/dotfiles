@@ -65,6 +65,9 @@ build/
 logs
 *.log
 
+# nvm
+.nvmrc
+
 # Runtime data
 pids
 *.pid

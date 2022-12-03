@@ -32,5 +32,6 @@ lualine_nightfly.command = {
 lualine.setup({
 	options = {
 		theme = lualine_nightfly,
+		globalstatus = true,
 	},
 })

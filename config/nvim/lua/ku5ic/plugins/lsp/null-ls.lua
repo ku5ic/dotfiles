@@ -6,7 +6,7 @@ end
 
 -- for conciseness
 local formatting = null_ls.builtins.formatting -- to setup formatters
-local diagnostics = null_ls.builtins.diagnostics -- to setup linters
+local diagnostics = null_ls.builtins.diagnostics -- to setup diagnostics
 local code_actions = null_ls.builtins.code_actions -- to setup code_actions
 local completion = null_ls.builtins.completion -- to setup completion
 
@@ -24,7 +24,10 @@ null_ls.setup({
 				return utils.root_has_file(".eslintrc.js") -- change file extension if you use something else
 			end,
 		}),
+		diagnostics.rubocop,
+		formatting.rubocop,
 		completion.spell,
+		completion.tsserver,
 		code_actions.gitsigns,
 	},
 })

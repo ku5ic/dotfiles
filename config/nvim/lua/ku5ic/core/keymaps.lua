@@ -30,6 +30,7 @@ keymap.set("n", "<leader>sm", ":MaximizerToggle<CR>") -- toggle split window max
 
 -- nvim-tree
 keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>") -- toggle file explorer
+keymap.set("n", "<leader>f", ":NvimTreeFindFileToggle<CR>") -- toggle file explorer with current file focused in the tree
 
 -- telescope
 keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>") -- find files within current working directory, respects .gitignore
@@ -47,15 +48,14 @@ keymap.set("n", "<leader>gs", "<cmd>Telescope git_status<cr>") -- list current c
 -- restart lsp server (not on youtube nvim video)
 keymap.set("n", "<leader>rs", ":LspRestart<CR>") -- mapping to restart lsp if necessary
 
--- move
+-- move lines
 local move_opts = { noremap = true, silent = true }
 
-vim.keymap.set("n", "<C-j>", ":MoveLine(1)<CR>", move_opts)
-vim.keymap.set("n", "<C-k>", ":MoveLine(-1)<CR>", move_opts)
-vim.keymap.set("n", "<C-h>", ":MoveHChar(-1)<CR>", move_opts)
-vim.keymap.set("n", "<C-l>", ":MoveHChar(1)<CR>", move_opts)
+vim.keymap.set("n", "<C-j>", ":m .+1<CR>==", move_opts)
+vim.keymap.set("n", "<C-k>", ":m .-2<CR>==", move_opts)
 
-vim.keymap.set("v", "<C-j>", ":MoveBlock(1)<CR>", move_opts)
-vim.keymap.set("v", "<C-k>", ":MoveBlock(-1)<CR>", move_opts)
-vim.keymap.set("v", "<C-h>", ":MoveHBlock(-1)<CR>", move_opts)
-vim.keymap.set("v", "<C-l>", ":MoveHBlock(1)<CR>", move_opts)
+vim.keymap.set("i", "<C-j>", "<Esc>:m .+1<CR>==gi", move_opts)
+vim.keymap.set("i", "<C-k>", "<Esc>:m .-2<CR>==gi", move_opts)
+
+vim.keymap.set("v", "<C-j>", ":m '>+1<CR>gv=gv", move_opts)
+vim.keymap.set("v", "<C-k>", ":m '<-2<CR>gv=g", move_opts)
