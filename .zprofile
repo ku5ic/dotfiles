@@ -59,5 +59,13 @@ fix_chromedriver() {
   xattr -d com.apple.quarantine $(which chromedriver)
 }
 
+switch_php_to_latest() {
+  brew unlink php && brew link --force php
+}
+
+switch_php_to_7() {
+  brew unlink php && brew link --force php@7.4
+}
+
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"

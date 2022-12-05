@@ -112,7 +112,16 @@ source ~/.aliases.zsh
 ssh-add -K ~/.ssh/id_rsa &> /dev/null
 ssh-add -A &> /dev/null
 
-export FZF_DEFAULT_OPTS="--height=70% --preview='bat --color=always --style=numbers --line-range=:500 {}'"
+# fzf
+export FZF_DEFAULT_OPTS="
+--layout=reverse
+--info=inline
+--height=80%
+--multi
+--preview-window=:hidden
+--preview '([[ -f {} ]] && (bat --style=numbers --color=always --theme=TwoDark {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'
+--bind '?:toggle-preview'
+"
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*" --glob "!node_modules/*" --glob "!vendor/*" 2> /dev/null'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 

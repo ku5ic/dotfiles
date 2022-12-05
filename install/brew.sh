@@ -5,32 +5,32 @@ brew upgrade
 
 brews=(
   ansible
-  bat
+  bat # for fzf
   cmake
+  composer
   ctags
+  dnsmasq
   fzf
   git
   grep
+  httpd
   imagemagick
-  libidn
-  mysql
+  mercurial
+  neovim
+  node
   nvm
-  openssl
+  openjdk
+  openssl@3
+  php
   pipenv
-  postgresql
-  puma/puma/puma-dev
+  postgresql@14
   pyenv
-  python
   rbenv
-  rbenv-gemset
   reattach-to-user-namespace
   redis
-  ripgrep
-  ruby
-  ruby-build
-  sqlite
+  ripgrep #for fzf
   ssh-copy-id
-  tmux
+  tig
   tmuxinator
   tree
   wget
@@ -38,10 +38,6 @@ brews=(
   zplug
   zsh
   zsh-completions
-  nvim
-  asdf
-  gpg
-  gawk
 )
 
 for brew in "${brews[@]}"

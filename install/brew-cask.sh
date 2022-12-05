@@ -2,27 +2,23 @@
 
 casks=(
   1password
-  authy
-  beekeeper-studio
   chromedriver
-  diffmerge
   firefox
-  font-hack-nerd-font
-  font-input
-  font-open-sans
   google-chrome
-  iterm2
-  java
-  macs-fan-control
-  ngrok
-  onyx
   postman
-  slack
-  spotify
-  the-unarchiver
-  transmission
-  visual-studio-code
   vimr
+  authy
+  diffmerge
+  font-hack-nerd-font
+  iterm2
+  spotify
+  viscosity
+  beekeeper-studio
+  docker
+  font-input
+  onyx
+  the-unarchiver
+  visual-studio-code
 )
 
 for cask in "${casks[@]}"
