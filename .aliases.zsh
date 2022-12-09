@@ -7,6 +7,9 @@ alias gb="git branch"
 alias gcb="git checkout -b"
 alias gr="git rebase"
 
+# replace at with bat
+alias cat="bat --style=numbers --color=always --theme=TwoDark"
+
 # tmuxinator
 alias mux=tmuxinator
 
