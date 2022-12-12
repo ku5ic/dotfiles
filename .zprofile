@@ -27,7 +27,7 @@ jira_to_git_branch() {
   git checkout -b  "${story_id}/${story_title/ /_}"
 }
 
-2e_projects_tmux) {
+2e_projects_tmux() {
    tmuxinator start 2e-eebook project=eeBook/eebkgweb -n core
    tmuxinator start 2e-eebook project=eeBook/eebkgweb-aee-custom  -n aee
    tmuxinator start 2e-eebook project=eeBook/eebkgweb-bwa-custom -n bwa

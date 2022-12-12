@@ -8,6 +8,7 @@ brews=(
   bat # for fzf
   cmake
   composer
+  coreutils
   ctags
   dnsmasq
   fzf
