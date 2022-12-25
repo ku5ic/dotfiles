@@ -23,12 +23,13 @@ null_ls.setup({
 		formatting.rubocop,
 
 		-- diagnostics
-		diagnostics.eslint_d,
+		diagnostics.eslint_d.with({
+			diagnostics_format = "[eslint] #{m}\n(#{c})",
+		}),
 		diagnostics.rubocop,
 
 		-- completion
 		completion.spell,
-		completion.tsserver,
 
 		-- code actions
 		code_actions.gitsigns,

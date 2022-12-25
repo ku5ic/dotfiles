@@ -13,10 +13,10 @@ end
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 local opts = { noremap = true, silent = true }
-vim.keymap.set("n", "<space>e", vim.diagnostic.open_float, opts)
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, opts)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, opts)
+vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, opts)
 
 local keymap = vim.keymap -- for conciseness
 
@@ -34,16 +34,16 @@ local on_attach = function(client, bufnr)
 	keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
 	keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
 	keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
-	keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, bufopts)
-	keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
-	keymap.set("n", "<space>wl", function()
+	keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, bufopts)
+	keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
+	keymap.set("n", "<leader>wl", function()
 		print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
 	end, bufopts)
-	keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
-	keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
-	keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
+	keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, bufopts)
+	keymap.set("n", "<leader>rn", vim.lsp.buf.rename, bufopts)
+	keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, bufopts)
 	keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
-	keymap.set("n", "<space>f", function()
+	keymap.set("n", "<leader>f", function()
 		vim.lsp.buf.format({ async = true })
 	end, bufopts)
 end
@@ -86,6 +86,11 @@ lspconfig["tsserver"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
 	filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascriptreact", "javascript" },
+	diagnostics = {
+		format = function(diagnostic)
+			return string.format("[tsserver] %s", diagnostic.message)
+		end,
+	},
 })
 
 -- configure ruby server plugin

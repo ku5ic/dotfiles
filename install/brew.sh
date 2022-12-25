@@ -5,7 +5,7 @@ brew upgrade
 
 brews=(
   ansible
-  bat # for fzf
+  bat
   cmake
   composer
   coreutils
@@ -22,23 +22,26 @@ brews=(
   nvm
   openjdk
   openssl@3
-  php
+  php@8.1
   pipenv
   postgresql@14
   pyenv
+  python@3.10
   rbenv
   reattach-to-user-namespace
   redis
-  ripgrep #for fzf
+  ripgrep
   ssh-copy-id
+  starship
   tig
   tmuxinator
   tree
   wget
   yarn
-  zplug
   zsh
+  zsh-autosuggestions
   zsh-completions
+  zsh-syntax-highlighting
 )
 
 for brew in "${brews[@]}"
