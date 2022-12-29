@@ -2,22 +2,22 @@
 
 casks=(
   1password
-  chromedriver
-  firefox
-  google-chrome
-  postman
-  vimr
   authy
-  diffmerge
-  font-hack-nerd-font
-  iterm2
-  spotify
-  viscosity
   beekeeper-studio
+  chromedriver
+  diffmerge
   docker
+  firefox
+  font-hack-nerd-font
   font-input
+  google-chrome
+  iterm2
+  neovide
   onyx
+  postman
+  spotify
   the-unarchiver
+  viscosity
   visual-studio-code
 )
 

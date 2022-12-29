@@ -32,9 +32,6 @@ ln -sfv "$DOTFILES_DIR/.gitmessage" ~
 ln -sfv "$DOTFILES_DIR/.gemrc" ~
 ln -sfv "$DOTFILES_DIR/.tmux.conf" ~
 
-mkdir -p ~/.config
+mkdir ~/.config
 
 ln -sfv ~/.dotfiles/config/nvim ~/.config/
-
-# install lts version of node
-nvm install --lts

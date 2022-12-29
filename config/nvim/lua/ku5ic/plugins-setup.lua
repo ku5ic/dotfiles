@@ -32,9 +32,7 @@ return packer.startup(function(use)
 	use("wbthomason/packer.nvim")
 
 	use("nvim-lua/plenary.nvim") -- lua functions that many plugins use
-
-	use("bluz71/vim-nightfly-guicolors") -- preferred colorscheme
-
+	use("folke/tokyonight.nvim") -- preferred colorscheme
 	use("szw/vim-maximizer") -- maximizes and restores current window
 
 	-- essential plugins
