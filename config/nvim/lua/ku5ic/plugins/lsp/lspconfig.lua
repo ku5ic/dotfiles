@@ -99,6 +99,12 @@ lspconfig["solargraph"].setup({
 	on_attach = on_attach,
 })
 
+-- configure php server plugin
+lspconfig["phpactor"].setup({
+	capabilities = capabilities,
+	on_attach = on_attach,
+})
+
 -- configure css server
 lspconfig["cssls"].setup({
 	capabilities = capabilities,

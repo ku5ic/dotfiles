@@ -102,6 +102,11 @@ return packer.startup(function(use)
 		requires = "kyazdani42/nvim-web-devicons",
 	})
 
+	-- DAP
+	use("mfussenegger/nvim-dap")
+	use("rcarriga/nvim-dap-ui")
+	use("ravenxrz/DAPInstall.nvim")
+
 	if packer_bootstrap then
 		require("packer").sync()
 	end
