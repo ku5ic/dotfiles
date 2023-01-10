@@ -12,7 +12,6 @@ casks=(
   font-input
   google-chrome
   iterm2
-  neovide
   onyx
   postman
   spotify
