@@ -16,4 +16,4 @@ alias mux=tmuxinator
 alias la="ls -la"
 
 # brew
-alias brewall="brew update; brew upgrade; brew upgrade --cask; brew cleanup; brew doctor;"
+alias brewall="brew update; brew upgrade; brew upgrade --cask; brew cleanup --prune=all; brew doctor;"
