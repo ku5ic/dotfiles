@@ -8,8 +8,6 @@ casks=(
   diffmerge
   docker
   firefox
-  font-hack-nerd-font
-  font-input
   google-chrome
   iterm2
   onyx
@@ -18,6 +16,7 @@ casks=(
   the-unarchiver
   viscosity
   visual-studio-code
+  font-fira-code-nerd-font
 )
 
 for cask in "${casks[@]}"
