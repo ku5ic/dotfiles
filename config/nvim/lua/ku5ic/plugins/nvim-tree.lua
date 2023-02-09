@@ -18,8 +18,8 @@ nvimtree.setup({
 		icons = {
 			glyphs = {
 				folder = {
-					arrow_closed = "", -- arrow when folder is closed
-					arrow_open = "", -- arrow when folder is open
+					arrow_open = "", -- arrow when folder is closed
+					arrow_closed = "", -- arrow when folder is open
 				},
 			},
 		},
@@ -36,7 +36,7 @@ nvimtree.setup({
 	},
 	view = {
 		adaptive_size = true,
-		width = 50,
+		width = 40,
 	},
 	-- 	git = {
 	-- 		ignore = false,

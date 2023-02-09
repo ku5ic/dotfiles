@@ -15,9 +15,10 @@ opt.expandtab = true -- expand tab to spaces
 opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
 opt.shiftwidth = 2 -- 2 spaces for indent width
 opt.autoindent = true -- copy indent from current line when starting new one
+opt.list = true -- show invisible characters
 
 -- listchars
-opt.listchars = { eol = "¬", tab = ">·", trail = "~", extends = ">", precedes = "<", space = "␣" }
+opt.listchars = { eol = "¬", tab = ">-", trail = "␣", extends = "»", precedes = "«", space = "·" }
 -- opt.list = true
 
 -- line wrapping
