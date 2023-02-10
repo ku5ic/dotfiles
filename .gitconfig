@@ -23,13 +23,13 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[mergetool "nvim"]
-	cmd = nvim -f -c \"Gdiffsplit!\" \"$MERGED\"
 [merge]
-	tool = nvim
+	tool = nvimdiff
 [mergetool]
 	prompt = false
 	keepBackup = false
+[diff]
+	tool = nvimdiff
 [gpg]
 	format = ssh
 [gpg "ssh"]
