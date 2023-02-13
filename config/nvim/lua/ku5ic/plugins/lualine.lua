@@ -5,4 +5,8 @@ if not status then
 end
 
 -- configure lualine with modified theme
-lualine.setup({})
+lualine.setup({
+	options = {
+		globalstatus = true,
+	}
+})
