@@ -4,6 +4,8 @@
 	name = Sinisa Kusic
 	email = contact.sinisa@gmail.com
 	signingkey = ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDLyU27pH5dy1YkuMvyehtEwXfzLAqxybv6oGXCdVqH7j2YG0X31Z3tmZchw8Y3czl9QstPDoxF2+iHdwDV1QRBTn5nP02mZXgmF9FkZ/VoJBoVQU49Hb3/Pyp5UEFkWXqcQt6COMcBJREyc89OaBb7442KQCAr3LzhxjGD4O6OMdH/KQOoxARE1Fyg3XmyeBiHrgQVtA0p+Sq4nki9Q3Q7Pmv7bJA24AuKVK3rgWXG3ZeUKRGSe3M1QrK2EPNC++Yrz50k+UY+CuLP82sOiuD5sudO1vAxKEiG7OM91U9QesTkFTnIVFNakvbBjUUhoYYDmHK7JgY6aIs3lvxouM3Lykxh05ktWtqJmUTIM8v0ef8fzZevF/1DVocnDUv5WGxXOR44MZuRqJtOTZ/7xXeVLw/NJO7aw4AubKZiqYFK4pD8DaBY2P5Lq3Z+M2PG5XRaEcddE0TfuN5C/RSJ8biIMYOE2p818gXqFruyWL9Zll9NFWBBIEsr2JJpJbycFl/LuUi5YO/yWXhc/iJlqUQMA9MsjoZifsFn5KYiQMbiX87+pvy2paqrLdNbBebLBo/jVwRthar2lr3X+bHC3r0l52KmkS6VglLxPPEvQOZSMkyx2te9Vf2rcdKdK0wtIHP5QkZvjbiz+anu0DyBfv22wlqmaYfugOf1c04p7/ratw==
+[includeIf "gitdir:~/Projects/2e-systems/"]
+    path = ~/Projects/2e-systems/.gitconfig
 [core]
 	editor = nvim
 	whitespace = trailing-space,space-before-tab
