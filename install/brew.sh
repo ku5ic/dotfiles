@@ -26,7 +26,7 @@ brews=(
   pipenv
   postgresql@14
   pyenv
-  python@3.10
+  python@3.11
   rbenv
   reattach-to-user-namespace
   redis
