@@ -3,6 +3,7 @@ export PATH="/opt/homebrew/bin:$PATH"
 export PATH="$(yarn global bin):$PATH"
 export PATH="$(brew --prefix)/opt/python/libexec/bin:$PATH"
 export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
+export PATH="~/.nvm/versions/node/v16.15.0/bin:$PATH"
 export PATH
 
 # Ruby
