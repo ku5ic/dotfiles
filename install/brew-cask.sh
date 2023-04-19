@@ -2,12 +2,14 @@
 
 casks=(
   1password
+  1password-cli
   authy
   beekeeper-studio
   chromedriver
   diffmerge
   docker
   firefox
+  font-fira-code-nerd-font
   google-chrome
   iterm2
   onyx
@@ -16,7 +18,6 @@ casks=(
   the-unarchiver
   viscosity
   visual-studio-code
-  font-fira-code-nerd-font
 )
 
 for cask in "${casks[@]}"
