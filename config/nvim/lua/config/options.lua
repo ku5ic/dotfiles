@@ -10,7 +10,7 @@ opt.history = 1000
 opt.relativenumber = true -- show relative line numbers
 opt.number = true -- shows absolute line number on cursor line (when relative number is on)
 
--- tabs & indentation
+-- tabs & indentation & folding
 opt.guitablabel = "%t" -- show file name in tab label
 opt.winbar = "%=%m %f" -- show file name and modified status in window bar
 opt.expandtab = true -- expand tab to spaces
@@ -18,6 +18,9 @@ opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
 opt.shiftwidth = 2 -- 2 spaces for indent width
 opt.autoindent = true -- copy indent from current line when starting new one
 opt.list = true -- show invisible characters
+opt.foldmethod = "expr" -- use treesitter for folding
+opt.foldexpr = "nvim_treesitter#foldexpr()" -- use treesitter for folding
+opt.foldlevel = 99 -- open all folds by default
 
 -- listchars
 opt.listchars = { eol = "¬", tab = ">-", trail = "␣", extends = "»", precedes = "«", space = "·" }
