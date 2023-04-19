@@ -4,6 +4,15 @@ return {
 		lazy = false, -- make sure we load this during startup if it is your main colorscheme
 		priority = 1000, -- make sure to load this before all the other start plugins
 		config = function()
+			require("tokyonight").setup(
+				{
+					transparent = true,
+					styles = {
+						sidebars = "transparent",
+						floats = "transparent",
+					},
+				}
+			)
 			-- load the colorscheme here
 			vim.cmd([[colorscheme tokyonight]])
 		end,
@@ -14,6 +23,7 @@ return {
 	{
 		"akinsho/bufferline.nvim",
 		event = "VeryLazy",
+		lazy = false,
 		keys = {
 			{ "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle pin" },
 			{ "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },
@@ -44,12 +54,12 @@ return {
 	{
 		"nvim-lualine/lualine.nvim",
 		event = "VeryLazy",
+		lazy = false,
 		opts = function(plugin)
 			local icons = require("config.icons").icons
 
 			local function fg(name)
 				return function()
-					---@type {foreground?:number}?
 					local hl = vim.api.nvim_get_hl_by_name(name, true)
 					return hl and hl.foreground and { fg = string.format("#%06x", hl.foreground) }
 				end
@@ -60,6 +70,8 @@ return {
 					theme = "auto",
 					globalstatus = true,
 					disabled_filetypes = { statusline = { "dashboard", "lazy", "alpha" } },
+					section_separators = '',
+					component_separators = '',
 				},
 				sections = {
 					lualine_a = { "mode" },
@@ -76,25 +88,12 @@ return {
 						},
 						{ "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
 						{ "filename", path = 1, symbols = { modified = "  ", readonly = "", unnamed = "" } },
-						-- stylua: ignore
 						{
 							function() return require("nvim-navic").get_location() end,
 							cond = function() return package.loaded["nvim-navic"] and require("nvim-navic").is_available() end,
 						},
 					},
 					lualine_x = {
-						-- stylua: ignore
-						{
-							function() return require("noice").api.status.command.get() end,
-							cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-							color = fg("Statement")
-						},
-						-- stylua: ignore
-						{
-							function() return require("noice").api.status.mode.get() end,
-							cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-							color = fg("Constant") ,
-						},
 						{ require("lazy.status").updates, cond = require("lazy.status").has_updates, color = fg("Special") },
 						{
 							"diff",
@@ -131,6 +130,7 @@ return {
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
+		enabled = false,
 		config = function()
 			local alpha = require("alpha")
             local dashboard = require("alpha.themes.dashboard")

@@ -22,7 +22,9 @@ return {
 			local dapui = require("dapui")
 			local dap_install = require("dap-install")
 
-			dap_install.setup({})
+			dap_install.setup({
+				installation_path = vim.fn.stdpath("data") .. "/dapinstall/",
+			})
 
 			dap.adapters.php = {
 				type = "executable",
