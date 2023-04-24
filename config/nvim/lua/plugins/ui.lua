@@ -18,7 +18,6 @@ return {
 		end,
 	},
 
-
 	-- bufferline
 	{
 		"akinsho/bufferline.nvim",
@@ -118,6 +117,26 @@ return {
 			}
 		end,
 	},
+
+	-- statuscol
+	{
+		"luukvbaal/statuscol.nvim",
+		config = function()
+			local builtin = require("statuscol.builtin")
+			require("statuscol").setup({
+				segments = {
+					{ text = { builtin.foldfunc, " " }, click = "v:lua.ScFa" },
+					{ text = { "%s" }, click = "v:lua.ScSa" },
+					{
+						text = { builtin.lnumfunc, " " },
+						condition = { true, builtin.not_empty },
+						click = "v:lua.ScLa",
+					},
+				},
+			})
+		end,
+	},
+
 	-- maximizes and restores current window
 	{
 		"szw/vim-maximizer",
@@ -125,6 +144,7 @@ return {
 			{ "<leader>z", "<Cmd>MaximizerToggle<CR>", desc = "Toggle maximize" },
 		},
 	},
+
 	{
 		"goolord/alpha-nvim",
 		dependencies = {
