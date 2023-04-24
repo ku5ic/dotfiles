@@ -16,7 +16,7 @@ return {
 					"tsserver",
 					"html",
 					"cssls",
-					-- "lua_ls",
+					"lua_ls",
 					"emmet_ls",
 					"solargraph",
 					"phpactor",
@@ -32,8 +32,6 @@ return {
 					"stylua", -- lua formatter
 					"eslint_d", -- ts/js linter
 					"rubocop",
-					"phpcbf",
-					"phpcs",
 				},
 				-- auto-install configured formatters & linters (with null-ls)
 				automatic_installation = true,
@@ -67,14 +65,12 @@ return {
 					formatting.prettier, -- js/ts formatter
 					formatting.stylua, -- lua formatter
 					formatting.rubocop, -- ruby formatter
-					formatting.phpcbf, -- php formatter
 
 					-- diagnostics
 					diagnostics.eslint_d.with({
 						diagnostics_format = "[eslint] #{m}\n(#{c})",
 					}), -- js/ts linter
 					diagnostics.rubocop, -- ruby linter
-					diagnostics.phpcs, -- php linter
 
 					-- completion
 					completion.spell, -- spell checker
@@ -104,7 +100,7 @@ return {
 			-- nvim-cmp supports additional completion capabilities
 			-- local capabilities = vim.lsp.protocol.make_client_capabilities()
 			-- capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
-			local capabilities = require('cmp_nvim_lsp').default_capabilities()
+			local capabilities = cmp_nvim_lsp.default_capabilities()
 
 			-- Change diagnostic symbols in the sign column (gutter)
 			local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
@@ -236,25 +232,25 @@ return {
 			})
 
 			-- configure lua server (with special settings)
-			--		lspconfig["lua_ls"].setup({
-			--			on_attach = on_attach,
-			--			capabilities = capabilities,
-			--			settings = { -- custom settings for lua
-			--				Lua = {
-			--					-- make the language server recognize "vim" global
-			--					diagnostics = {
-			--						globals = { "vim" },
-			--					},
-			--					workspace = {
-			--						-- make language server aware of runtime files
-			--						library = {
-			--							[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-			--							[vim.fn.stdpath("config") .. "/lua"] = true,
-			--						},
-			--					},
-			--				},
-			--			},
-			--		})
+			lspconfig["lua_ls"].setup({
+				on_attach = on_attach,
+				capabilities = capabilities,
+				settings = { -- custom settings for lua
+					Lua = {
+						-- make the language server recognize "vim" global
+						diagnostics = {
+							globals = { "vim" },
+						},
+						workspace = {
+							-- make language server aware of runtime files
+							library = {
+								[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+								[vim.fn.stdpath("config") .. "/lua"] = true,
+							},
+						},
+					},
+				},
+			})
 		end,
 	},
 }
