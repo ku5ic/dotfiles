@@ -18,9 +18,12 @@ opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
 opt.shiftwidth = 2 -- 2 spaces for indent width
 opt.autoindent = true -- copy indent from current line when starting new one
 opt.list = true -- show invisible characters
+opt.foldenable = true -- enable folding
+opt.foldcolumn = "1" -- show fold column
 opt.foldmethod = "expr" -- use treesitter for folding
 opt.foldexpr = "nvim_treesitter#foldexpr()" -- use treesitter for folding
 opt.foldlevel = 99 -- open all folds by default
+vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]] -- fold characters
 
 -- listchars
 opt.listchars = { eol = "¬", tab = ">-", trail = "␣", extends = "»", precedes = "«", space = "·" }
