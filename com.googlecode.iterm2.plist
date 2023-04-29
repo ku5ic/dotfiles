@@ -2823,7 +2823,7 @@
 			<key>Thin Strokes</key>
 			<integer>0</integer>
 			<key>Transparency</key>
-			<real>0.050000000000000003</real>
+			<real>0.10000000000000001</real>
 			<key>Triggers</key>
 			<array/>
 			<key>Unicode Normalization</key>
