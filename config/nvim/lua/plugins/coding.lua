@@ -13,15 +13,14 @@ return {
 			"L3MON4D3/LuaSnip",
 		},
 		config = function()
-
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
-			local lspkind = require("lspkind")
 
 			local has_words_before = function()
 				unpack = unpack or table.unpack
 				local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-				return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+				return col ~= 0
+					and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 			end
 			-- load vs-code like snippets from plugins (e.g. friendly-snippets)
 			require("luasnip/loaders/from_vscode").lazy_load()
@@ -70,19 +69,22 @@ return {
 					{ name = "buffer" }, -- text within current buffer
 					{ name = "luasnip" }, -- snippets
 				}),
-				-- configure lspkind for vs-code like icons
+				-- configure completion menu
 				formatting = {
-					format = lspkind.cmp_format({
-						maxwidth = 50,
-						ellipsis_char = "...",
-					}),
+					format = function(_, item)
+						local icons = require("config.icons").icons.kinds
+						if icons[item.kind] then
+							item.kind = icons[item.kind] .. item.kind
+						end
+						return item
+					end,
 				},
 			})
 		end,
 	},
 
-	{"tpope/vim-rbenv"},
-	{"tpope/vim-surround"}, -- add, delete, change surroundings (it's awesome)
+	{ "tpope/vim-rbenv" },
+	{ "tpope/vim-surround" }, -- add, delete, change surroundings (it's awesome)
 	{
 		"numToStr/Comment.nvim",
 		config = function()
@@ -97,15 +99,15 @@ return {
 			-- import nvim-autopairs completion functionality safely
 			local cmp_autopairs = require("nvim-autopairs.completion.cmp")
 			-- import nvim-cmp plugin safely (completions plugin)
-			local cmp =require("cmp")
+			local cmp = require("cmp")
 
 			-- configure autopairs
 			autopairs.setup({
-				check_ts = true, -- enable treesitter
+				check_ts = true,         -- enable treesitter
 				ts_config = {
-					lua = { "string" }, -- don't add pairs in lua string treesitter nodes
+					lua = { "string" },  -- don't add pairs in lua string treesitter nodes
 					javascript = { "template_string" }, -- don't add pairs in javscript template_string treesitter nodes
-					java = false, -- don't check treesitter on java
+					java = false,        -- don't check treesitter on java
 				},
 			})
 
