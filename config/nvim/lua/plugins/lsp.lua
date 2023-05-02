@@ -103,10 +103,9 @@ return {
 			local capabilities = cmp_nvim_lsp.default_capabilities()
 
 			-- Change diagnostic symbols in the sign column (gutter)
-			local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
-			for type, icon in pairs(signs) do
-				local hl = "DiagnosticSign" .. type
-				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+			for name, icon in pairs(require("config.icons").icons.diagnostics) do
+				name = "DiagnosticSign" .. name
+				vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
 			end
 
 			local opts = { noremap = true, silent = true }
