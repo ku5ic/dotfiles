@@ -11,6 +11,7 @@ return {
 			"hrsh7th/cmp-path",
 			"ray-x/cmp-treesitter",
 			"L3MON4D3/LuaSnip",
+			"f3fora/cmp-spell",
 		},
 		config = function()
 			local cmp = require("cmp")
@@ -64,18 +65,26 @@ return {
 				}),
 				-- sources for autocompletion
 				sources = cmp.config.sources({
-					{ name = "nvim_lsp" }, -- lsp
-					{ name = "path" }, -- file system paths
-					{ name = "buffer" }, -- text within current buffer
-					{ name = "luasnip" }, -- snippets
+					{ name = "path",     priority = 100 }, -- file system paths
+					{ name = "nvim_lsp", priority = 99 }, -- lsp
+					{ name = "luasnip",  priority = 98 }, -- snippets
+					{ name = "spell" },    -- spell checking
+					{ name = "buffer",   priority = 97 }, -- text within current buffer
 				}),
 				-- configure completion menu
 				formatting = {
-					format = function(_, item)
+					format = function(entry, item)
 						local icons = require("config.icons").icons.kinds
 						if icons[item.kind] then
 							item.kind = icons[item.kind] .. item.kind
 						end
+						item.menu = ({
+							path = "[Path]",
+							nvim_lsp = "[LSP]",
+							luasnip = "[LuaSnip]",
+							spell = "[Spell]",
+							buffer = "[Buffer]",
+						})[entry.source.name]
 						return item
 					end,
 				},
