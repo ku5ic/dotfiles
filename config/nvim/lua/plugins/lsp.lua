@@ -87,7 +87,6 @@ return {
 		"neovim/nvim-lspconfig",
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
-			"onsails/lspkind.nvim",
 			"jose-elias-alvarez/typescript.nvim"
 		},
 		event = "InsertEnter",
