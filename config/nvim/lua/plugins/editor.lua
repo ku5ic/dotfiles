@@ -3,8 +3,8 @@ return {
 	{
 		"nvim-neo-tree/neo-tree.nvim",
 		keys = {
-			{ "<leader><space>", "<cmd>Neotree toggle<cr>", desc = "Toggle NeoTree" },
-			{ "<leader><space><space>", "<cmd>NeoTreeRevealToggle<cr>", desc = "Toggle Reveal In NeoTree" },
+			{ "<C-enter>", "<cmd>Neotree toggle<cr>", desc = "Toggle NeoTree" },
+			{ "<C-S-enter>", "<cmd>NeoTreeReveal<cr>", desc = "Reveal In NeoTree" },
 		},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
