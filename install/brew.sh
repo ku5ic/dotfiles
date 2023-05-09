@@ -17,6 +17,7 @@ brews=(
   httpd
   imagemagick
   mercurial
+  ncurses
   neovim
   node
   nvm
