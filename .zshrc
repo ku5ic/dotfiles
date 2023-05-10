@@ -104,6 +104,11 @@ export NVM_DIR="$HOME/.nvm"
 # 1Password-cli completions
 eval "$(op completion zsh)"; compdef _op op
 
+export LANG=en_US.UTF-8
+# You don't strictly need this collation, but most technical people
+# probably want C collation for sane results
+export LC_COLLATE=C
+
 # PATH
 export PATH="/opt/homebrew/bin:$PATH"
 export PATH="$(yarn global bin):$PATH"

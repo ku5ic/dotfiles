@@ -35,3 +35,4 @@ ln -sfv "$DOTFILES_DIR/.tmux.conf" ~
 mkdir ~/.config
 
 ln -sfv ~/.dotfiles/config/nvim ~/.config/
+ln -sfv ~/.dotfiles/config/wezterm ~/.config/
