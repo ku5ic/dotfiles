@@ -12,8 +12,12 @@ end
 
 -- This is where you actually apply your config choices
 config.color_scheme = "Tokyo Night Storm"
-config.font = wezterm.font("FiraCode Nerd Font Propo", { weight = 450, stretch = "Normal", style = "Normal" }) -- (AKA: FiraCode Nerd Font Propo Ret) /Users/ku5ic/Library/Fonts/FiraCodeNerdFontPropo-Retina.ttf, CoreText
-config.font_size = 14.0
+config.font = wezterm.font("FiraCode Nerd Font Propo", {
+	weight = 450,
+	stretch = "Normal",
+	style = "Normal",
+}) -- (AKA: FiraCode Nerd Font Propo Ret) /Users/ku5ic/Library/Fonts/FiraCodeNerdFontPropo-Retina.ttf, CoreText
+config.font_size = 14
 config.initial_rows = 30
 config.initial_cols = 100
 config.window_padding = {
@@ -24,6 +28,7 @@ config.window_padding = {
 }
 config.native_macos_fullscreen_mode = true
 config.window_background_opacity = 0.95
+config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = true
 config.enable_scroll_bar = true
 config.enable_csi_u_key_encoding = true
