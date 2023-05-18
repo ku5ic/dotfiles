@@ -17,6 +17,8 @@ config.font = wezterm.font("FiraCode Nerd Font Propo", {
 	stretch = "Normal",
 	style = "Normal",
 }) -- (AKA: FiraCode Nerd Font Propo Ret) /Users/ku5ic/Library/Fonts/FiraCodeNerdFontPropo-Retina.ttf, CoreText
+config.freetype_load_target = 'Light'
+config.freetype_render_target = 'HorizontalLcd'
 config.font_size = 14
 config.initial_rows = 30
 config.initial_cols = 100
