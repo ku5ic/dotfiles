@@ -11,7 +11,6 @@ casks=(
   firefox
   font-fira-code-nerd-font
   google-chrome
-  iterm2
   onyx
   postman
   spotify
