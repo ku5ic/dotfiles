@@ -20,6 +20,7 @@ config.font = wezterm.font("FiraCode Nerd Font Propo", {
 config.freetype_load_target = 'Light'
 config.freetype_render_target = 'HorizontalLcd'
 config.font_size = 14
+config.front_end = "WebGpu"
 config.initial_rows = 30
 config.initial_cols = 100
 config.window_padding = {
