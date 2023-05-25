@@ -1,9 +1,7 @@
 return {
 	{
 		"mfussenegger/nvim-dap",
-		dependencies = {
-			"ravenxrz/DAPInstall.nvim",
-		},
+		dependencies = "jay-babu/mason-nvim-dap.nvim",
 		keys = {
 			-- DAP
 			{ "<F5>",       "<cmd>lua require'dap'.continue()<cr>",           desc = "Debugger Continue" },
@@ -29,17 +27,6 @@ return {
 		},
 		config = function()
 			local dap = require("dap")
-			local dap_install = require("dap-install")
-
-			dap_install.setup({
-				installation_path = vim.fn.stdpath("data") .. "/dapinstall/",
-			})
-
-			dap.adapters.php = {
-				type = "executable",
-				command = "node",
-				args = { os.getenv("HOME") .. "/.local/share/nvim/dapinstall/php/vscode-php-debug/out/phpDebug.js" },
-			}
 
 			dap.configurations.php = {
 				{
@@ -50,10 +37,46 @@ return {
 					log = true,
 				},
 			}
+
 			vim.fn.sign_define(
 				"DapBreakpoint",
 				{ text = "", texthl = "DiagnosticSignError", linehl = "", numhl = "" }
 			)
 		end,
+	},
+
+	-- mason.nvim integration
+	{
+		"jay-babu/mason-nvim-dap.nvim",
+		dependencies = "mason.nvim",
+		cmd = { "DapInstall", "DapUninstall" },
+		opts = {
+			-- You'll need to check that you have the required things installed
+			-- online, please don't ask me how to install them :)
+			ensure_installed = {
+				-- Update this to ensure that you have the debuggers for the langs you want
+				"php",
+			},
+			-- Makes a best effort to setup the various debuggers with
+			-- reasonable debug configurations
+			automatic_installation = true,
+			-- You can provide additional configuration to the handlers,
+			-- see mason-nvim-dap README for more information
+			handlers = {
+				function(config)
+					-- all sources with no handler get passed here
+
+					-- Keep original functionality
+					require("mason-nvim-dap").default_setup(config)
+				end,
+				php = function(config)
+					config.adapters = {
+						type = "executable",
+						command = os.getenv("HOME") .. "/.local/share/nvim/mason/bin/php-debug-adapter",
+					}
+					require("mason-nvim-dap").default_setup(config) -- don't forget this!
+				end,
+			},
+		},
 	},
 }
