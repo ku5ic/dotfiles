@@ -17,8 +17,8 @@ config.font = wezterm.font("FiraCode Nerd Font Propo", {
 	stretch = "Normal",
 	style = "Normal",
 }) -- (AKA: FiraCode Nerd Font Propo Ret) /Users/ku5ic/Library/Fonts/FiraCodeNerdFontPropo-Retina.ttf, CoreText
-config.freetype_load_target = 'Light'
-config.freetype_render_target = 'HorizontalLcd'
+config.freetype_load_target = "Light"
+config.freetype_render_target = "HorizontalLcd"
 config.font_size = 14
 config.front_end = "WebGpu"
 config.initial_rows = 30
@@ -36,6 +36,15 @@ config.hide_tab_bar_if_only_one_tab = true
 config.enable_scroll_bar = true
 config.enable_csi_u_key_encoding = true
 config.audible_bell = "Disabled"
+
+-- Keybindings
+config.keys = {
+	{
+		key = "v",
+		mods = "CTRL|SHIFT",
+		action = wezterm.action.DisableDefaultAssignment,
+	},
+}
 
 -- and finally, return the configuration to wezterm
 return config
