@@ -1,7 +1,6 @@
 return {
 	{
 		"mfussenegger/nvim-dap",
-		dependencies = "jay-babu/mason-nvim-dap.nvim",
 		keys = {
 			-- DAP
 			{ "<F5>",       "<cmd>lua require'dap'.continue()<cr>",           desc = "Debugger Continue" },
@@ -27,6 +26,11 @@ return {
 		},
 		config = function()
 			local dap = require("dap")
+
+			dap.adapters.php = {
+				type = "executable",
+				command = os.getenv("HOME") .. "/.local/share/nvim/mason/bin/php-debug-adapter",
+			}
 
 			dap.configurations.php = {
 				{
@@ -56,26 +60,7 @@ return {
 			ensure_installed = {
 				-- Update this to ensure that you have the debuggers for the langs you want
 				"php",
-			},
-			-- Makes a best effort to setup the various debuggers with
-			-- reasonable debug configurations
-			automatic_installation = true,
-			-- You can provide additional configuration to the handlers,
-			-- see mason-nvim-dap README for more information
-			handlers = {
-				function(config)
-					-- all sources with no handler get passed here
-
-					-- Keep original functionality
-					require("mason-nvim-dap").default_setup(config)
-				end,
-				php = function(config)
-					config.adapters = {
-						type = "executable",
-						command = os.getenv("HOME") .. "/.local/share/nvim/mason/bin/php-debug-adapter",
-					}
-					require("mason-nvim-dap").default_setup(config) -- don't forget this!
-				end,
+				"js",
 			},
 		},
 	},

@@ -13,13 +13,13 @@ return {
 			require("mason-lspconfig").setup({
 				-- list of servers for mason to install
 				ensure_installed = {
-					"tsserver",
-					"html",
 					"cssls",
-					"lua_ls",
 					"emmet_ls",
-					"solargraph",
+					"html",
+					"lua_ls",
 					"phpactor",
+					"solargraph",
+					"tsserver",
 				},
 				-- auto-install configured servers (with lspconfig)
 				automatic_installation = true, -- not the same as ensure_installed
@@ -69,15 +69,15 @@ return {
 					-- diagnostics
 					diagnostics.eslint_d.with({
 						diagnostics_format = "[eslint] #{m}\n(#{c})",
-					}), -- js/ts linter
+					}),   -- js/ts linter
 					diagnostics.rubocop, -- ruby linter
 
 					-- completion
 					completion.spell, -- spell checker
 
 					-- code actions
-					code_actions.gitsigns, -- code actions for gitsigns
-					require("typescript.extensions.null-ls.code-actions") -- code actions for typescript
+					code_actions.gitsigns,                  -- code actions for gitsigns
+					require("typescript.extensions.null-ls.code-actions"), -- code actions for typescript
 				},
 			})
 		end,
@@ -87,7 +87,7 @@ return {
 		"neovim/nvim-lspconfig",
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
-			"jose-elias-alvarez/typescript.nvim"
+			"jose-elias-alvarez/typescript.nvim",
 		},
 		event = "InsertEnter",
 		config = function()
@@ -139,23 +139,53 @@ return {
 				keymap.set("n", "gd", vim.lsp.buf.definition, set_desc(bufopts, { desc = "Go to Definition" }))
 				keymap.set("n", "K", vim.lsp.buf.hover, set_desc(bufopts, { desc = "Show Hover" }))
 				keymap.set("n", "gi", vim.lsp.buf.implementation, set_desc(bufopts, { desc = "Go to Implementation" }))
-				keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, set_desc(bufopts, { desc = "Show Signature Help" }))
-				keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, set_desc(bufopts, { desc = "Add Workspace Folder" }))
-				keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, set_desc(bufopts, { desc = "Remove Workspace Folder" }))
+				keymap.set(
+					"n",
+					"<C-k>",
+					vim.lsp.buf.signature_help,
+					set_desc(bufopts, { desc = "Show Signature Help" })
+				)
+				keymap.set(
+					"n",
+					"<leader>wa",
+					vim.lsp.buf.add_workspace_folder,
+					set_desc(bufopts, { desc = "Add Workspace Folder" })
+				)
+				keymap.set(
+					"n",
+					"<leader>wr",
+					vim.lsp.buf.remove_workspace_folder,
+					set_desc(bufopts, { desc = "Remove Workspace Folder" })
+				)
 				keymap.set("n", "<leader>wl", function()
 					print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-					end, set_desc(bufopts, { desc = "List Workspace Folders" }))
-				keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, set_desc(bufopts, { desc = "Go to Type Definition" }))
+				end, set_desc(bufopts, { desc = "List Workspace Folders" }))
+				keymap.set(
+					"n",
+					"<leader>D",
+					vim.lsp.buf.type_definition,
+					set_desc(bufopts, { desc = "Go to Type Definition" })
+				)
 				keymap.set("n", "<leader>rn", vim.lsp.buf.rename, set_desc(bufopts, { desc = "Rename" }))
 				keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, set_desc(bufopts, { desc = "Code Action" }))
 				keymap.set("n", "gr", vim.lsp.buf.references, set_desc(bufopts, { desc = "Go to References" }))
 				keymap.set("n", "<leader>f", function()
 					vim.lsp.buf.format({ async = true })
-					end, set_desc(bufopts, { desc = "Format Document" }))
+				end, set_desc(bufopts, { desc = "Format Document" }))
 
 				if client.name == "tsserver" then
-					keymap.set("n", "<leader>co", "<cmd>TypescriptOrganizeImports<CR>", set_desc(bufopts, { desc = "Organize Imports" }))
-					keymap.set("n", "<leader>cR", "<cmd>TypescriptRenameFile<CR>", set_desc(bufopts, { desc = "Rename File" }))
+					keymap.set(
+						"n",
+						"<leader>co",
+						"<cmd>TypescriptOrganizeImports<CR>",
+						set_desc(bufopts, { desc = "Organize Imports" })
+					)
+					keymap.set(
+						"n",
+						"<leader>cR",
+						"<cmd>TypescriptRenameFile<CR>",
+						set_desc(bufopts, { desc = "Rename File" })
+					)
 				end
 			end
 
@@ -172,7 +202,8 @@ return {
 				go_to_source_definition = {
 					fallback = true, -- fall back to standard LSP definition on failure
 				},
-				server = { -- pass options to lspconfig's setup method
+				server = {
+				              -- pass options to lspconfig's setup method
 					on_attach = on_attach,
 					capabilities = capabilities,
 					filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascriptreact", "javascript" },
@@ -233,7 +264,8 @@ return {
 			lspconfig["lua_ls"].setup({
 				on_attach = on_attach,
 				capabilities = capabilities,
-				settings = { -- custom settings for lua
+				settings = {
+				 -- custom settings for lua
 					Lua = {
 						-- make the language server recognize "vim" global
 						diagnostics = {
