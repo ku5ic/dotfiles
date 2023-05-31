@@ -36,3 +36,4 @@ mkdir ~/.config
 
 ln -sfv ~/.dotfiles/config/nvim ~/.config/
 ln -sfv ~/.dotfiles/config/wezterm ~/.config/
+ln -sfv ~/.dotfiles/config/starship.toml ~/.config/
