@@ -4,8 +4,8 @@ casks=(
   1password
   1password-cli
   authy
-  beekeeper-studio
   chromedriver
+  dbeaver-community
   diffmerge
   docker
   firefox
