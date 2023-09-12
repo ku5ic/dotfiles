@@ -98,25 +98,21 @@ export LC_COLLATE=C
 
 # PATH
 export PATH="/opt/homebrew/bin:$PATH"
-export PATH="$(yarn global bin):$PATH"
 export PATH="$(brew --prefix)/opt/python/libexec/bin:$PATH"
 export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
-export PATH="~/.nvm/versions/node/v16.15.0/bin:$PATH"
 export PATH="/opt/homebrew/opt/ncurses/bin:$PATH"
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 export PATH
 
 # rbenv
 eval "$(rbenv init - zsh)"
 
+# node version manager
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
-
-# groovy
-export GROOVY_HOME=/opt/homebrew/opt/groovy/libexec
-
-# Node
-export NVM_DIR="$HOME/.nvm"
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
