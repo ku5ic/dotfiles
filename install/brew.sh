@@ -19,10 +19,9 @@ brews=(
   mercurial
   ncurses
   neovim
-  node
   nvm
   openjdk
-  openssl@3
+  openssl
   php@8.1
   pipenv
   postgresql@14
@@ -38,7 +37,6 @@ brews=(
   tmuxinator
   tree
   wget
-  yarn
   zsh
   zsh-autosuggestions
   zsh-completions
