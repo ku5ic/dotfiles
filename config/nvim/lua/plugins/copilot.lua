@@ -10,6 +10,7 @@ return {
 				["css"] = true,
 				["html"] = true,
 				["javascript"] = true,
+				["javascriptreact"] = true,
 				["ruby"] = true,
 				["python"] = true,
 				["php"] = true,
@@ -17,7 +18,7 @@ return {
 				["typescript"] = true,
 			}
 
-			vim.g.copilot_node_command = "/Users/ku5ic/.nvm/versions/node/v16.19.1/bin/node"
+			-- vim.g.copilot_node_command = "/Users/ku5ic/.nvm/versions/node/v16.19.1/bin/node"
 			vim.g.copilot_no_tab_map = true
 			vim.cmd[[highlight CopilotSuggestion guifg=#555555 ctermfg=8]]
 
