@@ -25,9 +25,9 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 ###############################################################################
 
 # Change the computer name
-sudo scutil --set ComputerName "Sanctuary"
-sudo scutil --set LocalHostName "Sanctuary"
 sudo scutil --set HostName "Sanctuary"
+sudo scutil --set LocalHostName "Sanctuary"
+sudo scutil --set ComputerName "Sanctuary"
 
 dscacheutil -flushcache
 
