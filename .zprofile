@@ -5,6 +5,8 @@ export DISABLE_SPRING=true
 export PYTHONDONTWRITEBYTECODE=1
 export PYTHON_CONFIGURE_OPTS="--enable-framework"
 
+export NODE_OPTIONS=--openssl-legacy-provider
+
 pyclean () {
   find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 }
