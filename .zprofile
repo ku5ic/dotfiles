@@ -23,10 +23,10 @@ jira_to_git_branch() {
 }
 
 2e_projects_tmux() {
-   tmuxinator start 2e-eebook project=eeBook/eebkgweb -n core
-   tmuxinator start 2e-eebook project=eeBook/eebkgweb-aee-custom  -n aee
-   tmuxinator start 2e-eebook project=eeBook/eebkgweb-eed-custom  -n eed
-   tmuxinator start 2e-eebook project=eeBook/eebkgweb-bwa-custom -n bwa
+   tmuxinator start 2e-eebook project=eeBook/eebkgweb -n core &&
+   tmuxinator start 2e-eebook project=eeBook/eebkgweb-aee-custom  -n aee &&
+   tmuxinator start 2e-eebook project=eeBook/eebkgweb-eed-custom  -n eed &&
+   tmuxinator start 2e-eebook project=eeBook/eebkgweb-bwa-custom -n bwa &&
    tmuxinator start 2e-eebook project=eePay/eepayweb -n eePayweb
 }
 
