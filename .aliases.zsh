@@ -12,7 +12,7 @@ alias bat="bat --style=numbers --color=always --theme=TwoDark"
 # tmuxinator
 alias mux=tmuxinator
 
-alias la="ls -la"
+alias ll="ls -la"
 
 # brew
 alias brewall="brew update; brew upgrade; brew upgrade --cask; brew cleanup --prune=all; brew autoremove; brew doctor;"
