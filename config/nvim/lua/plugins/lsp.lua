@@ -77,7 +77,7 @@ return {
 
 					-- code actions
 					code_actions.gitsigns,                  -- code actions for gitsigns
-					require("typescript.extensions.null-ls.code-actions"), -- code actions for typescript
+					-- require("typescript.extensions.null-ls.code-actions"), -- code actions for typescript
 				},
 			})
 		end,
@@ -87,7 +87,7 @@ return {
 		"neovim/nvim-lspconfig",
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
-			"jose-elias-alvarez/typescript.nvim",
+			-- "jose-elias-alvarez/typescript.nvim",
 		},
 		event = "InsertEnter",
 		config = function()
@@ -196,44 +196,44 @@ return {
 			})
 
 			-- configure typescript server with plugin
-			require("typescript").setup({
-				disable_commands = false, -- prevent the plugin from creating Vim commands
-				debug = false, -- enable debug logging for commands
-				go_to_source_definition = {
-					fallback = true, -- fall back to standard LSP definition on failure
-				},
-				server = {
-				              -- pass options to lspconfig's setup method
-					on_attach = on_attach,
-					capabilities = capabilities,
-					filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascriptreact", "javascript" },
-					diagnostics = {
-						format = function(diagnostic)
-							return string.format("[tsserver] %s", diagnostic.message)
-						end,
-					},
-					settings = {
-						completions = {
-							completeFunctionCalls = true,
-						},
-					},
-				},
-			})
-			-- lspconfig["tsserver"].setup({
-			-- 	on_attach = on_attach,
-			-- 	capabilities = capabilities,
-			-- 	filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascriptreact", "javascript" },
-			-- 	diagnostics = {
-			-- 		format = function(diagnostic)
-			-- 			return string.format("[tsserver] %s", diagnostic.message)
-			-- 		end,
+			-- require("typescript").setup({
+			-- 	disable_commands = false, -- prevent the plugin from creating Vim commands
+			-- 	debug = false, -- enable debug logging for commands
+			-- 	go_to_source_definition = {
+			-- 		fallback = true, -- fall back to standard LSP definition on failure
 			-- 	},
-			-- 	settings = {
-			-- 		completions = {
-			-- 			completeFunctionCalls = true,
+			-- 	server = {
+			-- 	              -- pass options to lspconfig's setup method
+			-- 		on_attach = on_attach,
+			-- 		capabilities = capabilities,
+			-- 		filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascriptreact", "javascript" },
+			-- 		diagnostics = {
+			-- 			format = function(diagnostic)
+			-- 				return string.format("[tsserver] %s", diagnostic.message)
+			-- 			end,
+			-- 		},
+			-- 		settings = {
+			-- 			completions = {
+			-- 				completeFunctionCalls = true,
+			-- 			},
 			-- 		},
 			-- 	},
 			-- })
+			lspconfig["tsserver"].setup({
+				on_attach = on_attach,
+				capabilities = capabilities,
+				filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascriptreact", "javascript" },
+				diagnostics = {
+					format = function(diagnostic)
+						return string.format("[tsserver] %s", diagnostic.message)
+					end,
+				},
+				settings = {
+					completions = {
+						completeFunctionCalls = true,
+					},
+				},
+			})
 
 			-- configure ruby server plugin
 			lspconfig["solargraph"].setup({
