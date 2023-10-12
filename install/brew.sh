@@ -4,6 +4,7 @@ brew update
 brew upgrade
 
 brews=(
+  asdf
   ansible
   bat
   cmake
@@ -16,18 +17,14 @@ brews=(
   grep
   httpd
   imagemagick
-  mercurial
   ncurses
   neovim
-  nvm
   openjdk
   openssl
   php@8.1
   pipenv
   postgresql@14
-  pyenv
   python@3.11
-  rbenv
   reattach-to-user-namespace
   redis
   ripgrep

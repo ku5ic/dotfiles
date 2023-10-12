@@ -1,4 +1,4 @@
-#!/bin/sh
+!/bin/sh
 
 # Get current dir (so run this script from anywhere)
 
@@ -37,3 +37,15 @@ mkdir ~/.config
 ln -sfv ~/.dotfiles/config/nvim ~/.config/
 ln -sfv ~/.dotfiles/config/wezterm ~/.config/
 ln -sfv ~/.dotfiles/config/starship.toml ~/.config/
+
+# setup node
+asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+asdf nodejs update-nodebuild
+asdf install nodejs latest:18
+asdf global nodejs latest:18
+
+# setup ruby
+asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git
+asdf plugin-update ruby
+asdf install ruby latest:3
+asdf lobal ruby latest:3
