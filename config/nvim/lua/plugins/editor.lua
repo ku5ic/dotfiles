@@ -64,7 +64,7 @@ return {
 	{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 	{
 		"nvim-telescope/telescope.nvim",
-		tag = "0.1.1",
+		tag = "0.1.3",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		cmd = "Telescope",
 		-- version = false, -- telescope did only one release, so use HEAD for now
