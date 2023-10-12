@@ -31,6 +31,9 @@ sudo scutil --set ComputerName "Sanctuary"
 
 dscacheutil -flushcache
 
+# Disable the sound effects on boot
+sudo nvram SystemAudioVolume=" "
+
 # Disable press-and-hold for keys in favor of key repeat.
 defaults write -g ApplePressAndHoldEnabled -bool false
 
