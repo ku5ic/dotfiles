@@ -2,6 +2,7 @@ return {
 	-- file explorer
 	{
 		"nvim-neo-tree/neo-tree.nvim",
+		branch = "v3.x",
 		keys = {
 			{ "<C-enter>",   "<cmd>Neotree toggle<cr>", desc = "Toggle NeoTree" },
 			{ "<C-S-enter>", "<cmd>NeoTreeReveal<cr>",  desc = "Reveal In NeoTree" },
@@ -11,9 +12,6 @@ return {
 			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
 			"MunifTanjim/nui.nvim",
 		},
-		config = function()
-			require("neo-tree").setup()
-		end,
 	},
 	-- search/replace in multiple files
 	{
@@ -26,6 +24,7 @@ return {
 	-- git signs
 	{
 		"lewis6991/gitsigns.nvim",
+		enabled = false,
 		event = { "BufReadPre", "BufNewFile" },
 		opts = {
 			signs = {
@@ -36,26 +35,34 @@ return {
 				changedelete = { text = "▎" },
 				untracked = { text = "▎" },
 			},
-			on_attach = function(buffer)
-				local gs = package.loaded.gitsigns
-
-				local function map(mode, l, r, desc)
-					vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
+			on_attach = function(bufnr)
+				local function map(mode, lhs, rhs, opts)
+					opts = vim.tbl_extend("force", { noremap = true, silent = true }, opts or {})
+					vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
 				end
 
-				-- stylua: ignore start
-				map("n", "]h", gs.next_hunk, "Next Hunk")
-				map("n", "[h", gs.prev_hunk, "Prev Hunk")
-				map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
-				map({ "n", "v" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
-				map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
-				map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
-				map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
-				map("n", "<leader>ghp", gs.preview_hunk, "Preview Hunk")
-				map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, "Blame Line")
-				map("n", "<leader>ghd", gs.diffthis, "Diff This")
-				map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
-				map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
+				-- Navigation
+				map("n", "]c", "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", { expr = true })
+				map("n", "[c", "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", { expr = true })
+
+				-- Actions
+				map("n", "<leader>hs", ":Gitsigns stage_hunk<CR>")
+				map("v", "<leader>hs", ":Gitsigns stage_hunk<CR>")
+				map("n", "<leader>hr", ":Gitsigns reset_hunk<CR>")
+				map("v", "<leader>hr", ":Gitsigns reset_hunk<CR>")
+				map("n", "<leader>hS", "<cmd>Gitsigns stage_buffer<CR>")
+				map("n", "<leader>hu", "<cmd>Gitsigns undo_stage_hunk<CR>")
+				map("n", "<leader>hR", "<cmd>Gitsigns reset_buffer<CR>")
+				map("n", "<leader>hp", "<cmd>Gitsigns preview_hunk<CR>")
+				map("n", "<leader>hb", '<cmd>lua require"gitsigns".blame_line{full=true}<CR>')
+				map("n", "<leader>tb", "<cmd>Gitsigns toggle_current_line_blame<CR>")
+				map("n", "<leader>hd", "<cmd>Gitsigns diffthis<CR>")
+				map("n", "<leader>hD", '<cmd>lua require"gitsigns".diffthis("~")<CR>')
+				map("n", "<leader>td", "<cmd>Gitsigns toggle_deleted<CR>")
+
+				-- Text object
+				map("o", "ih", ":<C-U>Gitsigns select_hunk<CR>")
+				map("x", "ih", ":<C-U>Gitsigns select_hunk<CR>")
 			end,
 		},
 	},
