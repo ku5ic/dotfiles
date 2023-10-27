@@ -5,7 +5,7 @@ return {
 		branch = "v3.x",
 		keys = {
 			{ "<C-enter>",   "<cmd>Neotree toggle<cr>", desc = "Toggle NeoTree" },
-			{ "<C-S-enter>", "<cmd>NeoTreeReveal<cr>",  desc = "Reveal In NeoTree" },
+			{ "<C-S-enter>", "<cmd>Neotree reveal<cr>",  desc = "Reveal In NeoTree" },
 		},
 		dependencies = {
 			"nvim-lua/plenary.nvim",

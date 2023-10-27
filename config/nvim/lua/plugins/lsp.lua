@@ -3,8 +3,6 @@ return {
 		"williamboman/mason.nvim",
 		dependencies = {
 			"williamboman/mason-lspconfig.nvim",
-			"jayp0521/mason-null-ls.nvim",
-			"jose-elias-alvarez/null-ls.nvim",
 		},
 		config = function()
 			-- enable mason
@@ -23,62 +21,6 @@ return {
 				},
 				-- auto-install configured servers (with lspconfig)
 				automatic_installation = true, -- not the same as ensure_installed
-			})
-
-			require("mason-null-ls").setup({
-				-- list of formatters & linters for mason to install
-				ensure_installed = {
-					"prettier", -- ts/js formatter
-					"stylua", -- lua formatter
-					"eslint_d", -- ts/js linter
-					"rubocop",
-				},
-				-- auto-install configured formatters & linters (with null-ls)
-				automatic_installation = true,
-			})
-		end,
-	},
-
-	{
-		"jose-elias-alvarez/null-ls.nvim",
-		config = function()
-			-- import null-ls plugin safely
-			local setup, null_ls = pcall(require, "null-ls")
-			if not setup then
-				return
-			end
-
-			-- for conciseness
-			local formatting = null_ls.builtins.formatting -- to setup formatters
-			local diagnostics = null_ls.builtins.diagnostics -- to setup diagnostics
-			local code_actions = null_ls.builtins.code_actions -- to setup code_actions
-			local completion = null_ls.builtins.completion -- to setup completion
-
-			-- configure null_ls
-			null_ls.setup({
-				-- setup formatters & linters
-				sources = {
-					--  to disable file types use
-					--  "formatting.prettier.with({disabled_filetypes: {}})" (see null-ls docs)
-
-					-- formatting
-					formatting.prettier, -- js/ts formatter
-					formatting.stylua, -- lua formatter
-					formatting.rubocop, -- ruby formatter
-
-					-- diagnostics
-					diagnostics.eslint_d.with({
-						diagnostics_format = "[eslint] #{m}\n(#{c})",
-					}),   -- js/ts linter
-					diagnostics.rubocop, -- ruby linter
-
-					-- completion
-					completion.spell, -- spell checker
-
-					-- code actions
-					code_actions.gitsigns,                  -- code actions for gitsigns
-					-- require("typescript.extensions.null-ls.code-actions"), -- code actions for typescript
-				},
 			})
 		end,
 	},
@@ -265,7 +207,7 @@ return {
 				on_attach = on_attach,
 				capabilities = capabilities,
 				settings = {
-				 -- custom settings for lua
+					-- custom settings for lua
 					Lua = {
 						-- make the language server recognize "vim" global
 						diagnostics = {
