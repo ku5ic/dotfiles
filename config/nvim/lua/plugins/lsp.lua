@@ -3,10 +3,19 @@ return {
 		"williamboman/mason.nvim",
 		dependencies = {
 			"williamboman/mason-lspconfig.nvim",
+			"WhoIsSethDaniel/mason-tool-installer.nvim",
 		},
 		config = function()
 			-- enable mason
-			require("mason").setup()
+			require("mason").setup({
+				ui = {
+					icons = {
+						package_installed = "✓",
+						package_pending = "➜",
+						package_uninstalled = "✗",
+					},
+				},
+			})
 
 			require("mason-lspconfig").setup({
 				-- list of servers for mason to install
@@ -18,6 +27,22 @@ return {
 					"phpactor",
 					"solargraph",
 					"tsserver",
+				},
+				-- auto-install configured servers (with lspconfig)
+				automatic_installation = true, -- not the same as ensure_installed
+			})
+
+			require("mason-tool-installer").setup({
+				ensure_installed = {
+					"prettier", -- prettier formatter
+					"stylua", -- lua formatter
+					"stylua", -- lua formatter
+					"eslint_d", -- js linter
+					"eslint_d", -- js linter
+					"pylint", -- python linter
+					"cspell", -- spell checker
+					"js-debug-adapter", -- js debugger
+					"php-debug-adapter", -- php debugger
 				},
 				-- auto-install configured servers (with lspconfig)
 				automatic_installation = true, -- not the same as ensure_installed
