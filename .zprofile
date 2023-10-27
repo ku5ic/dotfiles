@@ -5,8 +5,6 @@ export DISABLE_SPRING=true
 export PYTHONDONTWRITEBYTECODE=1
 export PYTHON_CONFIGURE_OPTS="--enable-framework"
 
-export NODE_OPTIONS=--openssl-legacy-provider
-
 pyclean () {
   find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 }
@@ -27,11 +25,16 @@ jira_to_git_branch() {
    tmuxinator start 2e-eebook project=eeBook/eebkgweb-aee-custom  -n aee &&
    tmuxinator start 2e-eebook project=eeBook/eebkgweb-eed-custom  -n eed &&
    tmuxinator start 2e-eebook project=eeBook/eebkgweb-bwa-custom -n bwa &&
-   tmuxinator start 2e-eebook project=eePay/eepayweb -n eePayweb
+   tmuxinator start 2e-eebook project=eePay/eepayweb -n eePayweb &&
+   tmuxinator start 2e-eebook project=mobile/eepxa-app -n eepxa-app
 }
 
 fix_chromedriver() {
   xattr -d com.apple.quarantine $(which chromedriver)
+}
+
+fix_node_openssl() {
+  export NODE_OPTIONS=--openssl-legacy-provider
 }
 
 # homebrew

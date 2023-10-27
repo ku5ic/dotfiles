@@ -24,7 +24,7 @@ brews=(
   php@8.1
   pipenv
   postgresql@14
-  python@3.11
+  python
   reattach-to-user-namespace
   redis
   ripgrep
