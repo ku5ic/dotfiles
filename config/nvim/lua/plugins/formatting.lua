@@ -7,7 +7,11 @@ return {
 			-- Customize or remove this keymap to your liking
 			"<leader>f",
 			function()
-				require("conform").format({ async = true, lsp_fallback = true })
+				require("conform").format({
+					lsp_fallback = true,
+					async = false,
+					timeout_ms = 500,
+				})
 			end,
 			mode = "",
 			desc = "Format buffer",
@@ -27,21 +31,15 @@ return {
 			json = { "prettier" },
 			yaml = { "prettier" },
 			markdown = { "prettier" },
-			graphql = { "prettier" },
 			lua = { "stylua" },
 			python = { "isort", "black" },
 		},
 		-- Set up format-on-save
-		format_on_save = { timeout_ms = 500, lsp_fallback = true },
-		-- Customize formatters
-		formatters = {
-			shfmt = {
-				prepend_args = { "-i", "2" },
-			},
+
+		format_on_save = {
+			lsp_fallback = true,
+			async = false,
+			timeout_ms = 500,
 		},
 	},
-	init = function()
-		-- If you want the formatexpr, here is the place to set it
-		vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
-	end,
 }

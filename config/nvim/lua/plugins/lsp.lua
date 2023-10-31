@@ -20,13 +20,13 @@ return {
 			require("mason-lspconfig").setup({
 				-- list of servers for mason to install
 				ensure_installed = {
-					"cssls",
-					"emmet_ls",
-					"html",
-					"lua_ls",
-					"phpactor",
-					"solargraph",
-					"tsserver",
+					"cssls", -- css language server
+					"emmet_ls", -- emmet language server
+					"html", -- html language server
+					"lua_ls", -- lua language server
+					"phpactor", -- php language server
+					"solargraph", -- ruby language server
+					"tsserver", -- typescript language server
 				},
 				-- auto-install configured servers (with lspconfig)
 				automatic_installation = true, -- not the same as ensure_installed
@@ -34,15 +34,14 @@ return {
 
 			require("mason-tool-installer").setup({
 				ensure_installed = {
-					"prettier", -- prettier formatter
-					"stylua", -- lua formatter
-					"stylua", -- lua formatter
-					"eslint_d", -- js linter
-					"eslint_d", -- js linter
-					"pylint", -- python linter
 					"cspell", -- spell checker
+					"eslint_d", -- js linter
 					"js-debug-adapter", -- js debugger
 					"php-debug-adapter", -- php debugger
+					"prettier", -- prettier formatter
+					"pylint", -- python linter
+					"stylelint", -- css linter
+					"stylua", -- lua formatter
 				},
 				-- auto-install configured servers (with lspconfig)
 				automatic_installation = true, -- not the same as ensure_installed
@@ -162,30 +161,6 @@ return {
 				capabilities = capabilities,
 			})
 
-			-- configure typescript server with plugin
-			-- require("typescript").setup({
-			-- 	disable_commands = false, -- prevent the plugin from creating Vim commands
-			-- 	debug = false, -- enable debug logging for commands
-			-- 	go_to_source_definition = {
-			-- 		fallback = true, -- fall back to standard LSP definition on failure
-			-- 	},
-			-- 	server = {
-			-- 	              -- pass options to lspconfig's setup method
-			-- 		on_attach = on_attach,
-			-- 		capabilities = capabilities,
-			-- 		filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascriptreact", "javascript" },
-			-- 		diagnostics = {
-			-- 			format = function(diagnostic)
-			-- 				return string.format("[tsserver] %s", diagnostic.message)
-			-- 			end,
-			-- 		},
-			-- 		settings = {
-			-- 			completions = {
-			-- 				completeFunctionCalls = true,
-			-- 			},
-			-- 		},
-			-- 	},
-			-- })
 			lspconfig["tsserver"].setup({
 				on_attach = on_attach,
 				capabilities = capabilities,
