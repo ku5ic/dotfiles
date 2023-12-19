@@ -4,8 +4,8 @@ brew update
 brew upgrade
 
 brews=(
-  asdf
   ansible
+  asdf
   bat
   cmake
   composer
@@ -14,6 +14,7 @@ brews=(
   dnsmasq
   fzf
   git
+  gnu-sed
   grep
   httpd
   imagemagick
