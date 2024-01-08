@@ -4,13 +4,7 @@ return {
 		lazy = false, -- make sure we load this during startup if it is your main colorscheme
 		priority = 1000, -- make sure to load this before all the other start plugins
 		config = function()
-			require("tokyonight").setup({
-				transparent = true,
-				styles = {
-					sidebars = "transparent",
-					floats = "transparent",
-				},
-			})
+			require("tokyonight").setup()
 			-- load the colorscheme here
 			vim.cmd([[colorscheme tokyonight]])
 		end,
@@ -22,7 +16,7 @@ return {
 		event = "VeryLazy",
 		lazy = false,
 		keys = {
-			{ "<leader>bp", "<Cmd>BufferLineTogglePin<CR>",            desc = "Toggle pin" },
+			{ "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle pin" },
 			{ "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },
 		},
 		opts = {
@@ -118,7 +112,7 @@ return {
 						},
 					},
 					lualine_y = {
-						{ "progress", separator = " ",                  padding = { left = 1, right = 0 } },
+						{ "progress", separator = " ", padding = { left = 1, right = 0 } },
 						{ "location", padding = { left = 0, right = 1 } },
 					},
 					lualine_z = {
@@ -140,8 +134,8 @@ return {
 			require("statuscol").setup({
 				relculright = true,
 				segments = {
-					{ text = { "%s" },                       click = "v:lua.ScSa" },
-					{ text = { builtin.lnumfunc },           click = "v:lua.ScLa" },
+					{ text = { "%s" }, click = "v:lua.ScSa" },
+					{ text = { builtin.lnumfunc }, click = "v:lua.ScLa" },
 					{ text = { " ", builtin.foldfunc, " " }, click = "v:lua.ScFa" },
 				},
 			})
@@ -153,6 +147,19 @@ return {
 		"szw/vim-maximizer",
 		keys = {
 			{ "<leader>z", "<Cmd>MaximizerToggle<CR>", desc = "Toggle maximize" },
+		},
+	},
+
+	-- Noice (Nice, Noise, Notice)
+	{
+		"folke/noice.nvim",
+		event = "VeryLazy",
+		opts = {
+			-- add any options here
+		},
+		dependencies = {
+			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+			"MunifTanjim/nui.nvim",
 		},
 	},
 }
