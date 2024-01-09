@@ -13,6 +13,7 @@ return {
 			"MunifTanjim/nui.nvim",
 		},
 	},
+
 	-- search/replace in multiple files
 	{
 		"nvim-pack/nvim-spectre",
@@ -24,6 +25,7 @@ return {
 			{ "<leader>sr", function() require("spectre").open() end, desc = "Replace in files (Spectre)" },
 		},
 	},
+
 	-- git signs
 	{
 		"lewis6991/gitsigns.nvim",
