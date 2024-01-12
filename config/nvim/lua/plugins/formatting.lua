@@ -10,7 +10,7 @@ return {
 				require("conform").format({
 					lsp_fallback = true,
 					async = false,
-					timeout_ms = 500,
+					timeout_ms = 1000,
 				})
 			end,
 			mode = "",
@@ -33,6 +33,7 @@ return {
 			markdown = { "prettier" },
 			lua = { "stylua" },
 			python = { "isort", "black" },
+			php = { "php_cs_fixer" },
 		},
 		-- Set up format-on-save
 

@@ -42,6 +42,7 @@ return {
 					"pylint", -- python linter
 					"stylelint", -- css linter
 					"stylua", -- lua formatter
+					"php-cs-fixer", -- php formatter
 				},
 				-- auto-install configured servers (with lspconfig)
 				automatic_installation = true, -- not the same as ensure_installed
@@ -135,9 +136,9 @@ return {
 				keymap.set("n", "<leader>rn", vim.lsp.buf.rename, set_desc(bufopts, { desc = "Rename" }))
 				keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, set_desc(bufopts, { desc = "Code Action" }))
 				keymap.set("n", "gr", vim.lsp.buf.references, set_desc(bufopts, { desc = "Go to References" }))
-				keymap.set("n", "<leader>f", function()
-					vim.lsp.buf.format({ async = true })
-				end, set_desc(bufopts, { desc = "Format Document" }))
+				-- keymap.set("n", "<leader>f", function()
+				-- 	vim.lsp.buf.format({ async = true })
+				-- end, set_desc(bufopts, { desc = "Format Document" }))
 
 				if client.name == "tsserver" then
 					keymap.set(
