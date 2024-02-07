@@ -11,7 +11,6 @@ brews=(
   composer
   coreutils
   ctags
-  dnsmasq
   fzf
   git
   gnu-sed

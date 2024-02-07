@@ -13,7 +13,6 @@ return {
 	-- bufferline
 	{
 		"akinsho/bufferline.nvim",
-		event = "VeryLazy",
 		lazy = false,
 		keys = {
 			{ "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle pin" },
@@ -44,7 +43,6 @@ return {
 	-- statusline
 	{
 		"nvim-lualine/lualine.nvim",
-		event = "VeryLazy",
 		lazy = false,
 		opts = function(plugin)
 			local icons = require("config.icons").icons
@@ -153,7 +151,7 @@ return {
 	-- Highly experimental plugin that completely replaces the UI for messages, cmdline and the popupmenu.
 	{
 		"folke/noice.nvim",
-		event = "VeryLazy",
+		lazy = false,
 		dependencies = {
 			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
 			"MunifTanjim/nui.nvim",
