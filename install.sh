@@ -31,6 +31,7 @@ ln -sfv "$DOTFILES_DIR/.gitignore_global" ~
 ln -sfv "$DOTFILES_DIR/.gitmessage" ~
 ln -sfv "$DOTFILES_DIR/.gemrc" ~
 ln -sfv "$DOTFILES_DIR/.tmux.conf" ~
+ln -sfv "$DOTFILES_DIR/.default-python-packages" ~
 
 mkdir ~/.config
 
@@ -48,4 +49,10 @@ asdf global nodejs latest:18
 asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git
 asdf plugin-update ruby
 asdf install ruby latest:3
-asdf lobal ruby latest:3
+asdf global ruby latest:3
+
+# setup python
+asdf plugin add python
+asdf plugin-update python
+asdf install python latest:3
+asdf global python latest:3

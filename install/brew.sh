@@ -4,7 +4,6 @@ brew update
 brew upgrade
 
 brews=(
-  ansible
   asdf
   bat
   cmake
@@ -22,9 +21,7 @@ brews=(
   openjdk
   openssl
   php@8.1
-  pipenv
   postgresql@14
-  python
   reattach-to-user-namespace
   redis
   ripgrep
