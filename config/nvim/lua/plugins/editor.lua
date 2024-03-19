@@ -37,10 +37,9 @@ return {
 	{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 	{
 		"nvim-telescope/telescope.nvim",
-		tag = "0.1.3",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		cmd = "Telescope",
-		-- version = false, -- telescope did only one release, so use HEAD for now
+		version = false, -- telescope did only one release, so use HEAD for now
 		keys = {
 			{ "<leader>,", "<cmd>Telescope buffers show_all_buffers=true<cr>", desc = "Switch Buffer" },
 			{ "<leader>/", "<cmd>Telescope live_grep<cr>", desc = "Find in Files (Grep)" },
@@ -66,7 +65,23 @@ return {
 			{ "<leader>so", "<cmd>Telescope vim_options<cr>", desc = "Options" },
 			{ "<leader>sR", "<cmd>Telescope resume<cr>", desc = "Resume" },
 		},
-		config = function()
+		opts = {
+			pickers = {
+				buffers = {
+					show_all_buffers = true,
+					sort_lastused = true,
+					theme = "dropdown",
+					previewer = false,
+					mappings = {
+						i = {
+							["<c-d>"] = "delete_buffer",
+						},
+					},
+				},
+			},
+		},
+		config = function(PluginSpec)
+			require("telescope").setup(PluginSpec.opts)
 			require("telescope").load_extension("fzf")
 		end,
 	},
@@ -76,11 +91,7 @@ return {
 		config = function()
 			vim.o.timeout = true
 			vim.o.timeoutlen = 300
-			require("which-key").setup({
-				-- your configuration comes here
-				-- or leave it empty to use the default settings
-				-- refer to the configuration section below
-			})
+			require("which-key").setup()
 		end,
 	},
 
