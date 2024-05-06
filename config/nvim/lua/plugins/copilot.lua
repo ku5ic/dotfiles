@@ -1,18 +1,3 @@
---- Get all the changes in the git repository
----@param staged? boolean
----@return string
-local function get_git_diff(staged)
-	local cmd = staged and "git diff --staged" or "git diff"
-	local handle = io.popen(cmd)
-	if not handle then
-		return ""
-	end
-
-	local result = handle:read("*a")
-	handle:close()
-	return result
-end
-
 local prompts = {
 	-- Code related prompts
 	Explain = "Please explain how the following code works.",
@@ -20,6 +5,7 @@ local prompts = {
 	Tests = "Please explain how the selected code works, then generate unit tests for it.",
 	Refactor = "Please refactor the following code to improve its clarity and readability.",
 	FixCode = "Please fix the following code to make it work as intended.",
+	FixError = "Please explain the error in the following text and provide a solution.",
 	BetterNamings = "Please provide better names for the following variables and functions.",
 	Documentation = "Please provide documentation for the following code.",
 	SwaggerApiDocs = "Please provide documentation for the following API using Swagger.",
@@ -59,13 +45,15 @@ return {
 		end,
 	},
 
-	-- Copilot chat
+	-- CopilotChat
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
-		branch = "canary",
+		version = "v2.7.0",
+		-- branch = "canary", -- Use the canary branch if you want to test the latest features but it might be unstable	branch = "canary",
 		dependencies = {
+			{ "github/copilot.vim" },
 			{ "nvim-telescope/telescope.nvim" }, -- Use telescope for help actions
-			{ "nvim-lua/plenary.nvim" },
+			{ "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
 		},
 		opts = {
 			question_header = "## User ",
@@ -191,9 +179,7 @@ return {
 				},
 			})
 		end,
-		build = function()
-			vim.notify("Please update the remote plugins by running ':UpdateRemotePlugins', then restart Neovim.")
-		end,
+		event = "VeryLazy",
 		keys = {
 			-- Show help actions with telescope
 			{
