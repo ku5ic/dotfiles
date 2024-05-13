@@ -48,8 +48,8 @@ return {
 	-- CopilotChat
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
-		version = "v2.7.0",
-		-- branch = "canary", -- Use the canary branch if you want to test the latest features but it might be unstable	branch = "canary",
+		-- version = "v2.7.0",
+		branch = "canary", -- Use the canary branch if you want to test the latest features but it might be unstable	branch = "canary",
 		dependencies = {
 			{ "github/copilot.vim" },
 			{ "nvim-telescope/telescope.nvim" }, -- Use telescope for help actions
@@ -179,7 +179,7 @@ return {
 				},
 			})
 		end,
-		event = "VeryLazy",
+		-- event = "VeryLazy",
 		keys = {
 			-- Show help actions with telescope
 			{
