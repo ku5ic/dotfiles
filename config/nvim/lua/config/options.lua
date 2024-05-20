@@ -11,7 +11,6 @@ opt.relativenumber = true -- show relative line numbers
 opt.number = true -- shows absolute line number on cursor line (when relative number is on)
 
 -- tabs & indentation & folding
-opt.guitablabel = "%t" -- show file name in tab label
 opt.winbar = "%=%m %f" -- show file name and modified status in window bar
 opt.expandtab = true -- expand tab to spaces
 opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
