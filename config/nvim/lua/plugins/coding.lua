@@ -65,11 +65,12 @@ return {
 				}),
 				-- sources for autocompletion
 				sources = cmp.config.sources({
-					{ name = "path",     priority = 100 }, -- file system paths
-					{ name = "nvim_lsp", priority = 99 }, -- lsp
-					{ name = "luasnip",  priority = 98 }, -- snippets
-					{ name = "spell" },    -- spell checking
-					{ name = "buffer",   priority = 97 }, -- text within current buffer
+					{ name = "copilot", group_index = 2 }, -- copilot completion
+					{ name = "path", group_index = 2 }, -- file system paths
+					{ name = "nvim_lsp", group_index = 2 }, -- lsp
+					{ name = "luasnip", group_index = 2 }, -- snippets
+					{ name = "spell", group_index = 2 }, -- spell checking
+					{ name = "buffer", group_index = 2 }, -- text within current buffer
 				}),
 				-- configure completion menu
 				formatting = {
@@ -79,6 +80,7 @@ return {
 							item.kind = icons[item.kind] .. item.kind
 						end
 						item.menu = ({
+							copilot = "[Copilot]",
 							path = "[Path]",
 							nvim_lsp = "[LSP]",
 							luasnip = "[LuaSnip]",
@@ -89,6 +91,14 @@ return {
 					end,
 				},
 			})
+		end,
+	},
+
+	-- copilot completion
+	{
+		"zbirenbaum/copilot-cmp",
+		config = function()
+			require("copilot_cmp").setup()
 		end,
 	},
 
@@ -112,11 +122,11 @@ return {
 
 			-- configure autopairs
 			autopairs.setup({
-				check_ts = true,         -- enable treesitter
+				check_ts = true, -- enable treesitter
 				ts_config = {
-					lua = { "string" },  -- don't add pairs in lua string treesitter nodes
+					lua = { "string" }, -- don't add pairs in lua string treesitter nodes
 					javascript = { "template_string" }, -- don't add pairs in javscript template_string treesitter nodes
-					java = false,        -- don't check treesitter on java
+					java = false, -- don't check treesitter on java
 				},
 			})
 
