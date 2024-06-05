@@ -115,8 +115,12 @@ return {
 	-- precognition.nvim assists with discovering motions (Both vertical and horizontal) to navigate your current buffer
 	{
 		"tris203/precognition.nvim",
+		keys = {
+			{ "<leader>pp", "<cmd>Precognition peek<cr>", desc = "Precognition peek" },
+			{ "<leader>pt", "<cmd>Precognition toggle<cr>", desc = "Precognition toggle" },
+		},
 		config = {
-			-- startVisible = true,
+			startVisible = false,
 			-- showBlankVirtLine = true,
 			-- highlightColor = { link = "Comment" },
 			-- hints = {
