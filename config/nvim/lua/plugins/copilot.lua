@@ -35,7 +35,7 @@ return {
 		-- version = "v2.7.0",
 		branch = "canary", -- Use the canary branch if you want to test the latest features but it might be unstable	branch = "canary",
 		dependencies = {
-			{ "github/copilot.vim" },
+			{ "zbirenbaum/copilot.lua" },
 			{ "nvim-telescope/telescope.nvim" }, -- Use telescope for help actions
 			{ "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
 		},
