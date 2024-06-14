@@ -16,6 +16,7 @@ jira_to_git_branch() {
   story_title="$2"
   story_title="${story_title// /_}"
   story_title="${story_title//-/}"
+  story_title="${story_title//[^a-zA-Z0-9_]/}"
 
   git checkout -b  "${story_id}/${story_title/ /_}"
 }
