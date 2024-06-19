@@ -119,7 +119,7 @@ return {
 			{ "<leader>pp", "<cmd>Precognition peek<cr>", desc = "Precognition peek" },
 			{ "<leader>pt", "<cmd>Precognition toggle<cr>", desc = "Precognition toggle" },
 		},
-		config = {
+		opts = {
 			startVisible = false,
 			-- showBlankVirtLine = true,
 			-- highlightColor = { link = "Comment" },
