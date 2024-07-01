@@ -28,7 +28,9 @@ jira_to_git_branch() {
    tmuxinator start 2e-eebook project=eeBook/eebkgweb-eed-custom  -n eeBook-eed &&
    tmuxinator start 2e-eebook project=eePay/eepayweb -n eePayweb &&
    tmuxinator start 2e-eebook project=mobile/eepxa-app -n eepxa-app &&
-   tmuxinator start 2e-eebook project=eeOpaque/eeopqfecli -n eeOpaque
+   tmuxinator start 2e-eebook project=eeOpaque/eeopqfecli -n eeOpaque-fe-cli &&
+   tmuxinator start 2e-eebook project=eeOpaque/eeopqfesrv -n eeOpaque-fe-srv
+
 }
 
 fix_chromedriver() {
