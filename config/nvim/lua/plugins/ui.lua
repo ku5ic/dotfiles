@@ -6,7 +6,7 @@ return {
 		config = function()
 			require("tokyonight").setup()
 			-- load the colorscheme here
-			vim.cmd([[colorscheme tokyonight]])
+			vim.cmd([[colorscheme tokyonight-moon]])
 		end,
 	},
 

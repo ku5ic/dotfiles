@@ -11,7 +11,8 @@ if wezterm.config_builder then
 end
 
 -- This is where you actually apply your config choices
-config.color_scheme = "Tokyo Night Storm"
+config.color_scheme_dirs = { "~/.local/share/nvim/lazy/tokyonight.nvim/extras/wezterm/" }
+config.color_scheme = "Tokyo Night Moon"
 config.font = wezterm.font("FiraCode Nerd Font Propo", {
 	weight = 450,
 	stretch = "Normal",
