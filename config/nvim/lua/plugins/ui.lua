@@ -43,6 +43,7 @@ return {
 	-- statusline
 	{
 		"nvim-lualine/lualine.nvim",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
 		lazy = false,
 		opts = function(plugin)
 			local icons = require("config.icons").icons
@@ -59,8 +60,8 @@ return {
 					theme = "auto",
 					globalstatus = true,
 					disabled_filetypes = { statusline = { "dashboard", "lazy", "alpha" } },
-					section_separators = "",
-					component_separators = "",
+					component_separators = { left = "", right = "" },
+					section_separators = { left = "", right = "" },
 				},
 				sections = {
 					lualine_a = { "mode" },
