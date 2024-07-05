@@ -1,8 +1,12 @@
 #!/bin/sh
 
+# Update Homebrew to the latest version
 brew update
+
+# Upgrade all installed packages to their latest versions
 brew upgrade
 
+# Declare an array of package names to be installed
 brews=(
   asdf
   bat
@@ -37,9 +41,11 @@ brews=(
   zsh-syntax-highlighting
 )
 
+# Loop through the array and install each package
 for brew in "${brews[@]}"
 do
   brew install $brew
 done
 
+# Clean up any outdated versions of installed packages
 brew cleanup
