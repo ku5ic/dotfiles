@@ -1,19 +1,33 @@
-# My dotfiles
+# ku5ic's Dotfiles
 
-These are my dotfiles. Take anything you want, but at your own risk.
+This repository contains my personal dotfiles. They are designed to set up a macOS system to my liking and provide a more efficient and pleasant terminal experience. Feel free to explore, learn and copy parts for your own dotfiles. Use at your own risk!
 
-It targets OS X systems
+## Prerequisites
 
-## Install
+These dotfiles are designed for macOS systems. Before installing, make sure your system is up to date and has Xcode command line tools installed:
 
-On a sparkling fresh installation of OS X:
+```bash
+sudo softwareupdate -i -a
+xcode-select --install
+```
 
-    sudo softwareupdate -i -a
-    xcode-select --install
+## Installation
 
-Install the dotfiles with either Git or curl:
+You can install these dotfiles on a brand new macOS installation by either cloning the repository using Git or downloading it using curl.
 
-### Clone with Git
+### Option 1: Clone with Git
 
-    git clone git@github.com:ku5ic/dotfiles.git ~/.dotfiles
-    source ~/.dotfiles/install.sh
+Clone the repository, and source the install script:
+
+```bash
+git clone git@github.com:ku5ic/dotfiles.git ~/.dotfiles
+source ~/.dotfiles/install.sh
+```
+
+### Option 2: Download with curl
+
+Coming soon...
+
+## Author
+
+- [ku5ic](https://github.com/ku5ic)
