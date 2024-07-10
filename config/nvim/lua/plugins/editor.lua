@@ -114,6 +114,7 @@ return {
 
 	-- vim-fugitive is a Git wrapper so awesome, it should be illegal
 	{ "tpope/vim-fugitive" },
+	{ "tpope/vim-rhubarb" },
 
 	-- precognition.nvim assists with discovering motions (Both vertical and horizontal) to navigate your current buffer
 	{
