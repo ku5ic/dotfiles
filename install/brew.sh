@@ -20,6 +20,8 @@ brews=(
   grep
   httpd
   imagemagick
+  lua
+  luarocks
   ncurses
   neovim
   openjdk
