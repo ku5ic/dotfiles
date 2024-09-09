@@ -26,7 +26,7 @@ return {
 					"lua_ls", -- lua language server
 					"phpactor", -- php language server
 					"solargraph", -- ruby language server
-					"tsserver", -- typescript language server
+					"ts_ls", -- typescript language server
 				},
 				-- auto-install configured servers (with lspconfig)
 				automatic_installation = true, -- not the same as ensure_installed
@@ -140,7 +140,7 @@ return {
 				-- 	vim.lsp.buf.format({ async = true })
 				-- end, set_desc(bufopts, { desc = "Format Document" }))
 
-				if client.name == "tsserver" then
+				if client.name == "ts_ls" then
 					keymap.set(
 						"n",
 						"<leader>co",
@@ -162,13 +162,13 @@ return {
 				capabilities = capabilities,
 			})
 
-			lspconfig["tsserver"].setup({
+			lspconfig["ts_ls"].setup({
 				on_attach = on_attach,
 				capabilities = capabilities,
 				filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascriptreact", "javascript" },
 				diagnostics = {
 					format = function(diagnostic)
-						return string.format("[tsserver] %s", diagnostic.message)
+						return string.format("[ts_ls] %s", diagnostic.message)
 					end,
 				},
 				settings = {
