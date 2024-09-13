@@ -1,5 +1,5 @@
 # General Navigation and File Management
-alias ls='ls --color=auto'     # Adds color to `ls` output for easy differentiation of file types
+alias ls='ls -G'               # Adds color to `ls` output on macOS (no `--color` option, use `-G`)
 alias ll='ls -lah'             # Lists all files, with detailed info and human-readable file sizes
 alias l='ls -CF'               # Lists files in columns, appends '/' to directories
 alias ..='cd ..'               # Moves up one directory level
@@ -16,13 +16,12 @@ alias gl='git pull'            # Pulls the latest changes from the remote reposi
 # System Management
 alias df='df -h'               # Shows disk usage in human-readable format
 alias du='du -h'               # Displays directory size in human-readable format
-alias free='free -m'           # Displays system memory usage in megabytes
-alias psu='ps aux --sort=-%cpu | head'  # Shows the top CPU-consuming processes
-alias top='htop'               # Replaces `top` with `htop` for a more interactive process viewer (if `htop` is installed)
+alias free='vm_stat | awk '\''/free/ {print $3/256" MB"}'\'''  # Shows free memory in macOS (macOS uses `vm_stat`)
+alias psu='ps aux | sort -nrk 3,3 | head'  # Shows top CPU-consuming processes (macOS `ps` doesn't support `--sort`)
 
 # Networking
 alias ping='ping -c 5'         # Pings a host 5 times by default
-alias wget='wget -c'           # Enables download resume for `wget`
+alias wget='wget -c'           # Enables download resume for `wget` (if `wget` is installed, as it's not default in macOS)
 alias curl='curl -O'           # Saves files with the same name as the URL
 
 # Safety Aliases
