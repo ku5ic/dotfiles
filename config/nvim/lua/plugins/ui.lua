@@ -50,8 +50,16 @@ return {
 
 			local function fg(name)
 				return function()
-					local hl = vim.api.nvim_get_hl_by_name(name, true)
-					return hl and hl.foreground and { fg = string.format("#%06x", hl.foreground) }
+					local hl = vim.api.nvim_get_hl(0, { name = name })
+					---@diagnostic disable-next-line: undefined-field
+					if hl and hl.foreground then
+						---@diagnostic disable-next-line: undefined-field
+						local fg_color = tonumber(hl.foreground)
+						if fg_color then
+							return { fg = string.format("#%06x", fg_color) }
+						end
+					end
+					return nil
 				end
 			end
 
