@@ -37,12 +37,24 @@ return {
 	{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 	{
 		"nvim-telescope/telescope.nvim",
-		dependencies = { "nvim-lua/plenary.nvim" },
+		dependencies = {
+			{ "nvim-lua/plenary.nvim" },
+			{
+				"nvim-telescope/telescope-live-grep-args.nvim",
+				-- This will not install any breaking changes.
+				-- For major updates, this must be adjusted manually.
+				version = "^1.0.0",
+			},
+		},
 		cmd = "Telescope",
 		version = false, -- telescope did only one release, so use HEAD for now
 		keys = {
 			{ "<leader>,", "<cmd>Telescope buffers show_all_buffers=true<cr>", desc = "Switch Buffer" },
-			{ "<leader>/", "<cmd>Telescope live_grep<cr>", desc = "Find in Files (Grep)" },
+			{
+				"<leader>/",
+				"<cmd>Telescope live_grep_args<cr>",
+				desc = "Find in Files (Grep)",
+			},
 			{ "<leader>:", "<cmd>Telescope command_history<cr>", desc = "Command History" },
 			-- find
 			{ "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
@@ -84,8 +96,10 @@ return {
 			},
 		},
 		config = function(PluginSpec)
-			require("telescope").setup(PluginSpec.opts)
-			require("telescope").load_extension("fzf")
+			local telescope = require("telescope")
+			telescope.setup(PluginSpec.opts)
+			telescope.load_extension("fzf")
+			telescope.load_extension("live_grep_args")
 		end,
 	},
 
