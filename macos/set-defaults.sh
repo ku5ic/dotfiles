@@ -40,12 +40,6 @@ defaults write -g ApplePressAndHoldEnabled -bool false
 # Disable iCloud as a default save location
 defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
 
-# Set accent color to purple
-defaults write -globalDomain AppleAccentColor -int 5
-
-# Set highlight color to purple
-defaults write NSGlobalDomain AppleHighlightColor -string "0.968627 0.831373 1.000000"
-
 # Use AirDrop over every interface. srsly this should be a default.
 #defaults write com.apple.NetworkBrowser BrowseAllInterfaces 1
 
