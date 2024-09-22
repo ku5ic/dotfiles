@@ -28,6 +28,7 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 sudo scutil --set HostName "Sanctuary"
 sudo scutil --set LocalHostName "Sanctuary"
 sudo scutil --set ComputerName "Sanctuary"
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "Sanctuary"
 
 dscacheutil -flushcache
 
