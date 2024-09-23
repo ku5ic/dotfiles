@@ -10,27 +10,53 @@ pyclean () {
 }
 
 jira_to_git_branch() {
-  declare -u stroy_id
+  # Convert story_id to uppercase and story_title to lowercase
+  declare -u story_id
   declare -l story_title
-  story_id="$1"
-  story_title="$2"
-  story_title="${story_title// /_}"
-  story_title="${story_title//-/}"
-  story_title="${story_title//[^a-zA-Z0-9_]/}"
 
-  git checkout -b  "${story_id}/${story_title/ /_}"
+  # Assign input parameters to variables
+  branch_type="$1"
+  story_id="$2"
+  story_title="$3"
+
+  # Validate branch type
+  case "$branch_type" in
+    feature|bugfix|hotfix)
+      ;;
+    *)
+      echo "Invalid branch type. Allowed types are: feature, bugfix, hotfix."
+      return 1
+      ;;
+  esac
+
+  # Format story_title: replace spaces with underscores, remove hyphens, and non-alphanumeric characters
+  story_title="${story_title// /_}"       # Replace spaces with underscores
+  story_title="${story_title//-/}"        # Remove hyphens
+  story_title="${story_title//[^a-zA-Z0-9_]/}"  # Remove non-alphanumeric characters
+
+  # Construct branch name
+  branch_name="${branch_type}/${story_id}/${story_title}"
+  branch_name=$(echo "$branch_name" | sed 's/[^a-zA-Z0-9]*$//')
+
+  # Create a new git branch with the formatted story_id and story_title
+  git checkout -b "${branch_name}"
 }
 
 2e_projects_tmux() {
-   tmuxinator start 2e-eebook project=eeBook/eebkgweb -n eeBook &&
-   tmuxinator start 2e-eebook project=eeBook/eebkgweb-aee-custom  -n eeBook-aee &&
-   tmuxinator start 2e-eebook project=eeBook/eebkgweb-bwa-custom -n eeBook-bwa &&
-   tmuxinator start 2e-eebook project=eeBook/eebkgweb-eed-custom  -n eeBook-eed &&
-   tmuxinator start 2e-eebook project=eePay/eepayweb -n eePayweb &&
-   tmuxinator start 2e-eebook project=mobile/eepxa-app -n eepxa-app &&
-   tmuxinator start 2e-eebook project=eeOpaque/eeopqfecli -n eeOpaque-fe-cli &&
-   tmuxinator start 2e-eebook project=eeOpaque/eeopqfesrv -n eeOpaque-fe-srv
+    declare -A projects=(
+        ["eeBook"]="eeBook/eebkgweb"
+        ["eeBook-aee"]="eeBook/eebkgweb-aee-custom"
+        ["eeBook-bwa"]="eeBook/eebkgweb-bwa-custom"
+        ["eeBook-eed"]="eeBook/eebkgweb-eed-custom"
+        ["eePayweb"]="eePay/eepayweb"
+        ["eepxa-app"]="mobile/eepxa-app"
+        ["eeOpaque-fe-cli"]="eeOpaque/eeopqfecli"
+        ["eeOpaque-fe-srv"]="eeOpaque/eeopqfesrv"
+    )
 
+    for name in "${!projects[@]}"; do
+        tmuxinator start 2e-eebook project="${projects[$name]}" -n "$name"
+    done
 }
 
 fix_chromedriver() {
