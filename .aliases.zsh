@@ -8,7 +8,7 @@ alias ~='cd ~'                 # Quick shortcut to navigate to the home director
 alias mkcd='foo(){ mkdir -p "$1" && cd "$1"; }; foo' # Make a new directory and immediately navigate into it
 
 # Git Shortcuts
-alias gs='git status'          # Check the status of the git repository
+alias gst='git status'         # Check the status of the git repository
 alias ga='git add'             # Add changes to the staging area
 alias gc='git commit'          # Commit changes
 alias gp='git push'            # Push changes to the remote repository
