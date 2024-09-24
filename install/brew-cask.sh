@@ -7,7 +7,6 @@ casks=(
   authy
   chromedriver
   dbeaver-community
-  diffmerge
   docker
   firefox
   font-fira-code-nerd-font
