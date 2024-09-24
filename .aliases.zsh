@@ -1,17 +1,22 @@
 # General Navigation and File Management
-alias ls='ls -G'               # Adds color to `ls` output on macOS (no `--color` option, use `-G`)
-alias ll='ls -lah'             # Lists all files, with detailed info and human-readable file sizes
+alias ll='ls -lh'              # Human-readable long listing (with file sizes)
+alias la='ls -lha'             # Human-readable listing including hidden files
 alias l='ls -CF'               # Lists files in columns, appends '/' to directories
 alias ..='cd ..'               # Moves up one directory level
 alias ...='cd ../..'           # Moves up two directory levels
 alias ~='cd ~'                 # Quick shortcut to navigate to the home directory
+alias mkcd='foo(){ mkdir -p "$1" && cd "$1"; }; foo' # Make a new directory and immediately navigate into it
 
 # Git Shortcuts
-alias gst='git status'         # Shows the status of the current Git repository
-alias gco='git checkout'       # Switches to another Git branch
-alias gcm='git commit -m'      # Commits changes with a message
-alias gp='git push'            # Pushes committed changes to the remote repository
-alias gl='git pull'            # Pulls the latest changes from the remote repository
+alias gs='git status'          # Check the status of the git repository
+alias ga='git add'             # Add changes to the staging area
+alias gc='git commit'          # Commit changes
+alias gp='git push'            # Push changes to the remote repository
+alias gl='git log --oneline --graph --decorate' # View a simplified git log with graph and decorations
+alias gco='git checkout'       # Check out a branch
+alias gb='git branch'          # List branches
+alias gd='git diff'            # View differences between commits, branches, etc.
+alias gcm='git checkout main'  # Check out the main branch
 
 # System Management
 alias df='df -h'               # Shows disk usage in human-readable format
@@ -29,6 +34,13 @@ alias cp='cp -i'               # Prompts before overwriting files during copy op
 alias mv='mv -i'               # Prompts before overwriting files during move operations
 alias rm='rm -i'               # Prompts before removing files, preventing accidental deletion
 
+# File Management Aliases
+alias rm='rm -i'               # Prompt before deletion
+alias cp='cp -i'               # Prompt before overwriting files
+alias mv='mv -i'               # Prompt before overwriting files
+alias tree='tree -C'           # Quick tree listing
+alias copy_path='pwd | pbcopy' # Copy current path to clipboard (macOS specific)
+
 # Miscellaneous
 alias cls='clear'              # Clears the terminal screen
 alias grep='grep --color=auto' # Adds color to `grep` output to highlight matches
@@ -36,3 +48,7 @@ alias chmod='chmod --preserve-root'  # Prevents `chmod -R /` from affecting the 
 alias mux=tmuxinator # tmuxinator alias
 alias brewall="brew update; brew upgrade; brew upgrade --cask; brew cleanup --prune=all; brew autoremove; brew doctor;" # Update all brew packages
 alias bat="bat --style=numbers --color=always --theme=TwoDark" # bat alias with theme
+
+# Set up your preferred editor (e.g., Neovim or Vim)
+alias vim='nvim'
+alias vi='nvim'
