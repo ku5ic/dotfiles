@@ -2,7 +2,6 @@ return {
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
-		enable = false,
 		config = function()
 			local configs = require("nvim-treesitter.configs")
 
@@ -23,26 +22,48 @@ return {
 					},
 				},
 				ensure_installed = {
-					"bash",
-					"c",
-					"diff",
-					"html",
-					"javascript",
-					"json",
-					"lua",
-					"luadoc",
-					"luap",
-					"markdown",
-					"markdown_inline",
-					"php",
-					"python",
-					"query",
-					"regex",
-					"ruby",
-					"tsx",
-					"typescript",
-					"vim",
-					"yaml",
+					-- Shell scripting
+					"bash", -- Bash scripting
+
+					-- Programming languages
+					"c", -- C programming language
+					"javascript", -- JavaScript programming language
+					"lua", -- Lua programming language
+					"php", -- PHP programming language
+					"python", -- Python programming language
+					"ruby", -- Ruby programming language
+					"tsx", -- TypeScript JSX
+					"typescript", -- TypeScript programming language
+
+					-- Markup languages
+					"html", -- HTML markup language
+					"json", -- JSON data format
+					"markdown", -- Markdown markup language
+					"markdown_inline", -- Inline Markdown
+
+					-- Git related
+					"diff", -- Diff syntax
+					"git_config", -- Git configuration files
+					"git_rebase", -- Git rebase files
+					"gitattributes", -- Git attributes files
+					"gitcommit", -- Git commit messages
+					"gitignore", -- Git ignore files
+
+					-- Lua documentation
+					"luadoc", -- LuaDoc documentation
+					"luap", -- Lua patterns
+
+					-- Miscellaneous
+					"query", -- Query language
+					"regex", -- Regular expressions
+					"requirements", -- Python requirements files
+					"scss", -- SCSS (Sassy CSS)
+					"sql", -- SQL (Structured Query Language)
+					"tmux", -- Tmux configuration
+					"toml", -- TOML configuration
+					"vim", -- Vim script
+					"yaml", -- YAML Ain't Markup Language
+					"jsdoc", -- JavaScript documentation
 				},
 			})
 		end,
