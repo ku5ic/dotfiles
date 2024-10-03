@@ -64,6 +64,7 @@ return {
 					"vim", -- Vim script
 					"yaml", -- YAML Ain't Markup Language
 					"jsdoc", -- JavaScript documentation
+					"phpdoc", -- PHP documentation
 				},
 			})
 		end,
