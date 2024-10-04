@@ -1,5 +1,9 @@
 local opt = vim.opt -- for conciseness
 
+-- disable netrw
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- backup and history
 opt.swapfile = false
 opt.backup = false
