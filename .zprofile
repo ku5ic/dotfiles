@@ -43,19 +43,22 @@ jira_to_git_branch() {
 }
 
 2e_projects_tmux() {
-    declare -A projects=(
-        ["eeBook"]="eeBook/eebkgweb"
-        ["eeBook-aee"]="eeBook/eebkgweb-aee-custom"
-        ["eeBook-bwa"]="eeBook/eebkgweb-bwa-custom"
-        ["eeBook-eed"]="eeBook/eebkgweb-eed-custom"
-        ["eePayweb"]="eePay/eepayweb"
+    typeset -A projects=(
+        ["eebook"]="eebook/eebkgweb"
+        ["eebook-aee"]="eebook/eebkgweb-aee-custom"
+        ["eebook-bwa"]="eebook/eebkgweb-bwa-custom"
+        ["eebook-eed"]="eebook/eebkgweb-eed-custom"
+        ["eepayweb"]="eepay/eepayweb"
         ["eepxa-app"]="mobile/eepxa-app"
-        ["eeOpaque-fe-cli"]="eeOpaque/eeopqfecli"
-        ["eeOpaque-fe-srv"]="eeOpaque/eeopqfesrv"
+        ["eeopaque-fe-cli"]="eeopaque/eeopqfecli"
+        ["eeopaque-fe-srv"]="eeopaque/eeopqfesrv"
+        ["bti-fe"]="bti/btife"
     )
 
-    for name in "${!projects[@]}"; do
-        tmuxinator start 2e-eebook project="${projects[$name]}" -n "$name"
+    for key in "${(@k)projects}"; do
+      value=${projects[$key]}
+      echo "Key: $key, Value: $value"
+      tmuxinator start 2e-eebook project="$value" -n "$key"
     done
 }
 
