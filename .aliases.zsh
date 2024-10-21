@@ -17,6 +17,7 @@ alias gco='git checkout'       # Check out a branch
 alias gb='git branch'          # List branches
 alias gd='git diff'            # View differences between commits, branches, etc.
 alias gcm='git checkout main'  # Check out the main branch
+alias gscf='git diff --name-only --diff-filter=U --relative' # Show conflicted files in a merge
 
 # System Management
 alias df='df -h'               # Shows disk usage in human-readable format
