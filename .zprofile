@@ -45,7 +45,6 @@ jira_to_git_branch() {
 2e_projects_tmux() {
     typeset -A projects=(
         ["eebook"]="eebook/eebkgweb"
-        ["eebook-aee"]="eebook/eebkgweb-aee-custom"
         ["eebook-bwa"]="eebook/eebkgweb-bwa-custom"
         ["eebook-eed"]="eebook/eebkgweb-eed-custom"
         ["eepayweb"]="eepay/eepayweb"
