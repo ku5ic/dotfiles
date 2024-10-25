@@ -33,9 +33,9 @@ ln -sfv "$DOTFILES_DIR/tmux/resurrect" ~/.tmux/
 
 # The script creates a .config directory in the home directory and creates symbolic links from various configuration files in the .dotfiles directory to the .config directory
 mkdir ~/.config
-ln -sfv ~/.dotfiles/config/nvim ~/.config/
-ln -sfv ~/.dotfiles/config/wezterm ~/.config/
-ln -sfv ~/.dotfiles/config/starship.toml ~/.config/
+ln -sfv "$DOTFILES_DIR/config/nvim" ~/.config/
+ln -sfv "$DOTFILES_DIR/config/wezterm" ~/.config/
+ln -sfv "$DOTFILES_DIR/config/starship.toml" ~/.config/
 
 # The script sets up Node.js, Ruby, and Python using asdf, a version manager. It adds the necessary plugins, updates them, installs the latest versions of the languages, and sets those versions as the global versions
 # setup node
