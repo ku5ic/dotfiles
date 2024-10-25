@@ -59,14 +59,51 @@ return {
 		event = "InsertEnter",
 		config = function()
 			local lspconfig = require("lspconfig")
-			local cmp_nvim_lsp = require("cmp_nvim_lsp")
 			local keymap = vim.keymap -- for conciseness
 			local set_desc = require("utils").set_desc
 
 			-- nvim-cmp supports additional completion capabilities
 			-- local capabilities = vim.lsp.protocol.make_client_capabilities()
 			-- capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
-			local capabilities = cmp_nvim_lsp.default_capabilities()
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+			local servers = {
+				html = {},
+				ts_ls = {},
+				solargraph = {},
+				phpactor = {},
+				cssls = {},
+				emmet_ls = {
+					filetypes = {
+						"html",
+						"typescriptreact",
+						"javascriptreact",
+						"css",
+						"sass",
+						"scss",
+						"less",
+						"svelte",
+					},
+				},
+				lua_ls = {
+					settings = {
+						-- custom settings for lua
+						Lua = {
+							-- make the language server recognize "vim" global
+							diagnostics = {
+								globals = { "vim" },
+							},
+							workspace = {
+								-- make language server aware of runtime files
+								library = {
+									[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+									[vim.fn.stdpath("config") .. "/lua"] = true,
+								},
+							},
+						},
+					},
+				},
+			}
 
 			-- Change diagnostic symbols in the sign column (gutter)
 			for name, icon in pairs(require("config.icons").icons.diagnostics) do
@@ -156,74 +193,13 @@ return {
 				end
 			end
 
-			-- configure html server
-			lspconfig["html"].setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-			})
-
-			lspconfig["ts_ls"].setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-				filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascriptreact", "javascript" },
-				diagnostics = {
-					format = function(diagnostic)
-						return string.format("[ts_ls] %s", diagnostic.message)
-					end,
-				},
-				settings = {
-					completions = {
-						completeFunctionCalls = true,
-					},
-				},
-			})
-
-			-- configure ruby server plugin
-			lspconfig["solargraph"].setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-			})
-
-			-- configure php server plugin
-			lspconfig["phpactor"].setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-			})
-
-			-- configure css server
-			lspconfig["cssls"].setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-			})
-
-			-- configure emmet language server
-			lspconfig["emmet_ls"].setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-				filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
-			})
-
-			-- configure lua server (with special settings)
-			lspconfig["lua_ls"].setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-				settings = {
-					-- custom settings for lua
-					Lua = {
-						-- make the language server recognize "vim" global
-						diagnostics = {
-							globals = { "vim" },
-						},
-						workspace = {
-							-- make language server aware of runtime files
-							library = {
-								[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-								[vim.fn.stdpath("config") .. "/lua"] = true,
-							},
-						},
-					},
-				},
-			})
+			-- configure servers
+			for key, value in pairs(servers) do
+				lspconfig[key].setup(vim.tbl_deep_extend("force", {
+					on_attach = on_attach,
+					capabilities = capabilities,
+				}, value))
+			end
 		end,
 	},
 }
