@@ -149,7 +149,12 @@ return {
 
 			local servers = {
 				html = {},
-				ts_ls = {},
+				ts_ls = {
+					filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
+				},
+				eslint = {
+					filetypes = { "javascript", "javascriptreact", "javascript.jsx", "vue", "svelte", "astro" },
+				},
 				solargraph = {},
 				phpactor = {},
 				cssls = {},
