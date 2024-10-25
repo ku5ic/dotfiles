@@ -29,6 +29,7 @@ ln -sfv "$DOTFILES_DIR/.gitmessage" ~
 ln -sfv "$DOTFILES_DIR/.gemrc" ~
 ln -sfv "$DOTFILES_DIR/.tmux.conf" ~
 ln -sfv "$DOTFILES_DIR/.default-python-packages" ~
+ln -sfv "$DOTFILES_DIR/tmux/resurrect" ~/.tmux/
 
 # The script creates a .config directory in the home directory and creates symbolic links from various configuration files in the .dotfiles directory to the .config directory
 mkdir ~/.config

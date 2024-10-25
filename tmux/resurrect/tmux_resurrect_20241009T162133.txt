@@ -1,0 +1,46 @@
+pane	bti-fe	0	1	:*	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/BTI/btife	1	nvim	:nvim
+pane	bti-fe	0	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/2e/Code/BTI/btife	0	zsh	:
+pane	bti-fe	1	0	:-	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/BTI/btife/client	1	zsh	:
+pane	eebook	0	1	:*	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeBook/eebkgweb	1	nvim	:nvim
+pane	eebook	0	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeBook/eebkgweb	0	zsh	:
+pane	eebook	1	0	:-	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeBook/eebkgweb/client	1	zsh	:
+pane	eebook-aee	0	1	:*	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeBook/eebkgweb-aee-custom	1	nvim	:nvim
+pane	eebook-aee	0	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeBook/eebkgweb-aee-custom	0	zsh	:
+pane	eebook-aee	1	0	:-	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeBook/eebkgweb-aee-custom/client	1	zsh	:
+pane	eebook-bwa	0	1	:*	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeBook/eebkgweb-bwa-custom	1	nvim	:nvim
+pane	eebook-bwa	0	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeBook/eebkgweb-bwa-custom	0	zsh	:
+pane	eebook-bwa	1	0	:-	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeBook/eebkgweb-bwa-custom/client	1	zsh	:
+pane	eebook-eed	0	1	:*	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeBook/eebkgweb-eed-custom	1	nvim	:nvim
+pane	eebook-eed	0	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeBook/eebkgweb-eed-custom	0	zsh	:
+pane	eebook-eed	1	0	:-	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeBook/eebkgweb-eed-custom/client	1	zsh	:
+pane	eeopaque-fe-cli	0	1	:*	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeOpaque/eeopqfecli	1	nvim	:nvim
+pane	eeopaque-fe-cli	0	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeOpaque/eeopqfecli	0	zsh	:
+pane	eeopaque-fe-cli	1	0	:-	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeOpaque/eeopqfecli	1	zsh	:
+pane	eeopaque-fe-srv	0	1	:*	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeOpaque/eeopqfesrv	1	nvim	:nvim
+pane	eeopaque-fe-srv	0	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeOpaque/eeopqfesrv	0	zsh	:
+pane	eeopaque-fe-srv	1	0	:-	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeOpaque/eeopqfesrv	1	zsh	:
+pane	eepayweb	0	1	:*	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eePay/eepayweb	1	nvim	:nvim
+pane	eepayweb	0	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eePay/eepayweb	0	zsh	:
+pane	eepayweb	1	0	:-	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eePay/eepayweb/client	1	zsh	:
+pane	eepxa-app	0	1	:*	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/mobile/eepxa-app	1	nvim	:nvim
+pane	eepxa-app	0	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/2e/Code/mobile/eepxa-app	0	zsh	:
+pane	eepxa-app	1	0	:-	0	Sanctuary	:/Users/ku5ic/Projects/2e/Code/mobile/eepxa-app	1	zsh	:
+window	bti-fe	0	:editor	1	:*	7bc8,200x59,0,0[200x24,0,0,14,200x34,0,25,16]	off
+window	bti-fe	1	:react	0	:-	6884,200x59,0,0,15	off
+window	eebook	0	:editor	1	:*	3bc6,200x59,0,0[200x24,0,0,22,200x34,0,25,24]	off
+window	eebook	1	:react	0	:-	e882,200x59,0,0,23	off
+window	eebook-aee	0	:editor	1	:*	bbc9,200x59,0,0[200x24,0,0,18,200x34,0,25,20]	off
+window	eebook-aee	1	:react	0	:-	6888,200x59,0,0,19	off
+window	eebook-bwa	0	:editor	1	:*	7bc2,200x59,0,0[200x24,0,0,10,200x34,0,25,12]	off
+window	eebook-bwa	1	:react	0	:-	6880,200x59,0,0,11	off
+window	eebook-eed	0	:editor	1	:*	3bcc,200x59,0,0[200x24,0,0,26,200x34,0,25,28]	off
+window	eebook-eed	1	:react	0	:-	e886,200x59,0,0,27	off
+window	eeopaque-fe-cli	0	:editor	1	:*	fbc3,200x59,0,0[200x24,0,0,30,200x34,0,25,32]	off
+window	eeopaque-fe-cli	1	:react	0	:-	6881,200x59,0,0,31	off
+window	eeopaque-fe-srv	0	:editor	1	:*	3dec,200x59,0,0[200x24,0,0,6,200x34,0,25,8]	off
+window	eeopaque-fe-srv	1	:react	0	:-	d0a4,200x59,0,0,7	off
+window	eepayweb	0	:editor	1	:*	3de2,200x59,0,0[200x24,0,0,2,200x34,0,25,4]	off
+window	eepayweb	1	:react	0	:-	d0a0,200x59,0,0,3	off
+window	eepxa-app	0	:editor	1	:*	fbc9,200x59,0,0[200x24,0,0,34,200x34,0,25,36]	off
+window	eepxa-app	1	:react	0	:-	6885,200x59,0,0,35	off
+state	eebook	
