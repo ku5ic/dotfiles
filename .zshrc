@@ -17,17 +17,6 @@ fi
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
-
-# Zsh history & completions
-# autoload -Uz compinit
-# if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
-#   compinit
-#   echo "Initializing Completions..."
-# else
-#   compinit -C
-# fi
-
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=100000
 SAVEHIST=$HISTSIZE
@@ -54,15 +43,6 @@ fi
 
 # Enable vi mode
 bindkey -v
-
-# bindkey '^[[H' beginning-of-line
-# bindkey '^[[F' end-of-line
-# bindkey '^[[3~' delete-char
-# bindkey '^[b' backward-word
-# bindkey '^[f' forward-word
-# bindkey '^[d' kill-word
-# bindkey '^[^?' backward-kill-word
-# bindkey "\e[3~" delete-char
 
 # aliases
 source ~/.aliases.zsh
