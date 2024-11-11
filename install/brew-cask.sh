@@ -5,6 +5,7 @@ casks=(
   1password
   1password-cli
   authy
+  boop
   chromedriver
   dbeaver-community
   docker
