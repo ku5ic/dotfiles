@@ -20,6 +20,7 @@ source "$DOTFILES_DIR/install/brew-cask.sh"
 source "$DOTFILES_DIR/install/tmux-plugin-manager.sh"
 
 # The script creates symbolic links from various configuration files in the .dotfiles directory to the home directory
+ln -sfv "$DOTFILES_DIR/.zshenv" ~
 ln -sfv "$DOTFILES_DIR/.zshrc" ~
 ln -sfv "$DOTFILES_DIR/.zprofile" ~
 ln -sfv "$DOTFILES_DIR/.aliases.zsh" ~

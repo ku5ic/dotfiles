@@ -1,25 +1,12 @@
 # Prompt
 eval "$(starship init zsh)"
 
-export CLICOLOR=1
-
 # Zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-# Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='nvim'
-else
-  export EDITOR='nvim'
-fi
-
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-
-HISTFILE=$HOME/.zsh_history
-HISTSIZE=100000
-SAVEHIST=$HISTSIZE
 
 setopt hist_ignore_all_dups # remove older duplicate entries from history
 setopt hist_reduce_blanks   # remove superfluous blanks from history items
@@ -70,19 +57,3 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 # 1Password-cli completions
 eval "$(op completion zsh)"; compdef _op op
-
-export LANG=en_US.UTF-8
-# You don't strictly need this collation, but most technical people
-# probably want C collation for sane results
-export LC_COLLATE=C
-
-# PATH
-export PATH="/opt/homebrew/bin:$PATH"
-export PATH="$(brew --prefix)/opt/python/libexec/bin:$PATH"
-export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
-export PATH="/opt/homebrew/opt/ncurses/bin:$PATH"
-export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
-export PATH
-
-# asdf
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
