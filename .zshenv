@@ -18,9 +18,10 @@ export LC_COLLATE=C
 # PATH
 export PATH="/opt/homebrew/bin:$PATH"
 export PATH="$(brew --prefix)/opt/python/libexec/bin:$PATH"
-export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
-export PATH="/opt/homebrew/opt/ncurses/bin:$PATH"
-export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+export PATH="$(brew --prefix)/opt/openssl@3/bin:$PATH"
+export PATH="$(brew --prefix)/opt/ncurses/bin:$PATH"
+export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
+export PATH="$HOME/.dotfiles/scripts:$PATH"
 export PATH
 
 # asdf

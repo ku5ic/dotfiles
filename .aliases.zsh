@@ -45,7 +45,6 @@ alias copy_path='pwd | pbcopy' # Copy current path to clipboard (macOS specific)
 # Miscellaneous
 alias cls='clear'              # Clears the terminal screen
 alias grep='grep --color=auto' # Adds color to `grep` output to highlight matches
-alias chmod='chmod --preserve-root'  # Prevents `chmod -R /` from affecting the root directory (added safety)
 alias mux=tmuxinator # tmuxinator alias
 alias brewall="brew update; brew upgrade; brew upgrade --cask; brew cleanup --prune=all; brew autoremove; brew doctor;" # Update all brew packages
 alias bat="bat --style=numbers --color=always --theme=TwoDark" # bat alias with theme
@@ -53,3 +52,14 @@ alias bat="bat --style=numbers --color=always --theme=TwoDark" # bat alias with 
 # Set up your preferred editor (e.g., Neovim or Vim)
 alias vim='nvim'
 alias vi='nvim'
+
+
+# Automatically create aliases for executable scripts
+for script in "$DOTFILES_DIR/scripts"/*.sh; do
+  if [[ -x "$script" ]]; then
+    # Extract the script name without the path and extension
+    alias_name=$(basename "$script" .sh)
+    # Create an alias that points to the script
+    alias "$alias_name"="$script"
+  fi
+done

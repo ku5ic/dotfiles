@@ -8,11 +8,17 @@ export DISABLE_SPRING=true
 export PYTHONDONTWRITEBYTECODE=1
 export PYTHON_CONFIGURE_OPTS="--enable-framework"
 
-# Custom scripts
-source "$DOTFILES_DIR/scripts/brew.sh"
-source "$DOTFILES_DIR/scripts/2e.sh"
-source "$DOTFILES_DIR/scripts/jira.sh"
-source "$DOTFILES_DIR/scripts/misc.sh"
-
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
+
+pyclean () {
+  find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
+}
+
+fix_chromedriver() {
+  xattr -d com.apple.quarantine $(which chromedriver)
+}
+
+fix_node_openssl() {
+  export NODE_OPTIONS=--openssl-legacy-provider
+}

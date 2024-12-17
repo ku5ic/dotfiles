@@ -12,7 +12,20 @@ export DOTFILES_DIR="$HOME/.dotfiles"
 
 # The script installs zsh, a shell, using Homebrew and sets it as the default shell
 brew install zsh
+
+# Add the Homebrew-installed zsh to the list of acceptable shells
+echo $(brew --prefix)/bin/zsh | sudo tee -a /private/etc/shells /usr/local/bin/bash
+
+# Change the default shell to the Homebrew-installed zsh
 chsh -s /opt/homebrew/bin/zsh
+
+# Install the latest version of Bash using Homebrew
+brew install bash
+
+# Add the newly installed Bash to the list of valid login shells
+# The command `brew --prefix` returns the Homebrew installation prefix
+# The output is then appended to the /private/etc/shells file and also copied to /usr/local/bin/bash
+echo $(brew --prefix)/bin/bash | sudo tee -a /private/etc/shells /usr/local/bin/bash
 
 # The script sources (runs) other scripts to install additional Homebrew and brew-cask packages and tmux plugins
 source "$DOTFILES_DIR/install/brew.sh"
