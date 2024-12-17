@@ -6,7 +6,7 @@ output=$(brew outdated --cask --greedy --verbose)
 # Check if there is any output
 if [[ -z "$output" ]]; then
   echo "No outdated casks found. Exiting."
-  return 0
+  exit 0
 else
   # Display the output to the user
   echo "$output"
