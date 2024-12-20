@@ -32,7 +32,6 @@ source_scripts() {
 }
 
 create_symlinks() {
-  ln -sfv "$DOTFILES_DIR/.zshenv" ~
   ln -sfv "$DOTFILES_DIR/.zshrc" ~
   ln -sfv "$DOTFILES_DIR/.zprofile" ~
   ln -sfv "$DOTFILES_DIR/.aliases.zsh" ~
