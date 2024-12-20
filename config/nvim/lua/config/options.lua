@@ -1,7 +1,7 @@
 local opt = vim.opt -- for conciseness
 
 vim.g.python3_host_prog = "~/.asdf/shims/python" -- use python3 from asdf
-vim.g.ruby_host_prog = "~/.asdf/shims/ruby" -- use ruby from asdf
+vim.g.ruby_host_prog = "~/.asdf/shims/neovim-ruby-host" -- use ruby from asdf
 
 -- disable netrw
 vim.g.loaded_netrw = 1
