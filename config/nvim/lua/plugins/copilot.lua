@@ -113,27 +113,23 @@ return {
 		end,
 		-- event = "VeryLazy",
 		keys = {
-			-- Show help actions with telescope
-			{
-				"<leader>ah",
-				function()
-					local actions = require("CopilotChat.actions")
-					require("CopilotChat.integrations.telescope").pick(actions.help_actions())
-				end,
-				desc = "CopilotChat - Help actions",
-			},
 			-- Show prompts actions with telescope
 			{
 				"<leader>ap",
 				function()
-					local actions = require("CopilotChat.actions")
-					require("CopilotChat.integrations.telescope").pick(actions.prompt_actions())
+					local actions = require("CopilotChat.actions").prompt_actions
+					require("CopilotChat.integrations.telescope").pick(actions())
 				end,
 				desc = "CopilotChat - Prompt actions",
 			},
 			{
 				"<leader>ap",
-				":lua require('CopilotChat.integrations.telescope').pick(require('CopilotChat.actions').prompt_actions({selection = require('CopilotChat.select').visual}))<CR>",
+				function()
+					local copilotChat = require("CopilotChat")
+					copilotChat.integrations.telescope.pick(
+						copilotChat.actions.prompt_actions({ selection = copilotChat.select.visual })
+					)
+				end,
 				mode = "x",
 				desc = "CopilotChat - Prompt actions",
 			},
@@ -154,7 +150,7 @@ return {
 			{
 				"<leader>ai",
 				function()
-					local input = vim.fn.input("Ask Copilot: ")
+					local input = vim.trim(vim.fn.input("Ask Copilot: "))
 					if input ~= "" then
 						vim.cmd("CopilotChat " .. input)
 					end
