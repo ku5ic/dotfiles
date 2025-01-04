@@ -8,6 +8,8 @@ source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
+unsetopt correct_all        # disable autocorrect
+setopt correct              # enable autocorrect
 setopt hist_ignore_all_dups # remove older duplicate entries from history
 setopt hist_reduce_blanks   # remove superfluous blanks from history items
 setopt inc_append_history   # save history entries as soon as they are entered
