@@ -14,6 +14,7 @@ brews=(
   composer
   coreutils
   ctags
+  fastfetch
   fzf
   git
   gnu-sed
