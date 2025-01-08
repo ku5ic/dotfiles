@@ -36,6 +36,7 @@ brews=(
   starship
   tig
   tmuxinator
+  tpm
   tree
   wget
   zsh
