@@ -47,6 +47,7 @@ export FZF_DEFAULT_OPTS="
 --layout=reverse
 --info=inline
 --height=80%
+--tmux bottom,80%
 --multi
 --preview-window=:hidden
 --preview '([[ -f {} ]] && (bat --style=numbers --color=always --theme=TwoDark {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'
