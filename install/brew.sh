@@ -21,6 +21,7 @@ brews=(
   grep
   httpd
   imagemagick
+  jesseduffield/lazygit/lazygit
   lua
   luarocks
   ncurses
