@@ -43,15 +43,13 @@ ssh-add -K ~/.ssh/id_rsa &> /dev/null
 ssh-add -A &> /dev/null
 
 # fzf
-export FZF_DEFAULT_OPTS="
---layout=reverse
---info=inline
---height=80%
---tmux bottom,80%
+export FZF_DEFAULT_OPTS="\
+--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
+--color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
+--color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
+--color=selected-bg:#45475a \
 --multi
---preview-window=:hidden
 --preview '([[ -f {} ]] && (bat --style=numbers --color=always --theme=TwoDark {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'
---bind '?:toggle-preview'
 "
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*" --glob "!node_modules/*" --glob "!vendor/*" 2> /dev/null'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
