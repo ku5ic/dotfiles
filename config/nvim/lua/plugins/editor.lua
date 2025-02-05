@@ -131,6 +131,28 @@ return {
 	{ "tpope/vim-fugitive" },
 	{ "tpope/vim-rhubarb" },
 
+	-- lazygit.nvim is a plugin for managing git repositories
+	{
+		"kdheepak/lazygit.nvim",
+		lazy = true,
+		cmd = {
+			"LazyGit",
+			"LazyGitConfig",
+			"LazyGitCurrentFile",
+			"LazyGitFilter",
+			"LazyGitFilterCurrentFile",
+		},
+		-- optional for floating window border decoration
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+		},
+		-- setting the keybinding for LazyGit with 'keys' is recommended in
+		-- order to load the plugin when the command is run for the first time
+		keys = {
+			{ "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
+		},
+	},
+
 	-- precognition.nvim assists with discovering motions (Both vertical and horizontal) to navigate your current buffer
 	{
 		"tris203/precognition.nvim",
