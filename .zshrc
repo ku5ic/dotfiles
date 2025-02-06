@@ -24,10 +24,10 @@ zstyle ':completion:*' group-name '' # group results by category
 zstyle ':completion:*' completer _expand _complete _correct _approximate # enable approximate matches for completion
 
 if type brew &>/dev/null; then
+  FPATH=${ASDF_DATA_DIR:-$HOME/.asdf}/completions:$FPATH
   FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 
-  autoload -Uz compinit
-  compinit
+  autoload -Uz compinit && compinit
 fi
 
 # Enable vi mode
@@ -83,10 +83,8 @@ export PATH="$(brew --prefix)/opt/openssl@3/bin:$PATH"
 export PATH="$(brew --prefix)/opt/ncurses/bin:$PATH"
 export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
 export PATH="$HOME/.dotfiles/scripts:$PATH"
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 export PATH
-
-# asdf
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
 
 # FastFetch, Fast, highly customisable system info script
 # fastfetch
