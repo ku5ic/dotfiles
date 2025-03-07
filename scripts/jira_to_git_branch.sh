@@ -19,6 +19,7 @@ esac
 
 # Format story_title: replace spaces with underscores, remove hyphens, and non-alphanumeric characters
 story_title="${story_title// /_}"             # Replace spaces with underscores
+story_title="${story_title/__/ /_}"           # Replace double underscores with a single underscore
 story_title="${story_title//-/}"              # Remove hyphens
 story_title="${story_title//[^a-zA-Z0-9_]/}"  # Remove non-alphanumeric characters
 
