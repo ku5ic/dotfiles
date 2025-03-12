@@ -78,19 +78,13 @@ return {
 			{ "<leader>sR", "<cmd>Telescope resume<cr>", desc = "Resume" },
 		},
 		opts = {
-			pickers = {
-				buffers = {
-					show_all_buffers = true,
-					sort_lastused = true,
-					theme = "dropdown",
-					previewer = false,
-					mappings = {
-						i = {
-							["<c-d>"] = "delete_buffer",
-						},
-						n = {
-							["<c-d>"] = "delete_buffer",
-						},
+			defaults = {
+				mappings = {
+					i = {
+						["<c-d>"] = "delete_buffer",
+					},
+					n = {
+						["<c-d>"] = "delete_buffer",
 					},
 				},
 			},
