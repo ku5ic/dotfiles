@@ -12,6 +12,7 @@ local prompts = {
 		Documentation = "Please provide documentation for the following code.",
 		SwaggerApiDocs = "Please provide documentation for the following API using Swagger.",
 		SwaggerJsDocs = "Please write JSDoc for the following API using Swagger.",
+		WCAGRefactor = "Please refactor the following code to comply with WCAG 2.2 AA accessibility standards, ensuring semantic HTML, keyboard accessibility, ARIA support, proper contrast, focus management, and accessible forms. Explain the changes made",
 	},
 	-- Text related prompts
 	Text = {
