@@ -32,6 +32,22 @@ local function setup_diagnostic_keymaps(opts)
 	keymap.set("n", "<leader>q", vim.diagnostic.setloclist, set_desc(opts, { desc = "Set Location List" }))
 end
 
+local function organize_imports(bufnr)
+	-- Get the current buffer number if none is provided
+	bufnr = bufnr or vim.api.nvim_get_current_buf()
+
+	-- Parameters for the request
+	local params = {
+		command = "_typescript.organizeImports",
+		arguments = { vim.api.nvim_buf_get_name(bufnr) },
+		title = "",
+	}
+
+	-- Perform a synchronous request with a 500ms timeout
+	-- Depending on the size of the file, a larger timeout may be needed
+	vim.lsp.buf_request_sync(bufnr, "workspace/executeCommand", params, 500)
+end
+
 -- Function to set up LSP key mappings
 local function setup_lsp_keymaps(client, bufnr)
 	local bufopts = { noremap = true, silent = true, buffer = bufnr }
@@ -61,12 +77,9 @@ local function setup_lsp_keymaps(client, bufnr)
 	keymap.set("n", "gr", vim.lsp.buf.references, set_desc(bufopts, { desc = "Go to References" }))
 
 	if client.name == "ts_ls" then
-		keymap.set(
-			"n",
-			"<leader>co",
-			"<cmd>TypescriptOrganizeImports<CR>",
-			set_desc(bufopts, { desc = "Organize Imports" })
-		)
+		keymap.set("n", "<leader>co", function()
+			organize_imports(bufnr)
+		end, set_desc(bufopts, { desc = "Organize Imports" }))
 		keymap.set("n", "<leader>cR", "<cmd>TypescriptRenameFile<CR>", set_desc(bufopts, { desc = "Rename File" }))
 	end
 end
