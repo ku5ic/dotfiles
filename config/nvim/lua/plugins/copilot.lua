@@ -5,14 +5,14 @@ local prompts = {
 		Explain = "Please explain how the following code works.",
 		Review = "Please review the following code and provide suggestions for improvement.",
 		Tests = "Please explain how the selected code works, then generate unit tests for it.",
-		Refactor = "Please refactor the following code to improve its clarity and readability.",
-		FixCode = "Please fix the following code to make it work as intended.",
+		Refactor = "Please refactor the following code to improve its clarity and readability. Explain the changes made.",
+		FixCode = "Please fix the following code to make it work as intended. Explain the changes made.",
 		FixError = "Please explain the error in the following text and provide a solution.",
 		BetterNamings = "Please provide better names for the following variables and functions.",
 		Documentation = "Please provide documentation for the following code.",
 		SwaggerApiDocs = "Please provide documentation for the following API using Swagger.",
 		SwaggerJsDocs = "Please write JSDoc for the following API using Swagger.",
-		WCAGRefactor = "Please refactor the following code to comply with WCAG 2.2 AA accessibility standards, ensuring semantic HTML, keyboard accessibility, ARIA support, proper contrast, focus management, and accessible forms. Explain the changes made",
+		WCAGRefactor = "Please refactor the following code to comply with WCAG 2.2 AA accessibility standards, ensuring semantic HTML, keyboard accessibility, ARIA support, proper contrast, focus management, and accessible forms. Explain the changes made.",
 	},
 	-- Text related prompts
 	Text = {
