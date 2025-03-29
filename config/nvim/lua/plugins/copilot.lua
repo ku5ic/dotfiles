@@ -199,19 +199,26 @@ return {
 		config = function(_, opts)
 			local chat = require("CopilotChat")
 			local select = require("CopilotChat.select")
-			-- Use unnamed register for the selection
-			opts.selection = select.unnamed
 
-			local user = vim.env.USER or "User"
-			user = user:sub(1, 1):upper() .. user:sub(2)
-			opts.question_header = "  " .. user .. " "
-			opts.answer_header = "  Copilot "
+			-- Configure selection and headers
+			local function configure_opts()
+				opts.selection = select.unnamed
 
+				local user = (vim.env.USER or "User"):gsub("^%l", string.upper)
+				opts.question_header = "  " .. user .. " "
+				opts.answer_header = "  Copilot "
+			end
+
+			-- Create user commands
+			local function create_user_commands()
+				vim.api.nvim_create_user_command("CopilotChatVisual", function(args)
+					chat.ask(args.args, { selection = select.visual })
+				end, { nargs = "*", range = true })
+			end
+
+			configure_opts()
 			chat.setup(opts)
-
-			vim.api.nvim_create_user_command("CopilotChatVisual", function(args)
-				chat.ask(args.args, { selection = select.visual })
-			end, { nargs = "*", range = true })
+			create_user_commands()
 		end,
 		-- event = "VeryLazy",
 		keys = {
