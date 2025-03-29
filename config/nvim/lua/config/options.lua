@@ -1,77 +1,74 @@
 local opt = vim.opt -- for conciseness
 
-vim.g.python3_host_prog = "~/.asdf/shims/python" -- use python3 from asdf
-vim.g.ruby_host_prog = "~/.asdf/shims/neovim-ruby-host" -- use ruby from asdf
+-- Host programs for external integrations
+vim.g.python3_host_prog = "~/.asdf/shims/python"
+vim.g.ruby_host_prog = "~/.asdf/shims/neovim-ruby-host"
 
--- disable netrw
+-- Disable netrw
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- backup and history
+-- Backup and history settings
 opt.swapfile = false
 opt.backup = false
-opt.wb = false
+opt.writebackup = false -- clearer alias for `wb`
 opt.history = 1000
 
--- line numbers
-opt.relativenumber = true -- show relative line numbers
-opt.number = true -- shows absolute line number on cursor line (when relative number is on)
+-- Line numbers
+opt.number = true
+opt.relativenumber = true
 
--- tabs & indentation & folding
-opt.winbar = "%=%m %f" -- show file name and modified status in window bar
-opt.expandtab = true -- expand tab to spaces
-opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
-opt.shiftwidth = 2 -- 2 spaces for indent width
-opt.autoindent = true -- copy indent from current line when starting new one
-opt.list = true -- show invisible characters
-opt.foldenable = true -- enable folding
-opt.foldcolumn = "1" -- show fold column
-opt.foldmethod = "expr" -- use treesitter for folding
-opt.foldexpr = "nvim_treesitter#foldexpr()" -- use treesitter for folding
-opt.foldlevel = 99 -- open all folds by default
-vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]] -- fold characters
-
--- listchars
+-- Tabs, indentation, and folding
+opt.expandtab = true
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.autoindent = true
+opt.list = true
 opt.listchars = { eol = "¬", tab = ">-", trail = "␣", extends = "»", precedes = "«", space = "·" }
--- opt.list = true
+opt.winbar = "%=%m %f"
+opt.foldenable = true
+opt.foldcolumn = "1"
+opt.foldmethod = "expr"
+opt.foldexpr = "nvim_treesitter#foldexpr()"
+opt.foldlevel = 99
+vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
 
--- line wrapping
-opt.wrap = false -- disable line wrapping
+-- Line wrapping
+opt.wrap = false
 
--- reload file changed outside vim
+-- Auto-reload files changed outside Neovim
 opt.autoread = true
 
--- search settings
-opt.ignorecase = true -- ignore case when searching
-opt.smartcase = true -- if you include mixed case in your search, assumes you want case-sensitive
+-- Search settings
+opt.ignorecase = true
+opt.smartcase = true
 
--- spelling and encoding
+-- Spelling and encoding
 opt.spell = true
 opt.spelllang = { "en_us" }
 opt.spellsuggest = { "best", 9 }
-opt.encoding = "utf-8"
 opt.spelloptions = "camel"
+opt.encoding = "utf-8"
 
--- cursor line
-opt.cursorline = true -- highlight the current cursor line
+-- Cursor line
+opt.cursorline = true
 
--- appearance
+-- Appearance
 opt.termguicolors = true
-opt.background = "dark" -- colorschemes that can be light or dark will be made dark
-opt.signcolumn = "yes" -- show sign column so that text doesn't shift
+opt.background = "dark"
+opt.signcolumn = "yes"
 opt.showtabline = 2
 
--- backspace
-opt.backspace = "indent,eol,start" -- allow backspace on indent, end of line or insert mode start position
+-- Backspace behavior
+opt.backspace = { "indent", "eol", "start" }
 
--- clipboard
--- only set clipboard if not in ssh, to make sure the OSC 52
--- integration works automatically. Requires Neovim >= 0.10.0
-opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus" -- Sync with system clipboard
+-- Clipboard integration
+opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus"
 
--- split windows
-opt.splitright = true -- split vertical window to the right
-opt.splitbelow = true -- split horizontal window to the bottom
+-- Split window behavior
+opt.splitright = true
+opt.splitbelow = true
 
-opt.iskeyword:append("-") -- consider string-string as whole word
-opt.runtimepath:append("/opt/homebrew/bin/fzf") -- add fzf to runtimepath
+-- Miscellaneous
+opt.iskeyword:append("-")
+opt.runtimepath:append("/opt/homebrew/bin/fzf")
