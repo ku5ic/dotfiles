@@ -10,24 +10,22 @@ return {
 	{
 		"windwp/nvim-autopairs",
 		config = function()
-			-- import nvim-autopairs safely
+			-- Safely import required modules
 			local autopairs = require("nvim-autopairs")
-			-- import nvim-autopairs completion functionality safely
 			local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-			-- import nvim-cmp plugin safely (completions plugin)
 			local cmp = require("cmp")
 
-			-- configure autopairs
+			-- Configure autopairs with Treesitter support
 			autopairs.setup({
-				check_ts = true, -- enable treesitter
+				check_ts = true,
 				ts_config = {
-					lua = { "string" }, -- don't add pairs in lua string treesitter nodes
-					javascript = { "template_string" }, -- don't add pairs in javscript template_string treesitter nodes
-					java = false, -- don't check treesitter on java
+					lua = { "string" }, -- Exclude Lua string nodes
+					javascript = { "template_string" }, -- Exclude JS template strings
+					java = false, -- Disable Treesitter checks for Java
 				},
 			})
 
-			-- make autopairs and completion work together
+			-- Integrate autopairs with nvim-cmp
 			cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 		end,
 	},
