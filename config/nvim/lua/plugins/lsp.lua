@@ -14,7 +14,7 @@ local function configure_diagnostics()
 	vim.diagnostic.config({
 		virtual_text = false,
 		float = {
-			source = "always", -- Or "if_many"
+			source = true, -- Or "if_many"
 		},
 		table = {
 			source = "always", -- Or "if_many"
@@ -27,8 +27,12 @@ end
 -- Function to set up diagnostic key mappings
 local function setup_diagnostic_keymaps(opts)
 	keymap.set("n", "<leader>e", vim.diagnostic.open_float, set_desc(opts, { desc = "Show Line Diagnostics" }))
-	keymap.set("n", "[d", vim.diagnostic.goto_prev, set_desc(opts, { desc = "Go to Previous Diagnostic" }))
-	keymap.set("n", "]d", vim.diagnostic.goto_next, set_desc(opts, { desc = "Go to Next Diagnostic" }))
+	keymap.set("n", "[d", function()
+		vim.diagnostic.jump({ count = 1, float = true })
+	end, set_desc(opts, { desc = "Go to Previous Diagnostic" }))
+	keymap.set("n", "]d", function()
+		vim.diagnostic.jump({ count = -1, float = true })
+	end, set_desc(opts, { desc = "Go to Next Diagnostic" }))
 	keymap.set("n", "<leader>q", vim.diagnostic.setloclist, set_desc(opts, { desc = "Set Location List" }))
 end
 
@@ -45,7 +49,13 @@ local function organize_imports(bufnr)
 
 	-- Perform a synchronous request with a 500ms timeout
 	-- Depending on the size of the file, a larger timeout may be needed
-	vim.lsp.buf_request_sync(bufnr, "workspace/executeCommand", params, 500)
+	vim.lsp.buf_request(bufnr, "workspace/executeCommand", params, function(err, result, ctx)
+		if err then
+			vim.notify("Error organizing imports: " .. err.message, vim.log.levels.ERROR)
+		elseif result then
+			vim.notify("Imports organized successfully", vim.log.levels.INFO)
+		end
+	end)
 end
 
 -- Function to set up LSP key mappings
@@ -195,6 +205,7 @@ return {
 						Lua = {
 							diagnostics = { globals = { "vim" } },
 							workspace = {
+								checkThirdParty = false,
 								library = {
 									[vim.fn.expand("$VIMRUNTIME/lua")] = true,
 									[vim.fn.stdpath("config") .. "/lua"] = true,
