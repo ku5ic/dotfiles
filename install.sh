@@ -40,6 +40,7 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/.gemrc" ~
   ln -sfv "$DOTFILES_DIR/.tmux.conf" ~
   ln -sfv "$DOTFILES_DIR/.default-python-packages" ~
+  ln -sfv "$DOTFILES_DIR/.default-npm-packages" ~
   ln -sfv "$DOTFILES_DIR/tmux/resurrect" ~/.tmux/
 
   mkdir -p ~/.config
