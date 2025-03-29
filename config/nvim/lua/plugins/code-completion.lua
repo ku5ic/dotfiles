@@ -17,17 +17,45 @@ return {
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
 
-			local has_words_before = function()
-				unpack = unpack or table.unpack
-				local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-				return col ~= 0
-					and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+			-- Helper function to check if there are words before the cursor
+			local function has_words_before()
+				local _, col = unpack(vim.api.nvim_win_get_cursor(0))
+				if col == 0 then
+					return false
+				end
+				return not vim.api.nvim_get_current_line():sub(col, col):match("%s")
 			end
-			-- load vs-code like snippets from plugins (e.g. friendly-snippets)
-			require("luasnip/loaders/from_vscode").lazy_load()
 
+			-- Lazy load VS Code-like snippets
+			require("luasnip.loaders.from_vscode").lazy_load()
+
+			-- Set completion options
 			vim.opt.completeopt = "menu,menuone,noselect"
 
+			-- Define mappings for completion
+			local function tab_mapping(fallback)
+				if cmp.visible() then
+					cmp.select_next_item()
+				elseif luasnip.expand_or_jumpable() then
+					luasnip.expand_or_jump()
+				elseif has_words_before() then
+					cmp.complete()
+				else
+					fallback()
+				end
+			end
+
+			local function shift_tab_mapping(fallback)
+				if cmp.visible() then
+					cmp.select_prev_item()
+				elseif luasnip.jumpable(-1) then
+					luasnip.jump(-1)
+				else
+					fallback()
+				end
+			end
+
+			-- Configure nvim-cmp
 			cmp.setup({
 				snippet = {
 					expand = function(args)
@@ -35,44 +63,22 @@ return {
 					end,
 				},
 				mapping = cmp.mapping.preset.insert({
-					["<Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_next_item()
-							-- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable()
-							-- they way you will only jump inside the snippet region
-						elseif luasnip.expand_or_jumpable() then
-							luasnip.expand_or_jump()
-						elseif has_words_before() then
-							cmp.complete()
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
-					["<S-Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_prev_item()
-						elseif luasnip.jumpable(-1) then
-							luasnip.jump(-1)
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
+					["<Tab>"] = cmp.mapping(tab_mapping, { "i", "s" }),
+					["<S-Tab>"] = cmp.mapping(shift_tab_mapping, { "i", "s" }),
 					["<C-b>"] = cmp.mapping.scroll_docs(-4),
 					["<C-f>"] = cmp.mapping.scroll_docs(4),
-					["<C-Space>"] = cmp.mapping.complete(), -- show completion suggestions
-					["<C-e>"] = cmp.mapping.abort(), -- close completion window
+					["<C-Space>"] = cmp.mapping.complete(),
+					["<C-e>"] = cmp.mapping.abort(),
 					["<CR>"] = cmp.mapping.confirm({ select = false }),
 				}),
-				-- sources for autocompletion
 				sources = cmp.config.sources({
-					{ name = "copilot", group_index = 2 }, -- copilot completion
-					{ name = "path", group_index = 2 }, -- file system paths
-					{ name = "nvim_lsp", group_index = 2 }, -- lsp
-					{ name = "luasnip", group_index = 2 }, -- snippets
-					{ name = "spell", group_index = 2 }, -- spell checking
-					{ name = "buffer", group_index = 2 }, -- text within current buffer
+					{ name = "nvim_lsp", group_index = 1 },
+					{ name = "luasnip", group_index = 1 },
+					{ name = "buffer", group_index = 2 },
+					{ name = "path", group_index = 2 },
+					{ name = "spell", group_index = 3 },
+					{ name = "copilot", group_index = 3 },
 				}),
-				-- configure completion menu
 				formatting = {
 					format = function(entry, item)
 						local icons = require("config.icons").icons.kinds
