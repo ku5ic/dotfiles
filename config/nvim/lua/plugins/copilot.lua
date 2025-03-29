@@ -1,4 +1,4 @@
-local mergeTables = require("utils").mergeTables
+local merge_tables = require("utils").merge_tables
 local prompts = {
 	Code = {
 		Explain = [[
@@ -146,7 +146,7 @@ return {
 			question_header = "## User ",
 			answer_header = "## Copilot ",
 			error_header = "## Error ",
-			prompts = mergeTables(prompts.Code, prompts.Text),
+			prompts = merge_tables(prompts.Code, prompts.Text),
 			auto_follow_cursor = false, -- Don't follow the cursor after getting response
 			mappings = {
 				-- Use tab for completion

@@ -1,20 +1,22 @@
 local M = {}
 
+-- utility function to set the description of a keymap
 local set_desc = function(options, desc)
 	return vim.tbl_extend("force", options, desc)
 end
 
-local function mergeTables(...)
-	local mergedTable = {}
+-- Utility function to merge multiple tables into one
+local function merge_tables(...)
+	local merged = {}
 	for _, tbl in ipairs({ ... }) do
 		for k, v in pairs(tbl) do
-			mergedTable[k] = v
+			merged[k] = v
 		end
 	end
-	return mergedTable
+	return merged
 end
 
 M.set_desc = set_desc
-M.mergeTables = mergeTables
+M.merge_tables = merge_tables
 
 return M
