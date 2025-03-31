@@ -1,25 +1,30 @@
 local keymap = vim.keymap -- for conciseness
 local set_desc = require("utils").set_desc
 
--- Function to set up diagnostic symbols
-local function setup_diagnostic_symbols()
-	for name, icon in pairs(require("config.icons").icons.diagnostics) do
-		name = "DiagnosticSign" .. name
-		vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
-	end
-end
-
 -- Function to configure diagnostics display
 local function configure_diagnostics()
+	local icons = require("config.icons").icons.diagnostics
 	vim.diagnostic.config({
-		virtual_text = false,
+		virtual_text = {
+			prefix = "●", -- Could be '●', '▎', 'x'
+			spacing = 4,
+			source = true, -- Or "if_many"
+		},
 		float = {
 			source = true, -- Or "if_many"
 		},
 		table = {
 			source = "always", -- Or "if_many"
 		},
-		signs = true,
+		signs = {
+			text = {
+				[vim.diagnostic.severity.ERROR] = icons.Error,
+				[vim.diagnostic.severity.WARN] = icons.Warn,
+				[vim.diagnostic.severity.INFO] = icons.Info,
+				[vim.diagnostic.severity.HINT] = icons.Hint,
+			},
+		},
+		underline = true,
 		severity_sort = true,
 	})
 end
@@ -216,7 +221,6 @@ return {
 				},
 			}
 
-			setup_diagnostic_symbols()
 			configure_diagnostics()
 			setup_diagnostic_keymaps({ noremap = true, silent = true })
 			configure_servers(servers, capabilities, lspconfig)
