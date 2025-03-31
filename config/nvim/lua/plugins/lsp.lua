@@ -6,7 +6,15 @@ local function configure_diagnostics()
 	local icons = require("config.icons").icons.diagnostics
 	vim.diagnostic.config({
 		virtual_text = {
-			prefix = "●", -- Could be '●', '▎', 'x'
+			prefix = function(diagnostic)
+				local severity_map = {
+					[1] = "Error",
+					[2] = "Warn",
+					[3] = "Info",
+					[4] = "Hint",
+				}
+				return icons[severity_map[diagnostic.severity]] .. " "
+			end, -- Dynamically set prefix based on severity
 			spacing = 4,
 			source = true, -- Or "if_many"
 		},
