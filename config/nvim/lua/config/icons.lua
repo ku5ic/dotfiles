@@ -9,9 +9,19 @@ M.icons = {
 		Info = " ",
 	},
 	git = {
-		added = " ",
-		modified = " ",
-		removed = " ",
+		-- Change type
+		added = "", -- nf-fa-plus_square
+		modified = "", -- nf-oct-diff_modified
+		deleted = "", -- nf-fa-minus_square
+		removed = "", -- nf-oct-diff_removed (alternative to deleted)
+		renamed = "󰁕", -- nf-md-file_replace
+		copied = "", -- nf-fa-copy
+		-- Status type
+		untracked = "", -- nf-fa-question_circle
+		ignored = "", -- nf-oct-file_submodule
+		unstaged = "󰄱", -- nf-md-pencil_off
+		staged = "", -- nf-fa-check_square
+		conflict = "", -- nf-dev-git_merge
 	},
 	kinds = (function()
 		-- Use a local table to avoid repetition and improve clarity

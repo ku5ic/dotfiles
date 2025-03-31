@@ -12,6 +12,34 @@ return {
 			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
 			"MunifTanjim/nui.nvim",
 		},
+		config = function()
+			local icons = require("config.icons").icons
+			require("neo-tree").setup({
+				close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
+				popup_border_style = "rounded",
+				window = {
+					position = "left",
+					width = 50,
+				},
+				default_component_configs = {
+					git_status = {
+						symbols = {
+							-- Change type
+							added = icons.git.added,
+							deleted = icons.git.deleted,
+							modified = icons.git.modified,
+							renamed = icons.git.renamed,
+							-- Status type
+							untracked = icons.git.untracked,
+							ignored = icons.git.ignored,
+							unstaged = icons.git.unstaged,
+							staged = icons.git.staged,
+							conflict = icons.git.conflict,
+						},
+					},
+				},
+			})
+		end,
 	},
 
 	-- search/replace in multiple files
