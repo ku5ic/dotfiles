@@ -19,7 +19,7 @@ return {
 
 			-- Helper function to check if there are words before the cursor
 			local function has_words_before()
-				local _, col = table.unpack(vim.api.nvim_win_get_cursor(0))
+				local _, col = unpack(vim.api.nvim_win_get_cursor(0))
 				if col == 0 then
 					return false
 				end
