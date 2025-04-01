@@ -49,6 +49,7 @@ alias grep='grep --color=auto' # Adds color to `grep` output to highlight matche
 alias mux=tmuxinator # tmuxinator alias
 alias brewall="brew update; brew upgrade; brew upgrade --cask; brew cleanup --prune=all; brew autoremove; brew doctor;" # Update all brew packages
 alias bat="bat --style=numbers --color=always --theme=TwoDark" # bat alias with theme
+alias dotfiles="cd $DOTFILES_DIR" # Navigate to the dotfiles directory
 
 # Set up your preferred editor (e.g., Neovim or Vim)
 alias vim='nvim'
