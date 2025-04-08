@@ -19,12 +19,16 @@ return {
 			sass = { "stylelint" },
 		}
 
-		-- ignore "No ESLint configuration found" error
+		-- ignore "No configuration found" error for eslint_d and stylelint
 		lint.linters.eslint_d = require("lint.util").wrap(lint.linters.eslint_d, function(diagnostic)
-			-- try to ignore "No ESLint configuration found" error
-			-- if diagnostic.message:find("Error: No ESLint configuration found") then -- old version
-			-- update: 20240814, following is working
 			if diagnostic.message:find("Error: Could not find config file") then
+				return nil
+			end
+			return diagnostic
+		end)
+
+		lint.linters.stylelint = require("lint.util").wrap(lint.linters.stylelint, function(diagnostic)
+			if diagnostic.message:find("Stylelint error, run `stylelint") then
 				return nil
 			end
 			return diagnostic
