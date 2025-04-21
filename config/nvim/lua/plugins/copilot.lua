@@ -148,6 +148,7 @@ return {
 			error_header = "## Error ",
 			prompts = merge_tables(prompts.Code, prompts.Text),
 			auto_follow_cursor = false, -- Don't follow the cursor after getting response
+			model = "o3-mini",
 			mappings = {
 				-- Use tab for completion
 				complete = {
