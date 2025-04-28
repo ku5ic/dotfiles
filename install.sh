@@ -28,6 +28,7 @@ install_shells() {
 source_scripts() {
   source "$DOTFILES_DIR/install/brew.sh"
   source "$DOTFILES_DIR/install/brew-cask.sh"
+  source "$DOTFILES_DIR/install/mas.sh"
 }
 
 create_symlinks() {
