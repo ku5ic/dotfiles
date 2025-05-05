@@ -33,6 +33,9 @@ opt.foldexpr = "nvim_treesitter#foldexpr()"
 opt.foldlevel = 99
 vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
 
+-- Set completion options
+opt.completeopt = "menu,menuone,noselect,noinsert,popup"
+
 -- Line wrapping
 opt.wrap = false
 

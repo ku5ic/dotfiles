@@ -134,7 +134,7 @@ return {
 	-- CopilotChat
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
-		version = "v3.9.1",
+		version = "v3.11.1",
 		-- branch = "canary", -- Use the canary branch if you want to test the latest features but it might be unstable	branch = "canary",
 		build = "make tiktoken", -- Only on MacOS or Linux
 		dependencies = {
@@ -148,7 +148,7 @@ return {
 			error_header = "## Error ",
 			prompts = merge_tables(prompts.Code, prompts.Text),
 			auto_follow_cursor = false, -- Don't follow the cursor after getting response
-			model = "o3-mini",
+			-- model = "o3-mini",
 			mappings = {
 				-- Use tab for completion
 				complete = {

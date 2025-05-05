@@ -29,9 +29,6 @@ return {
 			-- Lazy load VS Code-like snippets
 			require("luasnip.loaders.from_vscode").lazy_load()
 
-			-- Set completion options
-			vim.opt.completeopt = "menu,menuone,noselect"
-
 			-- Define mappings for completion
 			local function tab_mapping(fallback)
 				if cmp.visible() then
