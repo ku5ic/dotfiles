@@ -1,189 +1,94 @@
-local keymap = vim.keymap -- for conciseness
-local set_desc = require("utils").set_desc
-
--- Function to configure diagnostics display
-local function configure_diagnostics()
-	local icons = require("config.icons").icons.diagnostics
-	vim.diagnostic.config({
-		virtual_text = {
-			prefix = function(diagnostic)
-				local severity_map = {
-					[1] = "Error",
-					[2] = "Warn",
-					[3] = "Info",
-					[4] = "Hint",
-				}
-				return icons[severity_map[diagnostic.severity]] .. " "
-			end, -- Dynamically set prefix based on severity
-			spacing = 4,
-			source = true, -- Or "if_many"
-		},
-		float = {
-			source = true, -- Or "if_many"
-		},
-		table = {
-			source = "always", -- Or "if_many"
-		},
-		signs = {
-			text = {
-				[vim.diagnostic.severity.ERROR] = icons.Error,
-				[vim.diagnostic.severity.WARN] = icons.Warn,
-				[vim.diagnostic.severity.INFO] = icons.Info,
-				[vim.diagnostic.severity.HINT] = icons.Hint,
-			},
-		},
-		underline = true,
-		severity_sort = true,
-	})
-end
-
--- Function to set up diagnostic key mappings
-local function setup_diagnostic_keymaps(opts)
-	keymap.set("n", "<leader>e", vim.diagnostic.open_float, set_desc(opts, { desc = "Show Line Diagnostics" }))
-	keymap.set("n", "[d", function()
-		vim.diagnostic.jump({ count = 1, float = true })
-	end, set_desc(opts, { desc = "Go to Previous Diagnostic" }))
-	keymap.set("n", "]d", function()
-		vim.diagnostic.jump({ count = -1, float = true })
-	end, set_desc(opts, { desc = "Go to Next Diagnostic" }))
-	keymap.set("n", "<leader>q", vim.diagnostic.setloclist, set_desc(opts, { desc = "Set Location List" }))
-end
-
--- Function to set up LSP key mappings
-local function setup_lsp_keymaps(client, bufnr)
-	local bufopts = { noremap = true, silent = true, buffer = bufnr }
-	keymap.set("n", "gD", vim.lsp.buf.declaration, set_desc(bufopts, { desc = "Go to Declaration" }))
-	keymap.set("n", "gd", vim.lsp.buf.definition, set_desc(bufopts, { desc = "Go to Definition" }))
-	keymap.set("n", "K", vim.lsp.buf.hover, set_desc(bufopts, { desc = "Show Hover" }))
-	keymap.set("n", "gi", vim.lsp.buf.implementation, set_desc(bufopts, { desc = "Go to Implementation" }))
-	keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, set_desc(bufopts, { desc = "Show Signature Help" }))
-	keymap.set(
-		"n",
-		"<leader>wa",
-		vim.lsp.buf.add_workspace_folder,
-		set_desc(bufopts, { desc = "Add Workspace Folder" })
-	)
-	keymap.set(
-		"n",
-		"<leader>wr",
-		vim.lsp.buf.remove_workspace_folder,
-		set_desc(bufopts, { desc = "Remove Workspace Folder" })
-	)
-	keymap.set("n", "<leader>wl", function()
-		print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-	end, set_desc(bufopts, { desc = "List Workspace Folders" }))
-	keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, set_desc(bufopts, { desc = "Go to Type Definition" }))
-	keymap.set("n", "<leader>rn", vim.lsp.buf.rename, set_desc(bufopts, { desc = "Rename" }))
-	keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, set_desc(bufopts, { desc = "Code Action" }))
-	keymap.set("n", "gr", vim.lsp.buf.references, set_desc(bufopts, { desc = "Go to References" }))
-end
-
--- Function to configure LSP servers
-local function configure_servers(servers, capabilities, lspconfig)
-	for key, value in pairs(servers) do
-		lspconfig[key].setup(vim.tbl_deep_extend("force", {
-			on_attach = function(client, bufnr)
-				setup_lsp_keymaps(client, bufnr)
-			end,
-			capabilities = capabilities,
-		}, value))
-	end
-end
-
+-- lua/plugins/lsp.lua
 return {
+	---------------------------------------------------------------------------
+	-- Mason: installers -------------------------------------------------------
+	---------------------------------------------------------------------------
 	{
-		"williamboman/mason.nvim",
+		"mason-org/mason.nvim",
+		build = ":MasonUpdate",
 		dependencies = {
-			"williamboman/mason-lspconfig.nvim",
+			"mason-org/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 		},
 		config = function()
-			-- enable mason
 			require("mason").setup({
-				ui = {
-					icons = {
-						package_installed = "✓",
-						package_pending = "➜",
-						package_uninstalled = "✗",
-					},
-				},
+				ui = { icons = { package_installed = "✓", package_pending = "➜", package_uninstalled = "✗" } },
 			})
 
+			-- LSP servers that Mason should keep present on disk
 			require("mason-lspconfig").setup({
-				-- list of servers for mason to install
 				ensure_installed = {
-					"cssls", -- css language server
-					"emmet_ls", -- emmet language server
-					"html", -- html language server
-					"lua_ls", -- lua language server
-					"phpactor", -- php language server
-					"solargraph", -- ruby language server
-					"ts_ls", -- typescript language server
+					"cssls",
+					"emmet_ls",
+					"html",
+					"lua_ls",
+					"phpactor",
+					"solargraph",
+					"ts_ls",
 				},
-				-- auto-install configured servers (with lspconfig)
-				automatic_installation = true, -- not the same as ensure_installed
+				automatic_installation = true,
 			})
 
+			-- Stand-alone tools
 			require("mason-tool-installer").setup({
 				ensure_installed = {
-					"cspell", -- spell checker
-					"eslint_d", -- js linter
-					"js-debug-adapter", -- js debugger
-					"php-debug-adapter", -- php debugger
-					"prettier", -- prettier formatter
-					"pylint", -- python linter
-					"stylelint", -- css linter
-					"stylua", -- lua formatter
-					"php-cs-fixer", -- php formatter
+					"cspell",
+					"eslint_d",
+					"js-debug-adapter",
+					"php-debug-adapter",
+					"prettier",
+					"pylint",
+					"stylelint",
+					"stylua",
+					"php-cs-fixer",
 				},
-				-- auto-install configured servers (with lspconfig)
-				automatic_installation = true, -- not the same as ensure_installed
+				automatic_installation = true,
 			})
 		end,
 	},
 
+	---------------------------------------------------------------------------
+	-- LSP client configuration -----------------------------------------------
+	---------------------------------------------------------------------------
 	{
 		"neovim/nvim-lspconfig",
-		dependencies = {
-			"hrsh7th/cmp-nvim-lsp",
-			-- "jose-elias-alvarez/typescript.nvim",
-		},
-		event = "InsertEnter",
-		config = function()
-			local lspconfig = require("lspconfig")
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+		lazy = false, -- load at startup so first buffer gets LSP
+		priority = 1000,
+		dependencies = { "hrsh7th/cmp-nvim-lsp" },
 
-			local servers = {
-				html = {},
-				ts_ls = {
-					filetypes = {
-						"typescript",
-						"typescriptreact",
-						"typescript.tsx",
-						"javascript",
-						"javascriptreact",
-						"javascript.jsx",
-						"vue",
-						"svelte",
-						"astro",
+		config = function()
+			-----------------------------------------------------------------------
+			-- 0. Shared helpers --------------------------------------------------
+			-----------------------------------------------------------------------
+			local set_desc = require("utils").set_desc
+			local icons = require("config.icons").icons.diagnostics
+
+			-- Fancy virtual-text diagnostics
+			vim.diagnostic.config({
+				virtual_text = {
+					prefix = function(d)
+						return icons[({ "Error", "Warn", "Info", "Hint" })[d.severity]] .. " "
+					end,
+					spacing = 4,
+					source = true,
+				},
+				float = { source = true },
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = icons.Error,
+						[vim.diagnostic.severity.WARN] = icons.Warn,
+						[vim.diagnostic.severity.INFO] = icons.Info,
+						[vim.diagnostic.severity.HINT] = icons.Hint,
 					},
 				},
-				solargraph = {},
-				phpactor = {},
-				cssls = {},
-				emmet_ls = {
-					filetypes = {
-						"html",
-						"typescriptreact",
-						"javascriptreact",
-						"css",
-						"sass",
-						"scss",
-						"less",
-						"svelte",
-					},
-				},
+				underline = true,
+				severity_sort = true,
+			})
+
+			-----------------------------------------------------------------------
+			-- 1. Per-server extra settings --------------------------------------
+			-----------------------------------------------------------------------
+			local server_settings = {
 				lua_ls = {
 					settings = {
 						Lua = {
@@ -198,11 +103,87 @@ return {
 						},
 					},
 				},
+
+				ts_ls = { -- extra filetypes you wanted
+					filetypes = {
+						"typescript",
+						"typescriptreact",
+						"typescript.tsx",
+						"javascript",
+						"javascriptreact",
+						"javascript.jsx",
+						"vue",
+						"svelte",
+						"astro",
+					},
+				},
+
+				emmet_ls = { -- same idea
+					filetypes = {
+						"html",
+						"typescriptreact",
+						"javascriptreact",
+						"css",
+						"sass",
+						"scss",
+						"less",
+						"svelte",
+					},
+				},
 			}
 
-			configure_diagnostics()
-			setup_diagnostic_keymaps({ noremap = true, silent = true })
-			configure_servers(servers, capabilities, lspconfig)
+			-----------------------------------------------------------------------
+			-- 2. Capabilities (completion) --------------------------------------
+			-----------------------------------------------------------------------
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+			-----------------------------------------------------------------------
+			-- 3. Register the configs + enable ----------------------------------
+			-----------------------------------------------------------------------
+			local servers = { "cssls", "emmet_ls", "html", "lua_ls", "phpactor", "solargraph", "ts_ls" }
+
+			for _, name in ipairs(servers) do
+				vim.lsp.config(
+					name,
+					vim.tbl_deep_extend("force", { capabilities = capabilities }, server_settings[name] or {})
+				)
+				vim.lsp.enable(name) -- auto-start on matching buffers
+			end
+
+			-----------------------------------------------------------------------
+			-- 4. On-attach keymaps  ---------------------------------------------
+			-----------------------------------------------------------------------
+			vim.api.nvim_create_autocmd("LspAttach", {
+				callback = function(args)
+					local buf = args.buf
+					local opts = { buffer = buf, silent = true, noremap = true }
+
+					-- You already get K, [d, ]d, <C-W>d by default.
+					-- Add ONLY the extras you care about:
+					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, set_desc(opts, { desc = "Declaration" }))
+					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, set_desc(opts, { desc = "Implementation" }))
+					vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, set_desc(opts, { desc = "Type Def" }))
+					vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, set_desc(opts, { desc = "Rename" }))
+					vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, set_desc(opts, { desc = "Code Action" }))
+					vim.keymap.set("n", "gr", vim.lsp.buf.references, set_desc(opts, { desc = "References" }))
+					vim.keymap.set(
+						"n",
+						"<leader>wa",
+						vim.lsp.buf.add_workspace_folder,
+						set_desc(opts, { desc = "Add WS Folder" })
+					)
+					vim.keymap.set(
+						"n",
+						"<leader>wr",
+						vim.lsp.buf.remove_workspace_folder,
+						set_desc(opts, { desc = "Remove WS Folder" })
+					)
+					vim.keymap.set("n", "<leader>wl", function()
+						print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+					end, set_desc(opts, { desc = "List WS Folders" }))
+				end,
+			})
 		end,
 	},
 }
+
