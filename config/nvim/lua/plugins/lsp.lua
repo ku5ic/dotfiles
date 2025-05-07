@@ -1,8 +1,4 @@
--- lua/plugins/lsp.lua
 return {
-	---------------------------------------------------------------------------
-	-- Mason: installers -------------------------------------------------------
-	---------------------------------------------------------------------------
 	{
 		"mason-org/mason.nvim",
 		build = ":MasonUpdate",
@@ -47,9 +43,6 @@ return {
 		end,
 	},
 
-	---------------------------------------------------------------------------
-	-- LSP client configuration -----------------------------------------------
-	---------------------------------------------------------------------------
 	{
 		"neovim/nvim-lspconfig",
 		lazy = false, -- load at startup so first buffer gets LSP
@@ -57,9 +50,6 @@ return {
 		dependencies = { "hrsh7th/cmp-nvim-lsp" },
 
 		config = function()
-			-----------------------------------------------------------------------
-			-- 0. Shared helpers --------------------------------------------------
-			-----------------------------------------------------------------------
 			local set_desc = require("utils").set_desc
 			local icons = require("config.icons").icons.diagnostics
 
@@ -85,9 +75,6 @@ return {
 				severity_sort = true,
 			})
 
-			-----------------------------------------------------------------------
-			-- 1. Per-server extra settings --------------------------------------
-			-----------------------------------------------------------------------
 			local server_settings = {
 				lua_ls = {
 					settings = {
@@ -104,7 +91,7 @@ return {
 					},
 				},
 
-				ts_ls = { -- extra filetypes you wanted
+				ts_ls = {
 					filetypes = {
 						"typescript",
 						"typescriptreact",
@@ -132,14 +119,7 @@ return {
 				},
 			}
 
-			-----------------------------------------------------------------------
-			-- 2. Capabilities (completion) --------------------------------------
-			-----------------------------------------------------------------------
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
-			-----------------------------------------------------------------------
-			-- 3. Register the configs + enable ----------------------------------
-			-----------------------------------------------------------------------
 			local servers = { "cssls", "emmet_ls", "html", "lua_ls", "phpactor", "solargraph", "ts_ls" }
 
 			for _, name in ipairs(servers) do
@@ -150,16 +130,11 @@ return {
 				vim.lsp.enable(name) -- auto-start on matching buffers
 			end
 
-			-----------------------------------------------------------------------
-			-- 4. On-attach keymaps  ---------------------------------------------
-			-----------------------------------------------------------------------
 			vim.api.nvim_create_autocmd("LspAttach", {
 				callback = function(args)
 					local buf = args.buf
 					local opts = { buffer = buf, silent = true, noremap = true }
 
-					-- You already get K, [d, ]d, <C-W>d by default.
-					-- Add ONLY the extras you care about:
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, set_desc(opts, { desc = "Declaration" }))
 					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, set_desc(opts, { desc = "Implementation" }))
 					vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, set_desc(opts, { desc = "Type Def" }))
@@ -186,4 +161,3 @@ return {
 		end,
 	},
 }
-
