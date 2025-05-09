@@ -21,6 +21,9 @@ return {
 					position = "left",
 					width = 50,
 				},
+				symlink_target = {
+					enabled = true,
+				},
 				default_component_configs = {
 					git_status = {
 						symbols = {
