@@ -135,12 +135,38 @@ return {
 					local buf = args.buf
 					local opts = { buffer = buf, silent = true, noremap = true }
 
-					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, set_desc(opts, { desc = "Declaration" }))
-					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, set_desc(opts, { desc = "Implementation" }))
-					vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, set_desc(opts, { desc = "Type Def" }))
+					vim.keymap.set("n", "gd", vim.lsp.buf.definition, set_desc(opts, { desc = "Goto Definition" }))
+					vim.keymap.set("n", "gr", vim.lsp.buf.references, set_desc(opts, { desc = "Refereces" }))
+					vim.keymap.set(
+						"n",
+						"gI",
+						vim.lsp.buf.implementation,
+						set_desc(opts, { desc = "Goto Implementation" })
+					)
+					vim.keymap.set(
+						"n",
+						"gy",
+						vim.lsp.buf.type_definition,
+						set_desc(opts, { desc = "Goto Type Definition" })
+					)
+					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, set_desc(opts, { desc = "Goto Declaration" }))
+					vim.keymap.set("n", "K", vim.lsp.buf.hover, set_desc(opts, { desc = "Hover" }))
+					vim.keymap.set("n", "gk", vim.lsp.buf.signature_help, set_desc(opts, { desc = "Signature Help" }))
+					vim.keymap.set(
+						{ "n", "v" },
+						"ca",
+						vim.lsp.buf.code_action,
+						set_desc(opts, { desc = "Code Action" })
+					)
+					vim.keymap.set({ "n", "v" }, "cc", vim.lsp.codelens.run, set_desc(opts, { desc = "Run Codelens" }))
+					vim.keymap.set(
+						"n",
+						"gC",
+						vim.lsp.codelens.refresh,
+						set_desc(opts, { desc = "Referesh & Display Codelense" })
+					)
 					vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, set_desc(opts, { desc = "Rename" }))
 					vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, set_desc(opts, { desc = "Code Action" }))
-					vim.keymap.set("n", "gr", vim.lsp.buf.references, set_desc(opts, { desc = "References" }))
 					vim.keymap.set(
 						"n",
 						"<leader>wa",
