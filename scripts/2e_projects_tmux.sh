@@ -5,7 +5,6 @@ declare -A projects_keys=(
 ["eebook-bwa"]="eebook/eebkgweb-bwa-custom"
 ["eebook-eed"]="eebook/eebkgweb-eed-custom"
 ["eepayweb"]="eepay/eepayweb"
-["eepxa-app"]="mobile/eepxa-app"
 ["eeopaque-fe-cli"]="eeopaque/eeopqfecli"
 ["eeopaque-fe-srv"]="eeopaque/eeopqfesrv"
 ["bti-fe"]="bti/btife"
@@ -24,7 +23,7 @@ for i in "${!keys[@]}"; do
 
   if [[ $i -lt $last_index ]]; then
     # Start tmuxinator in the background and detach immediately
-    nohup tmuxinator start "2e-eebook" "project=${project_path}" -n "${key}" > /dev/null 2>&1 &
+    nohup tmuxinator start "2e-eebook" "project=${project_path}" -n "${key}"
   else
     # For the last project, run interactively
     tmuxinator start "2e-eebook" "project=${project_path}" -n "${key}"
