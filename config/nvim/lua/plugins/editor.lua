@@ -3,14 +3,15 @@ return {
 	{
 		"nvim-neo-tree/neo-tree.nvim",
 		branch = "v3.x",
-		keys = {
-			{ "<C-enter>", "<cmd>Neotree toggle<cr>", desc = "Toggle NeoTree" },
-			{ "<C-S-enter>", "<cmd>Neotree reveal<cr>", desc = "Reveal In NeoTree" },
-		},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
 			"MunifTanjim/nui.nvim",
+		},
+		lazy = false,
+		keys = {
+			{ "<C-enter>", "<cmd>Neotree toggle<cr>", desc = "Toggle NeoTree" },
+			{ "<C-S-enter>", "<cmd>Neotree reveal<cr>", desc = "Reveal In NeoTree" },
 		},
 		config = function()
 			local icons = require("config.icons").icons
