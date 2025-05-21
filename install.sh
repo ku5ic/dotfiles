@@ -53,8 +53,8 @@ create_symlinks() {
 setup_asdf() {
   asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git || true
   asdf nodejs update-nodebuild
-  asdf install nodejs latest:18
-  asdf global nodejs latest:18
+  asdf install nodejs latest:20
+  asdf global nodejs latest:20
 
   asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git || true
   asdf plugin-update ruby
