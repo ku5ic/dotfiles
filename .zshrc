@@ -77,9 +77,8 @@ export LANG=en_US.UTF-8
 export LC_COLLATE=C
 
 # PATH
-export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
-export PATH="$(brew --prefix)/opt/python/libexec/bin:$PATH"
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 export PATH="$(brew --prefix)/opt/openssl@3/bin:$PATH"
 export PATH="$(brew --prefix)/opt/ncurses/bin:$PATH"
 export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
