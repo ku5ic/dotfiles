@@ -47,7 +47,8 @@ alias copy_path='pwd | pbcopy' # Copy current path to clipboard (macOS specific)
 alias cls='clear'              # Clears the terminal screen
 alias grep='grep --color=auto' # Adds color to `grep` output to highlight matches
 alias mux=tmuxinator # tmuxinator alias
-alias brewall="brew update; brew upgrade; brew upgrade --cask; brew cleanup --prune=all; brew autoremove; brew doctor;" # Update all brew packages
+alias brew_all="brew update; brew upgrade; brew upgrade --cask; brew cleanup --prune=all; brew autoremove; brew doctor;" # Update all brew packages
+alias brew_reset=brew update-reset "$(brew --repository)" # Reset Homebrew to a clean state
 alias bat="bat --style=numbers --color=always --theme=TwoDark" # bat alias with theme
 alias dotfiles="cd $DOTFILES_DIR" # Navigate to the dotfiles directory
 
