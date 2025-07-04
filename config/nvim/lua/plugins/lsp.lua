@@ -21,6 +21,7 @@ return {
 					"phpactor",
 					"solargraph",
 					"ts_ls",
+					"pylsp",
 				},
 				automatic_installation = true,
 			})
@@ -117,6 +118,8 @@ return {
 						"svelte",
 					},
 				},
+
+				pylsp = {},
 			}
 
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
