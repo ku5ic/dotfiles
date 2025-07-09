@@ -48,7 +48,6 @@ return {
 		"neovim/nvim-lspconfig",
 		lazy = false, -- load at startup so first buffer gets LSP
 		priority = 1000,
-		dependencies = { "hrsh7th/cmp-nvim-lsp" },
 
 		config = function()
 			local set_desc = require("utils").set_desc
@@ -119,12 +118,11 @@ return {
 						"svelte",
 					},
 				},
-
-				pylsp = {},
 			}
 
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
-			local servers = { "cssls", "emmet_ls", "html", "lua_ls", "phpactor", "solargraph", "ts_ls" }
+			local capabilities = require("blink.cmp").get_lsp_capabilities()
+
+			local servers = { "cssls", "emmet_ls", "html", "lua_ls", "phpactor", "solargraph", "ts_ls", "pylsp" }
 
 			for _, name in ipairs(servers) do
 				vim.lsp.config(
