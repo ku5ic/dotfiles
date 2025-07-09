@@ -109,6 +109,7 @@ return {
 				emmet_ls = { -- same idea
 					filetypes = {
 						"html",
+						"djangohtml",
 						"typescriptreact",
 						"javascriptreact",
 						"css",

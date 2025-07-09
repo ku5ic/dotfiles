@@ -31,6 +31,7 @@ return {
 					"lua", -- Lua programming language
 					"php", -- PHP programming language
 					"python", -- Python programming language
+					"htmldjango", -- Django templates
 					"ruby", -- Ruby programming language
 					"tsx", -- TypeScript JSX
 					"typescript", -- TypeScript programming language

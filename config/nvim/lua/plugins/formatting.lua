@@ -28,6 +28,7 @@ return {
 			svelte = { "prettier" },
 			css = { "prettier" },
 			html = { "prettier" },
+			htmldjango = { "prettier" },
 			json = { "prettier" },
 			yaml = { "prettier" },
 			markdown = { "prettier" },
