@@ -4,18 +4,15 @@ return {
 		"hrsh7th/nvim-cmp",
 		version = false, -- last release is way too old
 		dependencies = {
-			"saadparwaiz1/cmp_luasnip",
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-nvim-lua",
 			"hrsh7th/cmp-buffer",
 			"hrsh7th/cmp-path",
 			"ray-x/cmp-treesitter",
-			"L3MON4D3/LuaSnip",
 			"f3fora/cmp-spell",
 		},
 		config = function()
 			local cmp = require("cmp")
-			local luasnip = require("luasnip")
 
 			-- Helper function to check if there are words before the cursor
 			local function has_words_before()
@@ -26,15 +23,10 @@ return {
 				return not vim.api.nvim_get_current_line():sub(col, col):match("%s")
 			end
 
-			-- Lazy load VS Code-like snippets
-			require("luasnip.loaders.from_vscode").lazy_load()
-
 			-- Define mappings for completion
 			local function tab_mapping(fallback)
 				if cmp.visible() then
 					cmp.select_next_item()
-				elseif luasnip.expand_or_jumpable() then
-					luasnip.expand_or_jump()
 				elseif has_words_before() then
 					cmp.complete()
 				else
@@ -45,8 +37,6 @@ return {
 			local function shift_tab_mapping(fallback)
 				if cmp.visible() then
 					cmp.select_prev_item()
-				elseif luasnip.jumpable(-1) then
-					luasnip.jump(-1)
 				else
 					fallback()
 				end
@@ -54,11 +44,6 @@ return {
 
 			-- Configure nvim-cmp
 			cmp.setup({
-				snippet = {
-					expand = function(args)
-						luasnip.lsp_expand(args.body)
-					end,
-				},
 				mapping = cmp.mapping.preset.insert({
 					["<Tab>"] = cmp.mapping(tab_mapping, { "i", "s" }),
 					["<S-Tab>"] = cmp.mapping(shift_tab_mapping, { "i", "s" }),
