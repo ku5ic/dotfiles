@@ -1,77 +1,102 @@
-local opt = vim.opt -- for conciseness
+local o, g = vim.opt, vim.g -- tiny aliases
 
--- Host programs for external integrations
-vim.g.python3_host_prog = "~/.asdf/shims/python"
-vim.g.ruby_host_prog = "~/.asdf/shims/neovim-ruby-host"
+---------------------------------------------------------------------------
+-- 1. External host executables -------------------------------------------
+---------------------------------------------------------------------------
+g.python3_host_prog = vim.fn.expand("~/.asdf/shims/python")
+g.ruby_host_prog = vim.fn.expand("~/.asdf/shims/neovim-ruby-host")
 
--- Disable netrw
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
+---------------------------------------------------------------------------
+-- 2. Built-in plugins -----------------------------------------------------
+---------------------------------------------------------------------------
+g.loaded_netrw = 1
+g.loaded_netrwPlugin = 1 -- use oil.nvim / telescope-file-browser, etc.
 
--- Backup and history settings
-opt.swapfile = false
-opt.backup = false
-opt.writebackup = false -- clearer alias for `wb`
-opt.history = 1000
+---------------------------------------------------------------------------
+-- 3. History / backups / undo --------------------------------------------
+---------------------------------------------------------------------------
+o.swapfile = false
+o.backup = false
+o.writebackup = false
+o.undofile = true -- modern replacement
+o.undodir = vim.fn.stdpath("state") .. "/undo"
+o.history = 1000
 
--- Line numbers
-opt.number = true
-opt.relativenumber = true
+---------------------------------------------------------------------------
+-- 4. UI: line numbers, columns, colours -----------------------------------
+---------------------------------------------------------------------------
+o.number = true
+o.relativenumber = true
+o.signcolumn = "yes"
+o.cursorline = true
+o.wrap = false
+o.termguicolors = true
+o.showtabline = 2
+o.winbar = "%=%m %f" -- readonly + filename
 
--- Tabs, indentation, and folding
-opt.expandtab = true
-opt.tabstop = 2
-opt.shiftwidth = 2
-opt.autoindent = true
-opt.list = true
-opt.listchars = { eol = "¬", tab = ">-", trail = "␣", extends = "»", precedes = "«", space = "·" }
-opt.winbar = "%=%m %f"
-opt.foldenable = true
-opt.foldcolumn = "1"
-opt.foldmethod = "expr"
-opt.foldexpr = "nvim_treesitter#foldexpr()"
-opt.foldlevel = 99
-vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+---------------------------------------------------------------------------
+-- 5. Indent / whitespace --------------------------------------------------
+---------------------------------------------------------------------------
+o.expandtab = true
+o.tabstop = 2
+o.shiftwidth = 2
+o.autoindent = true
+o.list = true
+o.listchars = {
+	eol = "¬",
+	tab = ">-",
+	trail = "␣",
+	extends = "»",
+	precedes = "«",
+	space = "·",
+}
 
--- Set completion options
-opt.completeopt = "menu,menuone,noselect,noinsert,popup"
+---------------------------------------------------------------------------
+-- 6. Folding (Treesitter-driven) ------------------------------------------
+---------------------------------------------------------------------------
+o.foldmethod = "expr"
+o.foldexpr = "nvim_treesitter#foldexpr()"
+o.foldenable = true
+o.foldlevel = 99 -- keep everything open by default
+o.foldlevelstart = 99
+o.foldcolumn = "1"
+o.fillchars = { -- table form parses faster in 0.11+
+	eob = " ",
+	fold = " ",
+	foldopen = "",
+	foldsep = " ",
+	foldclose = "",
+}
 
--- Line wrapping
-opt.wrap = false
+---------------------------------------------------------------------------
+-- 7. Completion & search --------------------------------------------------
+---------------------------------------------------------------------------
+o.completeopt = { "menu", "menuone", "noselect", "noinsert", "popup" }
+o.ignorecase = true
+o.smartcase = true
 
--- Auto-reload files changed outside Neovim
-opt.autoread = true
+---------------------------------------------------------------------------
+-- 8. Spelling --------------------------------------------------------------
+---------------------------------------------------------------------------
+o.spell = true
+o.spelllang = { "en_us" }
+o.spellsuggest = { "best", 9 }
+o.spelloptions = "camel"
 
--- Search settings
-opt.ignorecase = true
-opt.smartcase = true
+---------------------------------------------------------------------------
+-- 9. Clipboard / splits / misc --------------------------------------------
+---------------------------------------------------------------------------
+o.clipboard = vim.env.SSH_TTY and "" or "unnamedplus"
+o.splitright = true
+o.splitbelow = true
+o.backspace = { "indent", "eol", "start" }
+o.iskeyword:append("-")
 
--- Spelling and encoding
-opt.spell = true
-opt.spelllang = { "en_us" }
-opt.spellsuggest = { "best", 9 }
-opt.spelloptions = "camel"
-opt.encoding = "utf-8"
+-- Prefer :prepend when you *want* fzf earlier in rtp
+o.runtimepath:prepend("/opt/homebrew/bin/fzf")
 
--- Cursor line
-opt.cursorline = true
-
--- Appearance
-opt.termguicolors = true
-opt.background = "dark"
-opt.signcolumn = "yes"
-opt.showtabline = 2
-
--- Backspace behavior
-opt.backspace = { "indent", "eol", "start" }
-
--- Clipboard integration
-opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus"
-
--- Split window behavior
-opt.splitright = true
-opt.splitbelow = true
-
--- Miscellaneous
-opt.iskeyword:append("-")
-opt.runtimepath:append("/opt/homebrew/bin/fzf")
+---------------------------------------------------------------------------
+-- 10. Auto-reload files changed on disk -----------------------------------
+---------------------------------------------------------------------------
+o.autoread = true
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, { command = "checktime" })
