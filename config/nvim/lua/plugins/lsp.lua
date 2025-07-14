@@ -184,6 +184,9 @@ return {
 					vim.keymap.set("n", "<leader>wl", function()
 						print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
 					end, set_desc(opts, { desc = "List WS Folders" }))
+					vim.keymap.set("n", "<leader>dq", function()
+						vim.diagnostic.setloclist({ open = true })
+					end, set_desc(opts, { desc = "Set Diagnostic List" }))
 				end,
 			})
 		end,
