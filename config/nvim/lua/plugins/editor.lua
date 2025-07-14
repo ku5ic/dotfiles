@@ -13,9 +13,9 @@ return {
 			{ "<C-enter>", "<cmd>Neotree toggle<cr>", desc = "Toggle NeoTree" },
 			{ "<C-S-enter>", "<cmd>Neotree reveal<cr>", desc = "Reveal In NeoTree" },
 		},
-		config = function()
+		opts = function()
 			local icons = require("config.icons").icons
-			require("neo-tree").setup({
+			return {
 				close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
 				popup_border_style = "rounded",
 				window = {
@@ -42,7 +42,7 @@ return {
 						},
 					},
 				},
-			})
+			}
 		end,
 	},
 
