@@ -28,7 +28,7 @@ return {
 			svelte = { "prettier" },
 			css = { "prettier" },
 			html = { "prettier" },
-			htmldjango = { "prettier" },
+			htmldjango = { "" },
 			json = { "prettier" },
 			yaml = { "prettier" },
 			markdown = { "prettier" },
@@ -37,7 +37,6 @@ return {
 			php = { "php_cs_fixer" },
 		},
 		-- Set up format-on-save
-
 		format_on_save = {
 			lsp_fallback = true,
 			async = false,
