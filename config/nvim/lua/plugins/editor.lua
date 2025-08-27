@@ -62,6 +62,7 @@ return {
 				-- For major updates, this must be adjusted manually.
 				version = "^1.0.0",
 			},
+			{ "nvim-telescope/telescope-ui-select.nvim" },
 		},
 		cmd = "Telescope",
 		version = false, -- telescope did only one release, so use HEAD for now
@@ -111,6 +112,7 @@ return {
 			telescope.setup(PluginSpec.opts)
 			telescope.load_extension("fzf")
 			telescope.load_extension("live_grep_args")
+			telescope.load_extension("ui-select")
 		end,
 	},
 

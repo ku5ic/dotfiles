@@ -134,7 +134,7 @@ return {
 	-- CopilotChat
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
-		version = "v3.12.2",
+		version = "v4.4.1",
 		-- branch = "canary", -- Use the canary branch if you want to test the latest features but it might be unstable	branch = "canary",
 		build = "make tiktoken", -- Only on MacOS or Linux
 		dependencies = {
@@ -224,19 +224,18 @@ return {
 			{
 				"<leader>ap",
 				function()
-					local actions = require("CopilotChat.actions").prompt_actions
-					require("CopilotChat.integrations.telescope").pick(actions())
+					require("CopilotChat").select_prompt({
+						context = {
+							"buffers",
+						},
+					})
 				end,
 				desc = "CopilotChat - Prompt actions",
 			},
 			{
 				"<leader>ap",
 				function()
-					local telescope = require("CopilotChat.integrations.telescope")
-					local actions = require("CopilotChat.actions").prompt_actions
-					local visual = require("CopilotChat.select").visual
-
-					telescope.pick(actions({ selection = visual }))
+					require("CopilotChat").select_prompt()
 				end,
 				mode = "x",
 				desc = "CopilotChat - Prompt actions",
