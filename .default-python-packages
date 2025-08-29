@@ -1,4 +1,4 @@
-pipenv
 pynvim
 black
 isort
+poetry
