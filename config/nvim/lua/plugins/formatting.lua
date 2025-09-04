@@ -33,7 +33,7 @@ return {
 			yaml = { "prettier" },
 			markdown = { "prettier" },
 			lua = { "stylua" },
-			python = { "isort", "black" },
+			python = { "autopep8", "isort" },
 			php = { "php_cs_fixer" },
 		},
 		-- Set up format-on-save
