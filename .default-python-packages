@@ -1,4 +1,5 @@
 pynvim
 black
 isort
-poetry
+pylint
+pylint-django
