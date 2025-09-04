@@ -10,6 +10,7 @@ export PYTHON_CONFIGURE_OPTS="--enable-framework"
 
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
+HOMEBREW_NO_ENV_HINTS=1
 
 pyclean () {
   find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
