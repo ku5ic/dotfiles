@@ -13,7 +13,6 @@ apps=(
 409203825   # Numbers
 409201541   # Pages
 1153157709  # Speedtest
-497799835   # Xcode
 )
 
 
