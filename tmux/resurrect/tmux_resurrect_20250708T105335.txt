@@ -19,10 +19,9 @@ pane	eeopaque-fe-srv	2	0	:-	1	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eeOpaque/
 pane	eepayweb	1	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eePay/eepayweb	1	nvim	:nvim
 pane	eepayweb	1	1	:*	2	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eePay/eepayweb	0	zsh	:
 pane	eepayweb	2	0	:-	1	Sanctuary	:/Users/ku5ic/Projects/2e/Code/eePay/eepayweb/client	1	zsh	:
-pane	zanakadric	1	0	:-	1	Sanctuary	:/Users/ku5ic/Projects/ZanaKadric/Code/zanakadric	1	nvim	:nvim
-pane	zanakadric	1	0	:-	2	Sanctuary	:/Users/ku5ic/Projects/ZanaKadric/Code/zanakadric	0	zsh	:
-pane	zanakadric	3	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/ZanaKadric/Code/zanakadric	0	zsh	:
-pane	zanakadric	3	1	:*	2	Sanctuary	:/Users/ku5ic/Projects/ZanaKadric/Code/zanakadric	1	zsh	:
+pane	zanakadric	1	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/ZanaKadric/Code/zanakadric	1	nvim	:nvim
+pane	zanakadric	1	1	:*	2	Sanctuary	:/Users/ku5ic/Projects/ZanaKadric/Code/zanakadric	0	zsh	:
+pane	zanakadric	3	0	:-	1	Sanctuary	:/Users/ku5ic/Projects/ZanaKadric/Code/zanakadric	1	zsh	:
 window	bti-fe	1	:editor	1	:*Z	70d6,200x60,0,0[200x41,0,0,1,200x18,0,42,2]	off
 window	bti-fe	2	:react	0	:-	aea0,200x60,0,0,3	off
 window	eebook	1	:editor	1	:*	c9dd,200x60,0,0[200x40,0,0,4,200x19,0,41,5]	off
@@ -37,6 +36,6 @@ window	eeopaque-fe-srv	1	:editor	1	:*	a7c8,200x60,0,0[200x40,0,0,16,200x19,0,41,
 window	eeopaque-fe-srv	2	:react	0	:-	5787,200x60,0,0,18	off
 window	eepayweb	1	:editor	1	:*	67c8,200x60,0,0[200x40,0,0,19,200x19,0,41,20]	off
 window	eepayweb	2	:react	0	:-	d780,200x60,0,0,21	off
-window	zanakadric	1	:editor	0	:-	67c3,200x60,0,0[200x40,0,0,22,200x19,0,41,23]	off
-window	zanakadric	3	:terminal	1	:*	29ba,200x60,0,0{100x60,0,0,24,99x60,101,0,25}	off
+window	zanakadric	1	:editor	1	:*	67c3,200x60,0,0[200x40,0,0,22,200x19,0,41,23]	off
+window	zanakadric	3	:terminal	0	:-	d784,200x60,0,0,25	off
 state	zanakadric	bti-fe
