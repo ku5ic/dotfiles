@@ -9,10 +9,7 @@ return {
 			"MunifTanjim/nui.nvim",
 		},
 		lazy = false,
-		keys = {
-			{ "<leader><leader>", "<cmd>Neotree toggle<cr>", desc = "Toggle NeoTree" },
-			{ "<leader><leader><leader>", "<cmd>Neotree reveal<cr>", desc = "Reveal In NeoTree" },
-		},
+		-- Keymaps moved to main keymaps.lua for consistency
 		opts = {
 			close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
 			popup_border_style = "rounded",
@@ -32,21 +29,14 @@ return {
 		build = false,
 		cmd = "Spectre",
 		opts = { open_cmd = "noswapfile vnew" },
-		-- stylua: ignore
-		keys = {
-			{ "<leader>sr", function() require("spectre").open() end, desc = "Replace in files (Spectre)" },
-		},
+		-- Keymaps moved to main keymaps.lua for consistency
 	},
 
 	-- git signs
 	{
 		"lewis6991/gitsigns.nvim",
 		event = { "BufReadPre", "BufNewFile" },
-		keys = {
-			{ "<leader>gS", "<cmd>Gitsigns toggle_current_line_blame<cr>", desc = "Toggle Current Line Blame" },
-			{ "<leader>gn", "<cmd>Gitsigns next_hunk<cr>", desc = "Next hunk" },
-			{ "<leader>gp", "<cmd>Gitsigns prev_hunk<cr>", desc = "Previous hunk" },
-		},
+		-- Keymaps moved to main keymaps.lua for consistency
 		config = true,
 	},
 
@@ -66,35 +56,7 @@ return {
 		},
 		cmd = "Telescope",
 		version = false, -- telescope did only one release, so use HEAD for now
-		keys = {
-			{ "<leader>,", "<cmd>Telescope buffers show_all_buffers=true<cr>", desc = "Switch Buffer" },
-			{
-				"<leader>/",
-				"<cmd>Telescope live_grep_args<cr>",
-				desc = "Find in Files (Grep)",
-			},
-			{ "<leader>:", "<cmd>Telescope command_history<cr>", desc = "Command History" },
-			-- find
-			{ "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
-			{ "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find Files (root dir)" },
-			{ "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Recent" },
-			-- git
-			{ "<leader>gc", "<cmd>Telescope git_commits<CR>", desc = "commits" },
-			{ "<leader>gs", "<cmd>Telescope git_status<CR>", desc = "status" },
-			-- search
-			{ "<leader>sa", "<cmd>Telescope autocommands<cr>", desc = "Auto Commands" },
-			{ "<leader>sb", "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Buffer" },
-			{ "<leader>sc", "<cmd>Telescope command_history<cr>", desc = "Command History" },
-			{ "<leader>sC", "<cmd>Telescope commands<cr>", desc = "Commands" },
-			{ "<leader>sd", "<cmd>Telescope diagnostics<cr>", desc = "Diagnostics" },
-			{ "<leader>sh", "<cmd>Telescope help_tags<cr>", desc = "Help Pages" },
-			{ "<leader>sH", "<cmd>Telescope highlights<cr>", desc = "Search Highlight Groups" },
-			{ "<leader>sk", "<cmd>Telescope keymaps<cr>", desc = "Key Maps" },
-			{ "<leader>sM", "<cmd>Telescope man_pages<cr>", desc = "Man Pages" },
-			{ "<leader>sm", "<cmd>Telescope marks<cr>", desc = "Jump to Mark" },
-			{ "<leader>so", "<cmd>Telescope vim_options<cr>", desc = "Options" },
-			{ "<leader>sR", "<cmd>Telescope resume<cr>", desc = "Resume" },
-		},
+		-- Keymaps moved to main keymaps.lua for consistency
 		opts = {
 			defaults = {
 				mappings = {
@@ -132,12 +94,7 @@ return {
 		cmd = { "TodoTelescope" },
 		event = { "BufReadPost", "BufNewFile" },
 		config = true,
-		-- stylua: ignore
-		keys = {
-			{ "]t",         function() require("todo-comments").jump_next() end, desc = "Next todo comment" },
-			{ "[t",         function() require("todo-comments").jump_prev() end, desc = "Previous todo comment" },
-			{ "<leader>st", "<cmd>TodoTelescope<cr>",                            desc = "Todo" },
-		},
+		-- Keymaps moved to main keymaps.lua for consistency
 	},
 
 	-- vim-fugitive is a Git wrapper so awesome, it should be illegal
@@ -159,20 +116,13 @@ return {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 		},
-		-- setting the keybinding for LazyGit with 'keys' is recommended in
-		-- order to load the plugin when the command is run for the first time
-		keys = {
-			{ "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
-		},
+		-- Keymaps moved to main keymaps.lua for consistency
 	},
 
 	-- precognition.nvim assists with discovering motions (Both vertical and horizontal) to navigate your current buffer
 	{
 		"tris203/precognition.nvim",
-		keys = {
-			{ "<leader>pp", "<cmd>Precognition peek<cr>", desc = "Precognition peek" },
-			{ "<leader>pt", "<cmd>Precognition toggle<cr>", desc = "Precognition toggle" },
-		},
+		-- Keymaps moved to main keymaps.lua for consistency
 		opts = {
 			startVisible = false,
 			-- showBlankVirtLine = true,

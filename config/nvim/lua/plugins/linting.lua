@@ -79,8 +79,6 @@ return {
 			end,
 		})
 
-		vim.keymap.set("n", "<leader>lt", function()
-			lint.try_lint()
-		end, { desc = "Trigger linting for current file" })
+		-- Keymap moved to main keymaps.lua for consistency
 	end,
 }

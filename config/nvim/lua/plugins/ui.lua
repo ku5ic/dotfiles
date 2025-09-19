@@ -17,10 +17,7 @@ return {
 	{
 		"akinsho/bufferline.nvim",
 		lazy = false,
-		keys = {
-			{ "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle pin" },
-			{ "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },
-		},
+		-- Keymaps moved to main keymaps.lua for consistency
 		opts = {
 			options = {
 				diagnostics = "nvim_lsp",
@@ -155,9 +152,7 @@ return {
 	-- maximizes and restores current window
 	{
 		"szw/vim-maximizer",
-		keys = {
-			{ "<leader>z", "<Cmd>MaximizerToggle<CR>", desc = "Toggle maximize" },
-		},
+		-- Keymaps moved to main keymaps.lua for consistency
 	},
 
 	-- Highly experimental plugin that completely replaces the UI for messages, cmdline and the popupmenu.
@@ -196,30 +191,13 @@ return {
 				inc_rename = true,
 			},
 		},
-    -- stylua: ignore
-    keys = {
-      { "<S-Enter>", function() require("noice").redirect(vim.fn.getcmdline()) end, mode = "c", desc = "Redirect Cmdline" },
-      { "<leader>snl", function() require("noice").cmd("last") end, desc = "Noice Last Message" },
-      { "<leader>snh", function() require("noice").cmd("history") end, desc = "Noice History" },
-      { "<leader>sna", function() require("noice").cmd("all") end, desc = "Noice All" },
-      { "<leader>snd", function() require("noice").cmd("dismiss") end, desc = "Dismiss All" },
-      { "<c-f>", function() if not require("noice.lsp").scroll(4) then return "<c-f>" end end, silent = true, expr = true, desc = "Scroll forward", mode = {"i", "n", "s"} },
-      { "<c-b>", function() if not require("noice.lsp").scroll(-4) then return "<c-b>" end end, silent = true, expr = true, desc = "Scroll backward", mode = {"i", "n", "s"}},
-    },
+		-- Keymaps moved to main keymaps.lua for consistency
 	},
 
 	-- notify
 	{
 		"rcarriga/nvim-notify",
-		keys = {
-			{
-				"<leader>un",
-				function()
-					require("notify").dismiss({ silent = true, pending = true })
-				end,
-				desc = "Dismiss all Notifications",
-			},
-		},
+		-- Keymaps moved to main keymaps.lua for consistency
 		opts = {
 			timeout = 3000,
 			max_height = function()

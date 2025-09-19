@@ -2,21 +2,7 @@ return {
 	"stevearc/conform.nvim",
 	event = { "BufWritePre" },
 	cmd = { "ConformInfo" },
-	keys = {
-		{
-			-- Customize or remove this keymap to your liking
-			"<leader>f",
-			function()
-				require("conform").format({
-					lsp_fallback = true,
-					async = false,
-					timeout_ms = 1000,
-				})
-			end,
-			mode = "",
-			desc = "Format buffer",
-		},
-	},
+	-- Keymaps moved to main keymaps.lua for consistency
 	-- Everything in opts will be passed to setup()
 	opts = {
 		-- Define your formatters

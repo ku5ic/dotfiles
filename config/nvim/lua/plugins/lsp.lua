@@ -137,56 +137,22 @@ return {
 					local buf = args.buf
 					local opts = { buffer = buf, silent = true, noremap = true }
 
+					-- LSP navigation keymaps (using standard vim conventions)
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, set_desc(opts, { desc = "Goto Definition" }))
-					vim.keymap.set("n", "gr", vim.lsp.buf.references, set_desc(opts, { desc = "Refereces" }))
-					vim.keymap.set(
-						"n",
-						"gI",
-						vim.lsp.buf.implementation,
-						set_desc(opts, { desc = "Goto Implementation" })
-					)
-					vim.keymap.set(
-						"n",
-						"gy",
-						vim.lsp.buf.type_definition,
-						set_desc(opts, { desc = "Goto Type Definition" })
-					)
+					vim.keymap.set("n", "gr", vim.lsp.buf.references, set_desc(opts, { desc = "Goto References" }))
+					vim.keymap.set("n", "gI", vim.lsp.buf.implementation, set_desc(opts, { desc = "Goto Implementation" }))
+					vim.keymap.set("n", "gy", vim.lsp.buf.type_definition, set_desc(opts, { desc = "Goto Type Definition" }))
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, set_desc(opts, { desc = "Goto Declaration" }))
-					vim.keymap.set("n", "K", vim.lsp.buf.hover, set_desc(opts, { desc = "Hover" }))
+					vim.keymap.set("n", "K", vim.lsp.buf.hover, set_desc(opts, { desc = "Hover Documentation" }))
 					vim.keymap.set("n", "gk", vim.lsp.buf.signature_help, set_desc(opts, { desc = "Signature Help" }))
-					vim.keymap.set(
-						{ "n", "v" },
-						"ca",
-						vim.lsp.buf.code_action,
-						set_desc(opts, { desc = "Code Action" })
-					)
+					
+					-- Code lens
 					vim.keymap.set({ "n", "v" }, "cc", vim.lsp.codelens.run, set_desc(opts, { desc = "Run Codelens" }))
-					vim.keymap.set(
-						"n",
-						"gC",
-						vim.lsp.codelens.refresh,
-						set_desc(opts, { desc = "Referesh & Display Codelense" })
-					)
-					vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, set_desc(opts, { desc = "Rename" }))
-					vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, set_desc(opts, { desc = "Code Action" }))
-					vim.keymap.set(
-						"n",
-						"<leader>wa",
-						vim.lsp.buf.add_workspace_folder,
-						set_desc(opts, { desc = "Add WS Folder" })
-					)
-					vim.keymap.set(
-						"n",
-						"<leader>wr",
-						vim.lsp.buf.remove_workspace_folder,
-						set_desc(opts, { desc = "Remove WS Folder" })
-					)
-					vim.keymap.set("n", "<leader>wl", function()
-						print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-					end, set_desc(opts, { desc = "List WS Folders" }))
-					vim.keymap.set("n", "<leader>dq", function()
-						vim.diagnostic.setloclist({ open = true })
-					end, set_desc(opts, { desc = "Set Diagnostic List" }))
+					vim.keymap.set("n", "gC", vim.lsp.codelens.refresh, set_desc(opts, { desc = "Refresh Codelens" }))
+					
+					-- Note: LSP leader keymaps (<leader>l*) are defined in main keymaps.lua
+					-- These buffer-local keymaps use standard Vim conventions and must be set here
+					-- to ensure they are properly scoped to LSP buffers only
 				end,
 			})
 		end,
@@ -195,37 +161,6 @@ return {
 		"folke/trouble.nvim",
 		opts = {}, -- for default options, refer to the configuration section for custom setup.
 		cmd = "Trouble",
-		keys = {
-			{
-				"<leader>xx",
-				"<cmd>Trouble diagnostics toggle<cr>",
-				desc = "Diagnostics (Trouble)",
-			},
-			{
-				"<leader>xX",
-				"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-				desc = "Buffer Diagnostics (Trouble)",
-			},
-			{
-				"<leader>cs",
-				"<cmd>Trouble symbols toggle focus=false<cr>",
-				desc = "Symbols (Trouble)",
-			},
-			{
-				"<leader>cl",
-				"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-				desc = "LSP Definitions / references / ... (Trouble)",
-			},
-			{
-				"<leader>xL",
-				"<cmd>Trouble loclist toggle<cr>",
-				desc = "Location List (Trouble)",
-			},
-			{
-				"<leader>xQ",
-				"<cmd>Trouble qflist toggle<cr>",
-				desc = "Quickfix List (Trouble)",
-			},
-		},
+		-- Keymaps moved to main keymaps.lua for consistency
 	},
 }
