@@ -1,4 +1,6 @@
 local merge_tables = require("utils").merge_tables
+local icons = require("config.icons").icons
+
 local prompts = {
 	Code = {
 		Explain = [[
@@ -143,9 +145,10 @@ return {
 			{ "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
 		},
 		opts = {
-			question_header = "## User ",
-			answer_header = "## Copilot ",
-			error_header = "## Error ",
+			headers = {
+				user = icons.misc.User .. "Sinisa",
+				assistant = icons.misc.Copilot .. "Copilot",
+			},
 			prompts = merge_tables(prompts.Code, prompts.Text),
 			auto_follow_cursor = false, -- Don't follow the cursor after getting response
 			-- model = "o3-mini",
@@ -201,12 +204,6 @@ return {
 			local chat = require("CopilotChat")
 			local select = require("CopilotChat.select")
 
-			local function set_headers()
-				local user = (vim.env.USER or "User"):gsub("^%l", string.upper)
-				opts.question_header = opts.question_header or ("  " .. user .. " ")
-				opts.answer_header = opts.answer_header or "  Copilot "
-			end
-
 			local function create_visual_command()
 				vim.api.nvim_create_user_command("CopilotChatVisual", function(args)
 					chat.ask(args.args, { selection = select.visual })
@@ -214,7 +211,6 @@ return {
 			end
 
 			opts.selection = select.unnamed
-			set_headers()
 			chat.setup(opts)
 			create_visual_command()
 		end,

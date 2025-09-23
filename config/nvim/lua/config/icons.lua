@@ -69,6 +69,10 @@ M.icons = {
 			Variable = " ",
 		}
 	end)(),
+	misc = {
+		Copilot = " ",
+		User = " ",
+	},
 }
 
 return M
