@@ -200,20 +200,6 @@ return {
 				},
 			},
 		},
-		config = function(_, opts)
-			local chat = require("CopilotChat")
-			local select = require("CopilotChat.select")
-
-			local function create_visual_command()
-				vim.api.nvim_create_user_command("CopilotChatVisual", function(args)
-					chat.ask(args.args, { selection = select.visual })
-				end, { nargs = "*", range = true })
-			end
-
-			opts.selection = select.unnamed
-			chat.setup(opts)
-			create_visual_command()
-		end,
 		-- event = "VeryLazy",
 		-- Keymaps moved to main keymaps.lua for consistency
 	},

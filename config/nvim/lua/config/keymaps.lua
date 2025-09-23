@@ -356,7 +356,6 @@ map("n", "<leader>ai", function()
 	end
 end, "AI: Ask input")
 
-map("x", "<leader>av", "<cmd>CopilotChatVisual Ask me for a prompt.<cr>", "AI: Chat with visual selection")
 map("n", "<leader>av", "<cmd>CopilotChatToggle<cr>", "AI: Toggle chat")
 
 -- Git integration
