@@ -82,7 +82,7 @@ map("v", ">", ">gv", "Indent and reselect")
 -- They remain in lsp.lua for proper buffer-local scoping:
 --
 -- gd          - Go to definition
--- gr          - Go to references  
+-- gr          - Go to references
 -- gI          - Go to implementation
 -- gy          - Go to type definition
 -- gD          - Go to declaration
@@ -354,7 +354,7 @@ map("n", "<leader>ai", function()
 	end
 end, "AI: Ask input")
 
-map("x", "<leader>av", ":CopilotChatVisual", "AI: Chat with visual selection")
+map("x", "<leader>av", "<cmd>CopilotChatVisual Ask me for a prompt.<cr>", "AI: Chat with visual selection")
 map("n", "<leader>av", "<cmd>CopilotChatToggle<cr>", "AI: Toggle chat")
 
 -- Git integration

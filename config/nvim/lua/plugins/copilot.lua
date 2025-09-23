@@ -134,7 +134,7 @@ return {
 	-- CopilotChat
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
-		version = "v4.4.1",
+		version = "v4.7.2",
 		-- branch = "canary", -- Use the canary branch if you want to test the latest features but it might be unstable	branch = "canary",
 		build = "make tiktoken", -- Only on MacOS or Linux
 		dependencies = {
@@ -201,7 +201,7 @@ return {
 			local chat = require("CopilotChat")
 			local select = require("CopilotChat.select")
 
-			local function set_headers(opts)
+			local function set_headers()
 				local user = (vim.env.USER or "User"):gsub("^%l", string.upper)
 				opts.question_header = opts.question_header or ("  " .. user .. " ")
 				opts.answer_header = opts.answer_header or "  Copilot "
@@ -214,7 +214,7 @@ return {
 			end
 
 			opts.selection = select.unnamed
-			set_headers(opts)
+			set_headers()
 			chat.setup(opts)
 			create_visual_command()
 		end,
