@@ -41,8 +41,10 @@ local keymap = vim.keymap -- for conciseness
 local opts = { noremap = true, silent = true } -- Silent keymap option
 
 -- Utility function for setting keymaps with descriptions
-local function map(mode, lhs, rhs, desc)
-	keymap.set(mode, lhs, rhs, require("utils").set_desc(opts, { desc = desc }))
+local function map(mode, lhs, rhs, desc, options)
+	opts = options or {}
+	opts.desc = desc
+	keymap.set(mode, lhs, rhs, vim.tbl_extend("force", opts, { noremap = true, silent = true }))
 end
 
 -- ═══════════════════════════════════════════════════════════════════════════════════
