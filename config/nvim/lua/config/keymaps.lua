@@ -34,8 +34,14 @@ This file contains a comprehensive, organized keymap structure following best pr
 ══════════════════════════════════════════════════════════════════════════════════
 --]]
 
--- Set leader key to space
-vim.g.mapleader = " "
+local notify = require("notify")
+local noice = require("noice")
+local noice_lsp = require("noice.lsp")
+local spectre = require("spectre")
+local todo_comments = require("todo-comments")
+local conform = require("conform")
+local lint = require("lint")
+local CopilotChat = require("CopilotChat")
 
 local keymap = vim.keymap -- for conciseness
 local opts = { noremap = true, silent = true } -- Silent keymap option
@@ -147,41 +153,41 @@ map("n", "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", "Delete unpinn
 -- ═══════════════════════════════════════════════════════════════════════════════════
 
 map("n", "<leader>nn", function()
-	require("notify").dismiss({ silent = true, pending = true })
+	notify.dismiss({ silent = true, pending = true })
 end, "Dismiss notifications")
 
 map("n", "<leader>np", "<cmd>Precognition toggle<cr>", "Toggle Precognition")
 
 -- Noice commands
 map("n", "<leader>nl", function()
-	require("noice").cmd("last")
+	noice.cmd("last")
 end, "Show last message")
 map("n", "<leader>nh", function()
-	require("noice").cmd("history")
+	noice.cmd("history")
 end, "Show message history")
 map("n", "<leader>na", function()
-	require("noice").cmd("all")
+	noice.cmd("all")
 end, "Show all messages")
 map("n", "<leader>nd", function()
-	require("noice").cmd("dismiss")
+	noice.cmd("dismiss")
 end, "Dismiss all messages")
 
 -- Noice scroll in LSP hover docs
 map({ "i", "n", "s" }, "<c-f>", function()
-	if not require("noice.lsp").scroll(4) then
+	if not noice_lsp.scroll(4) then
 		return "<c-f>"
 	end
 end, "Scroll forward", { silent = true, expr = true })
 
 map({ "i", "n", "s" }, "<c-b>", function()
-	if not require("noice.lsp").scroll(-4) then
+	if not noice_lsp.scroll(-4) then
 		return "<c-b>"
 	end
 end, "Scroll backward", { silent = true, expr = true })
 
 -- Redirect cmdline
 map("c", "<S-Enter>", function()
-	require("noice").redirect(vim.fn.getcmdline())
+	noice.redirect(vim.fn.getcmdline())
 end, "Redirect cmdline")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════
@@ -206,7 +212,7 @@ map("n", "<leader>fc", "<cmd>Telescope commands<cr>", "Find commands")
 map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", "Find help")
 map("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", "Find keymaps")
 map("n", "<leader>fm", function()
-	require("conform").format({
+	conform.format({
 		lsp_fallback = true,
 		async = false,
 		timeout_ms = 1000,
@@ -220,7 +226,7 @@ end, "Format file")
 map("n", "<leader>ss", "<cmd>Telescope current_buffer_fuzzy_find<cr>", "Search in current buffer")
 map("n", "<leader>sg", "<cmd>Telescope live_grep_args<cr>", "Search with live grep")
 map("n", "<leader>sr", function()
-	require("spectre").open()
+	spectre.open()
 end, "Search and replace")
 map("n", "<leader>st", "<cmd>TodoTelescope<cr>", "Search todos")
 map("n", "<leader>sd", "<cmd>Telescope diagnostics<cr>", "Search diagnostics")
@@ -233,10 +239,10 @@ map("n", "<leader>sR", "<cmd>Telescope resume<cr>", "Resume last search")
 
 -- Todo navigation
 map("n", "]t", function()
-	require("todo-comments").jump_next()
+	todo_comments.jump_next()
 end, "Next todo comment")
 map("n", "[t", function()
-	require("todo-comments").jump_prev()
+	todo_comments.jump_prev()
 end, "Previous todo comment")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════
@@ -257,7 +263,7 @@ map("n", "<leader>gp", "<cmd>Gitsigns prev_hunk<cr>", "Previous git hunk")
 map("n", "<leader>lr", vim.lsp.buf.rename, "LSP Rename")
 map({ "n", "v" }, "<leader>la", vim.lsp.buf.code_action, "LSP Code Action")
 map("n", "<leader>lf", function()
-	require("conform").format({
+	conform.format({
 		lsp_fallback = true,
 		async = false,
 		timeout_ms = 1000,
@@ -267,7 +273,7 @@ map("n", "<leader>ld", function()
 	vim.diagnostic.setloclist({ open = true })
 end, "LSP Diagnostics to location list")
 map("n", "<leader>ll", function()
-	require("lint").try_lint()
+	lint.try_lint()
 end, "Lint current file")
 map("n", "<leader>li", "<cmd>LspInfo<cr>", "LSP Info")
 
@@ -331,13 +337,13 @@ map(
 
 -- AI prompts and actions
 map("n", "<leader>ap", function()
-	require("CopilotChat").select_prompt({
+	CopilotChat.select_prompt({
 		context = { "buffers" },
 	})
 end, "AI: Select prompt actions")
 
 map("x", "<leader>ap", function()
-	require("CopilotChat").select_prompt()
+	CopilotChat.select_prompt()
 end, "AI: Select prompt actions (visual)")
 
 -- Code assistance
@@ -370,7 +376,7 @@ map("n", "<leader>al", "<cmd>CopilotChatReset<cr>", "AI: Clear chat history")
 
 -- Keep some old keymaps for compatibility and muscle memory
 map("n", "<leader>f", function()
-	require("conform").format({
+	conform.format({
 		lsp_fallback = true,
 		async = false,
 		timeout_ms = 1000,
@@ -380,5 +386,5 @@ end, "Format buffer (legacy)")
 map("n", "<leader>rn", vim.lsp.buf.rename, "LSP Rename (legacy)")
 map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, "LSP Code Action (legacy)")
 map("n", "<leader>un", function()
-	require("notify").dismiss({ silent = true, pending = true })
+	notify.dismiss({ silent = true, pending = true })
 end, "Dismiss notifications (legacy)")

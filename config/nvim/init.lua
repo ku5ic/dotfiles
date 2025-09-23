@@ -18,6 +18,9 @@ end
 local lazypath = ensure_lazy_nvim_installed()
 vim.opt.rtp:prepend(lazypath)
 
+-- Set leader key to space
+vim.g.mapleader = " "
+
+require("lazy").setup("plugins")
 require("config.options")
 require("config.keymaps")
-require("lazy").setup("plugins")
