@@ -6,7 +6,7 @@
   "bufferline.nvim": { "branch": "main", "commit": "655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3" },
   "catppuccin": { "branch": "main", "commit": "f19cab18ec4dc86d415512c7a572863b2adbcc18" },
   "conform.nvim": { "branch": "master", "commit": "b4aab989db276993ea5dcb78872be494ce546521" },
-  "copilot.lua": { "branch": "master", "commit": "46e9895565fdae79833eda075b9b05d8543d7a77" },
+  "copilot.lua": { "branch": "master", "commit": "304fc5f2dadb5067ed26c60fa69fb7ba8a57eaf3" },
   "dressing.nvim": { "branch": "master", "commit": "2d7c2db2507fa3c4956142ee607431ddb2828639" },
   "friendly-snippets": { "branch": "main", "commit": "572f5660cf05f8cd8834e096d7b4c921ba18e175" },
   "gitsigns.nvim": { "branch": "main", "commit": "f780609807eca1f783a36a8a31c30a48fbe150c5" },
@@ -24,7 +24,7 @@
   "nvim-autopairs": { "branch": "master", "commit": "23320e75953ac82e559c610bec5a90d9c6dfa743" },
   "nvim-dap": { "branch": "master", "commit": "7367cec8e8f7a0b1e4566af9a7ef5959d11206a7" },
   "nvim-lint": { "branch": "master", "commit": "0864f81c681e15d9bdc1156fe3a17bd07db5a3ed" },
-  "nvim-lspconfig": { "branch": "master", "commit": "aafecf5b8bc0a768f1a97e3a6d5441e64dee79f9" },
+  "nvim-lspconfig": { "branch": "master", "commit": "b3cce1419ca67871ae782b3e529652f8a016f0de" },
   "nvim-notify": { "branch": "master", "commit": "8701bece920b38ea289b457f902e2ad184131a5d" },
   "nvim-spectre": { "branch": "master", "commit": "72f56f7585903cd7bf92c665351aa585e150af0f" },
   "nvim-treesitter": { "branch": "master", "commit": "42fc28ba918343ebfd5565147a42a26580579482" },
@@ -44,5 +44,5 @@
   "vim-rbenv": { "branch": "master", "commit": "2961648bcd772b0dc115ff5b5100f7d15b8c499f" },
   "vim-rhubarb": { "branch": "master", "commit": "5496d7c94581c4c9ad7430357449bb57fc59f501" },
   "vim-surround": { "branch": "master", "commit": "3d188ed2113431cf8dac77be61b842acb64433d9" },
-  "which-key.nvim": { "branch": "main", "commit": "370ec46f710e058c9c1646273e6b225acf47cbed" }
+  "which-key.nvim": { "branch": "main", "commit": "904308e6885bbb7b60714c80ab3daf0c071c1492" }
 }
