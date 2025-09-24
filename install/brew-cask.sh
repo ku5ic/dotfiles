@@ -15,7 +15,6 @@ casks=(
   postman
   spotify
   the-unarchiver
-  viscosity
   visual-studio-code
 )
 
