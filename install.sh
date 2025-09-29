@@ -43,6 +43,7 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/.pylintrc" ~
   ln -sfv "$DOTFILES_DIR/.default-python-packages" ~
   ln -sfv "$DOTFILES_DIR/.default-npm-packages" ~
+  ln -sfv "$DOTFILES_DIR/.default-gems" ~
   ln -sfv "$DOTFILES_DIR/.tool-versions" ~
   ln -sfv "$DOTFILES_DIR/tmux/resurrect" ~/.tmux/
 
