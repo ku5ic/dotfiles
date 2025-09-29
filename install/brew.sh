@@ -11,7 +11,6 @@ brews=(
   asdf
   bat
   cmake
-  composer
   coreutils
   ctags
   fastfetch
@@ -26,10 +25,8 @@ brews=(
   luarocks
   ncurses
   neovim
-  openjdk
   openssl
-  php@8.1
-  postgresql@14
+  postgresql@17
   reattach-to-user-namespace
   redis
   ripgrep

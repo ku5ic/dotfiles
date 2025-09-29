@@ -43,6 +43,7 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/.pylintrc" ~
   ln -sfv "$DOTFILES_DIR/.default-python-packages" ~
   ln -sfv "$DOTFILES_DIR/.default-npm-packages" ~
+  ln -sfv "$DOTFILES_DIR/.tool-versions" ~
   ln -sfv "$DOTFILES_DIR/tmux/resurrect" ~/.tmux/
 
   mkdir -p ~/.config
@@ -54,18 +55,15 @@ create_symlinks() {
 setup_asdf() {
   asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git || true
   asdf nodejs update-nodebuild
-  asdf install nodejs latest:20
-  asdf global nodejs latest:20
+  asdf install nodejs latest:22
 
   asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git || true
   asdf plugin-update ruby
   asdf install ruby latest:3
-  asdf global ruby latest:3
 
   asdf plugin add python || true
   asdf plugin-update python
   asdf install python latest:3
-  asdf global python latest:3
 }
 
 main() {
