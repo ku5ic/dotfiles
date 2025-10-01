@@ -41,7 +41,6 @@ local spectre = require("spectre")
 local todo_comments = require("todo-comments")
 local conform = require("conform")
 local lint = require("lint")
-local CopilotChat = require("CopilotChat")
 
 local keymap = vim.keymap -- for conciseness
 local opts = { noremap = true, silent = true } -- Silent keymap option
@@ -335,39 +334,8 @@ map(
 -- ■ AI/COPILOT OPERATIONS (<leader>a)
 -- ═══════════════════════════════════════════════════════════════════════════════════
 
--- AI prompts and actions
-map("n", "<leader>ap", function()
-	CopilotChat.select_prompt({
-		context = { "buffers" },
-	})
-end, "AI: Select prompt actions")
-
-map("x", "<leader>ap", function()
-	CopilotChat.select_prompt()
-end, "AI: Select prompt actions (visual)")
-
--- Code assistance
-map("n", "<leader>ae", "<cmd>CopilotChatExplain<cr>", "AI: Explain code")
-map("n", "<leader>at", "<cmd>CopilotChatTests<cr>", "AI: Generate tests")
-map("n", "<leader>ar", "<cmd>CopilotChatReview<cr>", "AI: Review code")
-map("n", "<leader>aR", "<cmd>CopilotChatRefactor<cr>", "AI: Refactor code")
-map("n", "<leader>an", "<cmd>CopilotChatBetterNamings<cr>", "AI: Better naming")
-map("n", "<leader>af", "<cmd>CopilotChatFixDiagnostic<cr>", "AI: Fix diagnostic")
-
--- Interactive AI
-map("n", "<leader>ai", function()
-	local input = vim.trim(vim.fn.input("Ask Copilot: "))
-	if input ~= "" then
-		vim.cmd("CopilotChat " .. input)
-	end
-end, "AI: Ask input")
-
 map("n", "<leader>av", "<cmd>CopilotChatToggle<cr>", "AI: Toggle chat")
-
--- Git integration
 map("n", "<leader>am", "<cmd>CopilotChatCommit<cr>", "AI: Generate commit message")
-
--- Utility
 map("n", "<leader>al", "<cmd>CopilotChatReset<cr>", "AI: Clear chat history")
 
 -- ═══════════════════════════════════════════════════════════════════════════════════
