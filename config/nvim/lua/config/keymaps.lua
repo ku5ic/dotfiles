@@ -337,22 +337,3 @@ map(
 map("n", "<leader>av", "<cmd>CopilotChatToggle<cr>", "AI: Toggle chat")
 map("n", "<leader>am", "<cmd>CopilotChatCommit<cr>", "AI: Generate commit message")
 map("n", "<leader>al", "<cmd>CopilotChatReset<cr>", "AI: Clear chat history")
-
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ LEGACY/COMPATIBILITY KEYMAPS
--- ═══════════════════════════════════════════════════════════════════════════════════
-
--- Keep some old keymaps for compatibility and muscle memory
-map("n", "<leader>f", function()
-	conform.format({
-		lsp_fallback = true,
-		async = false,
-		timeout_ms = 1000,
-	})
-end, "Format buffer (legacy)")
-
-map("n", "<leader>rn", vim.lsp.buf.rename, "LSP Rename (legacy)")
-map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, "LSP Code Action (legacy)")
-map("n", "<leader>un", function()
-	notify.dismiss({ silent = true, pending = true })
-end, "Dismiss notifications (legacy)")

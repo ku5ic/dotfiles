@@ -2,8 +2,7 @@ local merge_tables = require("utils").merge_tables
 local icons = require("config.icons").icons
 
 local prompts = {
-	Code = {
-		Explain = [[
+	Explain = [[
 Explain the following code in simple, clear terms.
 Cover the following aspects:
 - What the code does overall
@@ -15,7 +14,7 @@ Cover the following aspects:
 - Libraries or APIs being used and why
 Keep the explanation concise but complete, as if teaching someone new to the codebase or technology.
 		]],
-		Review = [[
+	Review = [[
 Review the following code and provide constructive feedback on:
 - Code quality and readability
 - Structure and organization
@@ -27,7 +26,7 @@ Review the following code and provide constructive feedback on:
 - Testability and code coverage (if relevant)
 Suggest improvements where applicable and explain why those changes would benefit the code.
 		]],
-		Tests = [[
+	Tests = [[
 Write tests for the following code.
 Ensure the tests:
 - Cover all key functionality and logic branches
@@ -39,7 +38,7 @@ Ensure the tests:
 If tests already exist, review and improve them for completeness, reliability, and clarity.
 After writing or improving the tests, briefly explain what is being tested and why it matters.
 		]],
-		Refactor = [[
+	Refactor = [[
 Refactor the following code with the following goals in mind:
 - Improve overall understanding and readability
 - Optimize any inefficient logic
@@ -50,7 +49,7 @@ Refactor the following code with the following goals in mind:
 - Reformat the code to use a cleaner or more appropriate structure (e.g., object destructuring, map/filter, early returns, etc.)
 After refactoring, explain what changes were made and why they improve the code.
         ]],
-		Fix = [[
+	Fix = [[
 Analyze the following code and fix any errors that may be causing:
 - Compilation or syntax failures
 - Runtime exceptions or crashes
@@ -62,7 +61,7 @@ Analyze the following code and fix any errors that may be causing:
 - Any other problems preventing the code from running correctly
 After applying fixes, explain what the error was, what caused it, and how it was resolved.
 		]],
-		FixCode = [[
+	FixCode = [[
 Review the following code and fix any issues with:
 - Syntax errors
 - Runtime errors or bugs
@@ -74,7 +73,7 @@ Review the following code and fix any issues with:
 - Improper or unclear naming that might lead to confusion
 After fixing, explain what changes were made and why those fixes were necessary.
 		]],
-		BetterNamings = [[
+	BetterNamings = [[
 Review the following code and improve the naming of:
 - Variables
 - Functions
@@ -88,7 +87,7 @@ Ensure that names are:
 - Free of ambiguity or misleading patterns
 After renaming, explain what changes were made and how the new names improve the clarity and understanding of the code.
 		]],
-		Documentation = [[
+	Documentation = [[
 Generate or improve documentation for the following code.
 Include:
 - Clear and concise descriptions of what each function, class, or component does
@@ -99,7 +98,7 @@ Include:
 Follow appropriate documentation conventions (e.g., JSDoc, TSDoc, docstrings) based on the language used.
 The goal is to make the code easy to understand and use by other developers, even if they’re unfamiliar with it.
 		]],
-		WCAGRefactor = [[
+	WCAGRefactor = [[
 Please refactor the following code to comply with WCAG 2.2 AA accessibility standards.
 Focus on improving:
 - Use of semantic HTML (headings, landmarks, buttons, etc.)
@@ -112,13 +111,10 @@ Focus on improving:
 - Avoidance of time-based or motion-triggered issues unless properly handled
 After refactoring, explain the specific accessibility issues that were resolved and how the changes align with WCAG 2.2 AA success criteria.
 		]],
-	},
-	Text = {
-		Summarize = "Please summarize the following text.",
-		Spelling = "Please correct any grammar and spelling errors in the following text.",
-		Wording = "Please improve the grammar and wording of the following text.",
-		Concise = "Please rewrite the following text to make it more concise.",
-	},
+	Summarize = "Please summarize the following text.",
+	Spelling = "Please correct any grammar and spelling errors in the following text.",
+	Wording = "Please improve the grammar and wording of the following text.",
+	Concise = "Please rewrite the following text to make it more concise.",
 }
 
 return {
@@ -149,7 +145,7 @@ return {
 				user = icons.misc.User .. "Sinisa",
 				assistant = icons.misc.Copilot .. "Copilot",
 			},
-			prompts = merge_tables(prompts.Code, prompts.Text),
+			prompts = prompts,
 			auto_follow_cursor = false, -- Don't follow the cursor after getting response
 			-- model = "o3-mini",
 			mappings = {
