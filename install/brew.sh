@@ -37,6 +37,7 @@ brews=(
   tpm
   tree
   wget
+  yarn
   zsh
   zsh-autosuggestions
   zsh-completions
