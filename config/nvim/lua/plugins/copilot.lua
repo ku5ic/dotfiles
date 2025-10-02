@@ -1,4 +1,3 @@
-local merge_tables = require("utils").merge_tables
 local icons = require("config.icons").icons
 
 local prompts = {
