@@ -34,6 +34,7 @@ return {
 					"js-debug-adapter",
 					"php-debug-adapter",
 					"prettier",
+					"prettierd",
 					"pylint",
 					"stylelint",
 					"stylua",
