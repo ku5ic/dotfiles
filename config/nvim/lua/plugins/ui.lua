@@ -17,7 +17,6 @@ return {
 	{
 		"akinsho/bufferline.nvim",
 		lazy = false,
-		-- Keymaps moved to main keymaps.lua for consistency
 		opts = {
 			options = {
 				diagnostics = "nvim_lsp",
@@ -152,7 +151,6 @@ return {
 	-- maximizes and restores current window
 	{
 		"szw/vim-maximizer",
-		-- Keymaps moved to main keymaps.lua for consistency
 	},
 
 	-- Highly experimental plugin that completely replaces the UI for messages, cmdline and the popupmenu.
@@ -191,13 +189,11 @@ return {
 				inc_rename = true,
 			},
 		},
-		-- Keymaps moved to main keymaps.lua for consistency
 	},
 
 	-- notify
 	{
 		"rcarriga/nvim-notify",
-		-- Keymaps moved to main keymaps.lua for consistency
 		opts = {
 			timeout = 3000,
 			max_height = function()

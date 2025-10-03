@@ -140,16 +140,26 @@ return {
 					-- LSP navigation keymaps (using standard vim conventions)
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, set_desc(opts, { desc = "Goto Definition" }))
 					vim.keymap.set("n", "gr", vim.lsp.buf.references, set_desc(opts, { desc = "Goto References" }))
-					vim.keymap.set("n", "gI", vim.lsp.buf.implementation, set_desc(opts, { desc = "Goto Implementation" }))
-					vim.keymap.set("n", "gy", vim.lsp.buf.type_definition, set_desc(opts, { desc = "Goto Type Definition" }))
+					vim.keymap.set(
+						"n",
+						"gI",
+						vim.lsp.buf.implementation,
+						set_desc(opts, { desc = "Goto Implementation" })
+					)
+					vim.keymap.set(
+						"n",
+						"gy",
+						vim.lsp.buf.type_definition,
+						set_desc(opts, { desc = "Goto Type Definition" })
+					)
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, set_desc(opts, { desc = "Goto Declaration" }))
 					vim.keymap.set("n", "K", vim.lsp.buf.hover, set_desc(opts, { desc = "Hover Documentation" }))
 					vim.keymap.set("n", "gk", vim.lsp.buf.signature_help, set_desc(opts, { desc = "Signature Help" }))
-					
+
 					-- Code lens
 					vim.keymap.set({ "n", "v" }, "cc", vim.lsp.codelens.run, set_desc(opts, { desc = "Run Codelens" }))
 					vim.keymap.set("n", "gC", vim.lsp.codelens.refresh, set_desc(opts, { desc = "Refresh Codelens" }))
-					
+
 					-- Note: LSP leader keymaps (<leader>l*) are defined in main keymaps.lua
 					-- These buffer-local keymaps use standard Vim conventions and must be set here
 					-- to ensure they are properly scoped to LSP buffers only
@@ -161,6 +171,5 @@ return {
 		"folke/trouble.nvim",
 		opts = {}, -- for default options, refer to the configuration section for custom setup.
 		cmd = "Trouble",
-		-- Keymaps moved to main keymaps.lua for consistency
 	},
 }

@@ -78,7 +78,5 @@ return {
 				lint.try_lint()
 			end,
 		})
-
-		-- Keymap moved to main keymaps.lua for consistency
 	end,
 }

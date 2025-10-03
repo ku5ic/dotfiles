@@ -9,7 +9,6 @@ return {
 			"MunifTanjim/nui.nvim",
 		},
 		lazy = false,
-		-- Keymaps moved to main keymaps.lua for consistency
 		opts = {
 			close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
 			popup_border_style = "rounded",
@@ -29,14 +28,12 @@ return {
 		build = false,
 		cmd = "Spectre",
 		opts = { open_cmd = "noswapfile vnew" },
-		-- Keymaps moved to main keymaps.lua for consistency
 	},
 
 	-- git signs
 	{
 		"lewis6991/gitsigns.nvim",
 		event = { "BufReadPre", "BufNewFile" },
-		-- Keymaps moved to main keymaps.lua for consistency
 		config = true,
 	},
 
@@ -56,7 +53,6 @@ return {
 		},
 		cmd = "Telescope",
 		version = false, -- telescope did only one release, so use HEAD for now
-		-- Keymaps moved to main keymaps.lua for consistency
 		opts = {
 			defaults = {
 				mappings = {
@@ -94,7 +90,6 @@ return {
 		cmd = { "TodoTelescope" },
 		event = { "BufReadPost", "BufNewFile" },
 		config = true,
-		-- Keymaps moved to main keymaps.lua for consistency
 	},
 
 	-- vim-fugitive is a Git wrapper so awesome, it should be illegal
@@ -116,13 +111,11 @@ return {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 		},
-		-- Keymaps moved to main keymaps.lua for consistency
 	},
 
 	-- precognition.nvim assists with discovering motions (Both vertical and horizontal) to navigate your current buffer
 	{
 		"tris203/precognition.nvim",
-		-- Keymaps moved to main keymaps.lua for consistency
 		opts = {
 			startVisible = false,
 			-- showBlankVirtLine = true,

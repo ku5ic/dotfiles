@@ -12,6 +12,9 @@ local function ensure_lazy_nvim_installed()
 		"--branch=stable", -- latest stable release
 		lazypath,
 	})
+	if not vim.uv.fs_stat(lazypath) then
+		error("Failed to install lazy.nvim. Please check your git/network setup.")
+	end
 	return lazypath
 end
 
@@ -23,4 +26,5 @@ vim.g.mapleader = " "
 
 require("lazy").setup("plugins")
 require("config.options")
-require("config.keymaps")
+require("keymaps.keymaps")
+require("keymaps.copilotchat")

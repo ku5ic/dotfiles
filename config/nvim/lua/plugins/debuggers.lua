@@ -1,7 +1,6 @@
 return {
 	{
 		"mfussenegger/nvim-dap",
-		-- Keymaps moved to main keymaps.lua for consistency
 		config = function()
 			local dap = require("dap")
 

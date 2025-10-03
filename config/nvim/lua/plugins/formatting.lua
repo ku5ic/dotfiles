@@ -2,8 +2,6 @@ return {
 	"stevearc/conform.nvim",
 	event = { "BufWritePre" },
 	cmd = { "ConformInfo" },
-	-- Keymaps moved to main keymaps.lua for consistency
-	-- Everything in opts will be passed to setup()
 	opts = {
 		-- Define your formatters
 		formatters_by_ft = {
