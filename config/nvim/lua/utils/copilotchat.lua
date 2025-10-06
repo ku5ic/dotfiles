@@ -131,10 +131,10 @@ local function build_prompt(user_prompt, opts)
 	-- selection vs buffer
 	local m = vim.fn.mode()
 	local visual = (m == "v" or m == "V" or m == "\22")
+
 	if opts.selection_only and visual then
 		table.insert(tags, "#selection")
 	else
-		-- include both to tolerate parser or alias changes
 		table.insert(tags, "#buffer")
 	end
 
@@ -146,24 +146,27 @@ local function build_prompt(user_prompt, opts)
 		table.insert(tags, "#git")
 	end
 
-	-- IMPORTANT: put each tag on its own line, after an empty spacer line.
-	-- Some versions ignore inline or space-separated tags.
-	-- Also ensure there is no trailing whitespace that could be trimmed away.
+	-- IMPORTANT: each tag on its own line, after an empty spacer line
 	return table.concat({
 		user_prompt or "",
-		"", -- spacer
+		"",
+		"Context:",
 		table.concat(tags, "\n"),
 	}, "\n")
 end
 
 local function try_commands(prompt)
+	if prompt:find("\n") then
+		return false
+	end
+	local esc = vim.fn.escape(prompt, [[\|"]])
 	if pcall(function()
-		vim.cmd("CopilotChat " .. prompt)
+		vim.cmd("CopilotChat " .. esc)
 	end) then
 		return true
 	end
 	if pcall(function()
-		vim.cmd("CopilotChatInline " .. prompt)
+		vim.cmd("CopilotChatInline " .. esc)
 	end) then
 		return true
 	end
@@ -172,9 +175,8 @@ end
 
 function M.ask(user_prompt, opts)
 	local composite = build_prompt(user_prompt, opts)
-	if try_commands(composite) then
-		return true
-	end
+
+	-- Prefer the module API (handles multiline safely)
 	local mod = safe_require()
 	if mod and type(mod.ask) == "function" then
 		local ok = pcall(mod.ask, composite, { window = { title = "CopilotChat" } })
@@ -182,6 +184,12 @@ function M.ask(user_prompt, opts)
 			return true
 		end
 	end
+
+	-- Only try Ex commands if there are no newlines
+	if not composite:find("\n") and try_commands(composite) then
+		return true
+	end
+
 	vim.notify("[CopilotChat] Unable to send prompt. Is the plugin loaded?", vim.log.levels.ERROR)
 	return false
 end
