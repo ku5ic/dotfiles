@@ -24,7 +24,7 @@ story_title="${story_title//-/}"              # Remove hyphens
 story_title="${story_title//[^a-zA-Z0-9_]/}"  # Remove non-alphanumeric characters
 
 # Construct branch name
-branch_name="${branch_type}/${story_id}/${story_title}"
+branch_name="ku5ic/${branch_type}/${story_id}/${story_title}"
 branch_name=$(echo "$branch_name" | sed 's/[^a-zA-Z0-9]*$//')
 
 # Create a new git branch with the formatted story_id and story_title
