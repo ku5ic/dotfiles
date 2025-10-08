@@ -6,6 +6,7 @@ casks=(
   1password-cli
   authy
   boop
+  cleanshot
   dbeaver-community
   docker
   firefox
