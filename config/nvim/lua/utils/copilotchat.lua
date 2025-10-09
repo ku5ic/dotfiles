@@ -45,7 +45,7 @@ Write tests for the following code.
 Ensure the tests:
 - Cover all key functionality and logic branches
 - Include edge cases and potential failure scenarios
-- Use appropriate testing framework (e.g., Jest, Mocha, Vitest – follow the code’s context)
+- Use appropriate testing framework (e.g., Vitest, Jest, Mocha – follow the code’s context)
 - Are clear, concise, and readable
 - Follow good test naming conventions
 - Include setup/teardown if needed
