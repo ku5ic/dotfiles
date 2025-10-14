@@ -17,7 +17,7 @@ return {
 	-- CopilotChat
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
-		version = "v4.7.3",
+		version = "v4.7.4",
 		-- branch = "canary", -- Use the canary branch if you want to test the latest features but it might be unstable	branch = "canary",
 		build = "make tiktoken", -- Only on MacOS or Linux
 		dependencies = {
