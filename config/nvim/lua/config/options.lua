@@ -92,6 +92,18 @@ o.splitbelow = true
 o.backspace = { "indent", "eol", "start" }
 o.iskeyword:append("-")
 
+vim.api.nvim_create_user_command("CopyPath", function()
+	local path = vim.fn.expand("%:p")
+	vim.fn.setreg("+", path)
+	vim.notify('Copied "' .. path .. '" to the clipboard!')
+end, {})
+
+vim.api.nvim_create_user_command("CopyRelPath", function()
+	local path = vim.fn.expand("%:.")
+	vim.fn.setreg("+", path)
+	vim.notify('Copied "' .. path .. '" to the clipboard!')
+end, {})
+
 -- Prefer :prepend when you *want* fzf earlier in rtp
 o.runtimepath:prepend("/opt/homebrew/bin/fzf")
 

@@ -337,3 +337,9 @@ map(
 map("n", "<leader>av", "<cmd>CopilotChatToggle<cr>", "AI: Toggle chat")
 map("n", "<leader>am", "<cmd>CopilotChatCommit<cr>", "AI: Generate commit message")
 map("n", "<leader>al", "<cmd>CopilotChatReset<cr>", "AI: Clear chat history")
+
+-- ═══════════════════════════════════════════════════════════════════════════════════
+-- ■ COPY FILE PATH (<leader>c)
+-- ═══════════════════════════════════════════════════════════════════════════════════
+map("n", "<leader>cP", "<cmd>CopyPath<cr>", "Copy Full File Path")
+map("n", "<leader>cp", "<cmd>CopyRelPath<cr>", "Copy Relative File Path")
