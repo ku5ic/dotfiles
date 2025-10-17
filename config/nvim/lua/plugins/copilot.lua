@@ -32,7 +32,7 @@ return {
 			},
 			prompts = prompts,
 			auto_follow_cursor = false, -- Don't follow the cursor after getting response
-			-- model = "o3-mini",
+			model = "claude-sonnet-4.5",
 			mappings = {
 				-- Use tab for completion
 				complete = {
