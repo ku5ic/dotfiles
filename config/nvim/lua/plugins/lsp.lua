@@ -213,30 +213,29 @@ local function setup_lsp_servers()
 end
 
 -- Extract LSP keymaps setup
-local function setup_lsp_keymaps(buf, client)
-	local set_desc = require("utils").set_desc
-	local opts = { buffer = buf, silent = true, noremap = true }
+local function setup_lsp_keymaps(bufnr, client)
+	-- Buffer-local LSP navigation (standard Vim conventions)
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = bufnr, desc = "Go to definition" })
+	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = bufnr, desc = "Go to declaration" })
+	vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, desc = "References" })
+	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { buffer = bufnr, desc = "Go to implementation" })
+	vim.keymap.set("n", "gy", vim.lsp.buf.type_definition, { buffer = bufnr, desc = "Go to type definition" })
+	vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, desc = "Hover documentation" })
+	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, { buffer = bufnr, desc = "Signature help" })
 
-	-- Navigation keymaps
-	local keymaps = {
-		{ "n", "gd", vim.lsp.buf.definition, "Goto Definition" },
-		{ "n", "gr", vim.lsp.buf.references, "Goto References" },
-		{ "n", "gI", vim.lsp.buf.implementation, "Goto Implementation" },
-		{ "n", "gy", vim.lsp.buf.type_definition, "Goto Type Definition" },
-		{ "n", "K", vim.lsp.buf.hover, "Hover Documentation" },
-		{ "n", "gk", vim.lsp.buf.signature_help, "Signature Help" },
-		{ { "n", "v" }, "cc", vim.lsp.codelens.run, "Run Codelens" },
-		{ "n", "gC", vim.lsp.codelens.refresh, "Refresh Codelens" },
-	}
+	-- Note: LSP action keymaps (<leader>l*, <leader>rn, <leader>ca, <leader>f)
+	-- are defined globally in keymaps/keymaps.lua for consistency
 
-	for _, map in ipairs(keymaps) do
-		local modes, key, action, desc = map[1], map[2], map[3], map[4]
-		vim.keymap.set(modes, key, action, set_desc(opts, { desc = desc }))
-	end
-
-	-- Conditional declaration keymap
-	if client and client.server_capabilities.declarationProvider then
-		vim.keymap.set("n", "gD", vim.lsp.buf.declaration, set_desc(opts, { desc = "Goto Declaration" }))
+	-- Setup codelens if supported
+	if client and client.server_capabilities.codeLensProvider then
+		vim.lsp.codelens.refresh()
+		vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+			buffer = bufnr,
+			callback = function()
+				vim.lsp.codelens.refresh()
+			end,
+		})
+		vim.keymap.set({ "n", "v" }, "<leader>lc", vim.lsp.codelens.run, { buffer = bufnr, desc = "Run Codelens" })
 	end
 end
 

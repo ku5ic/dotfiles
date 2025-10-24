@@ -22,9 +22,9 @@ This file contains a comprehensive, organized keymap structure following best pr
   ├── <leader>l - LSP Operations (rename, actions, diagnostics)
   ├── <leader>x - Diagnostics/Trouble (problems, quickfix)
   ├── <leader>d - Debug Operations (breakpoints, stepping)
-  ├── <leader>a - AI/Copilot Operations (chat, review, refactor)
-  ├── <leader>n - Notifications & UI (dismiss, toggles)
-  └── Legacy mappings for backward compatibility
+  ├── <leader>a - AI/Copilot Operations (see keymaps/copilotchat.lua)
+  ├── <leader>c - Copy Operations (file paths)
+  └── <leader>n - Notifications & UI (dismiss, toggles)
 
 ■ QUICK REFERENCE:
   <leader>,     - Switch buffer (quick access)
@@ -89,18 +89,15 @@ map("v", ">", ">gv", "Indent and reselect")
 -- They remain in lsp.lua for proper buffer-local scoping:
 --
 -- gd          - Go to definition
--- gr          - Go to references
--- gI          - Go to implementation
--- gy          - Go to type definition
 -- gD          - Go to declaration
+-- gr          - Go to references  
+-- gi          - Go to implementation
+-- gy          - Go to type definition
 -- K           - Hover documentation
--- gk          - Signature help
--- cc          - Run code lens
--- gC          - Refresh code lens
+-- <C-k>       - Signature help (conflicts with window navigation, LSP takes priority)
+-- <leader>lc  - Run code lens (only if LSP supports codelens)
 --
--- Note: LSP action keymaps using <leader>l* prefix are defined below
-
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Note: LSP action keymaps using <leader>l* prefix are defined below-- ═══════════════════════════════════════════════════════════════════════════════════
 -- ■ WINDOW MANAGEMENT (<leader>w)
 -- ═══════════════════════════════════════════════════════════════════════════════════
 
@@ -161,7 +158,7 @@ map("n", "<leader>np", "<cmd>Precognition toggle<cr>", "Toggle Precognition")
 map("n", "<leader>nl", function()
 	noice.cmd("last")
 end, "Show last message")
-map("n", "<leader>nh", function()
+map("n", "<leader>nH", function()
 	noice.cmd("history")
 end, "Show message history")
 map("n", "<leader>na", function()
@@ -333,10 +330,9 @@ map(
 -- ═══════════════════════════════════════════════════════════════════════════════════
 -- ■ AI/COPILOT OPERATIONS (<leader>a)
 -- ═══════════════════════════════════════════════════════════════════════════════════
-
-map("n", "<leader>av", "<cmd>CopilotChatToggle<cr>", "AI: Toggle chat")
-map("n", "<leader>am", "<cmd>CopilotChatCommit<cr>", "AI: Generate commit message")
-map("n", "<leader>al", "<cmd>CopilotChatReset<cr>", "AI: Clear chat history")
+--
+-- AI keymaps are defined in keymaps/copilotchat.lua
+-- See that file for the complete list of AI operations
 
 -- ═══════════════════════════════════════════════════════════════════════════════════
 -- ■ COPY FILE PATH (<leader>c)
