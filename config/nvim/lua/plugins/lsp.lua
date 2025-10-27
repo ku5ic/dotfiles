@@ -1,5 +1,5 @@
 -- Toggle between TypeScript LSP servers: "ts_ls" or "vtsls"
-local typescript_lsp = "vtsls" -- Change this to "ts_ls" to switch
+local typescript_lsp = "ts_ls" -- Change this to "ts_ls" to switch
 
 -- Extract server configurations into a separate module-level function
 local function get_server_settings()
