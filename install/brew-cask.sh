@@ -4,19 +4,30 @@
 casks=(
   1password
   1password-cli
-  authy
+  adguard
   boop
+  chatgpt
+  claude
   cleanshot
   dbeaver-community
-  docker
+  figma
   firefox
+  fliqlo
   font-fira-code-nerd-font
   google-chrome
   onyx
   postman
+  slack
   spotify
+  stremio
   the-unarchiver
+  transmission
+  vimr
   visual-studio-code
+  vlc
+  webstorm
+  wezterm
+  zoom
 )
 
 # Loop over the array of applications
