@@ -42,6 +42,10 @@ return {
 					"markdown", -- Markdown markup language
 					"markdown_inline", -- Inline Markdown
 
+					-- Styling
+					"css", -- CSS (needed for Tailwind)
+					"scss", -- SCSS (Sassy CSS)
+
 					-- Git related
 					"diff", -- Diff syntax
 					"git_config", -- Git configuration files
