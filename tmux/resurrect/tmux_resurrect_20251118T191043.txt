@@ -1,0 +1,7 @@
+pane	zanakadric	1	1	:*	1	Sanctuary	:/Users/ku5ic/Projects/ZanaKadric/Code/zanakadric	0	nvim	:nvim
+pane	zanakadric	1	1	:*	2	Sanctuary	:/Users/ku5ic/Projects/ZanaKadric/Code/zanakadric	1	zsh	:
+pane	zanakadric	3	0	:-	1	Sanctuary	:/Users/ku5ic/Projects/ZanaKadric/Code/zanakadric	0	zsh	:
+pane	zanakadric	3	0	:-	2	Sanctuary	:/Users/ku5ic/Projects/ZanaKadric/Code/zanakadric	1	zsh	:
+window	zanakadric	1	:editor	1	:*	c9dd,200x60,0,0[200x40,0,0,4,200x19,0,41,5]	off
+window	zanakadric	3	:terminal	0	:-	538a,200x60,0,0{100x60,0,0,6,99x60,101,0,7}	off
+state	zanakadric	
