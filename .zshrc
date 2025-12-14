@@ -79,14 +79,5 @@ export LANG=en_US.UTF-8
 # probably want C collation for sane results
 export LC_COLLATE=C
 
-# PATH
-export PATH="/opt/homebrew/bin:$PATH"
-export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
-export PATH="$(brew --prefix)/opt/openssl@3/bin:$PATH"
-export PATH="$(brew --prefix)/opt/ncurses/bin:$PATH"
-export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
-export PATH="$HOME/.dotfiles/scripts:$PATH"
-export PATH
-
 # FastFetch, Fast, highly customisable system info script
 # fastfetch
