@@ -15,6 +15,7 @@ casks=(
   fliqlo
   font-fira-code-nerd-font
   google-chrome
+  neovide-app
   onyx
   postman
   slack
@@ -22,7 +23,6 @@ casks=(
   stremio
   the-unarchiver
   transmission
-  vimr
   visual-studio-code
   vlc
   webstorm
