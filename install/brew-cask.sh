@@ -20,12 +20,10 @@ casks=(
   postman
   slack
   spotify
-  stremio
   the-unarchiver
   transmission
   visual-studio-code
   vlc
-  webstorm
   wezterm
   zoom
 )
