@@ -46,6 +46,7 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/.default-gems" ~
   ln -sfv "$DOTFILES_DIR/.tool-versions" ~
   ln -sfv "$DOTFILES_DIR/tmux/resurrect" ~/.tmux/
+  ln -sfv "$DOTFILES_DIR/.tmuxinator" ~
 
   mkdir -p ~/.config
   ln -sfv "$DOTFILES_DIR/config/nvim" ~/.config/
