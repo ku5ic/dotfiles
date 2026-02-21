@@ -1,5 +1,5 @@
-name: <%= @settings["name"] %>
-root: <%= @settings["workspace"] %>
+name: zanakadriic
+root: ~/Projects/ZanaKadric/Code/zanakadric/
 pre_window: source ./backend/.venv/bin/activate
 enable_pane_titles: true
 
@@ -10,7 +10,7 @@ windows:
         - nvim:
             - nvim
         - terminal:
-            -
+            - clear
   - terminal:
       layout: even-vertical
       panes:
