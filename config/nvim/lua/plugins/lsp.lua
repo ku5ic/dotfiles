@@ -171,6 +171,7 @@ local function setup_mason()
 			"pylint",
 			"stylelint",
 			"stylua",
+			"djlint",
 		},
 		automatic_installation = true,
 	})

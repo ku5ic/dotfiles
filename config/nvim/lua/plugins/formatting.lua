@@ -5,13 +5,13 @@ return {
 	opts = {
 		-- Define your formatters
 		formatters_by_ft = {
-			javascript = { "prettierd", "prettier", stop_after_first = true },
-			typescript = { "prettierd", "prettier", stop_after_first = true },
-			javascriptreact = { "prettierd", "prettier", stop_after_first = true },
-			typescriptreact = { "prettierd", "prettier", stop_after_first = true },
-			css = { "prettierd", "prettier", stop_after_first = true },
-			html = { "prettierd", "prettier", stop_after_first = true },
-			htmldjango = { "prettier" },
+			javascript = { "prettier", stop_after_first = true },
+			typescript = { "prettier", stop_after_first = true },
+			javascriptreact = { "prettier", stop_after_first = true },
+			typescriptreact = { "prettier", stop_after_first = true },
+			css = { "prettier", stop_after_first = true },
+			html = { "prettier", stop_after_first = true },
+			htmldjango = { "djlint", stop_after_first = true },
 			json = { "prettier" },
 			yaml = { "prettier" },
 			markdown = { "prettier" },
@@ -23,7 +23,7 @@ return {
 		format_on_save = {
 			lsp_fallback = true,
 			async = false,
-			timeout_ms = 500,
+			timeout_ms = 2000,
 		},
 	},
 }
