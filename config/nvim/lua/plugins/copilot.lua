@@ -6,6 +6,9 @@ return {
 	-- Copilot
 	{
 		"zbirenbaum/copilot.lua",
+		dependencies = {
+			{ "copilotlsp-nvim/copilot-lsp" },
+		},
 		-- cmd = "Copilot",
 		build = ":Copilot auth",
 		opts = {
@@ -32,7 +35,6 @@ return {
 			},
 			prompts = prompts,
 			auto_follow_cursor = false, -- Don't follow the cursor after getting response
-			model = "claude-sonnet-4.5",
 			mappings = {
 				-- Use tab for completion
 				complete = {
