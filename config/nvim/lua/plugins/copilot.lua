@@ -34,6 +34,7 @@ return {
 				assistant = icons.misc.Copilot .. "Copilot",
 			},
 			prompts = prompts,
+			model = "gpt-5.2",
 			auto_follow_cursor = false, -- Don't follow the cursor after getting response
 			mappings = {
 				-- Use tab for completion
