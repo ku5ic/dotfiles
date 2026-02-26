@@ -16,7 +16,7 @@ return {
 			yaml = { "prettier" },
 			markdown = { "prettier" },
 			lua = { "stylua" },
-			python = { "ruff_fix" },
+			python = { "ruff_format", "ruff" },
 			php = { "php_cs_fixer" },
 		},
 		-- Set up format-on-save

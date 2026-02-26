@@ -8,23 +8,15 @@ return {
 		local lint = require("lint")
 
 		lint.linters_by_ft = {
-			javascript = { "eslint_d" },
-			typescript = { "eslint_d" },
-			javascriptreact = { "eslint_d" },
-			typescriptreact = { "eslint_d" },
-			svelte = { "eslint_d" },
+			javascript = { "eslint" },
+			typescript = { "eslint" },
+			javascriptreact = { "eslint" },
+			typescriptreact = { "eslint" },
+			svelte = { "eslint" },
 			css = { "stylelint" },
 			scss = { "stylelint" },
 			sass = { "stylelint" },
 		}
-
-		-- ignore "No configuration found" error for eslint_d and stylelint
-		lint.linters.eslint_d = require("lint.util").wrap(lint.linters.eslint_d, function(diagnostic)
-			if diagnostic.message:find("Error: Could not find config file") then
-				return nil
-			end
-			return diagnostic
-		end)
 
 		lint.linters.stylelint = require("lint.util").wrap(lint.linters.stylelint, function(diagnostic)
 			if diagnostic.message:find("Stylelint error, run `stylelint") then
@@ -38,6 +30,9 @@ return {
 		vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
 			group = lint_augroup,
 			callback = function()
+				local bufdir = vim.fn.expand("%:p:h")
+				local local_eslint = vim.fn.findfile("node_modules/.bin/eslint", bufdir .. ";")
+				lint.linters.eslint.cmd = local_eslint ~= "" and vim.fn.fnamemodify(local_eslint, ":p") or "eslint"
 				lint.try_lint()
 			end,
 		})

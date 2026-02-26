@@ -183,7 +183,7 @@ local function setup_mason()
 	require("mason-tool-installer").setup({
 		ensure_installed = {
 			"cspell",
-			"eslint_d",
+			"eslint",
 			"js-debug-adapter",
 			"php-cs-fixer",
 			"php-debug-adapter",
