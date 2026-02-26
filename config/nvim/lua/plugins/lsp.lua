@@ -125,6 +125,26 @@ local function get_server_settings()
 				},
 			},
 		},
+
+		basedpyright = {
+			settings = {
+				basedpyright = {
+					analysis = {
+						typeCheckingMode = "standard",
+						autoImportCompletions = true,
+						diagnosticMode = "openFilesOnly",
+					},
+					reportIncompatibleVariableOverride = "none",
+					reportIncompatibleMethodOverride = "none",
+				},
+			},
+		},
+
+		ruff = {
+			on_attach = function(client)
+				client.server_capabilities.hoverProvider = false
+			end,
+		},
 	}
 end
 
@@ -142,12 +162,13 @@ local function setup_mason()
 
 	-- LSP servers list
 	local lsp_servers = {
+		"basedpyright",
 		"cssls",
 		"emmet_ls",
 		"html",
 		"lua_ls",
 		"phpactor",
-		"pylsp",
+		"ruff",
 		"solargraph",
 		"tailwindcss",
 		typescript_lsp,
@@ -211,12 +232,13 @@ local function setup_lsp_servers()
 	local server_settings = get_server_settings()
 
 	local servers = {
+		"basedpyright",
 		"cssls",
 		"emmet_ls",
 		"html",
 		"lua_ls",
 		"phpactor",
-		"pylsp",
+		"ruff",
 		"solargraph",
 		"tailwindcss",
 		typescript_lsp,
