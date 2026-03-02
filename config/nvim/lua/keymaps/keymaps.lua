@@ -90,7 +90,7 @@ map("v", ">", ">gv", "Indent and reselect")
 --
 -- gd          - Go to definition
 -- gD          - Go to declaration
--- gr          - Go to references  
+-- gr          - Go to references
 -- gi          - Go to implementation
 -- gy          - Go to type definition
 -- K           - Hover documentation
@@ -339,3 +339,14 @@ map(
 -- ═══════════════════════════════════════════════════════════════════════════════════
 map("n", "<leader>cP", "<cmd>CopyPath<cr>", "Copy Full File Path")
 map("n", "<leader>cp", "<cmd>CopyRelPath<cr>", "Copy Relative File Path")
+
+-- ═══════════════════════════════════════════════════════════════════════════════════
+-- ■ Neovide
+-- ═══════════════════════════════════════════════════════════════════════════════════
+-- Paste
+vim.keymap.set("n", "<D-v>", '"+p', { noremap = true, silent = true })
+vim.keymap.set("i", "<D-v>", "<C-r>+", { noremap = true, silent = true })
+vim.keymap.set("v", "<D-v>", '"+p', { noremap = true, silent = true })
+
+-- Copy
+vim.keymap.set("v", "<D-c>", '"+y', { noremap = true, silent = true })
