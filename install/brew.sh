@@ -10,6 +10,7 @@ brew upgrade
 brews=(
   asdf
   bat
+  claude-code
   cmake
   coreutils
   ctags
