@@ -2,6 +2,12 @@ return {
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
+		dependencies = {
+			-- nvim-treesitter-textobjects must be listed as a proper dependency.
+			-- The "enable" flag is not a valid lazy.nvim dependency field and has no effect here.
+			-- Textobject behaviour is controlled via the select.enable key in configs.setup() below.
+			"nvim-treesitter/nvim-treesitter-textobjects",
+		},
 		config = function()
 			local configs = require("nvim-treesitter.configs")
 
@@ -23,60 +29,55 @@ return {
 				},
 				ensure_installed = {
 					-- Shell scripting
-					"bash", -- Bash scripting
+					"bash",
 
 					-- Programming languages
-					"c", -- C programming language
-					"javascript", -- JavaScript programming language
-					"lua", -- Lua programming language
-					"php", -- PHP programming language
-					"python", -- Python programming language
-					"htmldjango", -- Django templates
-					"ruby", -- Ruby programming language
-					"tsx", -- TypeScript JSX
-					"typescript", -- TypeScript programming language
+					"c",
+					"javascript",
+					"lua",
+					"php",
+					"python",
+					"htmldjango",
+					"ruby",
+					"tsx",
+					"typescript",
 
 					-- Markup languages
-					"html", -- HTML markup language
-					"json", -- JSON data format
-					"markdown", -- Markdown markup language
-					"markdown_inline", -- Inline Markdown
+					"html",
+					"json",
+					"markdown",
+					"markdown_inline",
 
 					-- Styling
-					"css", -- CSS (needed for Tailwind)
-					"scss", -- SCSS (Sassy CSS)
+					"css",
+					"scss", -- only once
 
 					-- Git related
-					"diff", -- Diff syntax
-					"git_config", -- Git configuration files
-					"git_rebase", -- Git rebase files
-					"gitattributes", -- Git attributes files
-					"gitcommit", -- Git commit messages
-					"gitignore", -- Git ignore files
+					"diff",
+					"git_config",
+					"git_rebase",
+					"gitattributes",
+					"gitcommit",
+					"gitignore",
 
 					-- Lua documentation
-					"luadoc", -- LuaDoc documentation
-					"luap", -- Lua patterns
+					"luadoc",
+					"luap",
 
 					-- Miscellaneous
-					"query", -- Query language
-					"regex", -- Regular expressions
-					"requirements", -- Python requirements files
-					"scss", -- SCSS (Sassy CSS)
-					"sql", -- SQL (Structured Query Language)
-					"tmux", -- Tmux configuration
-					"toml", -- TOML configuration
-					"vim", -- Vim script
-					"yaml", -- YAML Ain't Markup Language
-					"jsdoc", -- JavaScript documentation
-					"phpdoc", -- PHP documentation
+					"query",
+					"regex",
+					"requirements",
+					"sql",
+					"tmux",
+					"toml",
+					"vim",
+					"yaml",
+					"jsdoc",
+					"phpdoc",
 				},
 			})
 		end,
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter-textobjects",
-			enable = false,
-		},
 	},
 
 	{

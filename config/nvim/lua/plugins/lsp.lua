@@ -1,5 +1,20 @@
 -- Toggle between TypeScript LSP servers: "ts_ls" or "vtsls"
-local typescript_lsp = "ts_ls" -- Change this to "ts_ls" to switch
+local typescript_lsp = "ts_ls" -- Change this to "vtsls" to switch
+
+-- Single source of truth for all managed LSP servers.
+-- Both Mason and the LSP setup derive from this list.
+local LSP_SERVERS = {
+	"basedpyright",
+	"cssls",
+	"emmet_ls",
+	"html",
+	"lua_ls",
+	"phpactor",
+	"ruff",
+	"solargraph",
+	"tailwindcss",
+	typescript_lsp,
+}
 
 -- Extract server configurations into a separate module-level function
 local function get_server_settings()
@@ -148,7 +163,6 @@ local function get_server_settings()
 	}
 end
 
--- Extract Mason setup into a separate function
 local function setup_mason()
 	require("mason").setup({
 		ui = {
@@ -160,26 +174,12 @@ local function setup_mason()
 		},
 	})
 
-	-- LSP servers list
-	local lsp_servers = {
-		"basedpyright",
-		"cssls",
-		"emmet_ls",
-		"html",
-		"lua_ls",
-		"phpactor",
-		"ruff",
-		"solargraph",
-		"tailwindcss",
-		typescript_lsp,
-	}
-
 	require("mason-lspconfig").setup({
-		ensure_installed = lsp_servers,
+		ensure_installed = LSP_SERVERS,
 		automatic_installation = true,
 	})
 
-	-- Stand-alone tools
+	-- Stand-alone tools (formatters, linters, debuggers)
 	require("mason-tool-installer").setup({
 		ensure_installed = {
 			"cspell",
@@ -199,7 +199,6 @@ local function setup_mason()
 	})
 end
 
--- Extract diagnostic configuration
 local function configure_diagnostics()
 	local icons = require("config.icons").icons.diagnostics
 
@@ -226,39 +225,22 @@ local function configure_diagnostics()
 	})
 end
 
--- Extract LSP server setup
 local function setup_lsp_servers()
 	local capabilities = require("blink.cmp").get_lsp_capabilities()
 	local server_settings = get_server_settings()
 
-	local servers = {
-		"basedpyright",
-		"cssls",
-		"emmet_ls",
-		"html",
-		"lua_ls",
-		"phpactor",
-		"ruff",
-		"solargraph",
-		"tailwindcss",
-		typescript_lsp,
-	}
-
-	-- Disable the non-selected TypeScript LSP
+	-- Disable whichever TypeScript LSP is not selected
 	local disabled_ts_lsp = typescript_lsp == "vtsls" and "ts_ls" or "vtsls"
 	vim.lsp.config(disabled_ts_lsp, { enabled = false })
 
-	-- Configure and enable each server
-	for _, name in ipairs(servers) do
+	for _, name in ipairs(LSP_SERVERS) do
 		local config = vim.tbl_deep_extend("force", { capabilities = capabilities }, server_settings[name] or {})
 		vim.lsp.config(name, config)
 		vim.lsp.enable(name)
 	end
 end
 
--- Extract LSP keymaps setup
 local function setup_lsp_keymaps(bufnr, client)
-	-- Buffer-local LSP navigation (standard Vim conventions)
 	vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = bufnr, desc = "Go to definition" })
 	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = bufnr, desc = "Go to declaration" })
 	vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, desc = "References" })
@@ -267,10 +249,6 @@ local function setup_lsp_keymaps(bufnr, client)
 	vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, desc = "Hover documentation" })
 	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, { buffer = bufnr, desc = "Signature help" })
 
-	-- Note: LSP action keymaps (<leader>l*, <leader>rn, <leader>ca, <leader>f)
-	-- are defined globally in keymaps/keymaps.lua for consistency
-
-	-- Setup codelens if supported
 	if client and client.server_capabilities.codeLensProvider then
 		vim.lsp.codelens.refresh()
 		vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {

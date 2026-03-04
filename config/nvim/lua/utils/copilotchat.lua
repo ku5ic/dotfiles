@@ -1,12 +1,16 @@
 local M = {}
 
-local prompts = require("utils.copilotchat.prompts").prompts
+local prompts_module = require("utils.copilotchat.prompts")
 
 -- Configuration
 M.config = {
 	include_diagnostics = true,
 	include_git = false,
 }
+
+-- Re-export prompts so plugins/copilot.lua can import them from this module
+-- without needing to know about the internal submodule path.
+M.prompts = prompts_module.prompts
 
 local CONTEXT_TAGS = {
 	SELECTION = "#selection",
@@ -15,26 +19,17 @@ local CONTEXT_TAGS = {
 	GIT = "#git",
 }
 
--- Safely load CopilotChat module
-local function safe_require()
-	local ok, mod = pcall(require, "CopilotChat")
-	return ok and mod or nil
-end
-
--- Check if currently in visual mode
+-- Check if the editor is currently in a visual mode.
+-- Uses vim.fn.mode() only — visualmode() retains the last visual mode
+-- after returning to normal mode and is therefore unreliable here.
 local function is_visual_mode()
 	local mode = vim.fn.mode()
-	return mode == "v" or mode == "V" or mode == "\22" or vim.fn.visualmode() ~= ""
+	return mode == "v" or mode == "V" or mode == "\22"
 end
 
--- Build context tags for the prompt
+-- Build context tags based on current state and config
 local function build_context_tags(opts)
 	opts = opts or {}
-
-	-- Add assertion or early return if config is required
-	if not M.config then
-		error("Configuration not initialized")
-	end
 
 	local tags = {}
 
@@ -55,63 +50,39 @@ local function build_context_tags(opts)
 	return tags
 end
 
--- Build complete prompt with context tags
+-- Build complete prompt string with context tags appended
 local function build_prompt(user_prompt, opts)
-	opts = opts or {}
 	local tags = build_context_tags(opts)
-
 	return string.format("%s\n\nContext:\n%s", user_prompt or "", table.concat(tags, "\n"))
 end
 
--- Attempt to send prompt via module API
-local function try_module_api(prompt)
-	local mod = safe_require()
-	if not mod or type(mod.ask) ~= "function" then
-		return false
-	end
-
-	return pcall(mod.ask, prompt, { window = { title = "CopilotChat" } })
-end
-
--- Attempt to send prompt via Ex commands (single-line only)
-local function try_ex_command(prompt)
-	if prompt:find("\n") then
-		return false
-	end
-
-	local escaped = vim.fn.escape(prompt, [[\|"]])
-	local commands = { "CopilotChat", "CopilotChatInline" }
-
-	for _, cmd in ipairs(commands) do
-		local success = pcall(function()
-			vim.cmd(cmd .. " " .. escaped)
-		end)
-		if success then
-			return true
-		end
-	end
-
-	return false
-end
-
--- Send a prompt to CopilotChat
+-- Send a prompt to CopilotChat via the module API.
+-- There is no Ex command fallback: if the module is not loaded the plugin
+-- is not available and failing loudly is the correct behaviour.
 function M.ask(user_prompt, opts)
-	local prompt = build_prompt(user_prompt, opts)
-
-	if try_module_api(prompt) or try_ex_command(prompt) then
-		return true
+	local ok, mod = pcall(require, "CopilotChat")
+	if not ok or type(mod.ask) ~= "function" then
+		vim.notify("[CopilotChat] Plugin not loaded or 'ask' API unavailable.", vim.log.levels.ERROR)
+		return false
 	end
 
-	vim.notify("[CopilotChat] Unable to send prompt. Is the plugin loaded?", vim.log.levels.ERROR)
-	return false
+	local prompt = build_prompt(user_prompt, opts)
+	local success, err = pcall(mod.ask, prompt, { window = { title = "CopilotChat" } })
+
+	if not success then
+		vim.notify("[CopilotChat] Failed to send prompt: " .. tostring(err), vim.log.levels.ERROR)
+		return false
+	end
+
+	return true
 end
 
--- Execute a named prompt
+-- Execute a named prompt from the prompts library
 function M.prompt(name, opts)
-	local prompt_text = prompts[name]
+	local prompt_text = M.prompts[name]
 
 	if not prompt_text then
-		vim.notify(string.format("[CopilotChat] Unknown prompt: %s", name), vim.log.levels.WARN)
+		vim.notify(string.format("[CopilotChat] Unknown prompt: '%s'", name), vim.log.levels.WARN)
 		return false
 	end
 

@@ -28,7 +28,7 @@ This file contains a comprehensive, organized keymap structure following best pr
 
 ■ QUICK REFERENCE:
   <leader>,     - Switch buffer (quick access)
-  <leader>/     - Live grep search (quick access)  
+  <leader>/     - Live grep search (quick access)
   <leader><leader> - Reveal file in explorer (quick access)
 
 ══════════════════════════════════════════════════════════════════════════════════
@@ -42,14 +42,14 @@ local todo_comments = require("todo-comments")
 local conform = require("conform")
 local lint = require("lint")
 
-local keymap = vim.keymap -- for conciseness
-local opts = { noremap = true, silent = true } -- Silent keymap option
+local keymap = vim.keymap
 
--- Utility function for setting keymaps with descriptions
-local function map(mode, lhs, rhs, desc, options)
-	opts = options or {}
+-- Utility function for setting keymaps with descriptions.
+-- Deliberately does not close over a shared opts table to avoid mutation bugs.
+local function map(mode, lhs, rhs, desc, extra_opts)
+	local opts = vim.tbl_extend("force", { noremap = true, silent = true }, extra_opts or {})
 	opts.desc = desc
-	keymap.set(mode, lhs, rhs, vim.tbl_extend("force", opts, { noremap = true, silent = true }))
+	keymap.set(mode, lhs, rhs, opts)
 end
 
 -- ═══════════════════════════════════════════════════════════════════════════════════
@@ -97,7 +97,9 @@ map("v", ">", ">gv", "Indent and reselect")
 -- <C-k>       - Signature help (conflicts with window navigation, LSP takes priority)
 -- <leader>lc  - Run code lens (only if LSP supports codelens)
 --
--- Note: LSP action keymaps using <leader>l* prefix are defined below-- ═══════════════════════════════════════════════════════════════════════════════════
+-- Note: LSP action keymaps using <leader>l* prefix are defined below
+
+-- ═══════════════════════════════════════════════════════════════════════════════════
 -- ■ WINDOW MANAGEMENT (<leader>w)
 -- ═══════════════════════════════════════════════════════════════════════════════════
 
@@ -190,7 +192,6 @@ end, "Redirect cmdline")
 -- ■ QUICK ACCESS
 -- ═══════════════════════════════════════════════════════════════════════════════════
 
--- Quick access to commonly used functions
 map("n", "<leader>,", "<cmd>Telescope buffers show_all_buffers=true<cr>", "Switch buffer (quick)")
 map("n", "<leader>/", "<cmd>Telescope live_grep_args<cr>", "Search in files (quick)")
 
@@ -273,7 +274,7 @@ map("n", "<leader>ll", function()
 end, "Lint current file")
 map("n", "<leader>li", "<cmd>LspInfo<cr>", "LSP Info")
 
--- LSP Workspace management (moved from <leader>w to <leader>lw for LSP grouping)
+-- LSP Workspace management
 map("n", "<leader>lwa", vim.lsp.buf.add_workspace_folder, "LSP Add workspace folder")
 map("n", "<leader>lwr", vim.lsp.buf.remove_workspace_folder, "LSP Remove workspace folder")
 map("n", "<leader>lwl", function()
@@ -343,10 +344,7 @@ map("n", "<leader>cp", "<cmd>CopyRelPath<cr>", "Copy Relative File Path")
 -- ═══════════════════════════════════════════════════════════════════════════════════
 -- ■ Neovide
 -- ═══════════════════════════════════════════════════════════════════════════════════
--- Paste
 vim.keymap.set("n", "<D-v>", '"+p', { noremap = true, silent = true })
 vim.keymap.set("i", "<D-v>", "<C-r>+", { noremap = true, silent = true })
 vim.keymap.set("v", "<D-v>", '"+p', { noremap = true, silent = true })
-
--- Copy
 vim.keymap.set("v", "<D-c>", '"+y', { noremap = true, silent = true })

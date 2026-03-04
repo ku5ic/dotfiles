@@ -53,9 +53,11 @@ o.listchars = {
 
 ---------------------------------------------------------------------------
 -- 6. Folding (Treesitter-driven) ------------------------------------------
+-- Uses the native Neovim 0.10+ treesitter fold expression.
+-- The legacy "nvim_treesitter#foldexpr()" Vimscript shim is deprecated.
 ---------------------------------------------------------------------------
 o.foldmethod = "expr"
-o.foldexpr = "nvim_treesitter#foldexpr()"
+o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 o.foldenable = true
 o.foldlevel = 99 -- keep everything open by default
 o.foldlevelstart = 99
@@ -63,9 +65,9 @@ o.foldcolumn = "1"
 o.fillchars = { -- table form parses faster in 0.11+
 	eob = " ",
 	fold = " ",
-	foldopen = "",
+	foldopen = "",
 	foldsep = " ",
-	foldclose = "",
+	foldclose = "",
 }
 
 ---------------------------------------------------------------------------
