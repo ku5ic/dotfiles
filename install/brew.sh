@@ -31,6 +31,7 @@ brews=(
   reattach-to-user-namespace
   redis
   ripgrep
+  rust
   ssh-copy-id
   starship
   tig
