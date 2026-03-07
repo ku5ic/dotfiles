@@ -31,11 +31,6 @@ alias ping='ping -c 5'         # Pings a host 5 times by default
 alias wget='wget -c'           # Enables download resume for `wget` (if `wget` is installed, as it's not default in macOS)
 alias curl='curl -O'           # Saves files with the same name as the URL
 
-# Safety Aliases
-alias cp='cp -i'               # Prompts before overwriting files during copy operations
-alias mv='mv -i'               # Prompts before overwriting files during move operations
-alias rm='rm -i'               # Prompts before removing files, preventing accidental deletion
-
 # File Management Aliases
 alias rm='rm -i'               # Prompt before deletion
 alias cp='cp -i'               # Prompt before overwriting files
