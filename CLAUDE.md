@@ -12,7 +12,7 @@ Personal macOS dotfiles managed as a git repo at `~/.dotfiles`. Files are symlin
 source ~/.dotfiles/install.sh
 ```
 
-This script: pulls the latest repo, installs Homebrew, installs zsh/bash shells, runs brew/cask/mas install scripts, creates all symlinks, and sets up asdf for Node/Ruby/Python.
+This script: pulls the latest repo, installs Homebrew, installs zsh/bash shells, runs `brew bundle` from `Brewfile`, creates all symlinks, and sets up asdf for Node/Ruby/Python.
 
 To update symlinks only (no full install):
 ```sh
@@ -26,10 +26,8 @@ ln -sfv ~/.dotfiles/config/nvim ~/.config/
 |------|---------|
 | `.zshrc` / `.zprofile` / `.aliases.zsh` | Shell config — zprofile sets PATH and env vars, zshrc configures zsh options/plugins, aliases.zsh defines all aliases |
 | `.tmux.conf` / `.tmuxinator/` | tmux config and tmuxinator session layouts |
-| `install/brew.sh` | CLI tools installed via Homebrew |
-| `install/brew-cask.sh` | GUI apps installed via Homebrew Cask |
-| `install/mas.sh` | Mac App Store apps |
-| `scripts/` | Shell scripts auto-aliased by name (without `.sh`) in every shell session |
+| `Brewfile` | All Homebrew formulae, casks, and Mac App Store apps in one file |
+| `scripts/` | Shell scripts on `$PATH` — callable by name without `.sh` extension |
 | `config/nvim/` | Neovim config (lazy.nvim plugin manager, symlinked to `~/.config/nvim`) |
 | `config/starship.toml` | Starship prompt config |
 | `config/wezterm/` | WezTerm terminal config |
@@ -66,9 +64,13 @@ Entry point: `config/nvim/init.lua` — bootstraps lazy.nvim, sets leader to `<S
 - `<leader>d` — DAP debugger
 - `<leader>a` — AI/Copilot (see `keymaps/copilotchat.lua`)
 
-## Scripts Auto-Aliasing
+## Scripts
 
-Any executable `.sh` file added to `scripts/` is automatically available as a shell alias (without the `.sh` extension) in every new shell session. No manual alias registration needed.
+`scripts/` is prepended to `$PATH` in `.zprofile`, so any `.sh` file added there is immediately callable by name (without the `.sh` extension) in every new shell session.
+
+Branch naming follows the convention in `jira_to_git_branch.sh`: `ku5ic/<type>/<STORY-ID>/<normalized_title>` where type is `feature`, `bugfix`, or `hotfix`.
+
+Machine-local shell overrides go in `~/.zshrc.local` (sourced at the end of `.zshrc`, not tracked in this repo).
 
 ## Key Aliases
 
