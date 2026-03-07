@@ -25,10 +25,8 @@ install_shells() {
   chsh -s "$(brew --prefix)/bin/zsh"
 }
 
-source_scripts() {
-  source "$DOTFILES_DIR/install/brew.sh"
-  source "$DOTFILES_DIR/install/brew-cask.sh"
-  source "$DOTFILES_DIR/install/mas.sh"
+install_packages() {
+  brew bundle --file="$DOTFILES_DIR/Brewfile"
 }
 
 create_symlinks() {
@@ -72,7 +70,7 @@ main() {
   update_dotfiles
   install_homebrew
   install_shells
-  source_scripts
+  install_packages
   create_symlinks
   setup_asdf
 }
