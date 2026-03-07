@@ -1,10 +1,21 @@
 # ku5ic's Dotfiles
 
-This repository contains my personal dotfiles. They are designed to set up a macOS system to my liking and provide a more efficient and pleasant terminal experience. Feel free to explore, learn and copy parts for your own dotfiles. Use at your own risk!
+Personal macOS dotfiles for a development environment centered around
+Neovim, tmux, and zsh. Managed as a git repo at `~/.dotfiles` with
+symlinks into `$HOME` and `~/.config`.
+
+## What's included
+
+- **Neovim** — LSP, Treesitter, Copilot, lazy.nvim plugin manager
+- **zsh** — Starship prompt, syntax highlighting, autosuggestions, vi mode
+- **tmux** — Catppuccin theme, tmuxinator session layouts
+- **WezTerm** — Terminal config with FiraCode Nerd Font
+- **macOS defaults** — Sane system defaults for development use
+- **Homebrew** — CLI tools and GUI apps via Brewfile
 
 ## Prerequisites
 
-These dotfiles are designed for macOS systems. Before installing, make sure your system is up to date and has Xcode command line tools installed:
+macOS with Xcode command line tools:
 
 ```bash
 sudo softwareupdate -i -a
@@ -13,21 +24,37 @@ xcode-select --install
 
 ## Installation
 
-You can install these dotfiles on a brand new macOS installation by either cloning the repository using Git or downloading it using curl.
-
-### Option 1: Clone with Git
-
-Clone the repository, and source the install script:
-
 ```bash
 git clone git@github.com:ku5ic/dotfiles.git ~/.dotfiles
 source ~/.dotfiles/install.sh
 ```
 
-### Option 2: Download with curl
+This will install Homebrew, set zsh as the default shell, install all
+packages from the Brewfile, create symlinks, and set up Node, Ruby,
+and Python via asdf.
 
-Coming soon...
+## Updating
 
-## Author
+To pull latest changes and re-apply symlinks:
 
-- [ku5ic](https://github.com/ku5ic)
+```bash
+source ~/.dotfiles/install.sh
+```
+
+To update Homebrew packages:
+
+```bash
+brew_all
+```
+
+To add or remove packages, edit the `Brewfile` and run:
+
+```bash
+brew bundle --file="$DOTFILES_DIR/Brewfile"
+brew bundle cleanup --file="$DOTFILES_DIR/Brewfile" --force
+```
+
+## Structure
+
+See [CLAUDE.md](CLAUDE.md) for a detailed breakdown of the repository
+structure and Neovim architecture.
