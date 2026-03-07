@@ -53,17 +53,33 @@ create_symlinks() {
 }
 
 setup_asdf() {
+  local tool_versions="$DOTFILES_DIR/.tool-versions"
+
+  if [ ! -f "$tool_versions" ]; then
+    echo "Missing .tool-versions at $tool_versions"
+    exit 1
+  fi
+
+  # Register plugins, tolerating already-added state
   asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git || true
-  asdf nodejs update-nodebuild
-  asdf install nodejs latest:22
-
   asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git || true
-  asdf plugin-update ruby
-  asdf install ruby latest:3
-
   asdf plugin add python || true
-  asdf plugin-update python
-  asdf install python latest:3
+
+  # Update all plugins
+  asdf plugin update --all
+
+  # Install each version declared in .tool-versions
+  while IFS= read -r line || [ -n "$line" ]; do
+    # Skip blank lines and comments
+    [[ -z "$line" || "$line" == \#* ]] && continue
+
+    local plugin version
+    plugin=$(echo "$line" | awk '{print $1}')
+    version=$(echo "$line" | awk '{print $2}')
+
+    echo "Installing $plugin $version"
+    asdf install "$plugin" "$version"
+  done < "$tool_versions"
 }
 
 main() {
