@@ -58,6 +58,7 @@ cask 'slack'
 cask 'spotify'
 cask 'the-unarchiver'
 cask 'transmission'
+cask 'typora'
 cask 'visual-studio-code'
 cask 'vlc'
 cask 'wezterm'
@@ -71,8 +72,8 @@ mas 'DuckDuckGo Privacy for Safari', id: 1_482_920_575
 mas 'GarageBand', id: 682_658_836
 mas 'iMovie', id: 408_981_434
 mas 'JSONPeep', id: 1_458_969_831
-mas 'Keynote', id: 409_183_694
+mas 'Keynote', id: 361_285_480
 mas 'Marked 2', id: 890_031_187
-mas 'Numbers', id: 409_203_825
-mas 'Pages', id: 409_201_541
+mas 'Numbers', id: 361_304_891
+mas 'Pages', id: 361_309_726
 mas 'Speedtest', id: 1_153_157_709
