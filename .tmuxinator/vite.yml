@@ -1,0 +1,17 @@
+name: vite
+enable_pane_titles: true
+
+windows:
+  - editor:
+      layout: main-horizontal
+      panes:
+        - nvim:
+            - nvim
+        - terminal:
+  - terminal:
+      layout: even-vertical
+      panes:
+        - tests:
+            - npm run test:watch
+        - server:
+            - npm run dev
