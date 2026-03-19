@@ -12,7 +12,7 @@ windows:
         - terminal:
             -
   - terminal:
-      layout: even-vertical
+      layout: even-horizontal
       panes:
         - backend:
             - cd backend

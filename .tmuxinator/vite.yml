@@ -9,7 +9,7 @@ windows:
             - nvim
         - terminal:
   - terminal:
-      layout: even-vertical
+      layout: even-horizontal
       panes:
         - tests:
             - npm run test:watch
