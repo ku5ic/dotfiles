@@ -12,7 +12,7 @@ local font = wezterm.font("FiraCode Nerd Font Propo", {
 local window_padding = {
 	left = 20,
 	right = 20,
-	top = 0,
+	top = 20,
 	bottom = 0,
 }
 
@@ -35,6 +35,7 @@ return {
 	initial_rows = 33,
 	initial_cols = 100,
 	window_padding = window_padding,
+	window_decorations = "INTEGRATED_BUTTONS",
 	native_macos_fullscreen_mode = true,
 	window_background_opacity = 0.95,
 	use_fancy_tab_bar = false,
