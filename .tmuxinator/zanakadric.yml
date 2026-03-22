@@ -11,7 +11,10 @@ windows:
             - nvim
         - terminal:
             - clear
-  - terminal:
+  - claude:
+      panes:
+        - claude
+  - localhost:
       layout: even-horizontal
       panes:
         - backend:
