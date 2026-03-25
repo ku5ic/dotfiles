@@ -14,8 +14,7 @@ M.prompts = prompts_module.prompts
 
 local CONTEXT_TAGS = {
 	SELECTION = "#selection",
-	BUFFER = "#buffer",
-	DIAGNOSTICS = "#diagnostics",
+	BUFFER = "#buffer:active",
 	GIT = "#git",
 }
 
@@ -67,7 +66,9 @@ function M.ask(user_prompt, opts)
 	end
 
 	local prompt = build_prompt(user_prompt, opts)
-	local success, err = pcall(mod.ask, prompt, { window = { title = "CopilotChat" } })
+	local success, err = pcall(function()
+		mod.ask(prompt, { window = { title = "CopilotChat" } })
+	end)
 
 	if not success then
 		vim.notify("[CopilotChat] Failed to send prompt: " .. tostring(err), vim.log.levels.ERROR)

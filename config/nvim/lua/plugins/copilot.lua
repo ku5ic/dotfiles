@@ -20,7 +20,7 @@ return {
 	-- CopilotChat
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
-		version = "v4.7.4",
+		-- version = "v4.7.4",
 		-- branch = "canary", -- Use the canary branch if you want to test the latest features but it might be unstable	branch = "canary",
 		build = "make tiktoken", -- Only on MacOS or Linux
 		dependencies = {
@@ -34,7 +34,7 @@ return {
 				assistant = icons.misc.Copilot .. "Copilot",
 			},
 			prompts = prompts,
-			-- model = "gpt-5.2",
+			model = "auto",
 			auto_follow_cursor = false, -- Don't follow the cursor after getting response
 			mappings = {
 				-- Use tab for completion

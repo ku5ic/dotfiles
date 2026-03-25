@@ -41,5 +41,11 @@ bind_prompt("Concise", "<leader>ac", "Concise")
 
 -- Additional AI commands (non-prompt based)
 map("n", "<leader>av", "<cmd>CopilotChatToggle<cr>", { desc = "AI: Toggle chat", noremap = true, silent = true })
-map("n", "<leader>am", "<cmd>CopilotChatCommit<cr>", { desc = "AI: Generate commit message", noremap = true, silent = true })
+map(
+	"n",
+	"<leader>am",
+	"<cmd>CopilotChatCommit<cr>",
+	{ desc = "AI: Generate commit message", noremap = true, silent = true }
+)
 map("n", "<leader>al", "<cmd>CopilotChatReset<cr>", { desc = "AI: Clear chat history", noremap = true, silent = true })
+map("n", "<leader>aM", "<cmd>CopilotChatModels<cr>", { desc = "AI: Select Model", noremap = true, silent = true })
