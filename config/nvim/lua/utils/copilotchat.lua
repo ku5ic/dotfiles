@@ -2,16 +2,11 @@ local M = {}
 
 local prompts_module = require("utils.copilotchat.prompts")
 
--- Configuration
--- include_diagnostics: when true, append diagnostics context tag to every request.
--- include_git: when true, append git context tag to every request.
 M.config = {
 	include_diagnostics = true,
 	include_git = false,
 }
 
--- Re-export prompts so plugins/copilot.lua can import them from this module
--- without needing to know about the internal submodule path.
 M.prompts = prompts_module.prompts
 
 local CONTEXT_TAGS = {
@@ -20,23 +15,24 @@ local CONTEXT_TAGS = {
 	GIT = "#git",
 }
 
--- Check if the editor is currently in a visual mode.
--- Uses vim.fn.mode() only — visualmode() retains the last visual mode
--- after returning to normal mode and is therefore unreliable here.
 local function is_visual_mode()
 	local mode = vim.fn.mode()
 	return mode == "v" or mode == "V" or mode == "\22"
 end
 
--- Build context tags based on current state and config.
--- @param opts table|nil Optional call options.
--- @field opts.selection_only boolean|nil If true, prefer #selection context
---   only while currently in visual mode; falls back to #buffer:active otherwise.
--- @return string[] tags Context tags consumed by CopilotChat in prompt text.
--- Notes:
--- - Always returns either selection or buffer tag (never neither).
--- - Diagnostics tag is controlled by M.config.include_diagnostics.
--- - Git tag is controlled by M.config.include_git.
+---Build context tags consumed by CopilotChat.
+---
+---Intent:
+---Keeps context inclusion policy centralized and predictable:
+---  - `selection_only=true` uses `#selection` only when a visual selection is active.
+---  - Otherwise falls back to `#buffer:active` to avoid sending an empty/invalid context.
+---  - Optional git context is controlled globally via `M.config.include_git`.
+---
+---Side effects:
+---None (pure builder).
+---
+---@param opts? { selection_only?: boolean }
+---@return string[] tags Ordered list of context tags appended to the user prompt.
 local function build_context_tags(opts)
 	opts = opts or {}
 
@@ -48,10 +44,6 @@ local function build_context_tags(opts)
 		table.insert(tags, CONTEXT_TAGS.BUFFER)
 	end
 
-	if M.config.include_diagnostics then
-		table.insert(tags, CONTEXT_TAGS.DIAGNOSTICS)
-	end
-
 	if M.config.include_git then
 		table.insert(tags, CONTEXT_TAGS.GIT)
 	end
@@ -59,26 +51,40 @@ local function build_context_tags(opts)
 	return tags
 end
 
--- Build final CopilotChat prompt payload.
--- @param user_prompt string|nil Natural-language prompt body.
--- @param opts table|nil Forwarded to build_context_tags().
--- @return string prompt Prompt with normalized "Context:" section appended.
--- Side effects: none (pure string construction).
+---Compose the final prompt payload sent to CopilotChat.
+---
+---Non-obvious decision:
+---Context tags are serialized as plain text under a `Context:` section instead of
+---passing a structured context object; this matches the current `CopilotChat.ask`
+---call pattern in this module.
+---
+---@param user_prompt? string Free-form user instruction. `nil` becomes an empty prompt body.
+---@param opts? { selection_only?: boolean }
+---@return string prompt Prompt text including context directives.
 local function build_prompt(user_prompt, opts)
 	local tags = build_context_tags(opts)
 	return string.format("%s\n\nContext:\n%s", user_prompt or "", table.concat(tags, "\n"))
 end
 
--- Send prompt to CopilotChat module API.
--- @param user_prompt string|nil Prompt text to send.
--- @param opts table|nil Options used for context-tag selection.
--- @return boolean ok True on successful dispatch, false on any failure.
--- Side effects:
--- - Emits vim.notify error messages for unavailable plugin API or dispatch errors.
--- - Opens/updates CopilotChat UI via mod.ask(...).
--- Constraints:
--- - Requires `require("CopilotChat")` to succeed and expose `ask`.
--- - Intentionally does not fallback to Ex commands; failure is explicit.
+---Send an ad-hoc prompt to CopilotChat with standardized context handling.
+---
+---Purpose:
+---Provides a single integration point that validates plugin availability, injects
+---context directives, and applies local window/system prompt options.
+---
+---Important side effects:
+---- Requires and calls into the external `CopilotChat` plugin.
+---- Opens/targets a CopilotChat window (`window.title = "CopilotChat"`).
+---- Emits `vim.notify` messages on failure paths.
+---
+---Constraints / edge cases:
+---- Returns `false` when plugin load fails or `ask` is unavailable.
+---- Returns `false` if `CopilotChat.ask` throws.
+---- `opts.selection_only=true` only takes effect in visual mode; otherwise buffer context is used.
+---
+---@param user_prompt? string User message body.
+---@param opts? { selection_only?: boolean, system_prompt?: string }
+---@return boolean ok `true` on successful dispatch, otherwise `false`.
 function M.ask(user_prompt, opts)
 	local ok, mod = pcall(require, "CopilotChat")
 	if not ok or type(mod.ask) ~= "function" then
@@ -86,10 +92,19 @@ function M.ask(user_prompt, opts)
 		return false
 	end
 
+	opts = opts or {}
+
 	local prompt = build_prompt(user_prompt, opts)
-	local success, err = pcall(function()
-		mod.ask(prompt, { window = { title = "CopilotChat" } })
-	end)
+
+	local ask_opts = {
+		window = { title = "CopilotChat" },
+	}
+
+	if opts.system_prompt then
+		ask_opts.system_prompt = opts.system_prompt
+	end
+
+	local success, err = pcall(mod.ask, prompt, ask_opts)
 
 	if not success then
 		vim.notify("[CopilotChat] Failed to send prompt: " .. tostring(err), vim.log.levels.ERROR)
@@ -99,21 +114,45 @@ function M.ask(user_prompt, opts)
 	return true
 end
 
--- Resolve and execute a named canned prompt.
--- @param name string Prompt key in M.prompts.
--- @param opts table|nil Forwarded to M.ask().
--- @return boolean ok False when prompt name is unknown or dispatch fails.
--- Side effects:
--- - Warns via vim.notify if `name` is not defined in prompts table.
+---Resolve a named prompt from `M.prompts` and dispatch it via `M.ask`.
+---
+---Purpose:
+---Supports two prompt definition shapes:
+---1) `string` -> treated as direct user prompt.
+---2) `{ prompt = string, system_prompt = string|nil }` -> merged into ask options.
+---
+---Non-obvious decision:
+---When table-based prompts are used, `system_prompt` from the prompt definition
+---overrides any caller-provided `opts.system_prompt` via `vim.tbl_extend("force", ...)`.
+---
+---Side effects:
+---Same runtime side effects as `M.ask`, plus warning/error notifications for unknown
+---or invalid prompt definitions.
+---
+---@param name string Prompt key in `M.prompts`.
+---@param opts? { selection_only?: boolean, system_prompt?: string }
+---@return boolean ok `true` when prompt is found/valid and successfully dispatched.
 function M.prompt(name, opts)
-	local prompt_text = M.prompts[name]
+	local prompt_def = M.prompts[name]
 
-	if not prompt_text then
+	if not prompt_def then
 		vim.notify(string.format("[CopilotChat] Unknown prompt: '%s'", name), vim.log.levels.WARN)
 		return false
 	end
 
-	return M.ask(prompt_text, opts)
+	if type(prompt_def) == "string" then
+		return M.ask(prompt_def, opts)
+	end
+
+	if type(prompt_def) == "table" and type(prompt_def.prompt) == "string" then
+		local merged_opts = vim.tbl_extend("force", opts or {}, {
+			system_prompt = prompt_def.system_prompt,
+		})
+		return M.ask(prompt_def.prompt, merged_opts)
+	end
+
+	vim.notify(string.format("[CopilotChat] Invalid prompt definition for '%s'", name), vim.log.levels.ERROR)
+	return false
 end
 
 return M

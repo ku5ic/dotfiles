@@ -276,6 +276,9 @@ return {
 		"neovim/nvim-lspconfig",
 		lazy = false,
 		priority = 1000,
+		dependencies = {
+			"saghen/blink.cmp",
+		},
 		config = function()
 			configure_diagnostics()
 			setup_lsp_servers()

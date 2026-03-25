@@ -1,12 +1,16 @@
 return {
 	{
-		"giuxtaposition/blink-cmp-copilot",
-		after = { "copilot.lua" },
-	},
-	{
 		"saghen/blink.cmp",
 		-- optional: provides snippets for the snippet source
-		dependencies = { "rafamadriz/friendly-snippets" },
+		dependencies = {
+			"rafamadriz/friendly-snippets",
+			{
+				"giuxtaposition/blink-cmp-copilot",
+				dependencies = {
+					"zbirenbaum/copilot.lua",
+				},
+			},
+		},
 
 		version = "1.*",
 		opts = {
