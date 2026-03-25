@@ -18,20 +18,27 @@ setopt auto_list            # automatically list choices on ambiguous completion
 setopt auto_menu            # automatically use menu completion
 setopt always_to_end        # move cursor to end if word had one match
 
+
 zstyle ':completion:*' menu select # select completions with arrow keys
 zstyle ':completion:*' group-name '' # group results by category
-zstyle ':completion:*' completer _expand _complete _correct _approximate # enable approximate matches for completion
+zstyle ':completion:*' completer _complete _correct _approximate # enable completion, then correction, then approximate matching
 zstyle ':completion:*' matcher-list 'r:|[._-]=*' # match dashes, underscores and dots interchangeably
 zstyle ':completion:*:corrections' ignored-patterns '.*' '_*' # ignore files starting with . or _ for corrections
-zstyle ':completion:*:functions' ignored-patterns '.*' '_*' # ignore files starting with . or _ for functions
-zstyle ':completion:*:commands' ignored-patterns '.*' '_*' # ignore files starting with . or _ for commands
+zstyle ':completion:*:functions' ignored-patterns '.*' '_*' # functions starting with . or _ are usually private and not useful to complete
+zstyle ':completion:*:commands' ignored-patterns '.*' '_*' # commands starting with . or _ are usually private and not useful to complete
+
+# Completion functions
+fpath=("$DOTFILES_DIR/completions" $fpath) # custom completions from the dotfiles repo
+FPATH=${ASDF_DATA_DIR:-$HOME/.asdf}/completions:$FPATH # asdf completions
 
 if type brew &>/dev/null; then
-  FPATH=${ASDF_DATA_DIR:-$HOME/.asdf}/completions:$FPATH
   FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
-
-  autoload -Uz compinit && compinit
 fi
+
+autoload -Uz compinit
+compinit
+
+setopt completealiases # enable completion for aliases
 
 # Enable vi mode
 bindkey -v

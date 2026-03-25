@@ -52,14 +52,23 @@ alias dotfiles="cd $DOTFILES_DIR" # Navigate to the dotfiles directory
 # Set up your preferred editor (e.g., Neovim or Vim)
 alias vim='nvim'
 alias vi='nvim'
-
+#
+# Load custom completion helpers written as .sh files
+for completion_script in "$DOTFILES_DIR/completions/"*.sh; do
+  [[ -f "$completion_script" ]] || continue
+  source "$completion_script"
+done
 
 # Automatically create aliases for executable scripts
 for script in "$DOTFILES_DIR/scripts"/*.sh; do
-  if [[ -x "$script" ]]; then
-    # Extract the script name without the path and extension
-    alias_name=$(basename "$script" .sh)
-    # Create an alias that points to the script
-    alias "$alias_name"="$script"
+  [[ -x "$script" ]] || continue
+
+  alias_name=$(basename "$script" .sh)
+  alias "$alias_name"="$script"
+
+  completion_fn="_${alias_name}"
+
+  if (( $+functions[$completion_fn] )); then
+    compdef "$completion_fn" "$alias_name"
   fi
 done
