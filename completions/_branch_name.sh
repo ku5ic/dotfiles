@@ -1,7 +1,8 @@
-#compdef branch_name
-
 _branch_name() {
-  local -a types=(
+  local context state line
+  local -a types
+
+  types=(
     'feat:New feature'
     'fix:Bug fix'
     'refactor:Code restructure without behavior change'
@@ -14,8 +15,15 @@ _branch_name() {
     'style:Formatting or style only'
   )
 
-  if (( CURRENT == 2 )); then
-    _describe 'branch type' types
-    return
-  fi
+  _arguments -C \
+    '(-h --help)'{-h,--help}'[Show help]' \
+    '(-c --checkout)'{-c,--checkout}'[Create and checkout the branch]' \
+    '1:branch type:->type' \
+    '*:branch title:_message "branch title"' && return 0
+
+  case $state in
+    type)
+      _describe -t types 'branch type' types
+      ;;
+  esac
 }
