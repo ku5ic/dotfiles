@@ -1,5 +1,11 @@
 local M = {}
 
+local CODING_DYNAMIC_CONTEXT = {
+	repo_root_docs = { "README.md", "CLAUDE.md" },
+	upward_docs = { "README.md", "CLAUDE.md" },
+	repo_anywhere_docs = { "architecture.md", "testing.md", "brand.md" },
+}
+
 local BASE_CODE_RULES = [[
 You are a senior software engineer working in an existing codebase.
 
@@ -119,6 +125,7 @@ local prompts = {
 	Explain = {
 		description = "Explain code",
 		system_prompt = CODING_SYSTEM_PROMPT,
+		dynamic_context = CODING_DYNAMIC_CONTEXT,
 		prompt = [[
 Explain the provided code clearly and practically.
 
@@ -137,6 +144,7 @@ Focus on intent, structure, and behavior.
 	Review = {
 		description = "Review code",
 		system_prompt = CODING_SYSTEM_PROMPT,
+		dynamic_context = CODING_DYNAMIC_CONTEXT,
 		prompt = [[
 Review the code and identify meaningful issues.
 
@@ -160,6 +168,7 @@ Output format:
 	Tests = {
 		description = "Write tests",
 		system_prompt = CODING_SYSTEM_PROMPT,
+		dynamic_context = CODING_DYNAMIC_CONTEXT,
 		prompt = [[
 Write or improve tests for the provided code.
 
@@ -183,6 +192,7 @@ Output format:
 	Refactor = {
 		description = "Refactor code",
 		system_prompt = CODING_SYSTEM_PROMPT,
+		dynamic_context = CODING_DYNAMIC_CONTEXT,
 		prompt = [[
 Refactor the code to improve clarity and maintainability without changing behavior.
 
@@ -208,6 +218,7 @@ Output format:
 	Fix = {
 		description = "Fix code issues",
 		system_prompt = CODING_SYSTEM_PROMPT,
+		dynamic_context = CODING_DYNAMIC_CONTEXT,
 		prompt = [[
 Analyze the code and fix the actual issue with the smallest safe change.
 
@@ -232,6 +243,7 @@ Output format:
 	RenameForClarity = {
 		description = "Improve naming",
 		system_prompt = CODING_SYSTEM_PROMPT,
+		dynamic_context = CODING_DYNAMIC_CONTEXT,
 		prompt = [[
 Review the code and improve naming for clarity.
 
@@ -260,6 +272,7 @@ Output format:
 	Docs = {
 		description = "Write documentation",
 		system_prompt = CODING_SYSTEM_PROMPT,
+		dynamic_context = CODING_DYNAMIC_CONTEXT,
 		prompt = [[
 Generate or improve documentation for the code.
 
@@ -282,6 +295,7 @@ Output format:
 	WCAG = {
 		description = "Improve accessibility",
 		system_prompt = CODING_SYSTEM_PROMPT,
+		dynamic_context = CODING_DYNAMIC_CONTEXT,
 		prompt = [[
 Review and improve the code toward WCAG 2.2 AA compliance.
 
@@ -329,6 +343,7 @@ Output format:
 		description = "Write conventional commit message",
 		context = { "#gitdiff:staged" },
 		system_prompt = COMMIT_SYSTEM_PROMPT,
+		dynamic_context = CODING_DYNAMIC_CONTEXT,
 		prompt = [[
 Write a git commit message from the staged changes.
 
