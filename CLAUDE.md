@@ -28,6 +28,7 @@ ln -sfv ~/.dotfiles/config/nvim ~/.config/
 | `.tmux.conf` / `.tmuxinator/` | tmux config and tmuxinator session layouts |
 | `Brewfile` | All Homebrew formulae, casks, and Mac App Store apps in one file |
 | `scripts/` | Shell scripts on `$PATH` — callable by name without `.sh` extension |
+| `completions/` | zsh completion functions (e.g. `_branch_name.sh` for `branch_name`) |
 | `config/nvim/` | Neovim config (lazy.nvim plugin manager, symlinked to `~/.config/nvim`) |
 | `config/starship.toml` | Starship prompt config |
 | `config/wezterm/` | WezTerm terminal config |
@@ -46,6 +47,7 @@ Entry point: `config/nvim/init.lua` — bootstraps lazy.nvim, sets leader to `<S
 - `lsp.lua` — Mason + nvim-lspconfig; LSP server list is the single source of truth for both Mason installation and lsp setup. Switch TypeScript LSP between `ts_ls`/`vtsls` via the `typescript_lsp` variable at the top.
 - `code-completion.lua` — blink.cmp
 - `copilot.lua` + `claude.lua` — GitHub Copilot and claude-code.nvim
+- `coding.lua` — vim-surround, Comment.nvim, nvim-autopairs, vim-rbenv
 - `editor.lua` — Telescope, Neo-tree, gitsigns, etc.
 - `formatting.lua` / `linting.lua` — conform.nvim / nvim-lint
 - `treesitter.lua` — syntax highlighting
@@ -68,7 +70,9 @@ Entry point: `config/nvim/init.lua` — bootstraps lazy.nvim, sets leader to `<S
 
 `scripts/` is prepended to `$PATH` in `.zprofile`, so any `.sh` file added there is immediately callable by name (without the `.sh` extension) in every new shell session.
 
-Branch naming follows the convention in `jira_to_git_branch.sh`: `ku5ic/<type>/<STORY-ID>/<normalized_title>` where type is `feature`, `bugfix`, or `hotfix`.
+Branch naming via `branch_name.sh`: `<type>/<ISSUE-ID>/<slug>` or `<type>/<slug>` (no issue id). Types: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `build`, `ci`, `chore`, `style`. Use `--checkout` flag to create and switch in one step. Tab-completion is registered via `completions/_branch_name.sh`.
+
+`git_diff_base.sh` diffs the current branch against main/master (auto-detected) or a specified base branch.
 
 Machine-local shell overrides go in `~/.zshrc.local` (sourced at the end of `.zshrc`, not tracked in this repo).
 

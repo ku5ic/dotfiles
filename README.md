@@ -12,6 +12,7 @@ symlinks into `$HOME` and `~/.config`.
 - **WezTerm** — Terminal config with FiraCode Nerd Font
 - **macOS defaults** — Sane system defaults for development use
 - **Homebrew** — CLI tools and GUI apps via Brewfile
+- **scripts** — Shell utilities on `$PATH` (branch naming, git helpers, etc.)
 
 ## Prerequisites
 
