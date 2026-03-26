@@ -31,10 +31,14 @@ end
 ---Side effects:
 ---None (pure builder).
 ---
----@param opts? { selection_only?: boolean }
+---@param opts? { selection_only?: boolean, context?: string[] }
 ---@return string[] tags Ordered list of context tags appended to the user prompt.
 local function build_context_tags(opts)
 	opts = opts or {}
+
+	if opts.context and #opts.context > 0 then
+		return opts.context
+	end
 
 	local tags = {}
 
@@ -147,6 +151,7 @@ function M.prompt(name, opts)
 	if type(prompt_def) == "table" and type(prompt_def.prompt) == "string" then
 		local merged_opts = vim.tbl_extend("force", opts or {}, {
 			system_prompt = prompt_def.system_prompt,
+			context = prompt_def.context,
 		})
 		return M.ask(prompt_def.prompt, merged_opts)
 	end

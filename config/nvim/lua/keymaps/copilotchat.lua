@@ -76,15 +76,10 @@ bind_prompt("Docs", "<leader>aD", "Write documentation")
 bind_prompt("WCAG", "<leader>aW", "Improve accessibility")
 bind_prompt("Summarize", "<leader>as", "Summarize text")
 bind_prompt("Wording", "<leader>aw", "Improve wording")
-bind_prompt("Concise", "<leader>ac", "Make concise")
+bind_prompt("Concise", "<leader>az", "Make concise")
+bind_prompt("Commit", "<leader>ac", "Create commit message")
 
 -- Additional AI commands (non-prompt based)
 map("n", "<leader>av", "<cmd>CopilotChatToggle<cr>", { desc = "AI: Toggle chat", noremap = true, silent = true })
-map(
-	"n",
-	"<leader>am",
-	"<cmd>CopilotChatCommit<cr>",
-	{ desc = "AI: Generate commit message", noremap = true, silent = true }
-)
 map("n", "<leader>al", "<cmd>CopilotChatReset<cr>", { desc = "AI: Clear chat history", noremap = true, silent = true })
 map("n", "<leader>aM", "<cmd>CopilotChatModels<cr>", { desc = "AI: Select Model", noremap = true, silent = true })
