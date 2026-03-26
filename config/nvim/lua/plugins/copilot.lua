@@ -34,7 +34,7 @@ return {
 				assistant = icons.misc.Copilot .. "Copilot",
 			},
 			prompts = prompts,
-			model = "auto",
+			-- model = "auto",
 			auto_follow_cursor = false, -- Don't follow the cursor after getting response
 			mappings = {
 				-- Use tab for completion
