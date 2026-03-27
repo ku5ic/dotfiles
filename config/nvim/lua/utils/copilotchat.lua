@@ -27,6 +27,39 @@ See also:
 
 local prompts_module = require("utils.copilotchat.prompts")
 
+local uv = vim.uv or vim.loop
+
+-- Session cache: automatically invalidated when the working directory changes.
+local _cache = {}
+local _cache_cwd = nil
+
+local function cache_get(key)
+	local cwd = vim.fn.getcwd()
+	if cwd ~= _cache_cwd then
+		_cache = {}
+		_cache_cwd = cwd
+	end
+	return _cache[key]
+end
+
+local function cache_set(key, value)
+	_cache[key] = value
+	return value
+end
+
+local function make_key(...)
+	return table.concat({ ... }, "\0")
+end
+
+-- Lazily detect whether `fd` is available on PATH.
+local _has_fd = nil
+local function has_fd()
+	if _has_fd == nil then
+		_has_fd = vim.fn.executable("fd") == 1
+	end
+	return _has_fd
+end
+
 --- Module configuration.
 -- @field include_diagnostics (boolean) If true, include diagnostics in context (not currently used).
 -- @field include_git (boolean) If true, include git context tag.
@@ -50,9 +83,15 @@ local function is_visual_mode()
 	return mode == "v" or mode == "V" or mode == "\22"
 end
 
---- Returns true if the given file path exists and is readable.
+--- Returns true if the given file path exists and is a regular file.
+-- Uses vim.uv.fs_stat (a direct libuv call) instead of vim.fn.filereadable
+-- to avoid the Vimscript overhead on hot paths.
 local function file_exists(path)
-	return type(path) == "string" and path ~= "" and vim.fn.filereadable(path) == 1
+	if type(path) ~= "string" or path == "" then
+		return false
+	end
+	local stat = (uv and uv.fs_stat) and uv.fs_stat(path) or nil
+	return stat ~= nil and stat.type == "file"
 end
 
 --- Returns the absolute, normalized path for a given file.
@@ -95,9 +134,14 @@ end
 -- @param names (table) List of filenames to check at project root.
 -- @return table of context tags for found files.
 local function collect_repo_root_docs(names)
-	local tags = {}
 	local root = project_root()
+	local key = make_key("root_docs", root, table.concat(names or {}, "|"))
+	local cached = cache_get(key)
+	if cached then
+		return cached
+	end
 
+	local tags = {}
 	for _, name in ipairs(names or {}) do
 		local candidate = root .. "/" .. name
 		if file_exists(candidate) then
@@ -105,7 +149,7 @@ local function collect_repo_root_docs(names)
 		end
 	end
 
-	return tags
+	return cache_set(key, tags)
 end
 
 --- Collects tags for documentation files found by walking upward from the current buffer's directory.
@@ -113,12 +157,18 @@ end
 -- @param names (table) List of filenames to search for in each parent directory.
 -- @return table of context tags for found files.
 local function collect_upward_docs(names)
-	local tags = {}
 	local root = project_root()
 	local buf_path = current_buffer_path()
+	local key = make_key("upward_docs", root, buf_path or "", table.concat(names or {}, "|"))
+	local cached = cache_get(key)
+	if cached then
+		return cached
+	end
+
+	local tags = {}
 
 	if not buf_path then
-		return tags
+		return cache_set(key, tags)
 	end
 
 	local dir = vim.fn.fnamemodify(buf_path, ":p:h")
@@ -152,18 +202,37 @@ local function collect_upward_docs(names)
 		dir = parent
 	end
 
-	return tags
+	return cache_set(key, tags)
 end
 
 --- Collects tags for all files matching given names anywhere in the repo.
+-- Uses `fd` when available (much faster on large trees); falls back to globpath.
 -- @param names (table) List of filenames to search for recursively.
 -- @return table of context tags for found files.
 local function collect_repo_files_by_name(names)
-	local tags = {}
 	local root = project_root()
+	local key = make_key("repo_files", root, table.concat(names or {}, "|"))
+	local cached = cache_get(key)
+	if cached then
+		return cached
+	end
+
+	local tags = {}
 
 	for _, name in ipairs(names or {}) do
-		local matches = vim.fn.globpath(root, "**/" .. name, false, true)
+		local matches
+
+		if has_fd() then
+			matches = vim.fn.systemlist(
+				string.format("fd --type f --name %s %s", vim.fn.shellescape(name), vim.fn.shellescape(root))
+			)
+			if vim.v.shell_error ~= 0 then
+				matches = vim.fn.globpath(root, "**/" .. name, false, true)
+			end
+		else
+			matches = vim.fn.globpath(root, "**/" .. name, false, true)
+		end
+
 		for _, match in ipairs(matches) do
 			local full = normalize_path(match)
 			if file_exists(full) then
@@ -172,7 +241,7 @@ local function collect_repo_files_by_name(names)
 		end
 	end
 
-	return tags
+	return cache_set(key, tags)
 end
 
 --- Resolves dynamic context specification to a list of context tags.
