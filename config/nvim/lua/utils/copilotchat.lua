@@ -124,6 +124,7 @@ local function collect_upward_docs(names)
 	local dir = vim.fn.fnamemodify(buf_path, ":p:h")
 	local root_with_sep = root .. "/"
 
+	-- Traverse upward from the buffer's directory to the project root.
 	while dir and dir ~= "" do
 		for _, name in ipairs(names or {}) do
 			local candidate = dir .. "/" .. name
@@ -132,15 +133,18 @@ local function collect_upward_docs(names)
 			end
 		end
 
+		-- Stop if we've reached the project root directory.
 		if dir == root then
 			break
 		end
 
-		-- Prevent escaping the project root
-		if not dir:find("^" .. vim.pesc(root_with_sep)) then
+		-- Prevent escaping the project root (handles symlinks and odd cases).
+		-- This ensures we never traverse above the root directory.
+		if not vim.startswith(dir .. "/", root_with_sep) then
 			break
 		end
 
+		-- Move up one directory.
 		local parent = vim.fn.fnamemodify(dir, ":h")
 		if parent == dir then
 			break
