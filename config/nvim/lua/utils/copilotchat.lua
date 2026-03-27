@@ -1,12 +1,41 @@
 local M = {}
 
+--[[
+CopilotChat Neovim utility module
+
+Purpose:
+- Provides helper functions and prompt composition for integrating with the CopilotChat Neovim plugin.
+- Builds context-aware prompts for AI code assistance, including buffer, selection, git, and project documentation context.
+- Supports dynamic context resolution for project-level and file-level documentation.
+- Exposes a simple API for sending prompts and using named prompt templates.
+
+Key Concepts:
+- Context tags: Strings like "#selection", "#buffer:active", "#file:README.md" that instruct CopilotChat what context to include.
+- Dynamic context: Allows prompts to reference project docs (e.g. README.md), upward docs (e.g. nearest package.json), or arbitrary files by name.
+- Prompt templates: Predefined prompts (see `utils.copilotchat.prompts`) that can be invoked by name.
+
+Usage:
+  local copilotchat = require("utils.copilotchat")
+  copilotchat.ask("Explain this code", { selection_only = true })
+  copilotchat.prompt("summarize", { dynamic_context = { repo_root_docs = { "README.md" } } })
+
+See also:
+- utils/copilotchat/prompts.lua for prompt definitions.
+- CLAUDE.md for Neovim architecture and keymap conventions.
+
+--]]
+
 local prompts_module = require("utils.copilotchat.prompts")
 
+--- Module configuration.
+-- @field include_diagnostics (boolean) If true, include diagnostics in context (not currently used).
+-- @field include_git (boolean) If true, include git context tag.
 M.config = {
 	include_diagnostics = true,
 	include_git = false,
 }
 
+--- Table of named prompt templates (see prompts.lua).
 M.prompts = prompts_module.prompts
 
 local CONTEXT_TAGS = {
@@ -15,23 +44,28 @@ local CONTEXT_TAGS = {
 	GIT = "#git",
 }
 
+--- Returns true if the current mode is any visual mode.
 local function is_visual_mode()
 	local mode = vim.fn.mode()
 	return mode == "v" or mode == "V" or mode == "\22"
 end
 
+--- Returns true if the given file path exists and is readable.
 local function file_exists(path)
 	return type(path) == "string" and path ~= "" and vim.fn.filereadable(path) == 1
 end
 
+--- Returns the absolute, normalized path for a given file.
 local function normalize_path(path)
 	return vim.fn.fnamemodify(path, ":p")
 end
 
+--- Returns the absolute path to the current working directory (project root).
 local function project_root()
 	return normalize_path(vim.fn.getcwd())
 end
 
+--- Returns the absolute path to the current buffer, or nil if not a file buffer.
 local function current_buffer_path()
 	local name = vim.api.nvim_buf_get_name(0)
 	if not name or name == "" then
@@ -40,11 +74,13 @@ local function current_buffer_path()
 	return normalize_path(name)
 end
 
+--- Returns the path relative to the given root directory.
 local function path_relative_to_root(path, root)
 	local escaped_root = vim.pesc(root)
 	return path:gsub("^" .. escaped_root .. "/?", "")
 end
 
+--- Adds a tag to the tags list if not already present.
 local function add_unique_tag(tags, seen, tag)
 	if type(tag) ~= "string" or tag == "" then
 		return
@@ -55,6 +91,9 @@ local function add_unique_tag(tags, seen, tag)
 	end
 end
 
+--- Collects tags for documentation files at the project root.
+-- @param names (table) List of filenames to check at project root.
+-- @return table of context tags for found files.
 local function collect_repo_root_docs(names)
 	local tags = {}
 	local root = project_root()
@@ -69,6 +108,10 @@ local function collect_repo_root_docs(names)
 	return tags
 end
 
+--- Collects tags for documentation files found by walking upward from the current buffer's directory.
+-- Stops at project root.
+-- @param names (table) List of filenames to search for in each parent directory.
+-- @return table of context tags for found files.
 local function collect_upward_docs(names)
 	local tags = {}
 	local root = project_root()
@@ -93,6 +136,7 @@ local function collect_upward_docs(names)
 			break
 		end
 
+		-- Prevent escaping the project root
 		if not dir:find("^" .. vim.pesc(root_with_sep)) then
 			break
 		end
@@ -107,6 +151,9 @@ local function collect_upward_docs(names)
 	return tags
 end
 
+--- Collects tags for all files matching given names anywhere in the repo.
+-- @param names (table) List of filenames to search for recursively.
+-- @return table of context tags for found files.
 local function collect_repo_files_by_name(names)
 	local tags = {}
 	local root = project_root()
@@ -124,28 +171,13 @@ local function collect_repo_files_by_name(names)
 	return tags
 end
 
----@class CopilotChatDynamicContext
----@field repo_root_docs? string[]
----@field upward_docs? string[]
----@field repo_anywhere_docs? string[]
----@field extra? string[]
----
---- Resolve declarative dynamic context rules into concrete CopilotChat tags.
----
---- Purpose:
---- - Expand repo-aware prompt context only from files that actually exist.
---- - Support three discovery modes:
----   - `repo_root_docs`: exact files at repository root.
----   - `upward_docs`: nearest matching files walking upward from current buffer dir.
----   - `repo_anywhere_docs`: matching filenames anywhere in the repository.
----
---- Constraints / edge cases:
---- - Missing files are ignored silently.
---- - Results are deduplicated while preserving discovery order.
---- - Paths are normalized and emitted as repo-relative `#file:` tags.
----
----@param dynamic_context? CopilotChatDynamicContext
----@return string[] tags
+--- Resolves dynamic context specification to a list of context tags.
+-- @param dynamic_context (table) Table with keys:
+--   repo_root_docs: list of filenames at repo root
+--   upward_docs: list of filenames to search upward from buffer
+--   repo_anywhere_docs: list of filenames to search anywhere in repo
+--   extra: list of additional tags
+-- @return table of unique context tags
 local function resolve_dynamic_context(dynamic_context)
 	local tags = {}
 	local seen = {}
@@ -181,27 +213,12 @@ local function resolve_dynamic_context(dynamic_context)
 	return tags
 end
 
----@class CopilotChatAskOptions
----@field selection_only? boolean
----@field context? string[]
----@field dynamic_context? CopilotChatDynamicContext
----@field system_prompt? string
----
----Build context tags consumed by CopilotChat.
----
----Intent:
----Keeps context inclusion policy centralized and predictable:
----  - `context` uses explicit tags as-is when provided.
----  - `dynamic_context` appends discovered repo-aware file tags that actually exist.
----  - `selection_only=true` uses `#selection` only when a visual selection is active.
----  - Otherwise falls back to `#buffer:active` to avoid sending an empty/invalid context.
----  - Optional git context is controlled globally via `M.config.include_git`.
----
----Side effects:
----None (pure builder).
----
----@param opts? CopilotChatAskOptions
----@return string[] tags Ordered list of context tags appended to the user prompt.
+--- Builds a list of context tags for a prompt.
+-- @param opts (table) Options:
+--   context: explicit list of tags (overrides default selection/buffer/git)
+--   selection_only: if true, prefer #selection if in visual mode
+--   dynamic_context: table, see resolve_dynamic_context
+-- @return table of unique context tags
 local function build_context_tags(opts)
 	opts = opts or {}
 
@@ -233,42 +250,23 @@ local function build_context_tags(opts)
 	return tags
 end
 
----Compose the final prompt payload sent to CopilotChat.
----
----Non-obvious decision:
----Context tags are serialized as plain text under a `Context:` section instead of
----passing a structured context object; this matches the current `CopilotChat.ask`
----call pattern in this module.
----
----@param user_prompt? string Free-form user instruction. `nil` becomes an empty prompt body.
----@param opts? CopilotChatAskOptions
----@return string prompt Prompt text including context directives.
+--- Builds the final prompt string with context tags.
+-- @param user_prompt (string) The main user prompt.
+-- @param opts (table) Options for context (see build_context_tags).
+-- @return string Prompt with context section.
 local function build_prompt(user_prompt, opts)
 	local tags = build_context_tags(opts)
 	return string.format("%s\n\nContext:\n%s", user_prompt or "", table.concat(tags, "\n"))
 end
 
----Send an ad-hoc prompt to CopilotChat with standardized context handling.
----
----Purpose:
----Provides a single integration point that validates plugin availability, injects
----context directives, and applies local window/system prompt options.
----
----Important side effects:
----- Requires and calls into the external `CopilotChat` plugin.
----- Opens/targets a CopilotChat window (`window.title = "CopilotChat"`).
----- Emits `vim.notify` messages on failure paths.
----
----Constraints / edge cases:
----- Returns `false` when plugin load fails or `ask` is unavailable.
----- Returns `false` if `CopilotChat.ask` throws.
----- `opts.selection_only=true` only takes effect in visual mode; otherwise buffer context is used.
----- Explicit `opts.context` overrides default buffer/selection context construction.
----- `opts.dynamic_context` appends repo-aware file context discovered at dispatch time.
----
----@param user_prompt? string User message body.
----@param opts? CopilotChatAskOptions
----@return boolean ok `true` on successful dispatch, otherwise `false`.
+--- Sends a prompt to CopilotChat.
+-- @param user_prompt (string) The main user prompt.
+-- @param opts (table) Options:
+--   system_prompt: string, optional system prompt for CopilotChat
+--   context: list of context tags
+--   dynamic_context: table, see resolve_dynamic_context
+--   selection_only: boolean, prefer #selection if in visual mode
+-- @return boolean True if sent successfully, false on error.
 function M.ask(user_prompt, opts)
 	local ok, mod = pcall(require, "CopilotChat")
 	if not ok or type(mod.ask) ~= "function" then
@@ -298,25 +296,10 @@ function M.ask(user_prompt, opts)
 	return true
 end
 
----Resolve a named prompt from `M.prompts` and dispatch it via `M.ask`.
----
----Purpose:
----Supports two prompt definition shapes:
----1) `string` -> treated as direct user prompt.
----2) `{ prompt = string, system_prompt = string|nil, context = string[]|nil,
----     dynamic_context = table|nil }` -> merged into ask options.
----
----Non-obvious decision:
----When table-based prompts are used, prompt-defined dispatch options override any
----caller-provided equivalents via `vim.tbl_extend("force", ...)`.
----
----Side effects:
----Same runtime side effects as `M.ask`, plus warning/error notifications for unknown
----or invalid prompt definitions.
----
----@param name string Prompt key in `M.prompts`.
----@param opts? CopilotChatAskOptions
----@return boolean ok `true` when prompt is found/valid and successfully dispatched.
+--- Sends a named prompt template to CopilotChat.
+-- @param name (string) Name of the prompt template (see M.prompts).
+-- @param opts (table) Options to override or extend the prompt definition.
+-- @return boolean True if sent successfully, false on error.
 function M.prompt(name, opts)
 	local prompt_def = M.prompts[name]
 
@@ -330,7 +313,7 @@ function M.prompt(name, opts)
 	end
 
 	if type(prompt_def) == "table" and type(prompt_def.prompt) == "string" then
-		---@cast prompt_def { prompt: string, system_prompt: string|nil, context: string[]|nil, dynamic_context: CopilotChatDynamicContext|nil }
+		---@cast prompt_def { prompt: string, system_prompt: string|nil, context: string[]|nil, dynamic_context: table|nil }
 		local merged_opts = vim.tbl_extend("force", opts or {}, {
 			system_prompt = prompt_def.system_prompt,
 			context = prompt_def.context,
