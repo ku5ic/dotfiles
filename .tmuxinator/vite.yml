@@ -8,6 +8,8 @@ windows:
         - nvim:
             - nvim
         - terminal:
+  - claude:
+      - claude
   - terminal:
       layout: even-horizontal
       panes:
