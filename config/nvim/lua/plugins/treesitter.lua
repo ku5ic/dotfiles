@@ -1,6 +1,7 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
+		tag = "v0.9.3",
 		build = ":TSUpdate",
 		dependencies = {
 			-- nvim-treesitter-textobjects must be listed as a proper dependency.
