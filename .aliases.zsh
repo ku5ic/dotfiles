@@ -52,6 +52,10 @@ alias dotfiles="cd $DOTFILES_DIR" # Navigate to the dotfiles directory
 # Set up your preferred editor (e.g., Neovim or Vim)
 alias vim='nvim'
 alias vi='nvim'
+
+# Override the default `tree` command to remove color codes for better readability in terminals that don't support them
+function tree() { command tree -n "$@" | sed 's/\x1b\[[0-9;]*m//g'; }
+
 #
 # Load custom completion helpers written as .sh files
 for completion_script in "$DOTFILES_DIR/completions/"*.sh; do

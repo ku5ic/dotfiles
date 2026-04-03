@@ -26,6 +26,7 @@ local keys = {
 }
 
 return {
+	term = "xterm-256color",
 	color_scheme = "Catppuccin Mocha",
 	font = font,
 	freetype_load_target = "Light",
@@ -42,6 +43,9 @@ return {
 	hide_tab_bar_if_only_one_tab = true,
 	enable_scroll_bar = false,
 	enable_csi_u_key_encoding = true,
+	enable_kitty_graphics = false,
+	enable_kitty_keyboard = false,
+	selection_word_boundary = " \t\n{}[]()\"'`,;:@│",
 	audible_bell = "Disabled",
 	keys = keys,
 }
