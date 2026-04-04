@@ -46,6 +46,8 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/tmux/resurrect" ~/.tmux/
   ln -sfv "$DOTFILES_DIR/.tmuxinator" ~
 
+  ln -sfv "$DOTFILES_DIR/claude/settings.json" ~/.claude/
+
   mkdir -p ~/.config
   ln -sfv "$DOTFILES_DIR/config/nvim" ~/.config/
   ln -sfv "$DOTFILES_DIR/config/wezterm" ~/.config/
