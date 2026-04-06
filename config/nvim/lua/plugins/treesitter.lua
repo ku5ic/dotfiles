@@ -44,7 +44,7 @@ return {
 				})
 				:wait(300000)
 
-			-- Highlighting is not automatic on main branch — enable per filetype
+			-- Highlighting is not automatic on main branch - enable per filetype
 			vim.api.nvim_create_autocmd("FileType", {
 				callback = function()
 					pcall(vim.treesitter.start)

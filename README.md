@@ -6,13 +6,13 @@ symlinks into `$HOME` and `~/.config`.
 
 ## What's included
 
-- **Neovim** — LSP, Treesitter, Copilot, lazy.nvim plugin manager
-- **zsh** — Starship prompt, syntax highlighting, autosuggestions, vi mode
-- **tmux** — Catppuccin theme, tmuxinator session layouts
-- **WezTerm** — Terminal config with FiraCode Nerd Font
-- **macOS defaults** — Sane system defaults for development use
-- **Homebrew** — CLI tools and GUI apps via Brewfile
-- **scripts** — Shell utilities on `$PATH` (branch naming, git helpers, etc.)
+- **Neovim** - LSP, Treesitter, Copilot, lazy.nvim plugin manager
+- **zsh** - Starship prompt, syntax highlighting, autosuggestions, vi mode
+- **tmux** - Catppuccin theme, tmuxinator session layouts
+- **WezTerm** - Terminal config with FiraCode Nerd Font
+- **macOS defaults** - Sane system defaults for development use
+- **Homebrew** - CLI tools and GUI apps via Brewfile
+- **scripts** - Shell utilities on `$PATH` (branch naming, git helpers, etc.)
 
 ## Prerequisites
 

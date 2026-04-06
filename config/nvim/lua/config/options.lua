@@ -1,20 +1,14 @@
-local o, g = vim.opt, vim.g -- tiny aliases
+local o, g = vim.opt, vim.g
 
----------------------------------------------------------------------------
--- 1. External host executables -------------------------------------------
----------------------------------------------------------------------------
+-- 1. External host executables
 g.python3_host_prog = vim.fn.expand("~/.asdf/shims/python")
 g.ruby_host_prog = vim.fn.expand("~/.asdf/shims/neovim-ruby-host")
 
----------------------------------------------------------------------------
--- 2. Built-in plugins -----------------------------------------------------
----------------------------------------------------------------------------
+-- 2. Built-in plugins
 g.loaded_netrw = 1
 g.loaded_netrwPlugin = 1 -- use oil.nvim / telescope-file-browser, etc.
 
----------------------------------------------------------------------------
--- 3. History / backups / undo --------------------------------------------
----------------------------------------------------------------------------
+-- 3. History / backups / undo
 o.swapfile = false
 o.backup = false
 o.writebackup = false
@@ -22,9 +16,7 @@ o.undofile = true -- modern replacement
 o.undodir = vim.fn.stdpath("state") .. "/undo"
 o.history = 1000
 
----------------------------------------------------------------------------
--- 4. UI: line numbers, columns, colours -----------------------------------
----------------------------------------------------------------------------
+-- 4. UI: line numbers, columns, colours
 o.number = true
 o.relativenumber = true
 o.signcolumn = "yes"
@@ -34,9 +26,7 @@ o.termguicolors = true
 o.showtabline = 2
 o.winbar = "%=%m %f" -- readonly + filename
 
----------------------------------------------------------------------------
--- 5. Indent / whitespace --------------------------------------------------
----------------------------------------------------------------------------
+-- 5. Indent / whitespace
 o.expandtab = true
 o.tabstop = 2
 o.shiftwidth = 2
@@ -51,11 +41,9 @@ o.listchars = {
 	space = "·",
 }
 
----------------------------------------------------------------------------
--- 6. Folding (Treesitter-driven) ------------------------------------------
+-- 6. Folding (Treesitter-driven)
 -- Uses the native Neovim 0.10+ treesitter fold expression.
 -- The legacy "nvim_treesitter#foldexpr()" Vimscript shim is deprecated.
----------------------------------------------------------------------------
 o.foldmethod = "expr"
 o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 o.foldenable = true
@@ -70,24 +58,18 @@ o.fillchars = { -- table form parses faster in 0.11+
 	foldclose = "",
 }
 
----------------------------------------------------------------------------
--- 7. Completion & search --------------------------------------------------
----------------------------------------------------------------------------
+-- 7. Completion & search
 o.completeopt = { "menu", "menuone", "noselect", "noinsert", "popup" }
 o.ignorecase = true
 o.smartcase = true
 
----------------------------------------------------------------------------
--- 8. Spelling --------------------------------------------------------------
----------------------------------------------------------------------------
+-- 8. Spelling
 o.spell = true
 o.spelllang = { "en_us" }
 o.spellsuggest = { "best", 9 }
 o.spelloptions = "camel"
 
----------------------------------------------------------------------------
--- 9. Clipboard / splits / misc --------------------------------------------
----------------------------------------------------------------------------
+-- 9. Clipboard / splits / misc
 o.clipboard = vim.env.SSH_TTY and "" or "unnamedplus"
 o.splitright = true
 o.splitbelow = true
@@ -109,22 +91,16 @@ end, {})
 -- Prefer :prepend when you *want* fzf earlier in rtp
 o.runtimepath:prepend("/opt/homebrew/bin/fzf")
 
----------------------------------------------------------------------------
--- 10. Auto-reload files changed on disk -----------------------------------
----------------------------------------------------------------------------
+-- 10. Auto-reload files changed on disk
 o.autoread = true
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, { command = "checktime" })
 
----------------------------------------------------------------------------
--- 11. File types ---------------------------------------------------------
----------------------------------------------------------------------------
+-- 11. File types
 vim.filetype.add({
 	filename = {
 		["Brewfile"] = "ruby",
 	},
 })
 
----------------------------------------------------------------------------
--- 12. Neovide ------------------------------------------------------------
----------------------------------------------------------------------------
+-- 12. Neovide
 vim.o.guifont = "FiraCode Nerd Font Propo:h14"

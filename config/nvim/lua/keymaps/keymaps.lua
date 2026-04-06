@@ -1,38 +1,5 @@
---[[
-══════════════════════════════════════════════════════════════════════════════════
-                           NEOVIM KEYMAP CONFIGURATION
-══════════════════════════════════════════════════════════════════════════════════
-
-This file contains a comprehensive, organized keymap structure following best practices:
-
-■ ORGANIZATION PRINCIPLES:
-  • Mnemonic patterns - Keys should be memorable (f = find, g = git, etc.)
-  • Logical grouping - Related functions under common prefixes
-  • Consistency - Similar operations use similar patterns
-  • No conflicts - Each keymap is unique and non-overlapping
-
-■ KEYMAP HIERARCHY:
-  ├── Core Navigation & Editing (no prefix)
-  ├── <leader>f - Find/File Operations (files, commands, help, format)
-  ├── <leader>s - Search Operations (grep, todos, diagnostics)
-  ├── <leader>g - Git Operations (status, commits, hunks)
-  ├── <leader>w - Window Management (splits, resize, maximize)
-  ├── <leader>t - Tabs & Toggles (tabs, explorer, terminal)
-  ├── <leader>b - Buffer Operations (switch, delete, pin)
-  ├── <leader>l - LSP Operations (rename, actions, diagnostics)
-  ├── <leader>x - Diagnostics/Trouble (problems, quickfix)
-  ├── <leader>d - Debug Operations (breakpoints, stepping)
-  ├── <leader>a - AI/Copilot Operations (see keymaps/copilotchat.lua)
-  ├── <leader>c - Copy Operations (file paths)
-  └── <leader>n - Notifications & UI (dismiss, toggles)
-
-■ QUICK REFERENCE:
-  <leader>,     - Switch buffer (quick access)
-  <leader>/     - Live grep search (quick access)
-  <leader><leader> - Reveal file in explorer (quick access)
-
-══════════════════════════════════════════════════════════════════════════════════
---]]
+-- Neovim keymap configuration
+-- See CLAUDE.md for keymap prefix conventions
 
 local notify = require("notify")
 local noice = require("noice")
@@ -52,9 +19,7 @@ local function map(mode, lhs, rhs, desc, extra_opts)
 	keymap.set(mode, lhs, rhs, opts)
 end
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ CORE NAVIGATION & EDITING
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Core navigation & editing
 
 -- Clear search highlights
 map("n", "<leader>nh", ":nohl<CR>", "Clear search highlights")
@@ -81,9 +46,7 @@ end
 map("v", "<", "<gv", "Unindent and reselect")
 map("v", ">", ">gv", "Indent and reselect")
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ LSP NAVIGATION (Buffer-local, set via autocmd in LSP config)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- LSP navigation (buffer-local, set via autocmd in LSP config)
 --
 -- These keymaps are automatically set when LSP attaches to a buffer.
 -- They remain in lsp.lua for proper buffer-local scoping:
@@ -99,9 +62,7 @@ map("v", ">", ">gv", "Indent and reselect")
 --
 -- Note: LSP action keymaps using <leader>l* prefix are defined below
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ WINDOW MANAGEMENT (<leader>w)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Window management (<leader>w)
 
 local window_mappings = {
 	{ "<leader>wv", "<C-w>v", "Split window vertically" },
@@ -121,9 +82,7 @@ map("n", "<C-j>", "<C-w>j", "Go to bottom window")
 map("n", "<C-k>", "<C-w>k", "Go to top window")
 map("n", "<C-l>", "<C-w>l", "Go to right window")
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ TAB MANAGEMENT (<leader>t)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Tab management (<leader>t)
 
 local tab_mappings = {
 	{ "<leader>tn", ":tabnew<CR>", "New tab" },
@@ -137,18 +96,14 @@ for _, mapping in ipairs(tab_mappings) do
 	map("n", mapping[1], mapping[2], mapping[3])
 end
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ BUFFER MANAGEMENT (<leader>b)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Buffer management (<leader>b)
 
 map("n", "<leader>bb", "<cmd>Telescope buffers show_all_buffers=true<cr>", "Switch buffer")
 map("n", "<leader>bd", "<cmd>bdelete<cr>", "Delete buffer")
 map("n", "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", "Pin buffer")
 map("n", "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", "Delete unpinned buffers")
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ NOTIFICATIONS & UI (<leader>n)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Notifications & UI (<leader>n)
 
 map("n", "<leader>nn", function()
 	notify.dismiss({ silent = true, pending = true })
@@ -188,9 +143,7 @@ map("c", "<S-Enter>", function()
 	noice.redirect(vim.fn.getcmdline())
 end, "Redirect cmdline")
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ QUICK ACCESS
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Quick access
 
 map("n", "<leader>,", "<cmd>Telescope buffers show_all_buffers=true<cr>", "Switch buffer (quick)")
 map("n", "<leader>/", "<cmd>Telescope live_grep_args<cr>", "Search in files (quick)")
@@ -198,9 +151,7 @@ map("n", "<leader>/", "<cmd>Telescope live_grep_args<cr>", "Search in files (qui
 -- Neo-tree reveal current file
 map("n", "<leader><leader>", "<cmd>Neotree reveal<cr>", "Reveal current file in explorer")
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ FIND/FILE OPERATIONS (<leader>f)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Find/file operations (<leader>f)
 
 map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", "Find files")
 map("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", "Find recent files")
@@ -216,9 +167,7 @@ map("n", "<leader>fm", function()
 	})
 end, "Format file")
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ SEARCH OPERATIONS (<leader>s)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Search operations (<leader>s)
 
 map("n", "<leader>ss", "<cmd>Telescope current_buffer_fuzzy_find<cr>", "Search in current buffer")
 map("n", "<leader>sg", "<cmd>Telescope live_grep_args<cr>", "Search with live grep")
@@ -242,9 +191,7 @@ map("n", "[t", function()
 	todo_comments.jump_prev()
 end, "Previous todo comment")
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ GIT OPERATIONS (<leader>g)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Git operations (<leader>g)
 
 map("n", "<leader>gg", "<cmd>LazyGit<cr>", "LazyGit")
 map("n", "<leader>gs", "<cmd>Telescope git_status<CR>", "Git status")
@@ -253,9 +200,7 @@ map("n", "<leader>gb", "<cmd>Git blame <cr>", "Toggle git blame")
 map("n", "<leader>gn", "<cmd>Gitsigns next_hunk<cr>", "Next git hunk")
 map("n", "<leader>gp", "<cmd>Gitsigns prev_hunk<cr>", "Previous git hunk")
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ LSP OPERATIONS (<leader>l)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- LSP operations (<leader>l)
 
 map("n", "<leader>lr", vim.lsp.buf.rename, "LSP Rename")
 map({ "n", "v" }, "<leader>la", vim.lsp.buf.code_action, "LSP Code Action")
@@ -281,9 +226,7 @@ map("n", "<leader>lwl", function()
 	print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
 end, "LSP List workspace folders")
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ DIAGNOSTICS/TROUBLE (<leader>x)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Diagnostics/Trouble (<leader>x)
 
 map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", "Show all diagnostics")
 map("n", "<leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", "Show document diagnostics")
@@ -292,9 +235,7 @@ map("n", "<leader>xl", "<cmd>Trouble lsp toggle focus=false win.position=right<c
 map("n", "<leader>xL", "<cmd>Trouble loclist toggle<cr>", "Show location list")
 map("n", "<leader>xq", "<cmd>Trouble qflist toggle<cr>", "Show quickfix list")
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ DEBUG OPERATIONS (<leader>d)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Debug operations (<leader>d)
 
 -- Debug control
 map("n", "<F5>", "<cmd>lua require'dap'.continue()<cr>", "Debug Continue")
@@ -328,22 +269,16 @@ map(
 	"Debug variables/scopes"
 )
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ AI/COPILOT OPERATIONS (<leader>a)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- AI/Copilot operations (<leader>a)
 --
 -- AI keymaps are defined in keymaps/copilotchat.lua
 -- See that file for the complete list of AI operations
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ COPY FILE PATH (<leader>c)
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Copy file path (<leader>c)
 map("n", "<leader>cP", "<cmd>CopyPath<cr>", "Copy Full File Path")
 map("n", "<leader>cp", "<cmd>CopyRelPath<cr>", "Copy Relative File Path")
 
--- ═══════════════════════════════════════════════════════════════════════════════════
--- ■ Neovide
--- ═══════════════════════════════════════════════════════════════════════════════════
+-- Neovide
 vim.keymap.set("n", "<D-v>", '"+p', { noremap = true, silent = true })
 vim.keymap.set("i", "<D-v>", "<C-r>+", { noremap = true, silent = true })
 vim.keymap.set("v", "<D-v>", '"+p', { noremap = true, silent = true })
