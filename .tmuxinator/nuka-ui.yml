@@ -1,0 +1,20 @@
+name: nuka-ui
+root: ~/Projects/SinisaKusic/Code/Showcases/nuka-ui/
+enable_pane_titles: true
+
+windows:
+  - editor:
+      layout: main-horizontal
+      panes:
+        - nvim:
+            - nvim
+        - terminal:
+  - claude:
+      - claude
+  - terminal:
+      layout: even-horizontal
+      panes:
+        - tests:
+            - npm run test:watch
+        - server:
+            - npm run dev
