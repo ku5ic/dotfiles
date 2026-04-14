@@ -25,3 +25,14 @@ windows:
             - cd frontend
             - clear
             - npm run dev
+  - tests:
+      layout: even-horizontal
+      panes:
+        - backend:
+            - cd backend
+            - clear
+            - make test
+        - frontend:
+            - cd frontend
+            - clear
+            - npm run test
