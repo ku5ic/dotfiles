@@ -18,7 +18,7 @@
 # Parameters:
 #   Positional:
 #     <type>       Required. Must be one of:
-#                  feat, fix, refactor, perf, test, docs, build, ci, chore, style
+#                  feat, fix, refactor, perf, test, docs, build, ci, chore, style, release
 #     <issue_id>   Optional. Normalized to uppercase and restricted to [A-Z0-9_-].
 #     <title...>   Required. Remaining args are joined with spaces and slugified.
 #   Flags:
@@ -63,7 +63,7 @@ sanitize_title() {
 
 is_valid_type() {
   case "$1" in
-    feat|fix|refactor|perf|test|docs|build|ci|chore|style)
+    feat|fix|refactor|perf|test|docs|build|ci|chore|style|release)
       return 0
       ;;
     *)
@@ -97,7 +97,7 @@ fi
 branch_type="$1"
 shift
 
-is_valid_type "$branch_type" || die "Invalid branch type '$branch_type'. Allowed: feat, fix, refactor, perf, test, docs, build, ci, chore, style"
+is_valid_type "$branch_type" || die "Invalid branch type '$branch_type'. Allowed: feat, fix, refactor, perf, test, docs, build, ci, chore, style, release"
 
 issue_id=""
 title=""

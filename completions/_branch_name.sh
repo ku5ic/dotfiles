@@ -13,6 +13,7 @@ _branch_name() {
     'ci:CI changes'
     'chore:Maintenance task'
     'style:Formatting or style only'
+    'release:Release branch'
   )
 
   _arguments -C \
