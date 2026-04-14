@@ -7,15 +7,7 @@ Analyze the following for documentation drift between the code at $ARGUMENTS and
 
 ## Markdown documentation found in this project
 
-```!
-find . -name '*.md' \
-  -not -path '*/node_modules/*' \
-  -not -path '*/.git/*' \
-  -not -path '*/dist/*' \
-  -not -path '*/build/*' \
-  | sort \
-  | xargs -I{} sh -c 'echo "### {}" && cat "{}" && echo'
-```
+`! find . -name '*.md' -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' -not -path '*/build/*' | sort | xargs -I{} sh -c 'echo "### {}" && cat "{}" && echo'`
 
 ## Code to check
 
