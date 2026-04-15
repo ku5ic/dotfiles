@@ -58,6 +58,7 @@
       "MultiEdit(**)",
       "Read(**)",
       "Read(~/.claude/CLAUDE.md)",
+      "Read(~/.dotfiles/claude/**/*)",
       "Write(**)"
     ],
     "deny": [
