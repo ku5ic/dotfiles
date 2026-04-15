@@ -44,6 +44,8 @@ local keys = {
 	{ key = "k", mods = "SUPER|CTRL", action = act.ActivatePaneDirection("Up") },
 	-- Cmd+Ctrl+J: focus pane down
 	{ key = "j", mods = "SUPER|CTRL", action = act.ActivatePaneDirection("Down") },
+	-- Cmd+Shift+Z: toggle zoom (maximize/restore current pane)
+	{ key = "z", mods = "SUPER|SHIFT", action = act.TogglePaneZoomState },
 
 	-- Cmd+Shift+Enter: enter copy mode (vi-style text selection)
 	{ key = "Enter", mods = "SUPER|SHIFT", action = act.ActivateCopyMode },
