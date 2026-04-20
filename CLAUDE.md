@@ -49,7 +49,7 @@ Entry point: `config/nvim/init.lua` - bootstraps lazy.nvim, sets leader to `<Spa
 
 - `lsp.lua` - Mason + nvim-lspconfig; LSP server list is the single source of truth for both Mason installation and lsp setup. Switch TypeScript LSP between `ts_ls`/`vtsls` via the `typescript_lsp` variable at the top.
 - `code-completion.lua` - blink.cmp
-- `copilot.lua` + `claude.lua` - GitHub Copilot and claude-code.nvim
+- `copilot.lua` - GitHub Copilot and CopilotChat.nvim
 - `coding.lua` - vim-surround, Comment.nvim, nvim-autopairs, vim-rbenv
 - `editor.lua` - Telescope, Neo-tree, gitsigns, etc.
 - `formatting.lua` / `linting.lua` - conform.nvim / nvim-lint
@@ -74,7 +74,7 @@ Entry point: `config/nvim/init.lua` - bootstraps lazy.nvim, sets leader to `<Spa
 
 `scripts/` is prepended to `$PATH` in `.zprofile`, so any `.sh` file added there is immediately callable by name (without the `.sh` extension) in every new shell session.
 
-Branch naming via `branch_name.sh`: `<type>/<ISSUE-ID>/<slug>` or `<type>/<slug>` (no issue id). Types: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `build`, `ci`, `chore`, `style`. Use `--checkout` flag to create and switch in one step. Tab-completion is registered via `completions/_branch_name.sh`.
+Branch naming via `branch_name.sh`: `<type>/<ISSUE-ID>/<slug>` or `<type>/<slug>` (no issue id). Types: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `build`, `ci`, `chore`, `style`, `release`. Use `--checkout` flag to create and switch in one step. Tab-completion is registered via `completions/_branch_name.sh`.
 
 `git_diff_base.sh` diffs the current branch against main/master (auto-detected) or a specified base branch.
 

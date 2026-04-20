@@ -38,12 +38,10 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/.gitmessage" ~
   ln -sfv "$DOTFILES_DIR/.gemrc" ~
   ln -sfv "$DOTFILES_DIR/.tmux.conf" ~
-  ln -sfv "$DOTFILES_DIR/.pylintrc" ~
   ln -sfv "$DOTFILES_DIR/.default-python-packages" ~
   ln -sfv "$DOTFILES_DIR/.default-npm-packages" ~
   ln -sfv "$DOTFILES_DIR/.default-gems" ~
   ln -sfv "$DOTFILES_DIR/.tool-versions" ~
-  ln -sfv "$DOTFILES_DIR/tmux/resurrect" ~/.tmux/
   ln -sfv "$DOTFILES_DIR/.tmuxinator" ~
 
   ln -sfv "$DOTFILES_DIR/claude/settings.json" ~/.claude/
