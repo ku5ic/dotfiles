@@ -154,6 +154,7 @@
       "Skill(write:release-notes)",
       "Skill(write:stakeholder)",
       "Write(**)",
+      "Write($HOME/.claude//scratch/**)",
       "WebFetch(domain:developer.mozilla.org)",
       "WebFetch(domain:react.dev)",
       "WebFetch(domain:nextjs.org)",
