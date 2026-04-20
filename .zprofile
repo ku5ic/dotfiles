@@ -30,6 +30,14 @@ pyclean () {
   find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 }
 
+claude_clear() {
+  rm -rf ~/.claude/sessions/*
+  rm -rf ~/.claude/scratch/*
+  rm -rf ~/.claude/cache/*
+  rm -rf ~/.claude/paste-cache/*
+
+}
+
 fix_chromedriver() {
   xattr -d com.apple.quarantine $(which chromedriver)
 }
