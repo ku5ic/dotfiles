@@ -50,6 +50,8 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/claude/CLAUDE.md" ~/.claude/
   ln -sfv "$DOTFILES_DIR/claude/commands/" ~/.claude/
   ln -sfv "$DOTFILES_DIR/claude/hooks/" ~/.claude/
+  ln -sfv "$DOTFILES_DIR/claude/skills/" ~/.claude/
+  ln -sfv "$DOTFILES_DIR/claude/bin/" ~/.claude/
 
   mkdir -p ~/.config
   ln -sfv "$DOTFILES_DIR/config/nvim" ~/.config/

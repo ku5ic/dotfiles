@@ -12,6 +12,9 @@ export PYTHON_CONFIGURE_OPTS="--enable-framework"
 eval "$(/opt/homebrew/bin/brew shellenv)"
 HOMEBREW_NO_ENV_HINTS=1
 
+# github
+export GITHUB_PERSONAL_ACCESS_TOKEN="$(gh auth token 2>/dev/null)"
+
 # PATH
 export PATH="$(brew --prefix rustup)/bin:$PATH"
 export PATH="$(brew --prefix)/bin:$PATH"
@@ -20,6 +23,7 @@ export PATH="$(brew --prefix)/opt/openssl@3/bin:$PATH"
 export PATH="$(brew --prefix)/opt/ncurses/bin:$PATH"
 export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
 export PATH="$HOME/.dotfiles/scripts:$PATH"
+export PATH="$HOME/.dotfiles/claude/bin/:$PATH"
 export PATH
 
 pyclean () {

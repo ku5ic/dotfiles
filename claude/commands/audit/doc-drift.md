@@ -1,0 +1,57 @@
+---
+description: Detect drift between code and markdown or inline documentation
+argument-hint: <code path to check>
+allowed-tools: Read, Grep, Glob, Bash(find:*), Bash(detect-stack)
+---
+
+**Effort: medium.** Comparison task. Does not rewrite docs.
+
+## Prerequisites
+
+$ARGUMENTS should point to the code surface to check. Required.
+
+## Procedure
+
+1. Run `!`detect-stack`` for context.
+2. Read the code at $ARGUMENTS.
+3. Find relevant docs. Prefer targeted over exhaustive:
+   - `README.md` at the project root if $ARGUMENTS is in `src/` or equivalent
+   - `docs/` folder, but only files whose name or first heading mentions the target area
+   - JSDoc, docstrings, and inline comments in the target files
+   - `CHANGELOG.md` only if the task involves a version boundary
+4. Skip: `node_modules/**`, `.next/**`, `coverage/**`, `out/**`, `.turbo/**`, `.cache/**`, `vendor/**`, `target/**`, `dist/**`, `build/**`, `storybook-static/**`, `.pnpm-store/**`, `LICENSE.md`.
+5. Compare.
+
+## What counts as drift
+
+- Inline comments or JSDoc that describe code no longer present or that has changed behavior
+- Parameter descriptions that no longer match the signature
+- Return type docs that conflict with actual TypeScript or Python types
+- External markdown with usage examples that would fail if run
+- Configuration instructions that reference renamed or removed options
+- Documented features that have been removed or renamed
+- Feature documented but no longer exists
+
+## What does not count as drift
+
+- Missing documentation for new features (that is a docs gap, not drift)
+- Stylistic differences (tone, format)
+- Out of date links to external sites, unless the target area depends on them
+
+## Output per finding
+
+- Location: file and line of the documentation
+- What the documentation says (short quote or paraphrase)
+- What the code actually does (short description)
+- Severity: failure (actively misleads), warning (partially outdated), info (cosmetic gap)
+- Suggested correction (not applied; just noted)
+
+## Output file
+
+Use markdown-report format. Write to `.claude/scratch/doc-drift-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+
+## Scope rules
+
+- Do not edit documentation during the audit.
+- Do not flag "missing documentation" as drift. Only flag documented claims that no longer hold.
+- If nothing drifted, the report says "No drift detected" and lists what was checked so the user knows the scope covered.
