@@ -1,7 +1,7 @@
 ---
 description: Execute an approved plan step by step, staying within scope
 argument-hint: <optional: step number or range>
-allowed-tools: Read, Edit, MultiEdit, Write, Grep, Glob, Bash(detect-stack)
+allowed-tools: Read, Edit, MultiEdit, Write, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
 ---
 
 **Effort: heavy.** Actual code changes. Stay strictly within the approved plan.

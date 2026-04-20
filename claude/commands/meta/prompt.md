@@ -1,7 +1,7 @@
 ---
 description: Turn a fuzzy ask into a sharp Claude Code prompt with context and acceptance criteria
 argument-hint: <the fuzzy ask, or a file containing it>
-allowed-tools: Read, Grep, Glob, Bash(detect-stack)
+allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
 model: haiku
 ---
 
@@ -17,7 +17,7 @@ model: haiku
 ## Procedure
 
 1. Read $ARGUMENTS. If it points to a file, read it.
-2. Run `!`detect-stack`` if the ask appears technical.
+2. Run `!`$HOME/.claude/bin/detect-stack.sh`` if the ask appears technical.
 3. Identify what is missing:
    - Goal unclear or conflated with method
    - Scope undefined (no files, no surface area)

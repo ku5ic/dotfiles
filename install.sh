@@ -59,6 +59,17 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/config/starship.toml" ~/.config/
 }
 
+fix_permissions() {
+  find "$DOTFILES_DIR/scripts" \
+       "$DOTFILES_DIR/completions/" \
+       "$DOTFILES_DIR/claude/bin" \
+       "$DOTFILES_DIR/claude/hooks" \
+       "$DOTFILES_DIR/macos" \
+       "$HOME/.claude/bin" \
+       "$HOME/.claude/hooks" \
+    -type f -name '*.sh' -exec chmod +x {} +
+}
+
 setup_asdf() {
   local tool_versions="$DOTFILES_DIR/.tool-versions"
 
@@ -95,6 +106,7 @@ main() {
   install_shells
   install_packages
   create_symlinks
+  fix_permissions
   setup_asdf
 }
 

@@ -1,14 +1,14 @@
 ---
 description: Surface technical debt and architectural risks with severity and remediation path
 argument-hint: <file, directory, or area name>
-allowed-tools: Read, Grep, Glob, Bash(detect-stack), Bash(git log:*)
+allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git log:*)
 ---
 
 **Effort: heavy.** Structural analysis. Be direct and skeptical. Do not list minor style preferences.
 
 ## Procedure
 
-1. Run `!`detect-stack``.
+1. Run `!`$HOME/.claude/bin/detect-stack.sh``.
 2. Load the patterns skill for the detected stack (react-patterns, django-patterns, etc.) for the anti-pattern reference.
 3. Read the target. If $ARGUMENTS is a directory, sample: read the 5 largest files by line count plus any `index.ts`, `main.py`, `urls.py`, `routes.ts` equivalents.
 4. Run `git log --oneline -20` on the target to see recent churn. High-churn files are candidates for higher-priority debt.

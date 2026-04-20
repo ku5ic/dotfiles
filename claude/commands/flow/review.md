@@ -1,14 +1,14 @@
 ---
 description: Senior review of recently changed code, stack aware
 argument-hint: <optional: commit range, branch, or path>
-allowed-tools: Read, Grep, Glob, Bash(detect-stack), Bash(git diff:*), Bash(git log:*), Bash(git status:*)
+allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git diff:*), Bash(git log:*), Bash(git status:*)
 ---
 
 **Effort: heavy.** Deep review. Read the changed files and their immediate context.
 
 ## Procedure
 
-1. Run `!`detect-stack``.
+1. Run `!`$HOME/.claude/bin/detect-stack.sh``.
 2. Determine the review scope:
    - If $ARGUMENTS looks like a commit range (`main..HEAD`, SHA range): review that range
    - If $ARGUMENTS is a path: review that path's current state

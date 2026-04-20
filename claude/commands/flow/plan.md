@@ -1,7 +1,7 @@
 ---
 description: Turn a confirmed task into an ordered implementation plan with explicit tradeoffs
 argument-hint: <task description or link to preflight report>
-allowed-tools: Read, Grep, Glob, Bash(detect-stack)
+allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
 ---
 
 **Effort: heavy.** Thinking-heavy. Read project CLAUDE.md, relevant skills, and the preflight report if one exists.

@@ -14,7 +14,7 @@ Use this structure for every report Claude writes to disk. Keep it tight. No pad
 
 Generated: <ISO timestamp>
 Scope: <file, component, or module>
-Stack: <line from detect-stack, if applicable>
+Stack: <line from $HOME/.claude/bin/detect-stack.sh, if applicable>
 
 ## Summary
 
@@ -57,6 +57,7 @@ Stack: <line from detect-stack, if applicable>
 ## Summary line rubric
 
 The "overall health in one word" at the end of the Summary helps quick scanning:
+
 - `clean` (no findings)
 - `minor` (only info)
 - `moderate` (warnings, no failures)

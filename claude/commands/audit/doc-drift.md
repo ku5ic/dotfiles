@@ -1,7 +1,7 @@
 ---
 description: Detect drift between code and markdown or inline documentation
 argument-hint: <code path to check>
-allowed-tools: Read, Grep, Glob, Bash(find:*), Bash(detect-stack)
+allowed-tools: Read, Grep, Glob, Bash(find:*), Bash($HOME/.claude/bin/detect-stack.sh)
 ---
 
 **Effort: medium.** Comparison task. Does not rewrite docs.
@@ -12,7 +12,7 @@ $ARGUMENTS should point to the code surface to check. Required.
 
 ## Procedure
 
-1. Run `!`detect-stack`` for context.
+1. Run `!`$HOME/.claude/bin/detect-stack.sh`` for context.
 2. Read the code at $ARGUMENTS.
 3. Find relevant docs. Prefer targeted over exhaustive:
    - `README.md` at the project root if $ARGUMENTS is in `src/` or equivalent
