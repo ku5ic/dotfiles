@@ -50,7 +50,7 @@ Did the change come with tests? Are the tests meaningful or shape-checking?
 
 ## Output
 
-Use the markdown-report skill format. Write to `.claude/scratch/review-<scope-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the markdown-report skill format. Write to `~/.claude/scratch/review-<scope-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Severity rubric from markdown-report. Skip sections with no findings. Summary line rates overall health.
 

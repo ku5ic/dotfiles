@@ -39,4 +39,4 @@ Terminal only:
 - Run result
 - Coverage delta, if measured
 
-No scratch report for routine test passes. If something structurally wrong is found while testing (e.g. a function is untestable without refactor), write a short note to `.claude/scratch/test-findings-<YYYYMMDD-HHMM>.md`.
+No scratch report for routine test passes. If something structurally wrong is found while testing (e.g. a function is untestable without refactor), write a short note to `~/.claude/scratch/test-findings-<YYYYMMDD-HHMM>.md`.

@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
 
 ## Prerequisites
 
-- A preflight report exists in `.claude/scratch/`. If not, run `/flow:preflight` first.
+- A preflight report exists in `~/.claude/scratch/`. If not, run `/flow:preflight` first.
 - The task is stated clearly. If $ARGUMENTS is vague, ask one focused clarifying question before planning.
 
 ## Procedure

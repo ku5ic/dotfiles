@@ -8,7 +8,7 @@ allowed-tools: Read, Edit, MultiEdit, Write, Grep, Glob, Bash($HOME/.claude/bin/
 
 ## Prerequisites
 
-- An approved plan exists in `.claude/scratch/plan-*.md`. If not, run `/flow:plan` first.
+- An approved plan exists in `~/.claude/scratch/plan-*.md`. If not, run `/flow:plan` first.
 - If $ARGUMENTS specifies a step or range, implement only those. Otherwise implement the next unchecked step.
 
 ## Procedure

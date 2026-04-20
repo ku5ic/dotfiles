@@ -29,7 +29,7 @@ Write a short preflight report with:
 - Risks, unknowns, or stop conditions
 - Recommended smallest next step
 
-Write to `.claude/scratch/preflight-<YYYYMMDD-HHMM>.md`. Print the path.
+Write to `~/.claude/scratch/preflight-<YYYYMMDD-HHMM>.md`. Print the path.
 
 ## Stop
 
