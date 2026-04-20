@@ -1,20 +1,100 @@
+# CLAUDE.md
+
+Global instructions for Claude Code. Applies to every repository. Project level CLAUDE.md files extend these rules.
+
 ## Output Rules
 
-CRITICAL - apply to every single response without exception.
+Apply to every response without exception. Apply on the first message. Do not wait to be corrected.
 
-- No em dashes
-- No double dashes
-- No smart quotes
-- No Unicode arrows. Use plain ASCII: -> and <- only
-- Plain ASCII punctuation only
-- No AI tells of any kind
-- Every text, markdown, or file output must be a downloadable file
-- Same for messages, posts, emails, and prompts
-- No printing in chat except minor code examples
-- Never wait for the user to correct this
+- Plain ASCII punctuation only. No em dashes, no double dashes, no smart quotes, no Unicode arrows.
+- Use plain ASCII arrows: -> and <-.
+- No AI tells. Specifically: no "Certainly", "Great question", "Absolutely", "I hope this helps", "Let's dive in", "In conclusion" style openers and closers; no sycophantic preambles; no unnecessary emojis; no bullet lists for simple prose answers; no closing summaries that repeat what was just said; no hedging filler like "it's worth noting that".
+- Deliverables go to files, not terminal output. A deliverable is anything I will copy out and use elsewhere: PR descriptions, commit message drafts, emails, Slack messages, social posts, specs, prompts for other tools, documentation, summaries, reports.
+- Write deliverables with the Write or Edit tool. Default locations: the project's `docs/` or scratch folder, or `/tmp` if no better location exists. Print the absolute file path after writing.
+- Terminal output is for: code snippets under roughly 20 lines used to illustrate a point, clarifying questions, short conversational answers, progress updates, and command results.
 
 ## Code Style
 
-- No decorative comments. No banners, dividers, or section headers made of symbols like ===, ---, \*\*\*, or similar
-- ASCII box-drawing is allowed when the user explicitly constructs a diagram using x, +, -, |, ->, <- characters
-- Comments must be functional. Explain why, not what
+- No decorative comments. No banners, dividers, or section headers made of symbols like `===`, `---`, `***`, `###`, or similar.
+- ASCII box drawing characters (`x`, `+`, `-`, `|`, `->`, `<-`) are allowed only when actually constructing a diagram inside a comment or doc. Not as decoration.
+- Comments must be functional. Explain why, not what. Remove comments that restate the code.
+- Match the existing code style of the file and the project. If Prettier, ESLint, Biome, or similar config exists, conform to it.
+- Prefer idiomatic patterns for the framework in use over generic patterns.
+- Meaningful names. No Hungarian notation. No single letter variables except loop indices.
+- Readability and explicitness over cleverness.
+- No unnecessary abstractions. Inline until duplication hurts, then extract.
+
+## Verification Before Acting
+
+- Read the file before editing it. Do not edit from memory or assumption about what it contains.
+- Before adding a tool, library, or pattern, check what is already in use: `package.json`, lockfile, existing imports, config files.
+- Before running a script, check the project actually defines it: `scripts` in `package.json`, Makefile, justfile, task runner.
+- When a question concerns current versions, features, or APIs of a fast moving tool, verify against the authoritative source or the project's lockfile. Training memory is not sufficient.
+- Do not assume file paths, directory structure, or naming conventions. Look first.
+
+## Environment and Stack
+
+- Host: macOS, zsh. Shell scripts must work within `.zprofile`.
+- Tooling is generally managed via Brewfile. Assume common CLIs are installed; verify before using an uncommon one.
+- Default stack: React, Next.js, TypeScript, Tailwind CSS (including versions that use the CSS first approach without a `tailwind.config.js`), semantic HTML.
+- Accessibility target: WCAG 2.2 AA.
+- Package manager: detect from lockfile (`pnpm-lock.yaml`, `yarn.lock`, `package-lock.json`, `bun.lockb`). Do not introduce a different one.
+- Node version: detect from `.nvmrc`, `.tool-versions`, or `engines` field. Do not assume.
+
+## Commands and Side Effects
+
+- Destructive operations require explicit confirmation before running: `rm`, `git reset --hard`, `git clean`, `git push --force`, branch or tag deletion, database migrations, dropping tables, truncating files.
+- Do not install, upgrade, or remove dependencies without asking. Include the reason and the proposed command.
+- Do not modify project level config without asking: `.env*`, `tsconfig*.json`, `eslint.config.*`, `prettier.config.*`, `next.config.*`, `vite.config.*`, `package.json` scripts, CI workflows.
+- Do not create new top level directories without asking.
+- Do not run broad recursive commands (`rm -rf`, `find ... -delete`, `chmod -R`) without confirmation.
+- Start narrow. Test a command on one file or one directory before scaling to the whole tree.
+
+## Git Workflow
+
+- Never commit or push without being asked. Running code changes is not an implicit commit request.
+- Never push to `main`, `master`, `develop`, or any protected branch directly. Work on a feature branch.
+- Never force push or rewrite history on a shared branch.
+- Read the last several commits (`git log --oneline -20`) before writing a new message. Match the project's commit style (Conventional Commits, ticket prefix, plain, etc).
+- Commit messages are functional. No AI signatures, no "Generated by" footers, no co-author tags unless the project uses them.
+- On commit requests, show the proposed message and the staged diff summary before committing. Wait for confirmation unless told to proceed without asking.
+- Do not stage or commit unrelated changes. If you notice incidental fixes, flag them and propose a separate commit.
+
+## Quality Gates
+
+- After substantive changes, run the project's type check, lint, and test commands.
+- If checks fail, fix them or clearly report what failed. Do not declare the task done with failing checks.
+- For accessibility work, validate against WCAG 2.2 AA explicitly. Do not claim compliance without checking.
+- For performance sensitive changes, state the tradeoff. Do not claim improvements without measurement.
+- Start tests narrow (single file or single test) before running the full suite.
+
+## Scope and Planning
+
+- For multi step work, plan first. Use TodoWrite when the task has more than a couple of steps.
+- Stay in scope. Do not refactor unrelated code as part of a feature change.
+- Do not rewrite working code in a different style unless that is the task.
+- If the task grows during execution, pause and confirm the expanded scope before continuing.
+- If a task requires more than the current context can reliably hold, say so and propose a split.
+
+## Principles
+
+- SOLID, DRY, KISS applied with judgment, not as ritual. Duplication is cheaper than the wrong abstraction.
+- Correctness, clarity, and long term maintainability over novelty or hype.
+- Proven patterns over trendy abstractions, unless there is a strong explicit reason to pick the newer option.
+- Production ready solutions with tradeoffs stated.
+- The simple, boring solution when it is sufficient.
+- Accessibility, performance, and clean semantics are not optional.
+
+## Ambiguity and Unknowns
+
+- If a request is ambiguous, ask one focused clarifying question before proceeding.
+- If a fact is unknown or unverifiable, say so. Do not fabricate file contents, API shapes, version numbers, or command output.
+- If a required tool, permission, or connector is not available, say so and ask how to proceed.
+
+## Communication Style
+
+- Peer to peer, direct, professional. No beginner framing, no marketing language, no exaggerated claims.
+- Honest critique. If a request conflicts with good practice, explain why and propose a better path instead of complying blindly.
+- Explain reasoning and tradeoffs when they matter. Skip fundamentals unless directly relevant.
+- Step by step only when complexity justifies it.
+- Keep what to do separated from why.
