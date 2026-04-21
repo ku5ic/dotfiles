@@ -22,7 +22,7 @@ allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
 
 ## Output
 
-Write a plan to `.claude/scratch/plan-<task-slug>-<YYYYMMDD-HHMM>.md`:
+Write a plan to `~/.claude/scratch/plan-<task-slug>-<YYYYMMDD-HHMM>.md`:
 
 - Goal (one sentence)
 - Non-goals (what this change explicitly does not do)

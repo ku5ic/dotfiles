@@ -20,7 +20,7 @@ allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(g
 
 ## Output
 
-Use markdown-report format. Write to `.claude/scratch/security-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use markdown-report format. Write to `~/.claude/scratch/security-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Severity rubric for security audits:
 

@@ -48,7 +48,7 @@ $ARGUMENTS should point to the code surface to check. Required.
 
 ## Output file
 
-Use markdown-report format. Write to `.claude/scratch/doc-drift-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use markdown-report format. Write to `~/.claude/scratch/doc-drift-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 ## Scope rules
 

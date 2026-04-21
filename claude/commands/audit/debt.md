@@ -37,6 +37,6 @@ allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(g
 
 ## Output file
 
-Use markdown-report format. Write to `.claude/scratch/debt-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use markdown-report format. Write to `~/.claude/scratch/debt-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Sort findings by severity, then by effort (smallest first within each severity) so the quick wins are visible at the top.

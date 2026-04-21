@@ -48,7 +48,7 @@ allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
 
 ## Output file
 
-Use markdown-report format. Write to `.claude/scratch/perf-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use markdown-report format. Write to `~/.claude/scratch/perf-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 ## Rules
 
