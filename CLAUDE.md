@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Personal macOS dotfiles managed as a git repo at `~/.dotfiles`. Files are symlinked into `$HOME` and `~/.config` via `install.sh`.
+Personal macOS dotfiles managed as a git repo at `~/.dotfiles`. Files are symlinked into `$HOME`, `~/.config`, and `~/.claude/` via `install.sh`.
 
 ## Installation
 
@@ -12,12 +12,11 @@ Personal macOS dotfiles managed as a git repo at `~/.dotfiles`. Files are symlin
 source ~/.dotfiles/install.sh
 ```
 
-This script: pulls the latest repo, installs Homebrew, installs zsh/bash shells, runs `brew bundle` from `Brewfile`, creates all symlinks, and sets up asdf for Node/Ruby/Python.
+This script: pulls the latest repo, installs Homebrew, installs zsh/bash shells, sets zsh as the login shell, runs `brew bundle` from `Brewfile`, creates all symlinks, makes scripts and hooks executable, and sets up asdf for Node/Ruby/Python.
 
-To update symlinks only (no full install):
+To re-symlink a single config without running the full installer, re-run the `ln -sfv` manually:
 
 ```sh
-# Run just the create_symlinks() function, or manually re-run:
 ln -sfv ~/.dotfiles/config/nvim ~/.config/
 ```
 
@@ -28,7 +27,7 @@ ln -sfv ~/.dotfiles/config/nvim ~/.config/
 | `.zshrc` / `.zprofile` / `.aliases.zsh` | Shell config - zprofile sets PATH and env vars, zshrc configures zsh options/plugins, aliases.zsh defines all aliases |
 | `.tmux.conf` / `.tmuxinator/`           | tmux config and tmuxinator session layouts                                                                            |
 | `Brewfile`                              | All Homebrew formulae, casks, and Mac App Store apps in one file                                                      |
-| `scripts/`                              | Shell scripts on `$PATH` - callable by name without `.sh` extension                                                   |
+| `scripts/`                              | Shell scripts on `$PATH`; callable by bare name via aliases generated in `.aliases.zsh`                               |
 | `completions/`                          | zsh completion functions (e.g. `_branch_name.sh` for `branch_name`)                                                   |
 | `config/nvim/`                          | Neovim config (lazy.nvim plugin manager, symlinked to `~/.config/nvim`)                                               |
 | `config/starship.toml`                  | Starship prompt config                                                                                                |
@@ -72,7 +71,7 @@ Entry point: `config/nvim/init.lua` - bootstraps lazy.nvim, sets leader to `<Spa
 
 ## Scripts
 
-`scripts/` is prepended to `$PATH` in `.zprofile`, so any `.sh` file added there is immediately callable by name (without the `.sh` extension) in every new shell session.
+`scripts/` is prepended to `$PATH` in `.zprofile`. The alias loop at the bottom of `.aliases.zsh` then maps each `*.sh` file to its bare name, so e.g. `branch_name.sh` is callable as `branch_name` in every new shell session.
 
 Branch naming via `branch_name.sh`: `<type>/<ISSUE-ID>/<slug>` or `<type>/<slug>` (no issue id). Types: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `build`, `ci`, `chore`, `style`, `release`. Use `--checkout` flag to create and switch in one step. Tab-completion is registered via `completions/_branch_name.sh`.
 

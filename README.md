@@ -1,8 +1,6 @@
 # ku5ic's Dotfiles
 
-Personal macOS dotfiles for a development environment centered around
-Neovim, tmux, and zsh. Managed as a git repo at `~/.dotfiles` with
-symlinks into `$HOME` and `~/.config`.
+Personal macOS dotfiles for a development environment centered around Neovim, tmux, and zsh. Managed as a git repo at `~/.dotfiles` with symlinks into `$HOME`, `~/.config`, and `~/.claude/`.
 
 ## What's included
 
@@ -30,13 +28,11 @@ git clone git@github.com:ku5ic/dotfiles.git ~/.dotfiles
 source ~/.dotfiles/install.sh
 ```
 
-This will install Homebrew, set zsh as the default shell, install all
-packages from the Brewfile, create symlinks, and set up Node, Ruby,
-and Python via asdf.
+This pulls the repo, installs Homebrew, installs zsh and bash, sets zsh as the login shell, runs `brew bundle` from the `Brewfile`, creates all symlinks, makes scripts and hooks executable, and sets up Node, Ruby, and Python via asdf.
 
 ## Updating
 
-To pull latest changes and re-apply symlinks:
+To re-run the full installer (pulls the repo and refreshes Homebrew packages, symlinks, permissions, and asdf runtimes):
 
 ```bash
 source ~/.dotfiles/install.sh
@@ -57,5 +53,4 @@ brew bundle cleanup --file="$DOTFILES_DIR/Brewfile" --force
 
 ## Structure
 
-See [CLAUDE.md](CLAUDE.md) for a detailed breakdown of the repository
-structure and Neovim architecture.
+See [CLAUDE.md](CLAUDE.md) for a detailed breakdown of the repository structure and Neovim architecture.
