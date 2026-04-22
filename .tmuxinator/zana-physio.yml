@@ -1,5 +1,5 @@
-name: zanakadric
-root: ~/Projects/ZanaKadric/Code/zanakadric/
+name: ZanaPhysio
+root: ~/Projects/ZanaKadric/Code/ZanaPhysio/
 pre_window: source ./backend/.venv/bin/activate
 enable_pane_titles: true
 
@@ -9,7 +9,15 @@ windows:
       panes:
         - nvim:
             - nvim
-        - terminal:
+        - root:
+            - clear
+        - frontend:
+            - clear
+            - cd ./frontend
+            - clear
+        - backend:
+            - clear
+            - cd ./backend
             - clear
   - claude:
       panes:
