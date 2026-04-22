@@ -39,8 +39,8 @@ windows:
         - backend:
             - cd backend
             - clear
-            - make test
+            - make test-unit-watch
         - frontend:
             - cd frontend
             - clear
-            - npm run test
+            - npm run test:watch
