@@ -128,6 +128,8 @@
       "Bash(yarn list *)",
       "Bash(yarn outdated *)",
       "Bash(yarn why *)",
+      "Bash(mkdir -p $HOME/.claude/scratch)",
+      "Bash($HOME/.claude/bin/detect-stack.sh 2>/dev/null *)",
       "Edit(**)",
       "MultiEdit(**)",
       "Read(**)",
