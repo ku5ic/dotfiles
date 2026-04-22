@@ -136,6 +136,8 @@ All commands live under `~/.dotfiles/claude/commands/` and are organized into fo
 
 ### Hard rules
 
+- pause after each `/flow:*` step and wait for user approval before continuing.
+- after completing each logical segment, stop and wait for the user to review and commit the changes.
 - The older `cmd-*` naming (`cmd-preflight`, `cmd-implement-backend`, `cmd-audit-wcag`, `cmd-review-pr`, etc.) is stale. Any reference found in docs, workflow guides, `CLAUDE.md` files, or prompts must be corrected on touch to the new namespaced form.
 - Unprefixed references (`/preflight`, `/plan`, `/implement`) are ambiguous and should be normalized to the full `/<group>:<name>` form.
 - The canonical source of truth for available commands is the output of `/skills` inside Claude Code, not any UI label.
