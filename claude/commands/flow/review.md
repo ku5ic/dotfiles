@@ -1,20 +1,22 @@
 ---
 description: Senior review of recently changed code, stack aware
 argument-hint: <optional: commit range, branch, or path>
-allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git diff:*), Bash(git log:*), Bash(git status:*)
+allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash($HOME/.claude/bin/project-name.sh), Bash($HOME/.claude/bin/run-checks.sh)
 ---
 
 **Effort: heavy.** Deep review. Read the changed files and their immediate context.
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh``.
-2. Determine the review scope:
+1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Stack is in the injected `<repo-context>` block.
+2. If the diff exceeds 500 changed lines, propose splitting the review into logical chunks before starting.
+3. Determine the review scope:
    - If $ARGUMENTS looks like a commit range (`main..HEAD`, SHA range): review that range
    - If $ARGUMENTS is a path: review that path's current state
    - Otherwise: review `git diff HEAD` (working copy)
-3. Load patterns skills matching the detected stack (react-patterns, django-patterns, etc.).
-4. Review in this order, skipping categories with no findings. Do not pad.
+4. Run `$HOME/.claude/bin/run-checks.sh` to establish baseline check state. Note any pre-existing failures before reviewing.
+5. Load patterns skills matching the detected stack (react-patterns, django-patterns, etc.).
+6. Review in this order, skipping categories with no findings. Do not pad.
 
 ### 1. Correctness
 
@@ -50,7 +52,7 @@ Did the change come with tests? Are the tests meaningful or shape-checking?
 
 ## Output
 
-Use the markdown-report skill format. Write to `~/.claude/scratch/review-<scope-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the markdown-report skill format. Write to `~/.claude/scratch/review-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Severity rubric from markdown-report. Skip sections with no findings. Summary line rates overall health.
 

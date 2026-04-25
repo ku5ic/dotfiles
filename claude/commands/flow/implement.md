@@ -1,19 +1,19 @@
 ---
 description: Execute an approved plan step by step, staying within scope
 argument-hint: <optional: step number or range>
-allowed-tools: Read, Edit, MultiEdit, Write, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
+allowed-tools: Read, Edit, MultiEdit, Write, Grep, Glob, Bash($HOME/.claude/bin/project-name.sh), Bash(ls:*)
 ---
 
 **Effort: heavy.** Actual code changes. Stay strictly within the approved plan.
 
 ## Prerequisites
 
-- An approved plan exists in `~/.claude/scratch/plan-*.md`. If not, run `/flow:plan` first.
+- An approved plan exists for this project: `ls -t ~/.claude/scratch/plan-<project-name>-*.md | head -1`. If none, run /flow:plan first.
 - If $ARGUMENTS specifies a step or range, implement only those. Otherwise implement the next unchecked step.
 
 ## Procedure
 
-1. Read the most recent plan. Identify the step to implement.
+1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Read the most recent plan for this project: `ls -t ~/.claude/scratch/plan-<project-name>-\*.md | head -1`. Identify the step to implement.
 2. Confirm the files involved still match the plan. If drift: stop and report.
 3. Load the patterns skill for the stack if the change is stack-specific.
 4. Make the changes. One step at a time. After each file:
@@ -41,4 +41,4 @@ No report file. Terminal output only:
 
 ## Stop
 
-After each step, stop. Wait for the user to say continue, or to invoke `/flow:test` or `/flow:review`. Do not chain steps without explicit approval.
+After each step, stop. Do not proceed to the next step even if it is small. Wait for the user to explicitly say `continue`, or to invoke `/flow:test` or `/flow:review`.

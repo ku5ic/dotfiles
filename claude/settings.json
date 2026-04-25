@@ -1,6 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "model": "claude-sonnet-4-6",
   "permissions": {
     "defaultMode": "default",
     "additionalDirectories": ["~/.claude", "~/.dotfiles"],
@@ -23,7 +22,6 @@
       "Bash(docker *)",
       "Bash(du *)",
       "Bash(echo *)",
-      "Bash(env)",
       "Bash(eslint *)",
       "Bash(fd *)",
       "Bash(file *)",
@@ -65,6 +63,27 @@
       "Bash(git switch *)",
       "Bash(git tag *)",
       "Bash(git worktree *)",
+      "Bash(git -C * add *)",
+      "Bash(git -C * blame *)",
+      "Bash(git -C * branch *)",
+      "Bash(git -C * bisect *)",
+      "Bash(git -C * checkout *)",
+      "Bash(git -C * cherry-pick *)",
+      "Bash(git -C * commit *)",
+      "Bash(git -C * config --get *)",
+      "Bash(git -C * diff *)",
+      "Bash(git -C * fetch *)",
+      "Bash(git -C * log *)",
+      "Bash(git -C * merge *)",
+      "Bash(git -C * pull *)",
+      "Bash(git -C * remote -v)",
+      "Bash(git -C * restore *)",
+      "Bash(git -C * show *)",
+      "Bash(git -C * stash *)",
+      "Bash(git -C * status *)",
+      "Bash(git -C * switch *)",
+      "Bash(git -C * tag *)",
+      "Bash(git -C * worktree *)",
       "Bash(grep *)",
       "Bash(head *)",
       "Bash(hyperfine *)",
@@ -87,7 +106,6 @@
       "Bash(npm outdated *)",
       "Bash(npm view *)",
       "Bash(npx *)",
-      "Bash(open *)",
       "Bash(pandoc *)",
       "Bash(pbcopy)",
       "Bash(pbpaste)",
@@ -129,7 +147,13 @@
       "Bash(yarn outdated *)",
       "Bash(yarn why *)",
       "Bash(mkdir -p $HOME/.claude/scratch)",
-      "Bash($HOME/.claude/bin/detect-stack.sh 2>/dev/null *)",
+      "Bash($HOME/.claude/bin/detect-stack.sh)",
+      "Bash($HOME/.claude/bin/detect-stack.sh *)",
+      "Bash($HOME/.claude/bin/git-base.sh)",
+      "Bash($HOME/.claude/bin/git-base.sh *)",
+      "Bash($HOME/.claude/bin/project-name.sh)",
+      "Bash($HOME/.claude/bin/project-root.sh)",
+      "Bash($HOME/.claude/bin/run-checks.sh)",
       "Edit(**)",
       "MultiEdit(**)",
       "Read(**)",
@@ -168,6 +192,9 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:npmjs.com)",
+      "WebFetch(domain:playwright.dev)",
+      "WebFetch(domain:vitejs.dev)",
+      "WebFetch(domain:vitest.dev)",
       "WebFetch(domain:w3.org)",
       "WebFetch(domain:docs.python.org)",
       "WebFetch(domain:pypi.org)",
@@ -211,6 +238,15 @@
       "Bash(git reflog expire *)",
       "Bash(git reset *)",
       "Bash(git tag -d *)",
+      "Bash(git -C * branch -D *)",
+      "Bash(git -C * branch -d *)",
+      "Bash(git -C * clean *)",
+      "Bash(git -C * commit --amend*)",
+      "Bash(git -C * push *)",
+      "Bash(git -C * rebase *)",
+      "Bash(git -C * reflog expire *)",
+      "Bash(git -C * reset *)",
+      "Bash(git -C * tag -d *)",
       "Bash(mogrify *)",
       "Bash(npm audit fix *)",
       "Bash(npm install *)",
@@ -221,6 +257,7 @@
       "Bash(npm uninstall *)",
       "Bash(npm update *)",
       "Bash(npm ci *)",
+      "Bash(open *)",
       "Bash(pnpm add *)",
       "Bash(pnpm install *)",
       "Bash(pnpm remove *)",
@@ -270,6 +307,7 @@
       "Bash(chmod 777 *)",
       "Bash(chmod -R 777 *)",
       "Bash(dd *)",
+      "Bash(env)",
       "Bash(mkfs *)",
       "Bash(shutdown *)",
       "Bash(reboot *)",
@@ -307,6 +345,44 @@
             "type": "command",
             "command": "$HOME/.claude/hooks/guard-bash.sh",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-commit.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-edit.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/sanitize-output.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/inject-context.sh",
+            "timeout": 5
           }
         ]
       }
@@ -320,6 +396,7 @@
     "figma@claude-plugins-official": true,
     "github@claude-plugins-official": true
   },
+  "spinnerTipsEnabled": false,
   "includeCoAuthoredBy": false,
   "cleanupPeriodDays": 30
 }

@@ -1,28 +1,11 @@
 #!/usr/bin/env bash
-# ~/.claude/bin/detect-stack.sh
 # Emits a compact stack report for the current project or a nearby ancestor.
 # Output is terse on purpose. Each line is meant to be scanned by Claude in
 # under a few hundred tokens of context.
 
 set -euo pipefail
 
-# Walk up at most 3 levels to find a project anchor. Some projects nest a
-# backend inside a subfolder (e.g. zanakadric/backend), which is handled
-# separately below.
-find_root() {
-  local dir="$PWD" depth=0
-  while [[ "$dir" != "/" && $depth -lt 3 ]]; do
-    for f in package.json pyproject.toml Gemfile Cargo.toml go.mod; do
-      [[ -f "$dir/$f" ]] && { echo "$dir"; return; }
-    done
-    [[ -d "$dir/.git" ]] && { echo "$dir"; return; }
-    dir="$(dirname "$dir")"
-    depth=$((depth + 1))
-  done
-  echo "$PWD"
-}
-
-ROOT="$(find_root)"
+ROOT="$("$HOME/.claude/bin/project-root.sh")"
 cd "$ROOT"
 
 echo "root: $ROOT"

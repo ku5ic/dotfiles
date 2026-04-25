@@ -1,24 +1,26 @@
 ---
 description: Structured retrospective for an incident, sprint, or completed feature
 argument-hint: <context: incident summary, sprint label, or feature name>
-allowed-tools: Read, Grep, Glob, Bash(git log:*)
+allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash($HOME/.claude/bin/project-name.sh)
+model: haiku
 ---
 
 **Effort: medium.** Structure-driven, not analysis-heavy. Good for capturing learning quickly.
 
 ## Procedure
 
-1. Identify the retro type from $ARGUMENTS:
+1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
+2. Identify the retro type from $ARGUMENTS:
    - Incident: something broke, users affected, response happened
    - Sprint or iteration: time-boxed period of work
    - Feature or project: a shipped deliverable
-2. Read $ARGUMENTS. If it references a file (timeline, postmortem draft, sprint notes): read it.
-3. Pull git context if useful: `git log --since=<date>` for sprint retros.
-4. Use the matching template below.
+3. Read $ARGUMENTS. If it references a file (timeline, postmortem draft, sprint notes): read it.
+4. Pull git context if useful: `git log --since=<date>` for sprint retros.
+5. Use the matching template below.
 
 ## Output file
 
-Write to `.claude/scratch/retro-<type>-<slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write to `~/.claude/scratch/retro-<project-name>-<type>-<slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 ## Incident template
 

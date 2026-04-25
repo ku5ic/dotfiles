@@ -1,14 +1,14 @@
 ---
 description: Add or update tests for recent implementation work, then run them
 argument-hint: <optional: file or area to focus on>
-allowed-tools: Read, Edit, Write, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git diff:*), Bash(git status:*), Bash(npm test*), Bash(pnpm test*), Bash(yarn test*), Bash(vitest *), Bash(jest *), Bash(pytest *)
+allowed-tools: Read, Edit, Write, Grep, Glob, Bash(git diff:*), Bash(git status:*), Bash(npm:test*), Bash(pnpm:test*), Bash(yarn:test*), Bash(vitest:*), Bash(jest:*), Bash(pytest:*), Bash(bundle:exec rspec*), Bash(bundle:exec rails test*), Bash(cargo:test*), Bash(go:test*), Bash($HOME/.claude/bin/project-name.sh), Bash($HOME/.claude/bin/run-checks.sh)
 ---
 
 **Effort: medium.** Matches existing test style. Does not design new testing infrastructure.
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh`` to identify test runner and language.
+1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Identify the test runner from the injected `<repo-context>` block.
 2. Load the test-patterns skill.
 3. Identify what changed via `git diff HEAD` and `git status`. Scope testing to the delta.
 4. For each changed function, component, or endpoint:
@@ -28,7 +28,8 @@ allowed-tools: Read, Edit, Write, Grep, Glob, Bash($HOME/.claude/bin/detect-stac
 
 - Do not write tests for things the test-patterns skill says are not worth testing (trivial getters, framework defaults, pass-throughs).
 - Do not introduce a new test framework. Use what the project already uses.
-- No snapshot tests unless the project already has them and the snapshot is small and stable.
+- If the project uses snapshot tests, prefer that pattern only when snapshots are small and stable. Do not introduce snapshots if the project does not use them.
+- After narrow tests pass, run `$HOME/.claude/bin/run-checks.sh` for full verification across typecheck, lint, and tests.
 
 ## Output
 
@@ -39,4 +40,4 @@ Terminal only:
 - Run result
 - Coverage delta, if measured
 
-No scratch report for routine test passes. If something structurally wrong is found while testing (e.g. a function is untestable without refactor), write a short note to `~/.claude/scratch/test-findings-<YYYYMMDD-HHMM>.md`.
+No scratch report for routine test passes. If something structurally wrong is found while testing (e.g. a function is untestable without refactor), write a short note to `~/.claude/scratch/test-findings-<project-name>-<YYYYMMDD-HHMM>.md`.

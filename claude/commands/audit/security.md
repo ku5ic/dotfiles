@@ -1,14 +1,14 @@
 ---
 description: Security audit covering frontend and backend surface areas
 argument-hint: <file, directory, or area name>
-allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git log:*), Bash(git grep:*)
+allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git log:*), Bash(git grep:*), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: heavy.** Defensive review. Assume any input from outside the process boundary is hostile.
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh``.
+1. Run `!`$HOME/.claude/bin/detect-stack.sh``. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
 2. Load the security-patterns skill. Apply only the sections matching the detected stack.
 3. Scope the target:
    - If $ARGUMENTS is a path: audit that path plus any adjacent auth, validation, or boundary code it depends on.
@@ -20,7 +20,7 @@ allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(g
 
 ## Output
 
-Use markdown-report format. Write to `~/.claude/scratch/security-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use markdown-report format. Write to `~/.claude/scratch/security-<project-name>-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Severity rubric for security audits:
 

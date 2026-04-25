@@ -1,7 +1,7 @@
 ---
 description: Generate release notes from commits unique to the current branch vs its base
 argument-hint: <optional: explicit range like main..HEAD, or base branch name>
-allowed-tools: Bash(git log:*), Bash(git branch:*), Bash(git-base.sh:*)
+allowed-tools: Bash(git log:*), Bash(git branch:*), Bash(git-base.sh:*), Bash($HOME/.claude/bin/project-name.sh)
 model: haiku
 ---
 
@@ -17,18 +17,19 @@ Commits on this branch but not on the base: !`git log --oneline --no-merges "$(g
 
 ## Procedure
 
-1. Interpret $ARGUMENTS:
+1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
+2. Interpret $ARGUMENTS:
    - If it looks like an explicit range (`ref..HEAD`, `sha1..sha2`): trust it. Pull commits with `git log --oneline --no-merges $ARGUMENTS`.
    - If it is a single ref (e.g. `develop`): the Context block already used it as the base.
    - If empty: the Context block used the auto-detected base.
-2. The commit list in the Context block is authoritative unless $ARGUMENTS specified an explicit range.
-3. For conventional-commits-style history (subjects like `feat:`, `fix:`, `chore:`), group by type. Otherwise group by inferred category (user-facing, internal, tooling).
-4. Filter out noise: formatting-only commits, CI-only changes, revert pairs that cancel out, chore commits with no user impact.
-5. Rewrite each kept commit into a user-facing line. "fix: correct date parsing for non-ISO inputs" becomes "Dates in non-ISO formats now parse correctly."
+3. The commit list in the Context block is authoritative unless $ARGUMENTS specified an explicit range.
+4. For conventional-commits-style history (subjects like `feat:`, `fix:`, `chore:`), group by type. Otherwise group by inferred category (user-facing, internal, tooling).
+5. Filter out noise: formatting-only commits, CI-only changes, revert pairs that cancel out, chore commits with no user impact.
+6. Rewrite each kept commit into a user-facing line. "fix: correct date parsing for non-ISO inputs" becomes "Dates in non-ISO formats now parse correctly."
 
 ## Output file
 
-Write to `.claude/scratch/release-notes-<branch-or-range-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write to `~/.claude/scratch/release-notes-<project-name>-<branch-or-range-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Structure:
 
