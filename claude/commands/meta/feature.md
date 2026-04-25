@@ -1,7 +1,7 @@
 ---
 description: Shape a fuzzy feature request into a structured brief before planning
 argument-hint: <feature description or ticket text>
-allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
+allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: heavy.** Thinking-heavy. One step before `/flow:plan`. Produces a brief, not a plan.
@@ -15,14 +15,14 @@ allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh`` for context. Some features make sense in one stack and not another.
+1. Run `!`$HOME/.claude/bin/detect-stack.sh`` for context. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Some features make sense in one stack and not another.
 2. Read $ARGUMENTS. If it points to a ticket file or URL string, read the file. Otherwise treat as the request.
 3. Read project CLAUDE.md and any architecture docs.
 4. Work through the questions below in order. Write the brief as you go. It is fine for a section to end with "unknown, ask requester" rather than a fabricated answer.
 
 ## Output
 
-Write to `.claude/scratch/feature-<slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write to `~/.claude/scratch/feature-<project-name>-<slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Structure:
 
