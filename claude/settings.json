@@ -130,6 +130,8 @@
       "Bash(yarn why *)",
       "Bash(mkdir -p $HOME/.claude/scratch)",
       "Bash($HOME/.claude/bin/detect-stack.sh 2>/dev/null *)",
+      "Bash($HOME/.claude/bin/project-root.sh)",
+      "Bash($HOME/.claude/bin/project-name.sh)",
       "Edit(**)",
       "MultiEdit(**)",
       "Read(**)",
