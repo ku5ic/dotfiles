@@ -13,7 +13,7 @@ allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash($
 
 ## Procedure
 
-1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Read the most recent preflight report for this project: `ls -t ~/.claude/scratch/preflight-<project-name>-*.md | head -1`. If none exists for this project, run /flow:preflight first.
+1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Read the most recent preflight report for this project: `ls -t ~/.claude/scratch/preflight-<project-name>-\*.md | head -1`. If none exists for this project, run /flow:preflight first.
 2. Load the patterns skill matching the detected stack (react-patterns, django-patterns, etc.) if the task is in that area.
 3. Consider two implementation approaches. For each: scope, risk, effort, reversibility. Pick one and justify why.
 4. Break the chosen approach into phased steps. Each step is independently committable and leaves the codebase in a working state.

@@ -67,6 +67,7 @@ Apply to every response without exception. Apply on the first message. Do not wa
 ## Anti-fabrication
 
 Do not invent:
+
 - File paths that have not been seen via Read or Glob
 - API shapes that have not been read from source or fetched from authoritative docs
 - Version numbers; read from lockfile or `--version` output
@@ -74,6 +75,7 @@ Do not invent:
 - Browser, runtime, or library behavior; verify or say "would need to check at runtime"
 
 When uncertain:
+
 - "I have not verified this; the likely shape is X, please confirm"
 - "This depends on Y which I have not read"
 - Never silently substitute plausible content for verified content.
@@ -115,11 +117,13 @@ If a file claimed to exist by the user is not found, surface that immediately an
 ### When to extract a function or component
 
 Extract when one of:
+
 - Used in 3+ places with the same shape
 - Internal complexity makes the surrounding code hard to read
 - The unit has a name that makes sense outside its current site
 
 Do not extract for:
+
 - Abstract symmetry
 - "It might be reused later"
 - Reducing line count
@@ -127,11 +131,13 @@ Do not extract for:
 ### When to add a test
 
 Add a test when:
+
 - The change touches business logic, validation, auth, or data transformation
 - A bug is fixed (regression test)
 - A boundary condition exists (null, empty, max, error)
 
 Skip a test when:
+
 - The change is purely cosmetic, structural, or refactor with existing coverage
 - The code is a thin pass-through to a library
 - The framework already guarantees the behavior
@@ -139,11 +145,13 @@ Skip a test when:
 ### When to commit
 
 Commit when:
+
 - The change leaves the codebase in a working state
 - The change has one logical concern
 - A reviewer could understand the diff in under two minutes
 
 Do not commit:
+
 - WIP without explicit `wip:` prefix and intent to amend
 - Mixed concerns, even if the diff is small
 - Generated files alongside source changes (separate commits)
@@ -151,10 +159,12 @@ Do not commit:
 ### When to refactor in place vs. defer
 
 Refactor in place when:
+
 - The current task touches the code anyway
 - The fix is local and the test surface is unchanged
 
 Defer when:
+
 - The refactor would expand the diff beyond the original task
 - The refactor crosses a layer boundary
 - The refactor needs new tests of its own
@@ -175,6 +185,7 @@ Run only what the project defines. Detect runners from lockfile and scripts.
 - Tests narrow first: single file or single test. Then the suite for the touched module.
 
 If a check fails:
+
 - Fix it, or
 - Report the failure and stop. Do not declare the task complete with failing checks.
 
@@ -249,11 +260,11 @@ If a check is missing entirely (no linter configured), do not introduce one as p
 
 All commands that write to `~/.claude/scratch/` use this pattern:
 
-  ~/.claude/scratch/<kind>-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md
+~/.claude/scratch/<kind>-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md
 
 If the kind has no scope slug:
 
-  ~/.claude/scratch/<kind>-<project-name>-<YYYYMMDD-HHMM>.md
+~/.claude/scratch/<kind>-<project-name>-<YYYYMMDD-HHMM>.md
 
 `<project-name>` is the output of `$HOME/.claude/bin/project-name.sh`.
 It is the slugified basename of the git repo root: lowercased, leading dots
@@ -264,7 +275,7 @@ trimmed. Outside a git working tree it returns the slug of $PWD basename
 When reading "the most recent X" of a kind, always filter by the current
 project name:
 
-  ls -t ~/.claude/scratch/<kind>-<project-name>-*.md | head -1
+ls -t ~/.claude/scratch/<kind>-<project-name>-\*.md | head -1
 
 Never read across projects. If no artifact exists for the current project,
 run the predecessor command first.

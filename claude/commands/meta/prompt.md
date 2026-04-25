@@ -24,7 +24,7 @@ model: haiku
    - Scope undefined (no files, no surface area)
    - Success unstated (how do we know it worked)
    - Constraints missing (stack, style, deadline, performance)
-4. Rewrite as a structured prompt.
+5. Rewrite as a structured prompt.
 
 ## Output file
 
