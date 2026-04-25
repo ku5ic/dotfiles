@@ -14,8 +14,8 @@ allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*), Bash(git sta
    - If $ARGUMENTS looks like a commit range (`main..HEAD`, SHA range): review that range
    - If $ARGUMENTS is a path: review that path's current state
    - Otherwise: review `git diff HEAD` (working copy)
-3. Load patterns skills matching the detected stack (react-patterns, django-patterns, etc.).
-4. Review in this order, skipping categories with no findings. Do not pad.
+4. Load patterns skills matching the detected stack (react-patterns, django-patterns, etc.).
+5. Review in this order, skipping categories with no findings. Do not pad.
 
 ### 1. Correctness
 
