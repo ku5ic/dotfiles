@@ -1,7 +1,7 @@
 ---
 description: Turn a confirmed task into an ordered implementation plan with explicit tradeoffs
 argument-hint: <task description or link to preflight report>
-allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
+allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash($HOME/.claude/bin/project-name.sh), Bash(ls:*)
 ---
 
 **Effort: heavy.** Thinking-heavy. Read project CLAUDE.md, relevant skills, and the preflight report if one exists.
@@ -13,7 +13,7 @@ allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
 
 ## Procedure
 
-1. Read the most recent preflight report in `.claude/scratch/`.
+1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Read the most recent preflight report for this project: `ls -t ~/.claude/scratch/preflight-<project-name>-*.md | head -1`. If none exists for this project, run /flow:preflight first.
 2. Load the patterns skill matching the detected stack (react-patterns, django-patterns, etc.) if the task is in that area.
 3. Consider two implementation approaches. For each: scope, risk, effort, reversibility. Pick one and justify why.
 4. Break the chosen approach into phased steps. Each step is independently committable and leaves the codebase in a working state.
@@ -22,7 +22,7 @@ allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
 
 ## Output
 
-Write a plan to `~/.claude/scratch/plan-<task-slug>-<YYYYMMDD-HHMM>.md`:
+Write a plan to `~/.claude/scratch/plan-<project-name>-<task-slug>-<YYYYMMDD-HHMM>.md`:
 
 - Goal (one sentence)
 - Non-goals (what this change explicitly does not do)

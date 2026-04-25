@@ -1,14 +1,14 @@
 ---
 description: Add or update tests for recent implementation work, then run them
 argument-hint: <optional: file or area to focus on>
-allowed-tools: Read, Edit, Write, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git diff:*), Bash(git status:*), Bash(npm test*), Bash(pnpm test*), Bash(yarn test*), Bash(vitest *), Bash(jest *), Bash(pytest *)
+allowed-tools: Read, Edit, Write, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git diff:*), Bash(git status:*), Bash(npm test*), Bash(pnpm test*), Bash(yarn test*), Bash(vitest *), Bash(jest *), Bash(pytest *), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: medium.** Matches existing test style. Does not design new testing infrastructure.
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh`` to identify test runner and language.
+1. Run `!`$HOME/.claude/bin/detect-stack.sh`` to identify test runner and language. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
 2. Load the test-patterns skill.
 3. Identify what changed via `git diff HEAD` and `git status`. Scope testing to the delta.
 4. For each changed function, component, or endpoint:
@@ -39,4 +39,4 @@ Terminal only:
 - Run result
 - Coverage delta, if measured
 
-No scratch report for routine test passes. If something structurally wrong is found while testing (e.g. a function is untestable without refactor), write a short note to `~/.claude/scratch/test-findings-<YYYYMMDD-HHMM>.md`.
+No scratch report for routine test passes. If something structurally wrong is found while testing (e.g. a function is untestable without refactor), write a short note to `~/.claude/scratch/test-findings-<project-name>-<YYYYMMDD-HHMM>.md`.

@@ -1,14 +1,14 @@
 ---
 description: Senior review of recently changed code, stack aware
 argument-hint: <optional: commit range, branch, or path>
-allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git diff:*), Bash(git log:*), Bash(git status:*)
+allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: heavy.** Deep review. Read the changed files and their immediate context.
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh``.
+1. Run `!`$HOME/.claude/bin/detect-stack.sh``. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
 2. Determine the review scope:
    - If $ARGUMENTS looks like a commit range (`main..HEAD`, SHA range): review that range
    - If $ARGUMENTS is a path: review that path's current state
@@ -50,7 +50,7 @@ Did the change come with tests? Are the tests meaningful or shape-checking?
 
 ## Output
 
-Use the markdown-report skill format. Write to `~/.claude/scratch/review-<scope-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the markdown-report skill format. Write to `~/.claude/scratch/review-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Severity rubric from markdown-report. Skip sections with no findings. Summary line rates overall health.
 
