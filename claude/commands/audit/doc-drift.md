@@ -2,6 +2,7 @@
 description: Detect drift between code and markdown or inline documentation
 argument-hint: <code path to check>
 allowed-tools: Read, Grep, Glob, Bash(find:*), Bash($HOME/.claude/bin/detect-stack.sh), Bash($HOME/.claude/bin/project-name.sh)
+model: haiku
 ---
 
 **Effort: medium.** Comparison task. Does not rewrite docs.
