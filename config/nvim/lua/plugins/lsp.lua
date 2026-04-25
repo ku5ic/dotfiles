@@ -7,6 +7,7 @@ local LSP_SERVERS = {
 	"basedpyright",
 	"cssls",
 	"emmet_ls",
+	"graphql",
 	"html",
 	"lua_ls",
 	"phpactor",
@@ -160,6 +161,8 @@ local function get_server_settings()
 				client.server_capabilities.hoverProvider = false
 			end,
 		},
+
+		graphql = {},
 	}
 end
 
