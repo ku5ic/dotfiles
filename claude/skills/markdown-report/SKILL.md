@@ -51,7 +51,10 @@ Stack: <line from $HOME/.claude/bin/detect-stack.sh, if applicable>
 - Code snippets use fenced blocks with language tag.
 - No ASCII decoration, no banner comments, no emoji.
 - Use straight quotes, plain ASCII punctuation.
-- File naming: `.claude/scratch/<kind>-<target-slug>-<YYYYMMDD-HHMM>.md`.
+- File naming: `~/.claude/scratch/<kind>-<project-name>-<target-slug>-<YYYYMMDD-HHMM>.md`.
+- `<project-name>` comes from `$HOME/.claude/bin/project-name.sh`. Slugified basename of git repo root.
+- Always write to `~/.claude/scratch/` (home, absolute), never `.claude/scratch/` (cwd-relative).
+- For kinds without a target slug, omit it: `<kind>-<project-name>-<YYYYMMDD-HHMM>.md`.
 - Always print the absolute path at the end of execution so the user can open it.
 
 ## Summary line rubric

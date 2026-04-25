@@ -101,6 +101,33 @@ Apply to every response without exception. Apply on the first message. Do not wa
 - Step by step only when complexity justifies it.
 - Keep what to do separated from why.
 
+## Scratch artifact naming
+
+All commands that write to `~/.claude/scratch/` use this pattern:
+
+  ~/.claude/scratch/<kind>-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md
+
+If the kind has no scope slug:
+
+  ~/.claude/scratch/<kind>-<project-name>-<YYYYMMDD-HHMM>.md
+
+`<project-name>` is the output of `$HOME/.claude/bin/project-name.sh`.
+It is the slugified basename of the git repo root: lowercased, leading dots
+stripped, non-alphanumeric characters replaced with dashes, collapsed dashes,
+trimmed. Outside a git working tree it returns the slug of $PWD basename
+(e.g. "tmp" for /tmp, "dotfiles" for ~/.dotfiles).
+
+When reading "the most recent X" of a kind, always filter by the current
+project name:
+
+  ls -t ~/.claude/scratch/<kind>-<project-name>-*.md | head -1
+
+Never read across projects. If no artifact exists for the current project,
+run the predecessor command first.
+
+All scratch goes to `~/.claude/scratch/` (home, absolute), never
+`.claude/scratch/` (cwd-relative).
+
 ## Claude Code command namespace (canonical)
 
 All commands live under `~/.dotfiles/claude/commands/` and are organized into four namespaces. Invocation uses the `/<group>:<name>` form.
