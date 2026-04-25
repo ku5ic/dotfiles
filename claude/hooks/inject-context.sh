@@ -2,7 +2,9 @@
 # UserPromptSubmit hook. Prepends repo context to the first prompt of a session.
 set -euo pipefail
 
-safe_session_id="${CLAUDE_SESSION_ID//[^a-zA-Z0-9_-]/}"
+payload="$(cat)"
+session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty' 2>/dev/null || true)"
+safe_session_id="${session_id//[^a-zA-Z0-9_-]/}"
 session_marker="$HOME/.claude/scratch/.injected-${safe_session_id:-$$}"
 [[ -f "$session_marker" ]] && exit 0
 

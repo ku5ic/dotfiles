@@ -5,7 +5,7 @@
 #
 # Resolution order:
 #   1. Git working tree:    `git rev-parse --show-toplevel` (walks up itself)
-#   2. Project anchor walk: nearest ancestor (up to 3 levels) with
+#   2. Project anchor walk: nearest ancestor (up to 2 levels) with
 #                           package.json, pyproject.toml, Gemfile,
 #                           Cargo.toml, or go.mod
 #   3. Current directory:   $PWD

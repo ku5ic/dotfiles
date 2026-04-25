@@ -13,8 +13,8 @@ model: haiku
 2. Determine the diff range:
    - If $ARGUMENTS looks like a git range: use it
    - Else: use `main..HEAD` if `main` exists, otherwise `master..HEAD`, otherwise `HEAD~1..HEAD`
-3. Pull the diff: !`git diff $ARGUMENTS 2>/dev/null || git diff main..HEAD 2>/dev/null || git diff HEAD~1..HEAD`
-4. Pull the log: !`git log --oneline -20 $ARGUMENTS 2>/dev/null || git log --oneline -20 main..HEAD 2>/dev/null || git log --oneline -10`
+3. Pull the diff: !`git diff $ARGUMENTS || git diff main..HEAD || git diff HEAD~1..HEAD`
+4. Pull the log: !`git log --oneline -20 $ARGUMENTS || git log --oneline -20 main..HEAD || git log --oneline -10`
 5. Read any referenced issue number in recent commit messages, but do not fetch external data.
 
 ## Output

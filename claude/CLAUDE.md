@@ -246,8 +246,8 @@ If a check is missing entirely (no linter configured), do not introduce one as p
 
 ### Context exhausted
 
-1. If the conversation is running long, propose `meta/handoff` to capture state.
-2. After handoff written, summarize and stop.
+1. If the conversation is running long, write a scratch note capturing: files touched, step in progress, open questions, and what comes next. Use the scratch naming convention.
+2. Summarize to the user and stop.
 3. Do not silently degrade output quality to fit the context window.
 
 ### User correction received
@@ -288,39 +288,46 @@ All scratch goes to `~/.claude/scratch/` (home, absolute), never
 
 All commands live under `~/.dotfiles/claude/commands/` and are organized into four namespaces. Invocation uses the `/<group>:<name>` form.
 
-### flow/ — the default feature workflow
+### flow/ - the default feature workflow
 
-1. `/flow:preflight` — inspect repo state, confirm scope, surface risks
-2. `/flow:plan` — produce a short, atomic plan before any edits
-3. `/flow:implement` — execute the plan in small, reviewable steps
-4. `/flow:test` — add or update tests at the right level
-5. `/flow:review` — self-review the change before handing off
+Main path:
 
-### audit/ — invoked when scope warrants, not every change
+1. `/flow:preflight` - inspect repo state, confirm scope, surface risks
+2. `/flow:plan` - produce a short, atomic plan before any edits
+3. `/flow:implement` - execute the plan in small, reviewable steps
+4. `/flow:test` - add or update tests at the right level
+5. `/flow:review` - self-review the change before handing off
 
-- `/audit:a11y` — accessibility audit (WCAG 2.2, semantics, keyboard, focus)
-- `/audit:debt` — technical debt and architectural drift
-- `/audit:doc-drift` — detect implementation vs. documentation divergence
-- `/audit:perf` — performance audit
-- `/audit:security` — security hardening review
+Out-of-band:
 
-### meta/ — authoring and reflection
+- `/flow:fix` - surgical fix from a failing signal, no refactor
+- `/flow:resume` - reorient against a partially executed plan
 
-- `/meta:feature` — feature brief authoring
-- `/meta:prompt` — prompt authoring and refinement
-- `/meta:retro` — post-work retrospective
+### audit/ - invoked when scope warrants, not every change
 
-### write/ — outward-facing communication
+- `/audit:a11y` - accessibility audit (WCAG 2.2, semantics, keyboard, focus)
+- `/audit:debt` - technical debt and architectural drift
+- `/audit:doc-drift` - detect implementation vs. documentation divergence
+- `/audit:perf` - performance audit
+- `/audit:security` - security hardening review
 
-- `/write:commit` — commit message
-- `/write:pr` — pull request title and description
-- `/write:release-notes` — release notes
-- `/write:stakeholder` — stakeholder-facing summary
+### meta/ - authoring and reflection
+
+- `/meta:feature` - feature brief authoring
+- `/meta:prompt` - prompt authoring and refinement
+- `/meta:retro` - post-work retrospective
+
+### write/ - outward-facing communication
+
+- `/write:commit` - commit message
+- `/write:pr` - pull request title and description
+- `/write:release-notes` - release notes
+- `/write:stakeholder` - stakeholder-facing summary
 
 ### Hard rules
 
 - pause after each `/flow:*` step and wait for user approval before continuing.
 - after completing each logical segment, stop and wait for the user to review and commit the changes.
-- The older `cmd-*` naming (`cmd-preflight`, `cmd-implement-backend`, `cmd-audit-wcag`, `cmd-review-pr`, etc.) is stale. Any reference found in docs, workflow guides, `CLAUDE.md` files, or prompts must be corrected on touch to the new namespaced form.
+- The older `cmd-*` naming convention is stale. Any reference found in docs, workflow guides, `CLAUDE.md` files, or prompts must be corrected on touch to the new namespaced form.
 - Unprefixed references (`/preflight`, `/plan`, `/implement`) are ambiguous and should be normalized to the full `/<group>:<name>` form.
 - The canonical source of truth for available commands is the output of `/skills` inside Claude Code, not any UI label.

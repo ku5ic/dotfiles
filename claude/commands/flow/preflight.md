@@ -14,7 +14,7 @@ allowed-tools: Read, Grep, Glob, Bash(git status:*), Bash(git log:*), Bash(git d
 4. Identify the minimum file set the task touches: the files that will change, plus the files that the changing files import or depend on. No more, no less.
 5. Read those files.
 6. File budget: read at most 12 files across steps 2-5. If the minimum set exceeds 12, stop and ask the user to scope the task.
-7. Check current CI health with the commands the project actually defines (scripts in `package.json`, `Makefile`, `pyproject.toml` `[tool]` sections). Report state: clean, warnings, errors.
+7. Identify the CI checks the project defines (scripts in `package.json`, `Makefile`, `pyproject.toml` `[tool]` sections). List what is available (typecheck, lint, test, format) without running them. Note any that are missing entirely.
 8. Check `git status` and `git log -5 --oneline`. Note uncommitted work and recent direction.
 
 ## Output

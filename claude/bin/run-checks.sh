@@ -29,8 +29,10 @@ skip_msg() {
 # JS/TS
 if [[ -f package.json ]]; then
   pm="npm"
+  [[ -f package-lock.json ]] && pm="npm"
   [[ -f pnpm-lock.yaml ]] && pm="pnpm"
   [[ -f yarn.lock ]] && pm="yarn"
+  [[ -f bun.lockb ]] && pm="bun"
 
   if [[ -f tsconfig.json ]]; then
     run "ts: typecheck" $pm exec tsc --noEmit
@@ -46,12 +48,18 @@ if [[ -f package.json ]]; then
     skip_msg "js: lint (no script)"
   fi
 
-  if jq -e '.scripts.format' package.json >/dev/null 2>&1; then
-    skip_msg "js: format-check (would mutate, run manually)"
+  if jq -e '.scripts["format:check"]' package.json >/dev/null 2>&1; then
+    run "js: format-check" $pm run format:check
+  elif jq -e '.scripts.format' package.json >/dev/null 2>&1; then
+    skip_msg "js: format-check (no format:check script; format would mutate)"
   fi
 
   if jq -e '.scripts.test' package.json >/dev/null 2>&1; then
-    run "js: test" $pm test --silent
+    if [[ "$pm" == "bun" ]]; then
+      run "js: test" bun test
+    else
+      run "js: test" $pm test --silent
+    fi
   else
     skip_msg "js: test (no script)"
   fi

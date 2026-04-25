@@ -1,7 +1,7 @@
 ---
 description: Resume a partially executed plan from a scratch file
 argument-hint: <optional: scratch path or task slug>
-allowed-tools: Read, Grep, Glob, Bash(git status:*), Bash(git diff:*), Bash(ls *), Bash($HOME/.claude/bin/project-name.sh)
+allowed-tools: Read, Grep, Glob, Bash(git status:*), Bash(git diff:*), Bash(ls:*), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: light.** Reorientation, not work.

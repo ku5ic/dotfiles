@@ -1,7 +1,7 @@
 ---
 description: Surgical fix from a failing signal (test, type error, runtime error, lint)
 argument-hint: <error message, file path, or test name>
-allowed-tools: Read, Edit, MultiEdit, Grep, Glob, Bash(git diff:*), Bash(git status:*), Bash(npm test*), Bash(pnpm test*), Bash(yarn test*), Bash(vitest *), Bash(jest *), Bash(pytest *), Bash(cargo test*), Bash(go test*), Bash(bundle exec *)
+allowed-tools: Read, Edit, MultiEdit, Grep, Glob, Bash(git diff:*), Bash(git status:*), Bash(npm:test*), Bash(pnpm:test*), Bash(yarn:test*), Bash(vitest:*), Bash(jest:*), Bash(pytest:*), Bash(cargo:test*), Bash(go:test*), Bash(bundle:exec *)
 ---
 
 **Effort: medium.** Find the bug, fix it, verify. Do not refactor.
