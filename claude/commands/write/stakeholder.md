@@ -1,7 +1,7 @@
 ---
 description: Reframe a technical finding or proposal for a non-technical audience
 argument-hint: <technical content, or path to a file with it>
-allowed-tools: Read
+allowed-tools: Read, Bash($HOME/.claude/bin/project-name.sh)
 model: haiku
 ---
 
@@ -9,13 +9,14 @@ model: haiku
 
 ## Procedure
 
-1. Read the input. If $ARGUMENTS looks like a file path, read the file. Otherwise treat $ARGUMENTS as the content directly.
-2. Identify the audience implied by the input or default to PM-level.
-3. Reframe.
+1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
+2. Read the input. If $ARGUMENTS looks like a file path, read the file. Otherwise treat $ARGUMENTS as the content directly.
+3. Identify the audience implied by the input or default to PM-level.
+4. Reframe.
 
 ## Output file
 
-Write to `.claude/scratch/stakeholder-<topic-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write to `~/.claude/scratch/stakeholder-<project-name>-<topic-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Structure:
 

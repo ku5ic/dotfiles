@@ -1,7 +1,7 @@
 ---
 description: Generate a pull request description from the current diff
 argument-hint: <optional: commit range like main..HEAD>
-allowed-tools: Bash(git diff:*), Bash(git log:*), Bash(git branch:*), Bash(git status:*), Read
+allowed-tools: Bash(git diff:*), Bash(git log:*), Bash(git branch:*), Bash(git status:*), Read, Bash($HOME/.claude/bin/project-name.sh)
 model: haiku
 ---
 
@@ -9,16 +9,17 @@ model: haiku
 
 ## Procedure
 
-1. Determine the diff range:
+1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
+2. Determine the diff range:
    - If $ARGUMENTS looks like a git range: use it
    - Else: use `main..HEAD` if `main` exists, otherwise `master..HEAD`, otherwise `HEAD~1..HEAD`
-2. Pull the diff: !`git diff $ARGUMENTS 2>/dev/null || git diff main..HEAD 2>/dev/null || git diff HEAD~1..HEAD`
-3. Pull the log: !`git log --oneline -20 $ARGUMENTS 2>/dev/null || git log --oneline -20 main..HEAD 2>/dev/null || git log --oneline -10`
-4. Read any referenced issue number in recent commit messages, but do not fetch external data.
+3. Pull the diff: !`git diff $ARGUMENTS 2>/dev/null || git diff main..HEAD 2>/dev/null || git diff HEAD~1..HEAD`
+4. Pull the log: !`git log --oneline -20 $ARGUMENTS 2>/dev/null || git log --oneline -20 main..HEAD 2>/dev/null || git log --oneline -10`
+5. Read any referenced issue number in recent commit messages, but do not fetch external data.
 
 ## Output
 
-Write the PR description to `.claude/scratch/pr-<branch-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write the PR description to `~/.claude/scratch/pr-<project-name>-<branch-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Structure:
 
