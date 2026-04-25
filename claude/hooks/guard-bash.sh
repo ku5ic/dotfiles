@@ -8,6 +8,17 @@
 #   exit 0 -> allow the tool call
 #   exit 2 -> block the tool call. stderr is shown to Claude as the reason.
 # Any other non-zero exit is treated as a soft failure and does not block.
+#
+# TODO(phase6): full-string regex flaw -- all patterns below run against the
+# entire normalized command string, including quoted arguments. This means a
+# pattern like chmod[[:space:]] fires when the word "chmod" appears anywhere
+# in a multi-line command, even inside a commit message body or a heredoc.
+# Observed false positive: "git commit -m" with a message containing "chmod",
+# "+x", and "cd ~/..." triggered the chmod guard during Phase 4 smoke tests.
+# Phase 6 fix: segment the command before pattern matching. Extract the leading
+# subcommand (split on &&, ||, ;, and pipe boundaries) and check each segment
+# independently so that quoted string arguments are not scanned as commands.
+# Tracked in: ~/.claude/scratch/followup-dotfiles-guard-bash-segmentation-*.md
 
 set -euo pipefail
 
