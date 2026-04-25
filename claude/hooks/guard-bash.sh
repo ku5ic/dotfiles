@@ -120,8 +120,11 @@ if [[ "$norm" =~ git[[:space:]]+config[[:space:]]+--global ]]; then
 fi
 
 # Block broad chmod +x against root, home, or cwd.
-if [[ "$norm" =~ chmod[[:space:]]+[ugoa]*\+x[[:space:]]+(-R[[:space:]]+)?(\.|/|\$HOME) ]]; then
-  block "broad chmod +x against root, home, or cwd"
+if [[ "$norm" =~ chmod[[:space:]] ]] && [[ "$norm" =~ \+x ]]; then
+  if [[ "$norm" =~ [[:space:]](\.|\.\.|/)($|[[:space:]]) ]] || \
+     [[ "$norm" =~ [[:space:]](~|\$HOME|\$\{HOME\})($|[[:space:]]|/) ]]; then
+    block "broad chmod +x against root, home, or cwd"
+  fi
 fi
 
 # Block global package installs.
@@ -130,7 +133,7 @@ if [[ "$norm" =~ (npm|pnpm|yarn)[[:space:]]+(install|add|i)[[:space:]]+.*(-g|--g
 fi
 
 # Block writes to shell rc files via redirection.
-if [[ "$norm" =~ \>+[[:space:]]*$HOME/\.(zshrc|zprofile|bashrc|bash_profile|profile)([[:space:]]|$) ]]; then
+if [[ "$norm" =~ \>+[[:space:]]*(\$HOME|\$\{HOME\}|~|$HOME)/\.(zshrc|zprofile|bashrc|bash_profile|profile)([[:space:]]|$) ]]; then
   block "direct write to a shell rc file. Use the dotfiles repo."
 fi
 
