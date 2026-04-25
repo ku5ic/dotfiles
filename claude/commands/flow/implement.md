@@ -1,7 +1,7 @@
 ---
 description: Execute an approved plan step by step, staying within scope
 argument-hint: <optional: step number or range>
-allowed-tools: Read, Edit, MultiEdit, Write, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash($HOME/.claude/bin/project-name.sh), Bash(ls:*)
+allowed-tools: Read, Edit, MultiEdit, Write, Grep, Glob, Bash($HOME/.claude/bin/project-name.sh), Bash(ls:*)
 ---
 
 **Effort: heavy.** Actual code changes. Stay strictly within the approved plan.
@@ -41,4 +41,4 @@ No report file. Terminal output only:
 
 ## Stop
 
-After each step, stop. Wait for the user to say continue, or to invoke `/flow:test` or `/flow:review`. Do not chain steps without explicit approval.
+After each step, stop. Do not proceed to the next step even if it is small. Wait for the user to explicitly say `continue`, or to invoke `/flow:test` or `/flow:review`.

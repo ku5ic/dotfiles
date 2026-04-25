@@ -1,15 +1,16 @@
 ---
 description: Senior review of recently changed code, stack aware
 argument-hint: <optional: commit range, branch, or path>
-allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash($HOME/.claude/bin/project-name.sh)
+allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: heavy.** Deep review. Read the changed files and their immediate context.
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh``. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
-2. Determine the review scope:
+1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Stack is in the injected `<repo-context>` block.
+2. If the diff exceeds 500 changed lines, propose splitting the review into logical chunks before starting.
+3. Determine the review scope:
    - If $ARGUMENTS looks like a commit range (`main..HEAD`, SHA range): review that range
    - If $ARGUMENTS is a path: review that path's current state
    - Otherwise: review `git diff HEAD` (working copy)
