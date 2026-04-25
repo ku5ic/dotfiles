@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # PreToolUse hook for Bash. Inspects git commit commands for AI signatures.
 set -euo pipefail
+trap 'echo "guard-commit: unexpected error, failing open" >&2; exit 0' ERR
 
 payload="$(cat)"
 command -v jq >/dev/null 2>&1 || exit 0
@@ -8,7 +9,9 @@ cmd="$(printf '%s' "$payload" | jq -r '.tool_input.command // empty')"
 
 [[ "$cmd" =~ git[[:space:]]+commit ]] || exit 0
 
-msg="$(printf '%s' "$cmd" | grep -oE '(-m|--message=?)[[:space:]]*"[^"]*"' | sed -E 's/.*"([^"]*)"/\1/' || true)"
+msg_dq="$(printf '%s' "$cmd" | grep -oE '(-m|--message=?)[[:space:]]*"[^"]*"' | sed -E 's/.*"([^"]*)"/\1/' || true)"
+msg_sq="$(printf '%s' "$cmd" | grep -oE "(-m|--message=?)[[:space:]]*'[^']*'" | sed -E "s/.*'([^']*)'/\1/" || true)"
+msg="${msg_dq}${msg_sq}"
 
 [[ -z "$msg" ]] && exit 0
 

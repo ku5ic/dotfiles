@@ -2,7 +2,8 @@
 # UserPromptSubmit hook. Prepends repo context to the first prompt of a session.
 set -euo pipefail
 
-session_marker="$HOME/.claude/scratch/.injected-${CLAUDE_SESSION_ID:-$$}"
+safe_session_id="${CLAUDE_SESSION_ID//[^a-zA-Z0-9_-]/}"
+session_marker="$HOME/.claude/scratch/.injected-${safe_session_id:-$$}"
 [[ -f "$session_marker" ]] && exit 0
 
 mkdir -p "$(dirname "$session_marker")"

@@ -21,6 +21,7 @@
 # Tracked in: ~/.claude/scratch/followup-dotfiles-guard-bash-segmentation-*.md
 
 set -euo pipefail
+trap 'echo "guard-bash: unexpected error, failing open" >&2; exit 0' ERR
 
 payload="$(cat)"
 
