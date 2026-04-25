@@ -6,7 +6,7 @@ Global instructions for Claude Code. Applies to every repository. Project level 
 
 On the first substantive action in a repo:
 
-1. Check the injected `<repo-context>` block. If absent, run detect-stack.sh once.
+1. Check the injected `<repo-context>` block. If absent, surface the issue and stop -- the inject-context.sh hook did not fire.
 2. Read project root CLAUDE.md if present.
 3. Read README.md only if directly relevant to the task.
 4. Check current branch and dirty state. If dirty and the task implies a new feature, surface this and ask before proceeding.
