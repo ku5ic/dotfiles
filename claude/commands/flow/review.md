@@ -1,7 +1,7 @@
 ---
 description: Senior review of recently changed code, stack aware
 argument-hint: <optional: commit range, branch, or path>
-allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash($HOME/.claude/bin/project-name.sh)
+allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash($HOME/.claude/bin/project-name.sh), Bash($HOME/.claude/bin/run-checks.sh)
 ---
 
 **Effort: heavy.** Deep review. Read the changed files and their immediate context.
@@ -14,8 +14,9 @@ allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*), Bash(git sta
    - If $ARGUMENTS looks like a commit range (`main..HEAD`, SHA range): review that range
    - If $ARGUMENTS is a path: review that path's current state
    - Otherwise: review `git diff HEAD` (working copy)
-4. Load patterns skills matching the detected stack (react-patterns, django-patterns, etc.).
-5. Review in this order, skipping categories with no findings. Do not pad.
+4. Run `$HOME/.claude/bin/run-checks.sh` to establish baseline check state. Note any pre-existing failures before reviewing.
+5. Load patterns skills matching the detected stack (react-patterns, django-patterns, etc.).
+6. Review in this order, skipping categories with no findings. Do not pad.
 
 ### 1. Correctness
 

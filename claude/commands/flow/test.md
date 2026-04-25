@@ -1,7 +1,7 @@
 ---
 description: Add or update tests for recent implementation work, then run them
 argument-hint: <optional: file or area to focus on>
-allowed-tools: Read, Edit, Write, Grep, Glob, Bash(git diff:*), Bash(git status:*), Bash(npm test*), Bash(pnpm test*), Bash(yarn test*), Bash(vitest *), Bash(jest *), Bash(pytest *), Bash(bundle exec rspec*), Bash(bundle exec rails test*), Bash(cargo test*), Bash(go test*), Bash($HOME/.claude/bin/project-name.sh)
+allowed-tools: Read, Edit, Write, Grep, Glob, Bash(git diff:*), Bash(git status:*), Bash(npm test*), Bash(pnpm test*), Bash(yarn test*), Bash(vitest *), Bash(jest *), Bash(pytest *), Bash(bundle exec rspec*), Bash(bundle exec rails test*), Bash(cargo test*), Bash(go test*), Bash($HOME/.claude/bin/project-name.sh), Bash($HOME/.claude/bin/run-checks.sh)
 ---
 
 **Effort: medium.** Matches existing test style. Does not design new testing infrastructure.
@@ -29,6 +29,7 @@ allowed-tools: Read, Edit, Write, Grep, Glob, Bash(git diff:*), Bash(git status:
 - Do not write tests for things the test-patterns skill says are not worth testing (trivial getters, framework defaults, pass-throughs).
 - Do not introduce a new test framework. Use what the project already uses.
 - If the project uses snapshot tests, prefer that pattern only when snapshots are small and stable. Do not introduce snapshots if the project does not use them.
+- After narrow tests pass, run `$HOME/.claude/bin/run-checks.sh` for full verification across typecheck, lint, and tests.
 
 ## Output
 
