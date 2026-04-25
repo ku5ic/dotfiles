@@ -114,4 +114,24 @@ if [[ "$norm" =~ security[[:space:]]+delete-keychain ]]; then
   block "keychain deletion"
 fi
 
+# Block git config --global from a project session.
+if [[ "$norm" =~ git[[:space:]]+config[[:space:]]+--global ]]; then
+  block "git config --global from a project session"
+fi
+
+# Block broad chmod +x against root, home, or cwd.
+if [[ "$norm" =~ chmod[[:space:]]+[ugoa]*\+x[[:space:]]+(-R[[:space:]]+)?(\.|/|\$HOME) ]]; then
+  block "broad chmod +x against root, home, or cwd"
+fi
+
+# Block global package installs.
+if [[ "$norm" =~ (npm|pnpm|yarn)[[:space:]]+(install|add|i)[[:space:]]+.*(-g|--global) ]]; then
+  block "global package install. Use a project-local install or asdf shim."
+fi
+
+# Block writes to shell rc files via redirection.
+if [[ "$norm" =~ \>+[[:space:]]*$HOME/\.(zshrc|zprofile|bashrc|bash_profile|profile)([[:space:]]|$) ]]; then
+  block "direct write to a shell rc file. Use the dotfiles repo."
+fi
+
 exit 0
