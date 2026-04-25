@@ -148,4 +148,19 @@ if [[ "$norm" =~ \>+[[:space:]]*(\$HOME|\$\{HOME\}|~|$HOME)/\.(zshrc|zprofile|ba
   block "direct write to a shell rc file. Use the dotfiles repo."
 fi
 
+# Block 2>&1 and &> shell redirects. The matcher will not cover these
+# with wildcard patterns (issue #13137), so they force a permission
+# prompt every time. The Bash tool merges stderr by default; the
+# redirect is redundant noise.
+if [[ "$cmd" =~ 2\>\&1 ]]; then
+  echo "Blocked by guard-bash.sh: shell redirect detected (2>&1)" >&2
+  echo "The Bash tool merges stderr by default. Drop the redirect and retry." >&2
+  exit 2
+fi
+if [[ "$cmd" =~ \&\>\>? ]]; then
+  echo "Blocked by guard-bash.sh: shell redirect detected (&> or &>>)" >&2
+  echo "The Bash tool merges stderr by default. Drop the redirect and retry." >&2
+  exit 2
+fi
+
 exit 0
