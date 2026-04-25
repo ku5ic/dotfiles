@@ -308,11 +308,29 @@
       {
         "matcher": "Bash",
         "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/guard-bash.sh",
-            "timeout": 10
-          }
+          { "type": "command", "command": "$HOME/.claude/hooks/guard-bash.sh",   "timeout": 10 },
+          { "type": "command", "command": "$HOME/.claude/hooks/guard-commit.sh", "timeout": 5  }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "$HOME/.claude/hooks/guard-edit.sh", "timeout": 5 }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "$HOME/.claude/hooks/sanitize-output.sh", "timeout": 5 }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "$HOME/.claude/hooks/inject-context.sh", "timeout": 5 }
         ]
       }
     ]
