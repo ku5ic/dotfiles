@@ -1,14 +1,14 @@
 ---
 description: Performance audit focused on statically detectable issues
 argument-hint: <file, directory, or area name>
-allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
+allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: heavy.** Static analysis. Does not run benchmarks. Flags what is likely slow, names what to measure.
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh``.
+1. Run `!`$HOME/.claude/bin/detect-stack.sh``. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
 2. Load the patterns skill for the detected stack (react-patterns, django-patterns, etc.) for the anti-pattern reference.
 3. Review the target across these categories. Skip categories with no findings.
 
@@ -48,7 +48,7 @@ allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh)
 
 ## Output file
 
-Use markdown-report format. Write to `~/.claude/scratch/perf-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use markdown-report format. Write to `~/.claude/scratch/perf-<project-name>-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 ## Rules
 

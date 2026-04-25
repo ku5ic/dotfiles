@@ -1,7 +1,7 @@
 ---
 description: Detect drift between code and markdown or inline documentation
 argument-hint: <code path to check>
-allowed-tools: Read, Grep, Glob, Bash(find:*), Bash($HOME/.claude/bin/detect-stack.sh)
+allowed-tools: Read, Grep, Glob, Bash(find:*), Bash($HOME/.claude/bin/detect-stack.sh), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: medium.** Comparison task. Does not rewrite docs.
@@ -12,7 +12,7 @@ $ARGUMENTS should point to the code surface to check. Required.
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh`` for context.
+1. Run `!`$HOME/.claude/bin/detect-stack.sh`` for context. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
 2. Read the code at $ARGUMENTS.
 3. Find relevant docs. Prefer targeted over exhaustive:
    - `README.md` at the project root if $ARGUMENTS is in `src/` or equivalent
@@ -48,7 +48,7 @@ $ARGUMENTS should point to the code surface to check. Required.
 
 ## Output file
 
-Use markdown-report format. Write to `~/.claude/scratch/doc-drift-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use markdown-report format. Write to `~/.claude/scratch/doc-drift-<project-name>-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 ## Scope rules
 
