@@ -64,6 +64,27 @@
       "Bash(git switch *)",
       "Bash(git tag *)",
       "Bash(git worktree *)",
+      "Bash(git -C * add *)",
+      "Bash(git -C * blame *)",
+      "Bash(git -C * branch *)",
+      "Bash(git -C * bisect *)",
+      "Bash(git -C * checkout *)",
+      "Bash(git -C * cherry-pick *)",
+      "Bash(git -C * commit *)",
+      "Bash(git -C * config --get *)",
+      "Bash(git -C * diff *)",
+      "Bash(git -C * fetch *)",
+      "Bash(git -C * log *)",
+      "Bash(git -C * merge *)",
+      "Bash(git -C * pull *)",
+      "Bash(git -C * remote -v)",
+      "Bash(git -C * restore *)",
+      "Bash(git -C * show *)",
+      "Bash(git -C * stash *)",
+      "Bash(git -C * status *)",
+      "Bash(git -C * switch *)",
+      "Bash(git -C * tag *)",
+      "Bash(git -C * worktree *)",
       "Bash(grep *)",
       "Bash(head *)",
       "Bash(hyperfine *)",
@@ -128,7 +149,9 @@
       "Bash(yarn why *)",
       "Bash(mkdir -p $HOME/.claude/scratch)",
       "Bash($HOME/.claude/bin/*)",
+      "Bash($HOME/.claude/bin/* *)",
       "Bash($HOME/.claude/hooks/*)",
+      "Bash($HOME/.claude/hooks/* *)",
       "Edit(**)",
       "MultiEdit(**)",
       "Read(**)",
@@ -214,6 +237,15 @@
       "Bash(git reflog expire *)",
       "Bash(git reset *)",
       "Bash(git tag -d *)",
+      "Bash(git -C * branch -D *)",
+      "Bash(git -C * branch -d *)",
+      "Bash(git -C * clean *)",
+      "Bash(git -C * commit --amend*)",
+      "Bash(git -C * push *)",
+      "Bash(git -C * rebase *)",
+      "Bash(git -C * reflog expire *)",
+      "Bash(git -C * reset *)",
+      "Bash(git -C * tag -d *)",
       "Bash(mogrify *)",
       "Bash(npm audit fix *)",
       "Bash(npm install *)",
@@ -307,14 +339,26 @@
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "$HOME/.claude/hooks/guard-bash.sh",   "timeout": 10 },
-          { "type": "command", "command": "$HOME/.claude/hooks/guard-commit.sh", "timeout": 5  }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-bash.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-commit.sh",
+            "timeout": 5
+          }
         ]
       },
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-          { "type": "command", "command": "$HOME/.claude/hooks/guard-edit.sh", "timeout": 5 }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-edit.sh",
+            "timeout": 5
+          }
         ]
       }
     ],
@@ -322,14 +366,22 @@
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-          { "type": "command", "command": "$HOME/.claude/hooks/sanitize-output.sh", "timeout": 5 }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/sanitize-output.sh",
+            "timeout": 5
+          }
         ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
-          { "type": "command", "command": "$HOME/.claude/hooks/inject-context.sh", "timeout": 5 }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/inject-context.sh",
+            "timeout": 5
+          }
         ]
       }
     ]

@@ -95,6 +95,7 @@ If a file claimed to exist by the user is not found, surface that immediately an
 
 - Destructive operations require explicit confirmation before running: `rm`, `git reset --hard`, `git clean`, `git push --force`, branch or tag deletion, database migrations, dropping tables, truncating files.
 - Do not install, upgrade, or remove dependencies without asking. Include the reason and the proposed command.
+- Do not append `2>&1` or other shell redirects when invoking commands. The Bash tool merges stderr into its output by default; the redirect is redundant and triggers a permission prompt because the matcher does not cover redirect operators with wildcards.
 - Do not modify project level config without asking: `.env*`, `tsconfig*.json`, `eslint.config.*`, `prettier.config.*`, `next.config.*`, `vite.config.*`, `package.json` scripts, CI workflows.
 - Do not create new top level directories without asking.
 - Do not run broad recursive commands (`rm -rf`, `find ... -delete`, `chmod -R`) without confirmation.
