@@ -130,6 +130,7 @@
       "Bash($HOME/.claude/bin/detect-stack.sh 2>/dev/null *)",
       "Bash($HOME/.claude/bin/project-root.sh)",
       "Bash($HOME/.claude/bin/project-name.sh)",
+      "Bash($HOME/.claude/bin/run-checks.sh)",
       "Edit(**)",
       "MultiEdit(**)",
       "Read(**)",
