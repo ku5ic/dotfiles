@@ -3,6 +3,7 @@ tap 'jesseduffield/lazygit'
 # CLI tools
 brew 'asdf'
 brew 'bat'
+brew 'chafa'
 brew 'cmake'
 brew 'coreutils'
 brew 'ctags'
