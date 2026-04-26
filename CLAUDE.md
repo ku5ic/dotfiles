@@ -22,18 +22,19 @@ ln -sfv ~/.dotfiles/config/nvim ~/.config/
 
 ## Structure
 
-| Path                                    | Purpose                                                                                                               |
-| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `.zshrc` / `.zprofile` / `.aliases.zsh` | Shell config - zprofile sets PATH and env vars, zshrc configures zsh options/plugins, aliases.zsh defines all aliases |
-| `.tmux.conf` / `.tmuxinator/`           | tmux config and tmuxinator session layouts                                                                            |
-| `Brewfile`                              | All Homebrew formulae, casks, and Mac App Store apps in one file                                                      |
-| `scripts/`                              | Shell scripts on `$PATH`; callable by bare name via aliases generated in `.aliases.zsh`                               |
-| `completions/`                          | zsh completion functions (e.g. `_branch_name.sh` for `branch_name`)                                                   |
-| `config/nvim/`                          | Neovim config (lazy.nvim plugin manager, symlinked to `~/.config/nvim`)                                               |
-| `config/starship.toml`                  | Starship prompt config                                                                                                |
-| `config/wezterm/`                       | WezTerm terminal config                                                                                               |
-| `macos/set-defaults.sh`                 | macOS system defaults (run once on new machine)                                                                       |
-| `.tool-versions`                        | asdf runtime versions (Node 24, Ruby 4, Python 3)                                                                     |
+| Path                                    | Purpose                                                                                                                                                       |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.zshrc` / `.zprofile` / `.aliases.zsh` | Shell config - zprofile sets PATH and env vars, zshrc configures zsh options/plugins, aliases.zsh defines all aliases                                         |
+| `.tmux.conf` / `.tmuxinator/`           | tmux config and tmuxinator session layouts                                                                                                                    |
+| `Brewfile`                              | All Homebrew formulae, casks, and Mac App Store apps in one file                                                                                              |
+| `scripts/`                              | Shell scripts on `$PATH`; callable by bare name via aliases generated in `.aliases.zsh`                                                                       |
+| `completions/`                          | zsh completion functions (e.g. `_branch_name.sh` for `branch_name`)                                                                                           |
+| `config/nvim/`                          | Neovim config (lazy.nvim plugin manager, symlinked to `~/.config/nvim`)                                                                                       |
+| `config/starship.toml`                  | Starship prompt config                                                                                                                                        |
+| `config/wezterm/`                       | WezTerm terminal config                                                                                                                                       |
+| `macos/set-defaults.sh`                 | macOS system defaults (run once on new machine)                                                                                                               |
+| `.tool-versions`                        | asdf runtime versions (Node 24, Ruby 4, Python 3)                                                                                                             |
+| `claude/`                               | Claude Code config (`settings.json`, `CLAUDE.md`, `commands/`, `hooks/`, `skills/`, `bin/`) symlinked into `~/.claude/`; `bin/` is on `$PATH` via `.zprofile` |
 
 ## Neovim Architecture
 

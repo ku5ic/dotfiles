@@ -18,7 +18,7 @@ _branch_name() {
 
   _arguments -C \
     '(-h --help)'{-h,--help}'[Show help]' \
-    '(-c --checkout)'{-c,--checkout}'[Create and checkout the branch]' \
+    '--checkout[Create and checkout the branch]' \
     '1:branch type:->type' \
     '*:branch title:_message "branch title"' && return 0
 

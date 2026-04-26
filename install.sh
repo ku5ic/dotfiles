@@ -6,7 +6,7 @@ DOTFILES_DIR="$HOME/.dotfiles"
 
 update_dotfiles() {
   if [ -d "$DOTFILES_DIR/.git" ]; then
-    git --work-tree="$DOTFILES_DIR" --git-dir="$DOTFILES_DIR/.git" pull origin master
+    git --work-tree="$DOTFILES_DIR" --git-dir="$DOTFILES_DIR/.git" pull origin main
   fi
 }
 

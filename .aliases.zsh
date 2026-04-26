@@ -43,9 +43,9 @@ alias cls='clear'              # Clears the terminal screen
 alias grep='grep --color=auto' # Adds color to `grep` output to highlight matches
 alias mux=tmuxinator # tmuxinator alias
 alias brew_all="brew update; brew upgrade; brew upgrade --cask; brew cleanup --prune=all; brew autoremove; brew doctor;" # Update all brew packages
-alias brew_reset=brew update-reset "$(brew --repository)" # Reset Homebrew to a clean state
-alias brew_clean="brew bundle cleanup --file="$DOTFILES_DIR/Brewfile" --force" # Clean up Homebrew packages not listed in the Brewfile
-alias brew_install="brew bundle --file="$DOTFILES_DIR/Brewfile"" # Install Homebrew packages from the Brewfile
+alias brew_reset='brew update-reset "$(brew --repository)"' # Reset Homebrew to a clean state
+alias brew_clean='brew bundle cleanup --file="$DOTFILES_DIR/Brewfile" --force' # Clean up Homebrew packages not listed in the Brewfile
+alias brew_install='brew bundle --file="$DOTFILES_DIR/Brewfile"' # Install Homebrew packages from the Brewfile
 alias bat="bat --style=numbers --color=always --theme=TwoDark" # bat alias with theme
 alias dotfiles="cd $DOTFILES_DIR" # Navigate to the dotfiles directory
 

@@ -45,6 +45,22 @@ die() {
   exit 1
 }
 
+usage() {
+  cat <<'EOF'
+Usage: branch_name [--checkout] <type> [<issue_id>] <title...>
+
+Produce a normalized git branch name of the form <type>/<slug> or
+<type>/<ISSUE-ID>/<slug>.
+
+Types:
+  feat, fix, refactor, perf, test, docs, build, ci, chore, style, release
+
+Flags:
+  --checkout    Create and checkout the branch via `git checkout -b`
+  -h, --help    Print this help
+EOF
+}
+
 sanitize_issue_id() {
   printf '%s' "$1" \
     | tr '[:lower:]' '[:upper:]' \
@@ -73,11 +89,6 @@ is_valid_type() {
 }
 
 checkout=false
-
-if [[ $# -lt 2 ]]; then
-  usage
-  exit 1
-fi
 
 if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
   usage
