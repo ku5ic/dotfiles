@@ -113,6 +113,26 @@ return {
 		},
 	},
 
+	-- vim-tmux-navigator: jump between vim splits and tmux panes with C-hjkl + C-\
+	-- Tmux side configured in ~/.tmux.conf.
+	{
+		"christoomey/vim-tmux-navigator",
+		cmd = {
+			"TmuxNavigateLeft",
+			"TmuxNavigateDown",
+			"TmuxNavigateUp",
+			"TmuxNavigateRight",
+			"TmuxNavigatePrevious",
+		},
+		keys = {
+			{ "<C-h>", "<cmd>TmuxNavigateLeft<cr>" },
+			{ "<C-j>", "<cmd>TmuxNavigateDown<cr>" },
+			{ "<C-k>", "<cmd>TmuxNavigateUp<cr>" },
+			{ "<C-l>", "<cmd>TmuxNavigateRight<cr>" },
+			{ "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>" },
+		},
+	},
+
 	-- precognition.nvim assists with discovering motions (Both vertical and horizontal) to navigate your current buffer
 	{
 		"tris203/precognition.nvim",
