@@ -186,11 +186,12 @@ return {
 	initial_rows = 33,
 	initial_cols = 100,
 
+	-- Symmetric padding on all four sides for visual balance.
 	window_padding = {
 		left = 20,
 		right = 20,
 		top = 20,
-		bottom = 0,
+		bottom = 20,
 	},
 
 	window_decorations = "INTEGRATED_BUTTONS",
@@ -199,6 +200,36 @@ return {
 	-- opacity = 1.0 is clean and sharp. For frosted glass: set opacity to 0.92 and uncomment blur.
 	window_background_opacity = 1.0,
 	-- macos_window_background_blur = 20,
+
+	-- Dim inactive panes so the focused pane is visually obvious.
+	inactive_pane_hsb = {
+		saturation = 0.85,
+		brightness = 0.75,
+	},
+
+	-- Cursor: explicit defaults so future-you can tune without spelunking docs.
+	default_cursor_style = "SteadyBlock",
+	cursor_blink_rate = 500,
+
+	-- Tab bar font matches the main font. Uses Catppuccin surface tones for the frame.
+	window_frame = {
+		font = font,
+		font_size = 13,
+		active_titlebar_bg = c.mantle,
+		inactive_titlebar_bg = c.mantle,
+	},
+
+	-- Tie tab bar background to the Catppuccin palette already used in format-tab-title.
+	colors = {
+		tab_bar = {
+			background = c.mantle,
+			active_tab = { bg_color = c.surface0, fg_color = c.text },
+			inactive_tab = { bg_color = c.mantle, fg_color = c.subtext0 },
+			inactive_tab_hover = { bg_color = c.surface0, fg_color = c.text },
+			new_tab = { bg_color = c.mantle, fg_color = c.subtext0 },
+			new_tab_hover = { bg_color = c.surface0, fg_color = c.text },
+		},
+	},
 
 	use_fancy_tab_bar = false,
 	hide_tab_bar_if_only_one_tab = true,
