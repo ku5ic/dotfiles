@@ -85,15 +85,23 @@ local keys = {
 	{ key = "[", mods = "SUPER|SHIFT", action = act.ActivateTabRelative(-1) },
 	-- Cmd+Shift+]: next tab
 	{ key = "]", mods = "SUPER|SHIFT", action = act.ActivateTabRelative(1) },
-	-- Cmd+1-9: jump to tab by index
+	-- Cmd+1: jump to tab 1
 	{ key = "1", mods = "SUPER", action = act.ActivateTab(0) },
+	-- Cmd+2: jump to tab 2
 	{ key = "2", mods = "SUPER", action = act.ActivateTab(1) },
+	-- Cmd+3: jump to tab 3
 	{ key = "3", mods = "SUPER", action = act.ActivateTab(2) },
+	-- Cmd+4: jump to tab 4
 	{ key = "4", mods = "SUPER", action = act.ActivateTab(3) },
+	-- Cmd+5: jump to tab 5
 	{ key = "5", mods = "SUPER", action = act.ActivateTab(4) },
+	-- Cmd+6: jump to tab 6
 	{ key = "6", mods = "SUPER", action = act.ActivateTab(5) },
+	-- Cmd+7: jump to tab 7
 	{ key = "7", mods = "SUPER", action = act.ActivateTab(6) },
+	-- Cmd+8: jump to tab 8
 	{ key = "8", mods = "SUPER", action = act.ActivateTab(7) },
+	-- Cmd+9: jump to tab 9
 	{ key = "9", mods = "SUPER", action = act.ActivateTab(8) },
 
 	-- Cmd+D: split pane left/right
@@ -101,16 +109,22 @@ local keys = {
 	-- Cmd+Shift+D: split pane top/bottom
 	{ key = "d", mods = "SUPER|SHIFT", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
 
-	-- Cmd+Ctrl+H/L/K/J: focus pane in direction
+	-- Cmd+Ctrl+H: focus pane to the left
 	{ key = "h", mods = "SUPER|CTRL", action = act.ActivatePaneDirection("Left") },
+	-- Cmd+Ctrl+L: focus pane to the right
 	{ key = "l", mods = "SUPER|CTRL", action = act.ActivatePaneDirection("Right") },
+	-- Cmd+Ctrl+K: focus pane above
 	{ key = "k", mods = "SUPER|CTRL", action = act.ActivatePaneDirection("Up") },
+	-- Cmd+Ctrl+J: focus pane below
 	{ key = "j", mods = "SUPER|CTRL", action = act.ActivatePaneDirection("Down") },
 
-	-- Cmd+Ctrl+Shift+H/L/K/J: resize pane in direction
+	-- Cmd+Ctrl+Shift+H: shrink pane from the right edge (grow toward left)
 	{ key = "h", mods = "SUPER|CTRL|SHIFT", action = act.AdjustPaneSize({ "Left", 5 }) },
+	-- Cmd+Ctrl+Shift+L: grow pane to the right
 	{ key = "l", mods = "SUPER|CTRL|SHIFT", action = act.AdjustPaneSize({ "Right", 5 }) },
+	-- Cmd+Ctrl+Shift+K: grow pane upward
 	{ key = "k", mods = "SUPER|CTRL|SHIFT", action = act.AdjustPaneSize({ "Up", 5 }) },
+	-- Cmd+Ctrl+Shift+J: grow pane downward
 	{ key = "j", mods = "SUPER|CTRL|SHIFT", action = act.AdjustPaneSize({ "Down", 5 }) },
 
 	-- Cmd+Shift+Z: zoom (maximize) current pane, same key restores
@@ -118,19 +132,23 @@ local keys = {
 	-- Cmd+Shift+W: close current pane without closing the tab
 	{ key = "w", mods = "SUPER|SHIFT", action = act.CloseCurrentPane({ confirm = false }) },
 
-	-- Cmd+Shift+PageUp/PageDown: scroll by page
+	-- Cmd+Shift+PageUp: scroll buffer up by one page
 	{ key = "PageUp", mods = "SUPER|SHIFT", action = act.ScrollByPage(-1) },
+	-- Cmd+Shift+PageDown: scroll buffer down by one page
 	{ key = "PageDown", mods = "SUPER|SHIFT", action = act.ScrollByPage(1) },
-	-- Cmd+Shift+U/I: scroll up/down by line
+	-- Cmd+Shift+U: scroll buffer up by 5 lines
 	{ key = "u", mods = "SUPER|SHIFT", action = act.ScrollByLine(-5) },
+	-- Cmd+Shift+I: scroll buffer down by 5 lines
 	{ key = "i", mods = "SUPER|SHIFT", action = act.ScrollByLine(5) },
 
 	-- Cmd+Shift+Enter: enter copy mode (vi-style selection)
 	{ key = "Enter", mods = "SUPER|SHIFT", action = act.ActivateCopyMode },
 
-	-- Cmd+=/−/0: increase, decrease, reset font size
+	-- Cmd+=: increase font size
 	{ key = "=", mods = "SUPER", action = act.IncreaseFontSize },
+	-- Cmd+-: decrease font size
 	{ key = "-", mods = "SUPER", action = act.DecreaseFontSize },
+	-- Cmd+0: reset font size to configured default
 	{ key = "0", mods = "SUPER", action = act.ResetFontSize },
 
 	-- Cmd+Shift+R: reload config without restarting
