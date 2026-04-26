@@ -170,7 +170,18 @@ return {
 	-- On a non-Retina screen, try: freetype_load_target = "Light", freetype_render_target = "HorizontalLcd"
 
 	front_end = "WebGpu",
+	-- Prefer the discrete GPU on dual-GPU Macs for consistent frame pacing.
+	-- Tradeoff: marginally higher battery draw on laptops; switch to "LowPower" if that matters.
+	webgpu_power_preference = "HighPerformance",
 	max_fps = 120,
+	-- Independent of max_fps: paces cursor blink and other animated visuals.
+	animation_fps = 60,
+	-- Default is true; declared explicitly so future readers see image-protocol intent.
+	enable_kitty_graphics = true,
+	-- Default is 3500. Bumped for log review and long compile output.
+	scrollback_lines = 10000,
+	-- Cmd+= / Cmd+- adjust font without nudging window geometry.
+	adjust_window_size_when_changing_font_size = false,
 
 	initial_rows = 33,
 	initial_cols = 100,
