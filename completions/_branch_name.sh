@@ -14,6 +14,16 @@ _branch_name() {
     'chore:Maintenance task'
     'style:Formatting or style only'
     'release:Release branch'
+    'poc:Proof of concept'
+    'spike:Exploratory/Spike branch'
+    'wip:Work in progress'
+    'draft:Draft branch'
+    'temp:Temporary branch'
+    'drill:Practice/Drill branch'
+    'sandbox:Sandbox/Experimental branch'
+    'personal:Personal branch'
+    'exp:Experiment'
+    'try:Try/Throwaway branch'
   )
 
   _arguments -C \

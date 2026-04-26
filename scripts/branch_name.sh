@@ -18,7 +18,9 @@
 # Parameters:
 #   Positional:
 #     <type>       Required. Must be one of:
-#                  feat, fix, refactor, perf, test, docs, build, ci, chore, style, release
+#     <type>       Required. Must be one of:
+#                  feat, fix, refactor, perf, test, docs, build, ci, chore, style, release,
+#                  poc, spike, wip, draft, temp, drill, sandbox, personal, exp, try
 #     <issue_id>   Optional. Normalized to uppercase and restricted to [A-Z0-9_-].
 #     <title...>   Required. Remaining args are joined with spaces and slugified.
 #   Flags:
@@ -53,7 +55,8 @@ Produce a normalized git branch name of the form <type>/<slug> or
 <type>/<ISSUE-ID>/<slug>.
 
 Types:
-  feat, fix, refactor, perf, test, docs, build, ci, chore, style, release
+#   feat, fix, refactor, perf, test, docs, build, ci, chore, style, release,
+#   poc, spike, wip, draft, temp, drill, sandbox, personal, exp, try
 
 Flags:
   --checkout    Create and checkout the branch via `git checkout -b`
@@ -79,13 +82,14 @@ sanitize_title() {
 
 is_valid_type() {
   case "$1" in
-    feat|fix|refactor|perf|test|docs|build|ci|chore|style|release)
+    feat|fix|refactor|perf|test|docs|build|ci|chore|style|release|\
+    poc|spike|wip|draft|temp|drill|sandbox|personal|exp|try)
       return 0
       ;;
     *)
       return 1
       ;;
-  esac
+    esac
 }
 
 checkout=false
