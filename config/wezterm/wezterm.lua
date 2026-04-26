@@ -155,6 +155,39 @@ local keys = {
 	{ key = "r", mods = "SUPER|SHIFT", action = act.ReloadConfiguration },
 	-- Cmd+Shift+F: open search bar
 	{ key = "f", mods = "SUPER|SHIFT", action = act.Search({ CaseSensitiveString = "" }) },
+
+	-- Cmd+Shift+P: fuzzy command palette (all known actions)
+	{ key = "P", mods = "SUPER|SHIFT", action = act.ActivateCommandPalette },
+	-- Cmd+Shift+Space: jump to any URL/path/hash on screen via two-letter labels
+	{ key = "Space", mods = "SUPER|SHIFT", action = act.QuickSelect },
+	-- Cmd+Shift+L: debug overlay (live config errors and Lua REPL)
+	{ key = "L", mods = "SUPER|SHIFT", action = act.ShowDebugOverlay },
+	-- Cmd+Shift+E: emoji / unicode character picker, copies on select
+	{
+		key = "E",
+		mods = "SUPER|SHIFT",
+		action = act.CharSelect({ copy_on_select = true, copy_to = "ClipboardAndPrimarySelection" }),
+	},
+	-- Cmd+Shift+N: new top-level window (separate from new tab)
+	{ key = "n", mods = "SUPER|SHIFT", action = act.SpawnWindow },
+	-- Cmd+Shift+O: toggle window opacity between 1.0 (clean) and 0.92 (frosted)
+	{
+		key = "O",
+		mods = "SUPER|SHIFT",
+		action = wezterm.action_callback(function(window, _)
+			local overrides = window:get_config_overrides() or {}
+			if overrides.window_background_opacity == 0.92 then
+				overrides.window_background_opacity = 1.0
+				overrides.macos_window_background_blur = 0
+			else
+				overrides.window_background_opacity = 0.92
+				overrides.macos_window_background_blur = 20
+			end
+			window:set_config_overrides(overrides)
+		end),
+	},
+	-- Cmd+K: clear scrollback and viewport (iTerm/Ghostty muscle memory; remove if unused)
+	{ key = "k", mods = "SUPER", action = act.ClearScrollback("ScrollbackAndViewport") },
 }
 
 return {
