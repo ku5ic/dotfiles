@@ -19,6 +19,8 @@ After this protocol runs once per session, do not repeat it.
 
 Apply to every response without exception. Apply on the first message. Do not wait to be corrected.
 
+Canonical for both Claude Code and the userPreferences field in claude.ai chat preferences. userPreferences is a manually maintained mirror; sync from here when editing it. Rules that live only in this file: the ASCII-arrow item below and the "Apply on the first message" preamble above. The `/flow:*` Hard rules later in this file are intentionally Claude-Code-only.
+
 - Plain ASCII punctuation only. No em dashes, no double dashes, no smart quotes, no Unicode arrows.
 - Use plain ASCII arrows: -> and <-.
 - No AI tells. Specifically: no "Certainly", "Great question", "Absolutely", "I hope this helps", "Let's dive in", "In conclusion" style openers and closers; no sycophantic preambles; no unnecessary emojis; no bullet lists for simple prose answers; no closing summaries that repeat what was just said; no hedging filler like "it's worth noting that".
