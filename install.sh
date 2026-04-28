@@ -44,12 +44,7 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/.tool-versions" ~
   ln -sfv "$DOTFILES_DIR/.tmuxinator" ~
 
-  ln -sfv "$DOTFILES_DIR/claude/settings.json" ~/.claude/
-  ln -sfv "$DOTFILES_DIR/claude/CLAUDE.md" ~/.claude/
-  ln -sfv "$DOTFILES_DIR/claude/commands/" ~/.claude/
-  ln -sfv "$DOTFILES_DIR/claude/hooks/" ~/.claude/
-  ln -sfv "$DOTFILES_DIR/claude/skills/" ~/.claude/
-  ln -sfv "$DOTFILES_DIR/claude/bin/" ~/.claude/
+  bash "$DOTFILES_DIR/claude/bin/bootstrap.sh" --non-interactive
 
   mkdir -p ~/.config
   ln -sfv "$DOTFILES_DIR/config/nvim" ~/.config/
