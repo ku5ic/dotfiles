@@ -58,8 +58,6 @@ fix_permissions() {
        "$DOTFILES_DIR/claude/bin" \
        "$DOTFILES_DIR/claude/hooks" \
        "$DOTFILES_DIR/macos" \
-       "$HOME/.claude/bin" \
-       "$HOME/.claude/hooks" \
     -type f -name '*.sh' -exec chmod +x {} +
 }
 
@@ -98,8 +96,8 @@ main() {
   install_homebrew
   install_shells
   install_packages
-  create_symlinks
   fix_permissions
+  create_symlinks
   setup_asdf
 }
 
