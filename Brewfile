@@ -1,6 +1,7 @@
 tap 'jesseduffield/lazygit'
 
 # CLI tools
+brew 'bash'
 brew 'asdf'
 brew 'bat'
 brew 'chafa'
