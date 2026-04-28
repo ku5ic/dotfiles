@@ -8,6 +8,22 @@ set -euo pipefail
 ROOT="$("$HOME/.claude/bin/project-root.sh")"
 cd "$ROOT"
 
+# Short-circuit for repos with no language sentinels. inject-context.sh skips
+# the <repo-context> block when the cache is empty, so callers see no output.
+has_stack=0
+sentinels=(
+  package.json
+  pyproject.toml requirements.txt Pipfile manage.py
+  backend/pyproject.toml backend/requirements.txt backend/Pipfile backend/manage.py
+  server/pyproject.toml server/requirements.txt server/Pipfile server/manage.py
+  api/pyproject.toml api/requirements.txt api/Pipfile api/manage.py
+  Gemfile Cargo.toml go.mod
+)
+for f in "${sentinels[@]}"; do
+  if [[ -f "$f" ]]; then has_stack=1; break; fi
+done
+(( has_stack )) || exit 0
+
 echo "root: $ROOT"
 
 # JavaScript and TypeScript
