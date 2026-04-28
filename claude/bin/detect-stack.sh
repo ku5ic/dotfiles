@@ -1,42 +1,96 @@
 #!/usr/bin/env bash
+# Requires bash 4.0+. Personal dotfiles; bash 5.x is installed via Brewfile.
 # Emits a compact stack report for the current project or a nearby ancestor.
 # Output is terse on purpose. Each line is meant to be scanned by Claude in
 # under a few hundred tokens of context.
+#
+# Adding a new stack (illustrative; not a live example):
+#
+#   stacks+=(elixir)
+#   stack_sentinels[elixir]="mix.exs"
+#   stack_extras_fn[elixir]=     # leave empty for presence-only
+#
+# Optional extras function (parts on line 1, suffix on line 2):
+#
+#   elixir_extras() {
+#     local loc="$1" parts=()
+#     [[ -f "$loc/lib/<app>_web.ex" ]] && parts+=("phoenix")
+#     local IFS=', '; echo "${parts[*]}"; echo ""
+#   }
+#
+# That is the entire diff. No edits to the main loop, no edits to the
+# early-return list, no edits to emit_stack.
 
 set -euo pipefail
 
 ROOT="$("$HOME/.claude/bin/project-root.sh")"
 cd "$ROOT"
 
-# Short-circuit for repos with no language sentinels. inject-context.sh skips
-# the <repo-context> block when the cache is empty, so callers see no output.
-has_stack=0
-sentinels=(
-  package.json
-  pyproject.toml requirements.txt Pipfile manage.py
-  backend/pyproject.toml backend/requirements.txt backend/Pipfile backend/manage.py
-  server/pyproject.toml server/requirements.txt server/Pipfile server/manage.py
-  api/pyproject.toml api/requirements.txt api/Pipfile api/manage.py
-  Gemfile Cargo.toml go.mod
+stacks=(js python ruby rust go monorepo)
+
+declare -A stack_sentinels=(
+  [js]="package.json"
+  [python]="pyproject.toml requirements.txt Pipfile manage.py"
+  [ruby]="Gemfile"
+  [rust]="Cargo.toml"
+  [go]="go.mod"
+  [monorepo]="pnpm-workspace.yaml turbo.json nx.json lerna.json"
 )
-for f in "${sentinels[@]}"; do
-  if [[ -f "$f" ]]; then has_stack=1; break; fi
-done
-(( has_stack )) || exit 0
 
-echo "root: $ROOT"
+declare -A stack_extras_fn=(
+  [js]=js_extras
+  [python]=python_extras
+  [ruby]=ruby_extras
+  [monorepo]=monorepo_extras
+)
 
-# JavaScript and TypeScript
-if [[ -f package.json ]]; then
-  parts=()
-  [[ -f tsconfig.json || -f tsconfig.base.json ]] && parts+=("typescript")
+# Per-stack overrides only. Missing entries fall back to default_search_dirs.
+declare -A stack_search_dirs=()
+
+default_search_dirs=(. frontend client web app backend server api)
+
+stack_dirs() {
+  local name="$1"
+  if [[ -n "${stack_search_dirs[$name]:-}" ]]; then
+    echo "${stack_search_dirs[$name]}"
+  else
+    echo "${default_search_dirs[*]}"
+  fi
+}
+
+find_stack_dir() {
+  local name="$1"
+  local sentinels="${stack_sentinels[$name]}"
+  local dirs
+  dirs="$(stack_dirs "$name")"
+  for dir in $dirs; do
+    for sentinel in $sentinels; do
+      if [[ -f "$dir/$sentinel" ]]; then
+        echo "$dir"
+        return 0
+      fi
+    done
+  done
+}
+
+emit_stack() {
+  local name="$1" loc="$2" parts="$3" suffix="$4"
+  local line="$name: yes"
+  [[ "$loc" != "." ]] && line+=" at $loc/"
+  [[ -n "$parts" ]] && line+=" ($parts)"
+  [[ -n "$suffix" ]] && line+=" $suffix"
+  echo "$line"
+}
+
+js_extras() {
+  local loc="$1" parts=()
+  [[ -f "$loc/tsconfig.json" || -f "$loc/tsconfig.base.json" ]] && parts+=("typescript")
 
   if command -v jq >/dev/null 2>&1; then
-    # Merge dependencies and devDependencies, then emit each key.
-    deps=$(jq -r '((.dependencies // {}) + (.devDependencies // {})) | keys[]' package.json 2>/dev/null || true)
+    local deps
+    deps=$(jq -r '((.dependencies // {}) + (.devDependencies // {})) | keys[]' "$loc/package.json" 2>/dev/null || true)
     for pkg in next react vue @angular/core svelte express fastify @nestjs/core tailwindcss vitest jest @playwright/test cypress eslint prettier @biomejs/biome; do
       if echo "$deps" | grep -qx "$pkg"; then
-        # Shorten common scoped names for readability.
         case "$pkg" in
           @angular/core) parts+=("angular") ;;
           @nestjs/core)  parts+=("nestjs") ;;
@@ -48,85 +102,97 @@ if [[ -f package.json ]]; then
     done
   fi
 
-  pm="npm"
-  [[ -f pnpm-lock.yaml ]] && pm="pnpm"
-  [[ -f yarn.lock ]] && pm="yarn"
-  [[ -f bun.lockb ]] && pm="bun"
+  local pm="npm"
+  [[ -f "$loc/pnpm-lock.yaml" ]] && pm="pnpm"
+  [[ -f "$loc/yarn.lock" ]] && pm="yarn"
+  [[ -f "$loc/bun.lockb" ]] && pm="bun"
+
+  local IFS=', '
+  echo "${parts[*]}"
+  echo "[$pm]"
+}
+
+python_extras() {
+  local loc="$1" parts=()
+  [[ -f "$loc/manage.py" ]] && parts+=("django")
+
+  for f in "$loc/pyproject.toml" "$loc/requirements.txt" "$loc/Pipfile"; do
+    [[ -f "$f" ]] || continue
+    grep -qiE '^[ "]*(django|Django)' "$f" 2>/dev/null && parts+=("django")
+    grep -qiE '^[ "]*fastapi' "$f" 2>/dev/null && parts+=("fastapi")
+    grep -qiE '^[ "]*flask' "$f" 2>/dev/null && parts+=("flask")
+    grep -qiE '^[ "]*pytest' "$f" 2>/dev/null && parts+=("pytest")
+    grep -qiE '^[ "]*ruff' "$f" 2>/dev/null && parts+=("ruff")
+    grep -qiE '^[ "]*mypy' "$f" 2>/dev/null && parts+=("mypy")
+  done
+  [[ -f "$loc/conftest.py" || -f "$loc/pytest.ini" ]] && parts+=("pytest")
 
   if [[ ${#parts[@]} -gt 0 ]]; then
-    joined=$(IFS=', '; echo "${parts[*]}")
-    echo "js: yes (${joined}) [$pm]"
+    printf "%s\n" "${parts[@]}" | awk '!seen[$0]++' | paste -sd ", " -
   else
-    echo "js: yes [$pm]"
+    echo ""
   fi
+  echo ""
+}
 
-  [[ -f .nvmrc ]] && echo "node: $(tr -d 'v\n' < .nvmrc)"
-else
-  echo "js: no"
-fi
+ruby_extras() {
+  local loc="$1" parts=()
+  [[ -f "$loc/config/routes.rb" && -d "$loc/app/controllers" ]] && parts+=("rails")
+  local IFS=', '
+  echo "${parts[*]}"
+  echo ""
+}
 
-# Python. Also check common backend subfolders for dual-stack projects.
-py_loc=""
-for dir in . backend server api; do
-  if [[ -f "$dir/pyproject.toml" || -f "$dir/requirements.txt" || -f "$dir/manage.py" || -f "$dir/Pipfile" ]]; then
-    py_loc="$dir"
-    break
-  fi
+monorepo_extras() {
+  local loc="$1" parts=()
+  [[ -f "$loc/pnpm-workspace.yaml" ]] && parts+=("pnpm-workspaces")
+  [[ -f "$loc/turbo.json" ]] && parts+=("turbo")
+  [[ -f "$loc/nx.json" ]] && parts+=("nx")
+  [[ -f "$loc/lerna.json" ]] && parts+=("lerna")
+  local IFS=','
+  echo "${parts[*]}"
+  echo ""
+}
+
+# Generate the early-return sentinel list from the same config so the main
+# loop and the short-circuit cannot drift out of sync.
+all_sentinels=()
+for stack in "${stacks[@]}"; do
+  for dir in $(stack_dirs "$stack"); do
+    for sentinel in ${stack_sentinels[$stack]}; do
+      all_sentinels+=("$dir/$sentinel")
+    done
+  done
 done
 
-if [[ -n "$py_loc" ]]; then
-  py_parts=()
-  [[ -f "$py_loc/manage.py" ]] && py_parts+=("django")
+has_stack=0
+for f in "${all_sentinels[@]}"; do
+  if [[ -f "$f" ]]; then has_stack=1; break; fi
+done
+(( has_stack )) || exit 0
 
-  for f in "$py_loc/pyproject.toml" "$py_loc/requirements.txt" "$py_loc/Pipfile"; do
-    [[ -f "$f" ]] || continue
-    grep -qiE '^[ "]*(django|Django)' "$f" 2>/dev/null && py_parts+=("django")
-    grep -qiE '^[ "]*fastapi' "$f" 2>/dev/null && py_parts+=("fastapi")
-    grep -qiE '^[ "]*flask' "$f" 2>/dev/null && py_parts+=("flask")
-    grep -qiE '^[ "]*pytest' "$f" 2>/dev/null && py_parts+=("pytest")
-    grep -qiE '^[ "]*ruff' "$f" 2>/dev/null && py_parts+=("ruff")
-    grep -qiE '^[ "]*mypy' "$f" 2>/dev/null && py_parts+=("mypy")
-  done
-  [[ -f "$py_loc/conftest.py" || -f "$py_loc/pytest.ini" ]] && py_parts+=("pytest")
+echo "root: $ROOT"
 
-  # Deduplicate while preserving order.
-  py_uniq=$(printf "%s\n" "${py_parts[@]}" | awk '!seen[$0]++' | paste -sd ", " -)
-
-  loc_note=""
-  [[ "$py_loc" != "." ]] && loc_note=" at $py_loc/"
-
-  if [[ -n "$py_uniq" ]]; then
-    echo "python: yes${loc_note} (${py_uniq})"
-  else
-    echo "python: yes${loc_note}"
+js_loc=""
+for stack in "${stacks[@]}"; do
+  loc=$(find_stack_dir "$stack")
+  [[ -z "$loc" ]] && continue
+  fn="${stack_extras_fn[$stack]:-}"
+  parts=""; suffix=""
+  if [[ -n "$fn" ]]; then
+    mapfile -t out < <("$fn" "$loc")
+    parts="${out[0]:-}"
+    suffix="${out[1]:-}"
   fi
-else
-  echo "python: no"
-fi
+  emit_stack "$stack" "$loc" "$parts" "$suffix"
+  [[ "$stack" == "js" ]] && js_loc="$loc"
+done
 
-# Ruby
-if [[ -f Gemfile ]]; then
-  rb=""
-  [[ -f config/routes.rb && -d app/controllers ]] && rb=" (rails)"
-  echo "ruby: yes${rb}"
-else
-  echo "ruby: no"
-fi
-
-# Rust
-if [[ -f Cargo.toml ]]; then
-  echo "rust: yes"
-else
-  echo "rust: no"
-fi
-
-# Monorepo signals. Only print if at least one is present.
-mono=()
-[[ -f pnpm-workspace.yaml ]] && mono+=("pnpm-workspaces")
-[[ -f turbo.json ]] && mono+=("turbo")
-[[ -f nx.json ]] && mono+=("nx")
-[[ -f lerna.json ]] && mono+=("lerna")
-if [[ ${#mono[@]} -gt 0 ]]; then
-  joined_mono=$(IFS=','; echo "${mono[*]}")
-  echo "monorepo: yes (${joined_mono})"
+# Node version. Prefer the JS stack's location, fall back to project root.
+if [[ -n "$js_loc" ]]; then
+  if [[ -f "$js_loc/.nvmrc" ]]; then
+    echo "node: $(tr -d 'v\n' < "$js_loc/.nvmrc")"
+  elif [[ -f .nvmrc ]]; then
+    echo "node: $(tr -d 'v\n' < .nvmrc)"
+  fi
 fi
