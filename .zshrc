@@ -8,8 +8,7 @@ source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# setopt correct              # enable autocorrect for command names
-setopt correct_all          # autocorrect for all arguments (commands and their arguments)
+setopt correct              # autocorrect command names only
 setopt hist_ignore_all_dups # remove older duplicate entries from history
 setopt hist_reduce_blanks   # remove superfluous blanks from history items
 setopt inc_append_history   # save history entries as soon as they are entered
@@ -21,7 +20,7 @@ setopt always_to_end        # move cursor to end if word had one match
 
 zstyle ':completion:*' menu select # select completions with arrow keys
 zstyle ':completion:*' group-name '' # group results by category
-zstyle ':completion:*' completer _complete _correct _approximate # enable completion, then correction, then approximate matching
+zstyle ':completion:*' completer _complete # enable completion for commands, functions, and aliases
 zstyle ':completion:*' matcher-list 'r:|[._-]=*' # match dashes, underscores and dots interchangeably
 zstyle ':completion:*:corrections' ignored-patterns '.*' '_*' # ignore files starting with . or _ for corrections
 zstyle ':completion:*:functions' ignored-patterns '.*' '_*' # functions starting with . or _ are usually private and not useful to complete
