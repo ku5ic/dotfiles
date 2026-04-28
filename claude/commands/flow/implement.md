@@ -1,7 +1,7 @@
 ---
 description: Execute an approved plan step by step, staying within scope
 argument-hint: <optional: step number or range>
-allowed-tools: Read, Edit, MultiEdit, Write, Grep, Glob, Bash($HOME/.claude/bin/project-name.sh), Bash(ls:*)
+allowed-tools: Read, Edit, MultiEdit, Write, Grep, Glob, Bash($HOME/.claude/bin/project-name.sh), Bash(ls:*), Bash(tsc *), Bash(vitest *), Bash(jest *), Bash(pytest *), Bash(eslint *), Bash(ruff *), Bash(rubocop *), Bash(cargo *), Bash(go *), Bash(mypy *)
 ---
 
 **Effort: heavy.** Actual code changes. Stay strictly within the approved plan.
