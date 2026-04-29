@@ -8,14 +8,15 @@ argument-hint: <optional: commit range, branch, or path>
 ## Procedure
 
 1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Stack is in the injected `<repo-context>` block.
-2. If the diff exceeds 500 changed lines, propose splitting the review into logical chunks before starting.
-3. Determine the review scope:
+2. Mechanical-skip check. If the most recent plan for this project was marked `plan-shape: mechanical` and the implement step's verification passed cleanly (no failures recorded in the implement output), emit a one-line review ("verification passed, no findings, mechanical change per plan-<project-name>-<task-slug>-<HHMM>") and stop. Otherwise proceed to step 3.
+3. If the diff exceeds 500 changed lines, propose splitting the review into logical chunks before starting.
+4. Determine the review scope:
    - If $ARGUMENTS looks like a commit range (`main..HEAD`, SHA range): review that range
    - If $ARGUMENTS is a path: review that path's current state
    - Otherwise: review `git diff HEAD` (working copy)
-4. Run `$HOME/.claude/bin/run-checks.sh` to establish baseline check state. Note any pre-existing failures before reviewing.
-5. Load patterns skills matching the detected stack (react-patterns, django-patterns, etc.).
-6. Review in this order, skipping categories with no findings. Do not pad.
+5. Run `$HOME/.claude/bin/run-checks.sh` to establish baseline check state. Note any pre-existing failures before reviewing.
+6. Load patterns skills matching the detected stack (react-patterns, django-patterns, etc.).
+7. Review in this order, skipping categories with no findings. Do not pad.
 
 ### 1. Correctness
 

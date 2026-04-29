@@ -40,4 +40,8 @@ No report file. Terminal output only:
 
 ## Stop
 
-After each step, stop. Do not proceed to the next step even if it is small. Wait for the user to explicitly say `continue`, or to invoke `/flow:test` or `/flow:review`.
+If the plan declares its steps as a single phase (all steps under one "Phase" or "Step" heading; mechanical plans typically have this shape), implement all steps in that phase in one turn, then stop at the phase boundary. Pause at phase boundaries only.
+If the plan has multiple phases, stop at the end of each phase and wait
+for the user to say `continue`, or invoke `/flow:test` or `/flow:review`.
+
+The user can override at any time with "stop after step N" in $ARGUMENTS, or pass `--step` to force per-step pausing for a substantive plan.

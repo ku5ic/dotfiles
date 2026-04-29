@@ -46,6 +46,21 @@ Canonical for both Claude Code and the userPreferences field in claude.ai chat p
 - Skip these directories for any glob, grep, or read: `node_modules/**`, `.next/**`, `dist/**`, `build/**`, `coverage/**`, `.turbo/**`, `.cache/**`, `vendor/**`, `target/**`, `out/**`, `storybook-static/**`, `.pnpm-store/**`, `__pycache__/**`, `.venv/**`, `venv/**`.
 - For diffs, prefer `git diff <base>..HEAD -- <path>` over unfiltered diff.
 - Reports should reference scratch artifacts by path, not inline their full contents.
+- See "Preferred CLI tools" below for the full toolbox. The principle: if a CLI gives a deterministic answer, use it before reading and reasoning.
+
+## Preferred CLI tools
+
+When a deterministic CLI exists for a question, call it instead of reading files and reasoning. The tools below are installed via Brewfile and permitted in settings.json.
+
+- `rg` for code search and locating, over `grep`, `find -name`, or `Read` walks.
+- `fd` for filename and path search, over `find`.
+- `tokei` for repo size, language breakdown, and largest-file selection. One call replaces "read several files to estimate".
+- `gitleaks` for secret detection, over ad-hoc grep patterns. Run `gitleaks detect --no-banner --redact -v` and trust the output.
+- `hyperfine` for command-level timing measurement. Use it when a perf claim needs a number, not an opinion.
+- `jq` for JSON inspection and transformation, over substring matching on raw output. `yq` for YAML and TOML.
+- `git -C <dir> <subcmd>` for any git operation outside the current working directory. Do not `cd <dir> && git ...`; the chain triggers a permission prompt that `git -C` avoids.
+
+Rule: if the question is factual (how big, what secrets, how fast, what is in this JSON), reach for the tool. If the question is interpretive (is this code correct, does this design hold up), reading and reasoning is correct.
 
 ## Code Style
 
@@ -98,6 +113,7 @@ If a file claimed to exist by the user is not found, surface that immediately an
 - Destructive operations require explicit confirmation before running: `rm`, `git reset --hard`, `git clean`, `git push --force`, branch or tag deletion, database migrations, dropping tables, truncating files.
 - Do not install, upgrade, or remove dependencies without asking. Include the reason and the proposed command.
 - Do not append `2>&1` or other shell redirects when invoking commands. The Bash tool merges stderr into its output by default; the redirect is redundant and triggers a permission prompt because the matcher does not cover redirect operators with wildcards.
+- Do not chain shell commands with `&&`, `||`, or `;`. Each chain falls through the permission allow-list and forces an "ask" prompt. Use the tool's native path or directory argument instead (`git -C <dir>`, `tokei <path>`, `rg --type <lang> <path>`). When sequential operations are genuinely needed, run them as separate Bash tool calls. Pipes (`|`) are fine; they are matched per-segment by the guard hook.
 - Do not modify project level config without asking: `.env*`, `tsconfig*.json`, `eslint.config.*`, `prettier.config.*`, `next.config.*`, `vite.config.*`, `package.json` scripts, CI workflows.
 - Do not create new top level directories without asking.
 - Do not run broad recursive commands (`rm -rf`, `find ... -delete`, `chmod -R`) without confirmation.
@@ -333,3 +349,26 @@ Out-of-band:
 - The older `cmd-*` naming convention is stale. Any reference found in docs, workflow guides, `CLAUDE.md` files, or prompts must be corrected on touch to the new namespaced form.
 - Unprefixed references (`/preflight`, `/plan`, `/implement`) are ambiguous and should be normalized to the full `/<group>:<name>` form.
 - The canonical source of truth for available commands is the output of `/skills` inside Claude Code, not any UI label.
+
+## Flow optimization
+
+The `/flow:*` cycle has fixed per-task overhead (preflight context, plan sections, review pass) that pays off for substantive single-task work and wastes tokens when several related tasks land in the same session. Each flow command must apply the short-circuits below when their preconditions hold.
+
+### Definitions
+
+- **Session continuity**: a previous flow artifact for this project exists in `~/.claude/scratch/` from this session, the working tree's set of modified files is unchanged from when that artifact was written, the current branch is unchanged, and no new commits have landed since.
+- **Mechanical plan**: a plan whose steps are pure file edits with no architectural choice, no API design, no rejected alternatives worth considering. Examples: dropping a frontmatter field across N files, adding entries to a config list, find-and-replace across a directory. The plan author marks the plan with `plan-shape: mechanical` in its frontmatter when this applies.
+- **Substantive plan**: anything that is not mechanical. Default. Marked `plan-shape: substantive` or omitted (substantive is the default).
+
+### Short-circuits
+
+1. `/flow:preflight`: if session continuity holds and the previous preflight covered the same target area, emit a delta-only report ("same context as preflight-X-HHMM, no new findings") instead of re-establishing full context. Skip the file budget walk and skip re-reading project CLAUDE.md (it has not changed since the last preflight in this session).
+2. `/flow:plan`: when the user signals a mechanical plan in $ARGUMENTS ("mechanical:" prefix or explicit "plan-shape: mechanical" hint), or when the agent judges the work mechanical based on the preflight, omit the "Rejected alternatives" section, omit the elaborate per-step test strategy (verification at the end is enough), and omit "Open questions" unless an actual question exists.
+3. `/flow:implement`: when the plan declares its steps as a single phase (one logical concern, all steps in the same commit), do not pause between sub-steps within that phase. Pause at phase boundaries only. This collapses N approval gates into 1 for tightly coupled work.
+4. `/flow:review`: when the plan was marked mechanical and the implement step's verification passed cleanly, emit a one-line review ("verification passed, no findings") instead of running the full eight-category review. The full review remains the default for substantive work.
+
+### Rules
+
+- Short-circuits are opt-in by signal, not silent. The flow command states which short-circuit it applied and why, so the user can override with "do the full preflight" or "give me the full review".
+- A short-circuit failure (e.g. session continuity does not hold because new commits landed) falls through to the full flow step, not to a half-done one.
+- The user can always force a full step by passing `--full` or equivalent in $ARGUMENTS. The agent honors this without argument.
