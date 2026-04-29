@@ -69,6 +69,28 @@ if [[ "$_cmd_sq" =~ \&\>\>? ]]; then
   exit 2
 fi
 
+# Shell command chaining (&&, ||, ;) forces "ask" prompts because the
+# permission allow list cannot match compound commands. CLAUDE.md bans
+# this pattern; the hook enforces it. Strip quoted content first so
+# patterns like grep '&&' are not flagged. Pipes (|) are intentionally
+# allowed: the segment splitter handles them and they match per-segment
+# against the allow list.
+if [[ "$_cmd_sq" =~ \&\& ]]; then
+  echo "Blocked by guard-bash.sh: shell chain operator detected (&&)" >&2
+  echo "Run as separate Bash tool calls, or use the tool's native path/dir argument (git -C, tokei <path>, etc.)." >&2
+  exit 2
+fi
+if [[ "$_cmd_sq" =~ \|\| ]]; then
+  echo "Blocked by guard-bash.sh: shell chain operator detected (||)" >&2
+  echo "Run as separate Bash tool calls." >&2
+  exit 2
+fi
+if [[ "$_cmd_sq" =~ \; ]]; then
+  echo "Blocked by guard-bash.sh: shell chain operator detected (;)" >&2
+  echo "Run as separate Bash tool calls." >&2
+  exit 2
+fi
+
 # Per-segment checks: split $norm on &&, ||, ;, and newlines (NOT on | so that
 # pipe chains like curl|bash remain intact for the full-string check above).
 # Each segment is checked only when its leading token matches a known dangerous

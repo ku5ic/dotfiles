@@ -17,6 +17,7 @@
       "Bash(cargo fmt *)",
       "Bash(cargo test *)",
       "Bash(cat *)",
+      "Bash(command *)",
       "Bash(convert *)",
       "Bash(cp *)",
       "Bash(ctags *)",
