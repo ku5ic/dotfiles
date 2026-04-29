@@ -1,0 +1,13 @@
+name: dotfiles
+root: ~/.dotfiles
+enable_pane_titles: true
+
+windows:
+  - editor:
+      layout: main-horizontal
+      panes:
+        - nvim:
+            - nvim
+        - terminal:
+  - claude:
+      - claude
