@@ -37,6 +37,10 @@ argument-hint: <file, directory, or area name>
 - Reading a whole file when streaming is possible
 - Blocking operations in request path
 
+## Verification tools
+
+Command-level perf checks (build scripts, codegen, test runner startup, CLI tools) get measured with `hyperfine`, not eyeballed. Render-level perf (React re-renders, bundle cost) gets measured with React DevTools Profiler or browser perf tools at runtime, not from static analysis.
+
 ## Output per finding
 
 - Location

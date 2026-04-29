@@ -9,7 +9,7 @@ argument-hint: <file, directory, or area name>
 
 1. Run `!`$HOME/.claude/bin/detect-stack.sh``. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
 2. Load the patterns skill for the detected stack (react-patterns, django-patterns, etc.) for the anti-pattern reference.
-3. Read the target. If $ARGUMENTS is a directory, sample: read the 5 largest files by line count plus any `index.ts`, `main.py`, `urls.py`, `routes.ts` equivalents.
+3. Read the target. If $ARGUMENTS is a directory, run `tokei --sort code <path>` to get accurate line counts per language and per file. Read the 5 files with the highest code-line counts (excluding tests, generated files, and lockfiles), plus any `index.ts`, `main.py`, `urls.py`, `routes.ts` equivalents.
 4. Run `git log --oneline -20` on the target to see recent churn. High-churn files are candidates for higher-priority debt.
 5. Evaluate across these categories. Skip categories with no findings. Do not pad.
 

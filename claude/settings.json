@@ -91,6 +91,7 @@
       "Bash(git -C * switch *)",
       "Bash(git -C * tag *)",
       "Bash(git -C * worktree *)",
+      "Bash(gitleaks *)",
       "Bash(go build *)",
       "Bash(go run *)",
       "Bash(go test *)",

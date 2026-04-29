@@ -13,15 +13,16 @@ argument-hint: <optional task description>
 4. Read project README only if it explicitly covers the task area, judged from headings.
 5. Identify the minimum file set the task touches: the files that will change, plus the files that the changing files import or depend on. No more, no less.
 6. Read those files.
-7. File budget: read at most 12 files across steps 3-6. If the minimum set exceeds 12, stop and ask the user to scope the task.
-8. Identify the CI checks the project defines (scripts in `package.json`, `Makefile`, `pyproject.toml` `[tool]` sections). List what is available (typecheck, lint, test, format) without running them. Note any that are missing entirely.
-9. Check `git status` and `git log -5 --oneline`. Note uncommitted work and recent direction.
+7. File budget: read at most 12 files across steps 3-6. If the minimum set exceeds 12, stop and ask the user to scope the task. The tokei call in step 8 does not count toward this budget.
+8. Run `tokei` once at the project root for repo size context: total lines, language breakdown. This replaces the reflex to read many files just to estimate size. Capture the headline numbers in the preflight report under the Stack summary.
+9. Identify the CI checks the project defines (scripts in `package.json`, `Makefile`, `pyproject.toml` `[tool]` sections). List what is available (typecheck, lint, test, format) without running them. Note any that are missing entirely.
+10. Check `git status` and `git log -5 --oneline`. Note uncommitted work and recent direction.
 
 ## Output
 
 Write a short preflight report with:
 
-- Stack summary (from injected `<repo-context>` block)
+- Stack summary (from injected `<repo-context>` block, plus tokei size headline)
 - Task (from $ARGUMENTS, or "not specified, ask user")
 - Files that will change
 - Files read for context
