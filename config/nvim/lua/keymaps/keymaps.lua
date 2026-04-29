@@ -57,7 +57,7 @@ map("v", ">", ">gv", "Indent and reselect")
 -- gi          - Go to implementation
 -- gy          - Go to type definition
 -- K           - Hover documentation
--- <C-k>       - Signature help (conflicts with window navigation, LSP takes priority)
+-- <C-k>       - Signature help
 -- <leader>lc  - Run code lens (only if LSP supports codelens)
 --
 -- Note: LSP action keymaps using <leader>l* prefix are defined below
@@ -75,12 +75,6 @@ local window_mappings = {
 for _, mapping in ipairs(window_mappings) do
 	map("n", mapping[1], mapping[2], mapping[3])
 end
-
--- Window navigation with Ctrl+hjkl
-map("n", "<C-h>", "<C-w>h", "Go to left window")
-map("n", "<C-j>", "<C-w>j", "Go to bottom window")
-map("n", "<C-k>", "<C-w>k", "Go to top window")
-map("n", "<C-l>", "<C-w>l", "Go to right window")
 
 -- Tab management (<leader>t)
 
