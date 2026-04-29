@@ -1,7 +1,6 @@
 ---
 description: Shape a fuzzy feature request into a structured brief before planning
 argument-hint: <feature description or ticket text>
-allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: heavy.** Thinking-heavy. One step before `/flow:plan`. Produces a brief, not a plan.

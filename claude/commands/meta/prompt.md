@@ -1,7 +1,6 @@
 ---
 description: Turn a fuzzy ask into a sharp Claude Code prompt with context and acceptance criteria
 argument-hint: <the fuzzy ask, or a file containing it>
-allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash($HOME/.claude/bin/project-name.sh)
 model: haiku
 ---
 
@@ -82,6 +81,5 @@ If the shaped prompt looks reusable, suggest at the bottom:
 > ---
 > description: <one-line summary>
 > argument-hint: <what fills $ARGUMENTS>
-> allowed-tools: <list>
 > ---
 > ```

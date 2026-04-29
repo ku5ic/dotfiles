@@ -1,7 +1,6 @@
 ---
 description: Structured retrospective for an incident, sprint, or completed feature
 argument-hint: <context: incident summary, sprint label, or feature name>
-allowed-tools: Read, Grep, Glob, Bash(git log:*), Bash($HOME/.claude/bin/project-name.sh)
 model: haiku
 ---
 

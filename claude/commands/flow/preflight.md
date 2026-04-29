@@ -1,7 +1,6 @@
 ---
 description: Establish shared understanding of the codebase before any work begins
 argument-hint: <optional task description>
-allowed-tools: Read, Grep, Glob, Bash(git status:*), Bash(git log:*), Bash(git diff:*), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: medium.** Read, do not write. No code generation in this step.

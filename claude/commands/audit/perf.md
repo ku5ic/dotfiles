@@ -1,7 +1,6 @@
 ---
 description: Performance audit focused on statically detectable issues
 argument-hint: <file, directory, or area name>
-allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: heavy.** Static analysis. Does not run benchmarks. Flags what is likely slow, names what to measure.

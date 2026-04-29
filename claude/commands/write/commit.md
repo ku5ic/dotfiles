@@ -1,7 +1,6 @@
 ---
 description: Generate a commit message from the staged diff, matching project style
 argument-hint: <optional: short hint about the change intent>
-allowed-tools: Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash(git branch:*)
 model: haiku
 ---
 

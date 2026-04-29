@@ -1,7 +1,6 @@
 ---
 description: Generate a pull request description from the current diff
 argument-hint: <optional: commit range like main..HEAD>
-allowed-tools: Bash(git diff:*), Bash(git log:*), Bash(git branch:*), Bash(git status:*), Read, Bash($HOME/.claude/bin/project-name.sh)
 model: haiku
 ---
 

@@ -1,7 +1,6 @@
 ---
 description: Surface technical debt and architectural risks with severity and remediation path
 argument-hint: <file, directory, or area name>
-allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git log:*), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: heavy.** Structural analysis. Be direct and skeptical. Do not list minor style preferences.

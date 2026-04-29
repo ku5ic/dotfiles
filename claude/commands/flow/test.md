@@ -1,7 +1,6 @@
 ---
 description: Add or update tests for recent implementation work, then run them
 argument-hint: <optional: file or area to focus on>
-allowed-tools: Read, Edit, Write, Grep, Glob, Bash(git diff:*), Bash(git status:*), Bash(npm:test*), Bash(pnpm:test*), Bash(yarn:test*), Bash(vitest:*), Bash(jest:*), Bash(pytest:*), Bash(bundle:exec rspec*), Bash(bundle:exec rails test*), Bash(cargo:test*), Bash(go:test*), Bash($HOME/.claude/bin/project-name.sh), Bash($HOME/.claude/bin/run-checks.sh)
 ---
 
 **Effort: medium.** Matches existing test style. Does not design new testing infrastructure.

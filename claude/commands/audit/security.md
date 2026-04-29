@@ -1,7 +1,6 @@
 ---
 description: Security audit covering frontend and backend surface areas
 argument-hint: <file, directory, or area name>
-allowed-tools: Read, Grep, Glob, Bash($HOME/.claude/bin/detect-stack.sh), Bash(git log:*), Bash(git grep:*), Bash($HOME/.claude/bin/project-name.sh)
 ---
 
 **Effort: heavy.** Defensive review. Assume any input from outside the process boundary is hostile.

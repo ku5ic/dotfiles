@@ -1,7 +1,6 @@
 ---
 description: Senior review of recently changed code, stack aware
 argument-hint: <optional: commit range, branch, or path>
-allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash($HOME/.claude/bin/project-name.sh), Bash($HOME/.claude/bin/run-checks.sh)
 ---
 
 **Effort: heavy.** Deep review. Read the changed files and their immediate context.
