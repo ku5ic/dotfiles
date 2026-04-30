@@ -86,3 +86,12 @@ If both `tailwind.config.js` and `@import "tailwindcss"` are present, the projec
 
 - Pure utility-class additions (e.g. adding `mt-4`) on a known-good v4 project. Just write the class.
 - Non-Tailwind CSS work.
+
+## References
+
+- v4 release post: https://tailwindcss.com/blog/tailwindcss-v4
+- v3-to-v4 upgrade guide: https://tailwindcss.com/docs/upgrade-guide
+- v4 docs: https://tailwindcss.com/docs
+
+When v4 evolves (4.1, 5.x), reconcile this skill against the current upgrade
+guide before trusting the deltas above.
