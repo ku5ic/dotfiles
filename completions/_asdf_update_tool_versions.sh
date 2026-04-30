@@ -1,4 +1,4 @@
-_asdf-update-tool-versions() {
+_asdf_update_tool_versions() {
   local context state line
 
   _arguments -C \

@@ -1,15 +1,27 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# Check if exactly one argument is provided
-if [ $# -ne 1 ]; then
-  echo -e "\e[31mPlease provide the tag name and try again.\e[0m\n\n\tUsage: retag <tag_name>\n"
+yes=0
+if [[ "${1:-}" == "-y" || "${1:-}" == "--yes" ]]; then
+  yes=1
+  shift
+fi
+
+if [[ $# -ne 1 ]]; then
+  printf '\033[31mPlease provide the tag name and try again.\033[0m\n\n\tUsage: retag [-y|--yes] <tag_name>\n' >&2
   exit 1
 fi
 
-# Assign the first argument to the tag variable
 tag="$1"
 
-# Force create the tag and push it to the origin
+if [[ $yes -eq 0 ]]; then
+  printf 'About to force-recreate tag %s and force-push it to origin. Proceed? [y/N] ' "$tag"
+  read -r response
+  case "$response" in
+    y|Y|yes|YES) ;;
+    *) printf 'aborted\n' >&2; exit 1 ;;
+  esac
+fi
+
 git tag -f "$tag"
 git push -f origin "$tag"
-

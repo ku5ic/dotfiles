@@ -16,7 +16,6 @@ fi
 # URLs and other schemes go straight to Launch Services.
 case "$target" in
   *://*|mailto:*|file:*)
-    echo "branch: scheme"
     /usr/bin/open "$target"
     exit $?
     ;;
@@ -27,6 +26,7 @@ esac
 # captured string `~/foo` would otherwise be checked as a literal path.
 expand_tilde() {
   local s="$1"
+  # shellcheck disable=SC2088  # case patterns; literal tilde is intentional
   case "$s" in
     "~")
       printf '%s\n' "$HOME"
@@ -53,10 +53,8 @@ expand_tilde() {
 }
 
 target="$(expand_tilde "$target")"
-echo "after tilde expand: [$target]"
 
-pane_pwd="$(/opt/homebrew/bin/tmux display-message -p -F '#{pane_current_path}' 2>/dev/null || true)"
-echo "pane_pwd: [$pane_pwd]"
+pane_pwd="$(tmux display-message -p -F '#{pane_current_path}' 2>/dev/null || true)"
 
 resolve() {
   local s="$1"
@@ -70,19 +68,16 @@ if resolved="$(resolve "$target")"; then
   :
 elif [[ "$target" =~ ^(.+):[0-9]+(:[0-9]+)?$ ]]; then
   stripped="${BASH_REMATCH[1]}"
-  echo "stripped: [$stripped]"
   if resolved="$(resolve "$stripped")"; then :; fi
 fi
 
 if [ -n "$resolved" ]; then
-  echo "open: [$resolved]"
   /usr/bin/open "$resolved"
   rc=$?
   [ "$rc" -ne 0 ] && notify "open failed: $resolved"
   exit "$rc"
 fi
 
-echo "fallback open: [$target]"
 /usr/bin/open "$target"
 rc=$?
 [ "$rc" -ne 0 ] && notify "could not resolve: $target"

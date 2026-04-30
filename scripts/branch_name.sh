@@ -18,7 +18,6 @@
 # Parameters:
 #   Positional:
 #     <type>       Required. Must be one of:
-#     <type>       Required. Must be one of:
 #                  feat, fix, refactor, perf, test, docs, build, ci, chore, style, release,
 #                  poc, spike, wip, draft, temp, drill, sandbox, personal, exp, try
 #     <issue_id>   Optional. Normalized to uppercase and restricted to [A-Z0-9_-].
@@ -42,6 +41,9 @@
 #   - Unknown branch types are rejected early.
 #   - Intended for execution inside a git repository when using --checkout.
 #   - Uses Bash + sed/tr with POSIX character classes; behavior assumes typical GNU/BSD userland.
+
+set -euo pipefail
+
 die() {
   echo "Error: $*" >&2
   exit 1
@@ -55,8 +57,8 @@ Produce a normalized git branch name of the form <type>/<slug> or
 <type>/<ISSUE-ID>/<slug>.
 
 Types:
-#   feat, fix, refactor, perf, test, docs, build, ci, chore, style, release,
-#   poc, spike, wip, draft, temp, drill, sandbox, personal, exp, try
+  feat, fix, refactor, perf, test, docs, build, ci, chore, style, release,
+  poc, spike, wip, draft, temp, drill, sandbox, personal, exp, try
 
 Flags:
   --checkout    Create and checkout the branch via `git checkout -b`
@@ -89,7 +91,7 @@ is_valid_type() {
     *)
       return 1
       ;;
-    esac
+  esac
 }
 
 checkout=false
@@ -112,7 +114,7 @@ fi
 branch_type="$1"
 shift
 
-is_valid_type "$branch_type" || die "Invalid branch type '$branch_type'. Allowed: feat, fix, refactor, perf, test, docs, build, ci, chore, style, release"
+is_valid_type "$branch_type" || die "Invalid branch type '$branch_type'. Allowed: feat, fix, refactor, perf, test, docs, build, ci, chore, style, release, poc, spike, wip, draft, temp, drill, sandbox, personal, exp, try"
 
 issue_id=""
 title=""

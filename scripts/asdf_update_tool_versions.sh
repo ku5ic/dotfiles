@@ -69,8 +69,8 @@ command -v jq >/dev/null 2>&1 && HAS_JQ=1
 # Compare two semver-ish version strings. Echoes the larger one. Ignores
 # pre-release suffixes by trimming at the first non [0-9.] character.
 vmax() {
-  local a="${1//[^0-9.]*/}"
-  local b="${2//[^0-9.]*/}"
+  local a="${1%%[^0-9.]*}"
+  local b="${2%%[^0-9.]*}"
   printf '%s\n%s\n' "$a" "$b" | sort -V | tail -n1
 }
 
