@@ -7,7 +7,7 @@ argument-hint: <optional: file or area to focus on>
 
 ## Procedure
 
-1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Identify the test runner from the injected `<repo-context>` block.
+1. Get the project name: `!`project-name.sh``. Identify the test runner from the injected `<repo-context>` block.
 2. Load the `test-patterns` skill and the patterns skill matching the detected stack (`react-patterns`, `django-patterns`, etc.) when relevant to the change.
 3. Identify what changed via `git diff HEAD` and `git status`. Scope testing to the delta.
 4. For each changed function, component, or endpoint:
@@ -28,7 +28,7 @@ argument-hint: <optional: file or area to focus on>
 - Do not write tests for things the test-patterns skill says are not worth testing (trivial getters, framework defaults, pass-throughs).
 - Do not introduce a new test framework. Use what the project already uses.
 - If the project uses snapshot tests, prefer that pattern only when snapshots are small and stable. Do not introduce snapshots if the project does not use them.
-- After narrow tests pass, run `$HOME/.claude/bin/run-checks.sh` for full verification across typecheck, lint, and tests.
+- After narrow tests pass, run `run-checks.sh` for full verification across typecheck, lint, and tests.
 
 ## Output
 

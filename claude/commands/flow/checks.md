@@ -6,7 +6,7 @@ description: Run the project's verification checklist via run-checks.sh
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/run-checks.sh``.
+1. Run `!`run-checks.sh``.
 2. Report the trailing summary line (`checks: N passed, M failed, K skipped`). If any failed, also surface the file or label so the user knows where to look.
 
 ## Stop

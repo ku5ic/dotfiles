@@ -15,9 +15,9 @@ model: haiku
 
 ## Procedure
 
-1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
+1. Get the project name: `!`project-name.sh``.
 2. Read $ARGUMENTS. If it points to a file, read it.
-3. Run `!`$HOME/.claude/bin/detect-stack.sh`` if the ask appears technical.
+3. Run `!`detect-stack.sh`` if the ask appears technical.
 4. Identify what is missing:
    - Goal unclear or conflated with method
    - Scope undefined (no files, no surface area)

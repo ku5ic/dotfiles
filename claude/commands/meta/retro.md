@@ -8,7 +8,7 @@ model: haiku
 
 ## Procedure
 
-1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
+1. Get the project name: `!`project-name.sh``.
 2. Identify the retro type from $ARGUMENTS:
    - Incident: something broke, users affected, response happened
    - Sprint or iteration: time-boxed period of work

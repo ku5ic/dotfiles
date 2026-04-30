@@ -7,7 +7,7 @@ argument-hint: <optional task description>
 
 ## Procedure
 
-1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Stack is in the injected `<repo-context>` block.
+1. Get the project name: `!`project-name.sh``. Stack is in the injected `<repo-context>` block.
 2. Session continuity check. If a previous preflight artifact exists for this project from this session (`ls -t ~/.claude/scratch/preflight-<project-name>-*.md | head -1`), compare current `git status` and `git log -5 --oneline` against the artifact's recorded state. If unchanged AND the new task's target area is covered by the previous artifact, emit a delta-only report ("same context as preflight-<project-name>-<HHMM>, no new findings, target area X already covered") and stop. Otherwise proceed to step 3.
 3. Read `CLAUDE.md` at the project root in full. Read any `CLAUDE.md` in the path from project root to the target area.
 4. Read project README only if it explicitly covers the task area, judged from headings.

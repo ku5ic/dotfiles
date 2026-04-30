@@ -10,13 +10,13 @@ model: haiku
 
 Current branch: !`git branch --show-current`
 
-Detected base: !`$HOME/.claude/bin/git-base.sh "$ARGUMENTS"`
+Detected base: !`git-base.sh "$ARGUMENTS"`
 
-Commits on this branch but not on the base: !`git log --oneline --no-merges "$($HOME/.claude/bin/git-base.sh "$ARGUMENTS")..HEAD"`
+Commits on this branch but not on the base: !`git-log-from-base.sh "$ARGUMENTS" "--no-merges"`
 
 ## Procedure
 
-1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
+1. Get the project name: `!`project-name.sh``.
 2. Interpret $ARGUMENTS:
    - If it looks like an explicit range (`ref..HEAD`, `sha1..sha2`): trust it. Pull commits with `git log --oneline --no-merges $ARGUMENTS`.
    - If it is a single ref (e.g. `develop`): the Context block already used it as the base.

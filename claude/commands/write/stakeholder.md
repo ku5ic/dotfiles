@@ -8,7 +8,7 @@ model: haiku
 
 ## Procedure
 
-1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
+1. Get the project name: `!`project-name.sh``.
 2. Read the input. If $ARGUMENTS looks like a file path, read the file. Otherwise treat $ARGUMENTS as the content directly.
 3. Identify the audience implied by the input or default to PM-level.
 4. Reframe.

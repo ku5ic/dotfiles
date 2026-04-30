@@ -12,7 +12,7 @@ argument-hint: <optional: step number or range>
 
 ## Procedure
 
-1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Read the most recent plan for this project: `ls -t ~/.claude/scratch/plan-<project-name>-\*.md | head -1`. Identify the step to implement.
+1. Get the project name: `!`project-name.sh``. Read the most recent plan for this project: `ls -t ~/.claude/scratch/plan-<project-name>-\*.md | head -1`. Identify the step to implement.
 2. Confirm the files involved still match the plan. If drift: stop and report.
 3. Load the patterns skill for the stack if the change is stack-specific.
 4. Make the changes. One step at a time. After each file:

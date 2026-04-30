@@ -12,7 +12,7 @@ argument-hint: <task description or link to preflight report>
 
 ## Procedure
 
-1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Read the most recent preflight report for this project: `ls -t ~/.claude/scratch/preflight-<project-name>-\*.md | head -1`. If none exists for this project, run /flow:preflight first.
+1. Get the project name: `!`project-name.sh``. Read the most recent preflight report for this project: `ls -t ~/.claude/scratch/preflight-<project-name>-\*.md | head -1`. If none exists for this project, run /flow:preflight first.
 2. Load the patterns skill matching the detected stack (react-patterns, django-patterns, etc.) if the task is in that area.
 3. Determine plan shape. If $ARGUMENTS contains "mechanical:" or "plan-shape: mechanical", the plan is mechanical: skip steps 4 and 6 below (no rejected alternatives, no per-step test strategy beyond a single end verification). If the work is clearly mechanical from the preflight (pure file edits, no architectural choice), the agent may self-mark mechanical, stating the reason. Otherwise the plan is substantive (default).
 4. Consider two implementation approaches. For each: scope, risk, effort, reversibility. Pick one and justify why. If both score similarly, pick the approach that touches fewer layers.

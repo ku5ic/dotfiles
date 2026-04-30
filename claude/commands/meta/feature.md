@@ -14,7 +14,7 @@ argument-hint: <feature description or ticket text>
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh`` for context. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Some features make sense in one stack and not another.
+1. Run `!`detect-stack.sh`` for context. Get the project name: `!`project-name.sh``. Some features make sense in one stack and not another.
 2. Read $ARGUMENTS. If it points to a ticket file or URL string, read the file. Otherwise treat as the request.
 3. Read project CLAUDE.md and any architecture docs.
 4. Work through the questions below in order. Write the brief as you go. It is fine for a section to end with "unknown, ask requester" rather than a fabricated answer.

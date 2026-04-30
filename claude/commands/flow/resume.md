@@ -7,7 +7,7 @@ argument-hint: <optional: scratch path or task slug>
 
 ## Procedure
 
-1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
+1. Get the project name: `!`project-name.sh``.
 2. If $ARGUMENTS specifies a path, read it. Otherwise, find the most recent plan or feature brief for this project: `ls -t ~/.claude/scratch/plan-<project-name>-*.md ~/.claude/scratch/feature-<project-name>-*.md 2>/dev/null | head -1`.
 3. Diff the plan against current code state:
    - Which steps are done (via git log on touched files since the plan timestamp)

@@ -24,7 +24,7 @@ export PATH="$(brew --prefix)/opt/openssl@3/bin:$PATH"
 export PATH="$(brew --prefix)/opt/ncurses/bin:$PATH"
 export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
 export PATH="$HOME/.dotfiles/scripts:$PATH"
-export PATH="$HOME/.dotfiles/claude/bin/:$PATH"
+export PATH="$HOME/.claude/bin/:$PATH"
 export PATH
 
 pyclean () {
