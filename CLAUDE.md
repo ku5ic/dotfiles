@@ -38,37 +38,49 @@ ln -sfv ~/.dotfiles/config/nvim ~/.config/
 
 ## Neovim Architecture
 
-Entry point: `config/nvim/init.lua` - bootstraps lazy.nvim, sets leader to `<Space>`, then loads:
+Entry point: `config/nvim/init.lua` - bootstraps lazy.nvim, sets leader to `<Space>`, loads `config.options` first (so plugins can read final option state), then `lazy.setup("plugins")`, then keymap modules.
 
-- `plugins/` - one file per plugin category (lazy.nvim auto-discovers all files)
-- `config/options` - vim options
-- `keymaps/keymaps` - all keymaps
-- `keymaps/copilotchat` - AI-specific keymaps
+Top-level layout under `config/nvim/lua/`:
+
+- `plugins/` - one file per plugin category, auto-discovered by lazy.nvim (top-level files only; subdirectories without `init.lua` are not treated as specs)
+- `config/options.lua` - vim options
+- `config/icons.lua` - icon set used by lualine, bufferline, diagnostics
+- `config/filetypes.lua` - filetype constants (`JS`, `TS`, `JS_TS`, `JS_REACT`, `CSS`, `WEB`) consumed by formatting, linting, and LSP filetype lists
+- `lsp/servers/` - per-server LSP settings, one file per server. Adding a server is dropping a file here; `plugins/lsp.lua` discovers them at startup via `readdir` and feeds Mason
+- `keymaps/keymaps.lua` - global / built-in / cmd-form keymaps (window, tab, buffer, telescope, git, LSP, Trouble, copy paths, Neovide). Plugin-specific keymaps live with their plugin spec via lazy `keys = {...}`
+- `keymaps/copilotchat.lua` - AI keymaps
+- `utils/copilotchat.lua`, `utils/copilotchat/prompts.lua` - CopilotChat helpers and prompt templates
 
 **Plugin categories:**
 
-- `lsp.lua` - Mason + nvim-lspconfig; LSP server list is the single source of truth for both Mason installation and lsp setup. Switch TypeScript LSP between `ts_ls`/`vtsls` via the `typescript_lsp` variable at the top.
+- `lsp.lua` - Mason + nvim-lspconfig; LSP server list is built dynamically from `lua/lsp/servers/`. Switch TypeScript LSP between `ts_ls`/`vtsls` via the `typescript_lsp` variable at the top; the inactive one is filtered out of the discovered list.
 - `code-completion.lua` - blink.cmp
 - `copilot.lua` - GitHub Copilot and CopilotChat.nvim
 - `coding.lua` - vim-surround, Comment.nvim, nvim-autopairs, vim-rbenv
-- `editor.lua` - Telescope, Neo-tree, gitsigns, etc.
-- `formatting.lua` / `linting.lua` - conform.nvim / nvim-lint
+- `editor.lua` - Telescope, Neo-tree, gitsigns, which-key (with group labels for every `<leader>` prefix), etc.
+- `formatting.lua` / `linting.lua` - conform.nvim / nvim-lint; both consume `config.filetypes` for JS/TS filetype lists
 - `treesitter.lua` - syntax highlighting
-- `debuggers.lua` - nvim-dap
-- `ui.lua` - noice, bufferline, lualine, etc.
+- `debuggers.lua` - nvim-dap (all DAP keymaps colocated here via lazy `keys`)
+- `ui.lua` - noice, bufferline, lualine, nvim-notify, dressing
+
+**Augroups:**
+
+All custom autocmds belong to a `dotfiles_*` augroup created with `clear = true`, so `:source $MYVIMRC` does not duplicate registrations: `dotfiles_autoreload` (FocusGained/BufEnter checktime), `dotfiles_lsp_attach`, `dotfiles_lsp_codelens`, `dotfiles_treesitter_highlight`.
 
 **Keymap prefix conventions** (leader = `<Space>`):
 
 - `<leader>f` - Find/files (Telescope)
-- `<leader>s` - Search/grep
-- `<leader>g` - Git (LazyGit, gitsigns)
+- `<leader>s` - Search/grep (Telescope, Spectre, todo-comments)
+- `<leader>g` - Git (LazyGit, Telescope, fugitive blame, gitsigns)
 - `<leader>w` - Window splits
 - `<leader>t` - Tabs/explorer toggle
 - `<leader>b` - Buffer management
 - `<leader>l` - LSP actions
 - `<leader>x` - Trouble diagnostics
-- `<leader>d` - DAP debugger
+- `<leader>d` - DAP debugger (also F5/F10/F11/F12)
 - `<leader>a` - AI/Copilot (see `keymaps/copilotchat.lua`)
+- `<leader>n` - Notifications/UI (notify, noice, precognition)
+- `<leader>c` - Copy file path
 
 ## Scripts
 

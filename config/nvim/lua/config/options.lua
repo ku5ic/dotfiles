@@ -1,8 +1,18 @@
 local o, g = vim.opt, vim.g
 
 -- 1. External host executables
-g.python3_host_prog = vim.fn.expand("~/.asdf/shims/python")
-g.ruby_host_prog = vim.fn.expand("~/.asdf/shims/neovim-ruby-host")
+-- Resolve via PATH; fall back to asdf shim location for GUI launches that don't
+-- inherit a shell PATH.
+local function resolve_host(name, fallback)
+	local path = vim.fn.exepath(name)
+	if path == "" then
+		path = vim.fn.expand(fallback)
+	end
+	return path ~= "" and path or nil
+end
+
+g.python3_host_prog = resolve_host("python3", "~/.asdf/shims/python")
+g.ruby_host_prog = resolve_host("neovim-ruby-host", "~/.asdf/shims/neovim-ruby-host")
 
 -- 2. Built-in plugins
 g.loaded_netrw = 1
@@ -89,11 +99,18 @@ vim.api.nvim_create_user_command("CopyRelPath", function()
 end, {})
 
 -- Prefer :prepend when you *want* fzf earlier in rtp
-o.runtimepath:prepend("/opt/homebrew/bin/fzf")
+local fzf_path = vim.fn.exepath("fzf")
+if fzf_path ~= "" then
+	o.runtimepath:prepend(vim.fn.fnamemodify(fzf_path, ":h"))
+end
 
 -- 10. Auto-reload files changed on disk
 o.autoread = true
-vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, { command = "checktime" })
+local autoreload = vim.api.nvim_create_augroup("dotfiles_autoreload", { clear = true })
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+	group = autoreload,
+	command = "checktime",
+})
 
 -- 11. File types
 vim.filetype.add({

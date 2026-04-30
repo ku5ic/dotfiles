@@ -1,13 +1,10 @@
 -- Neovim keymap configuration
 -- See CLAUDE.md for keymap prefix conventions
-
-local notify = require("notify")
-local noice = require("noice")
-local noice_lsp = require("noice.lsp")
-local spectre = require("spectre")
-local todo_comments = require("todo-comments")
-local conform = require("conform")
-local lint = require("lint")
+--
+-- Plugin-specific keymaps live with their plugin specs (lazy `keys = {...}`)
+-- so removing a plugin removes its mappings cleanly. Built-ins, telescope/git
+-- (which trigger lazy loading via <cmd> form), LSP, Trouble, and Neovide
+-- bindings stay here.
 
 local keymap = vim.keymap
 
@@ -21,7 +18,6 @@ end
 
 -- Core navigation & editing
 
--- Clear search highlights
 map("n", "<leader>nh", ":nohl<CR>", "Clear search highlights")
 
 -- Better up/down movement for wrapped lines
@@ -29,18 +25,12 @@ map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", "Move down", { expr = true }
 map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", "Move up", { expr = true })
 
 -- Move lines with Alt+j/k
-local move_mappings = {
-	{ "n", "<A-j>", ":m .+1<CR>==", "Move line down" },
-	{ "n", "<A-k>", ":m .-2<CR>==", "Move line up" },
-	{ "i", "<A-j>", "<Esc>:m .+1<CR>==gi", "Move line down" },
-	{ "i", "<A-k>", "<Esc>:m .-2<CR>==gi", "Move line up" },
-	{ "v", "<A-j>", ":m '>+1<CR>gv=gv", "Move selection down" },
-	{ "v", "<A-k>", ":m '<-2<CR>gv=gv", "Move selection up" },
-}
-
-for _, mapping in ipairs(move_mappings) do
-	map(mapping[1], mapping[2], mapping[3], mapping[4])
-end
+map("n", "<A-j>", ":m .+1<CR>==", "Move line down")
+map("n", "<A-k>", ":m .-2<CR>==", "Move line up")
+map("i", "<A-j>", "<Esc>:m .+1<CR>==gi", "Move line down")
+map("i", "<A-k>", "<Esc>:m .-2<CR>==gi", "Move line up")
+map("v", "<A-j>", ":m '>+1<CR>gv=gv", "Move selection down")
+map("v", "<A-k>", ":m '<-2<CR>gv=gv", "Move selection up")
 
 -- Better indenting in visual mode
 map("v", "<", "<gv", "Unindent and reselect")
@@ -63,82 +53,26 @@ map("v", ">", ">gv", "Indent and reselect")
 -- Note: LSP action keymaps using <leader>l* prefix are defined below
 
 -- Window management (<leader>w)
-
-local window_mappings = {
-	{ "<leader>wv", "<C-w>v", "Split window vertically" },
-	{ "<leader>wh", "<C-w>s", "Split window horizontally" },
-	{ "<leader>we", "<C-w>=", "Equalize window sizes" },
-	{ "<leader>wc", ":close<CR>", "Close current window" },
-	{ "<leader>wm", "<Cmd>MaximizerToggle<CR>", "Toggle maximize window" },
-}
-
-for _, mapping in ipairs(window_mappings) do
-	map("n", mapping[1], mapping[2], mapping[3])
-end
+map("n", "<leader>wv", "<C-w>v", "Split window vertically")
+map("n", "<leader>wh", "<C-w>s", "Split window horizontally")
+map("n", "<leader>we", "<C-w>=", "Equalize window sizes")
+map("n", "<leader>wc", ":close<CR>", "Close current window")
+map("n", "<leader>wm", "<Cmd>MaximizerToggle<CR>", "Toggle maximize window")
 
 -- Tab management (<leader>t)
-
-local tab_mappings = {
-	{ "<leader>tn", ":tabnew<CR>", "New tab" },
-	{ "<leader>tc", ":tabclose<CR>", "Close tab" },
-	{ "<leader>tj", ":tabnext<CR>", "Next tab" },
-	{ "<leader>tk", ":tabprevious<CR>", "Previous tab" },
-	{ "<leader>te", "<cmd>Neotree toggle<cr>", "Toggle file explorer" },
-}
-
-for _, mapping in ipairs(tab_mappings) do
-	map("n", mapping[1], mapping[2], mapping[3])
-end
+map("n", "<leader>tn", ":tabnew<CR>", "New tab")
+map("n", "<leader>tc", ":tabclose<CR>", "Close tab")
+map("n", "<leader>tj", ":tabnext<CR>", "Next tab")
+map("n", "<leader>tk", ":tabprevious<CR>", "Previous tab")
+map("n", "<leader>te", "<cmd>Neotree toggle<cr>", "Toggle file explorer")
 
 -- Buffer management (<leader>b)
-
 map("n", "<leader>bb", "<cmd>Telescope buffers show_all_buffers=true<cr>", "Switch buffer")
 map("n", "<leader>bd", "<cmd>bdelete<cr>", "Delete buffer")
 map("n", "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", "Pin buffer")
 map("n", "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", "Delete unpinned buffers")
 
--- Notifications & UI (<leader>n)
-
-map("n", "<leader>nn", function()
-	notify.dismiss({ silent = true, pending = true })
-end, "Dismiss notifications")
-
-map("n", "<leader>np", "<cmd>Precognition toggle<cr>", "Toggle Precognition")
-
--- Noice commands
-map("n", "<leader>nl", function()
-	noice.cmd("last")
-end, "Show last message")
-map("n", "<leader>nH", function()
-	noice.cmd("history")
-end, "Show message history")
-map("n", "<leader>na", function()
-	noice.cmd("all")
-end, "Show all messages")
-map("n", "<leader>nd", function()
-	noice.cmd("dismiss")
-end, "Dismiss all messages")
-
--- Noice scroll in LSP hover docs
-map({ "i", "n", "s" }, "<c-f>", function()
-	if not noice_lsp.scroll(4) then
-		return "<c-f>"
-	end
-end, "Scroll forward", { silent = true, expr = true })
-
-map({ "i", "n", "s" }, "<c-b>", function()
-	if not noice_lsp.scroll(-4) then
-		return "<c-b>"
-	end
-end, "Scroll backward", { silent = true, expr = true })
-
--- Redirect cmdline
-map("c", "<S-Enter>", function()
-	noice.redirect(vim.fn.getcmdline())
-end, "Redirect cmdline")
-
 -- Quick access
-
 map("n", "<leader>,", "<cmd>Telescope buffers show_all_buffers=true<cr>", "Switch buffer (quick)")
 map("n", "<leader>/", "<cmd>Telescope live_grep_args<cr>", "Search in files (quick)")
 
@@ -146,28 +80,18 @@ map("n", "<leader>/", "<cmd>Telescope live_grep_args<cr>", "Search in files (qui
 map("n", "<leader><leader>", "<cmd>Neotree reveal<cr>", "Reveal current file in explorer")
 
 -- Find/file operations (<leader>f)
-
 map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", "Find files")
 map("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", "Find recent files")
 map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", "Find buffers")
 map("n", "<leader>fc", "<cmd>Telescope commands<cr>", "Find commands")
 map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", "Find help")
 map("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", "Find keymaps")
-map("n", "<leader>fm", function()
-	conform.format({
-		lsp_fallback = true,
-		async = false,
-		timeout_ms = 1000,
-	})
-end, "Format file")
+-- <leader>fm (Format file) lives in plugins/formatting.lua
 
 -- Search operations (<leader>s)
-
 map("n", "<leader>ss", "<cmd>Telescope current_buffer_fuzzy_find<cr>", "Search in current buffer")
 map("n", "<leader>sg", "<cmd>Telescope live_grep_args<cr>", "Search with live grep")
-map("n", "<leader>sr", function()
-	spectre.open()
-end, "Search and replace")
+-- <leader>sr (Search and replace) lives in plugins/editor.lua under nvim-spectre
 map("n", "<leader>st", "<cmd>TodoTelescope<cr>", "Search todos")
 map("n", "<leader>sd", "<cmd>Telescope diagnostics<cr>", "Search diagnostics")
 map("n", "<leader>sa", "<cmd>Telescope autocommands<cr>", "Search autocommands")
@@ -177,16 +101,9 @@ map("n", "<leader>sm", "<cmd>Telescope marks<cr>", "Search marks")
 map("n", "<leader>so", "<cmd>Telescope vim_options<cr>", "Search options")
 map("n", "<leader>sR", "<cmd>Telescope resume<cr>", "Resume last search")
 
--- Todo navigation
-map("n", "]t", function()
-	todo_comments.jump_next()
-end, "Next todo comment")
-map("n", "[t", function()
-	todo_comments.jump_prev()
-end, "Previous todo comment")
+-- Todo navigation: ]t / [t live in plugins/editor.lua under todo-comments.nvim
 
 -- Git operations (<leader>g)
-
 map("n", "<leader>gg", "<cmd>LazyGit<cr>", "LazyGit")
 map("n", "<leader>gs", "<cmd>Telescope git_status<CR>", "Git status")
 map("n", "<leader>gc", "<cmd>Telescope git_commits<CR>", "Git commits")
@@ -195,22 +112,13 @@ map("n", "<leader>gn", "<cmd>Gitsigns next_hunk<cr>", "Next git hunk")
 map("n", "<leader>gp", "<cmd>Gitsigns prev_hunk<cr>", "Previous git hunk")
 
 -- LSP operations (<leader>l)
-
 map("n", "<leader>lr", vim.lsp.buf.rename, "LSP Rename")
 map({ "n", "v" }, "<leader>la", vim.lsp.buf.code_action, "LSP Code Action")
-map("n", "<leader>lf", function()
-	conform.format({
-		lsp_fallback = true,
-		async = false,
-		timeout_ms = 1000,
-	})
-end, "LSP Format")
+-- <leader>lf (LSP Format) lives in plugins/formatting.lua
 map("n", "<leader>ld", function()
 	vim.diagnostic.setloclist({ open = true })
 end, "LSP Diagnostics to location list")
-map("n", "<leader>ll", function()
-	lint.try_lint()
-end, "Lint current file")
+-- <leader>ll (Lint current file) lives in plugins/linting.lua
 map("n", "<leader>li", "<cmd>LspInfo<cr>", "LSP Info")
 
 -- LSP Workspace management
@@ -221,7 +129,6 @@ map("n", "<leader>lwl", function()
 end, "LSP List workspace folders")
 
 -- Diagnostics/Trouble (<leader>x)
-
 map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", "Show all diagnostics")
 map("n", "<leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", "Show document diagnostics")
 map("n", "<leader>xs", "<cmd>Trouble symbols toggle focus=false<cr>", "Show symbols")
@@ -229,51 +136,23 @@ map("n", "<leader>xl", "<cmd>Trouble lsp toggle focus=false win.position=right<c
 map("n", "<leader>xL", "<cmd>Trouble loclist toggle<cr>", "Show location list")
 map("n", "<leader>xq", "<cmd>Trouble qflist toggle<cr>", "Show quickfix list")
 
--- Debug operations (<leader>d)
+-- Debug operations (<leader>d) and F5/F10/F11/F12 live in plugins/debuggers.lua
 
--- Debug control
-map("n", "<F5>", "<cmd>lua require'dap'.continue()<cr>", "Debug Continue")
-map("n", "<F10>", "<cmd>lua require'dap'.step_over()<cr>", "Debug Step Over")
-map("n", "<F11>", "<cmd>lua require'dap'.step_into()<cr>", "Debug Step Into")
-map("n", "<F12>", "<cmd>lua require'dap'.step_out()<cr>", "Debug Step Out")
+-- AI/Copilot operations (<leader>a) live in keymaps/copilotchat.lua
 
--- Debug actions
-map("n", "<leader>db", "<cmd>lua require'dap'.toggle_breakpoint()<cr>", "Toggle breakpoint")
-map("n", "<leader>dc", "<cmd>lua require'dap'.continue()<cr>", "Debug continue")
-map("n", "<leader>ds", "<cmd>lua require'dap'.step_over()<cr>", "Debug step over")
-map("n", "<leader>di", "<cmd>lua require'dap'.step_into()<cr>", "Debug step into")
-map("n", "<leader>do", "<cmd>lua require'dap'.step_out()<cr>", "Debug step out")
-map("n", "<leader>dr", "<cmd>lua require'dap'.repl.open()<cr>", "Open debug REPL")
-map("n", "<leader>dt", "<cmd>lua require'dap'.terminate()<cr>", "Terminate debug session")
-map("n", "<leader>dl", "<cmd>lua require'dap'.run_last()<cr>", "Run last debug session")
-
--- Debug UI
-map("n", "<leader>dh", "<cmd>lua require'dap.ui.widgets'.hover()<cr>", "Debug hover")
-map("n", "<leader>dp", "<cmd>lua require'dap.ui.widgets'.preview()<cr>", "Debug preview")
-map(
-	"n",
-	"<leader>df",
-	"<cmd>lua require'dap.ui.widgets'.centered_float(require'dap.ui.widgets'.frames)<cr>",
-	"Debug frames"
-)
-map(
-	"n",
-	"<leader>dv",
-	"<cmd>lua require'dap.ui.widgets'.centered_float(require'dap.ui.widgets'.scopes)<cr>",
-	"Debug variables/scopes"
-)
-
--- AI/Copilot operations (<leader>a)
---
--- AI keymaps are defined in keymaps/copilotchat.lua
--- See that file for the complete list of AI operations
+-- Notifications & UI (<leader>n)
+-- Sub-mappings live in their owning plugin specs:
+--   <leader>nn -> plugins/ui.lua (nvim-notify)
+--   <leader>nl/nH/na/nd -> plugins/ui.lua (noice.nvim)
+--   <leader>np -> plugins/editor.lua (precognition.nvim)
+-- <c-f>/<c-b> noice scrolls and <S-Enter> redirect also live in plugins/ui.lua.
 
 -- Copy file path (<leader>c)
 map("n", "<leader>cP", "<cmd>CopyPath<cr>", "Copy Full File Path")
 map("n", "<leader>cp", "<cmd>CopyRelPath<cr>", "Copy Relative File Path")
 
 -- Neovide
-vim.keymap.set("n", "<D-v>", '"+p', { noremap = true, silent = true })
-vim.keymap.set("i", "<D-v>", "<C-r>+", { noremap = true, silent = true })
-vim.keymap.set("v", "<D-v>", '"+p', { noremap = true, silent = true })
-vim.keymap.set("v", "<D-c>", '"+y', { noremap = true, silent = true })
+map("n", "<D-v>", '"+p', "Neovide paste")
+map("i", "<D-v>", "<C-r>+", "Neovide paste")
+map("v", "<D-v>", '"+p', "Neovide paste")
+map("v", "<D-c>", '"+y', "Neovide copy")

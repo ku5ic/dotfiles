@@ -1,169 +1,39 @@
 -- Toggle between TypeScript LSP servers: "ts_ls" or "vtsls"
 local typescript_lsp = "ts_ls" -- Change this to "vtsls" to switch
 
--- Single source of truth for all managed LSP servers.
--- Both Mason and the LSP setup derive from this list.
-local LSP_SERVERS = {
-	"basedpyright",
-	"cssls",
-	"emmet_ls",
-	"graphql",
-	"html",
-	"lua_ls",
-	"phpactor",
-	"ruff",
-	"solargraph",
-	"tailwindcss",
-	typescript_lsp,
-}
+-- Discovery: each file under lua/lsp/servers/ is one LSP server.
+-- Adding a server is dropping a file there; nothing else to edit.
+local function discover_server_names()
+	local dir = vim.fn.stdpath("config") .. "/lua/lsp/servers"
+	local files = vim.fn.readdir(dir)
+	local names = {}
+	for _, file in ipairs(files) do
+		if file:match("%.lua$") then
+			local name = file:gsub("%.lua$", "")
+			table.insert(names, name)
+		end
+	end
+	table.sort(names)
+	return names
+end
 
--- Extract server configurations into a separate module-level function
-local function get_server_settings()
-	return {
-		lua_ls = {
-			settings = {
-				Lua = {
-					diagnostics = { globals = { "vim" } },
-					workspace = {
-						checkThirdParty = false,
-						library = {
-							[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-							[vim.fn.stdpath("config") .. "/lua"] = true,
-						},
-					},
-				},
-			},
-		},
+-- Filter out the inactive ts_ls/vtsls (the toggle keeps both files on disk).
+local function active_server_names()
+	local skip = typescript_lsp == "vtsls" and "ts_ls" or "vtsls"
+	local result = {}
+	for _, name in ipairs(discover_server_names()) do
+		if name ~= skip then
+			table.insert(result, name)
+		end
+	end
+	return result
+end
 
-		vtsls = {
-			settings = {
-				vtsls = {
-					autoUseWorkspaceTsdk = true,
-					experimental = {
-						maxInlayHintLength = 30,
-						completion = {
-							enableServerSideFuzzyMatch = true,
-						},
-					},
-				},
-				typescript = {
-					updateImportsOnFileMove = { enabled = "always" },
-					suggest = { completeFunctionCalls = true },
-					inlayHints = {
-						enumMemberValues = { enabled = true },
-						functionLikeReturnTypes = { enabled = true },
-						parameterNames = { enabled = "literals" },
-						parameterTypes = { enabled = true },
-						propertyDeclarationTypes = { enabled = true },
-						variableTypes = { enabled = false },
-					},
-				},
-				javascript = {
-					updateImportsOnFileMove = { enabled = "always" },
-					inlayHints = {
-						enumMemberValues = { enabled = true },
-						functionLikeReturnTypes = { enabled = true },
-						parameterNames = { enabled = "literals" },
-						parameterTypes = { enabled = true },
-						propertyDeclarationTypes = { enabled = true },
-						variableTypes = { enabled = false },
-					},
-				},
-			},
-		},
+local LSP_SERVERS = active_server_names()
 
-		ts_ls = {
-			init_options = {
-				maxTsServerMemory = 8192,
-				tsserver = { logVerbosity = "off" },
-			},
-			settings = {
-				typescript = { inlayHints = { enabled = false } },
-				javascript = { inlayHints = { enabled = false } },
-			},
-			filetypes = {
-				"astro",
-				"javascript",
-				"javascript.jsx",
-				"javascriptreact",
-				"svelte",
-				"typescript",
-				"typescript.tsx",
-				"typescriptreact",
-				"vue",
-			},
-		},
-
-		tailwindcss = {
-			settings = {
-				tailwindCSS = {
-					experimental = {
-						classRegex = {
-							{ "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
-							{ "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
-							{ "cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
-						},
-					},
-				},
-			},
-		},
-
-		emmet_ls = {
-			filetypes = {
-				"css",
-				"djangohtml",
-				"html",
-				"javascriptreact",
-				"less",
-				"sass",
-				"scss",
-				"svelte",
-				"typescriptreact",
-			},
-		},
-
-		cssls = {
-			settings = {
-				css = {
-					lint = {
-						unknownAtRules = "ignore",
-					},
-				},
-				scss = {
-					lint = {
-						unknownAtRules = "ignore",
-					},
-				},
-				less = {
-					lint = {
-						unknownAtRules = "ignore",
-					},
-				},
-			},
-		},
-
-		basedpyright = {
-			settings = {
-				basedpyright = {
-					analysis = {
-						typeCheckingMode = "standard",
-						autoImportCompletions = true,
-						diagnosticMode = "openFilesOnly",
-					},
-					reportIncompatibleVariableOverride = "none",
-					reportIncompatibleMethodOverride = "none",
-				},
-			},
-		},
-
-		ruff = {
-			on_attach = function(client)
-				client.server_capabilities.hoverProvider = false
-			end,
-		},
-
-		graphql = {},
-	}
+local function get_server_settings(name)
+	local ok, settings = pcall(require, "lsp.servers." .. name)
+	return ok and settings or {}
 end
 
 local function setup_mason()
@@ -230,14 +100,13 @@ end
 
 local function setup_lsp_servers()
 	local capabilities = require("blink.cmp").get_lsp_capabilities()
-	local server_settings = get_server_settings()
 
-	-- Disable whichever TypeScript LSP is not selected
+	-- Defensive: explicitly disable the inactive TS server.
 	local disabled_ts_lsp = typescript_lsp == "vtsls" and "ts_ls" or "vtsls"
 	vim.lsp.config(disabled_ts_lsp, { enabled = false })
 
 	for _, name in ipairs(LSP_SERVERS) do
-		local config = vim.tbl_deep_extend("force", { capabilities = capabilities }, server_settings[name] or {})
+		local config = vim.tbl_deep_extend("force", { capabilities = capabilities }, get_server_settings(name))
 		vim.lsp.config(name, config)
 		vim.lsp.enable(name)
 	end
@@ -255,6 +124,7 @@ local function setup_lsp_keymaps(bufnr, client)
 	if client and client.server_capabilities.codeLensProvider then
 		vim.lsp.codelens.enable(true, { buffer = bufnr })
 		vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+			group = "dotfiles_lsp_codelens",
 			buffer = bufnr,
 			callback = function()
 				vim.lsp.codelens.enable(true, { buffer = bufnr })
@@ -286,7 +156,10 @@ return {
 			configure_diagnostics()
 			setup_lsp_servers()
 
+			vim.api.nvim_create_augroup("dotfiles_lsp_codelens", { clear = true })
+
 			vim.api.nvim_create_autocmd("LspAttach", {
+				group = vim.api.nvim_create_augroup("dotfiles_lsp_attach", { clear = true }),
 				callback = function(args)
 					local client = vim.lsp.get_client_by_id(args.data.client_id)
 					setup_lsp_keymaps(args.buf, client)

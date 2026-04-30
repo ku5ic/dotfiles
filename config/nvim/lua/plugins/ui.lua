@@ -161,6 +161,68 @@ return {
 			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
 			"MunifTanjim/nui.nvim",
 		},
+		keys = {
+			{
+				"<leader>nl",
+				function()
+					require("noice").cmd("last")
+				end,
+				desc = "Show last message",
+			},
+			{
+				"<leader>nH",
+				function()
+					require("noice").cmd("history")
+				end,
+				desc = "Show message history",
+			},
+			{
+				"<leader>na",
+				function()
+					require("noice").cmd("all")
+				end,
+				desc = "Show all messages",
+			},
+			{
+				"<leader>nd",
+				function()
+					require("noice").cmd("dismiss")
+				end,
+				desc = "Dismiss all messages",
+			},
+			{
+				"<c-f>",
+				function()
+					if not require("noice.lsp").scroll(4) then
+						return "<c-f>"
+					end
+				end,
+				mode = { "i", "n", "s" },
+				silent = true,
+				expr = true,
+				desc = "Scroll forward",
+			},
+			{
+				"<c-b>",
+				function()
+					if not require("noice.lsp").scroll(-4) then
+						return "<c-b>"
+					end
+				end,
+				mode = { "i", "n", "s" },
+				silent = true,
+				expr = true,
+				desc = "Scroll backward",
+			},
+			{
+				"<S-Enter>",
+				function()
+					require("noice").redirect(vim.fn.getcmdline())
+				end,
+				mode = "c",
+				desc = "Redirect cmdline",
+			},
+		},
 		opts = {
 			lsp = {
 				override = {
@@ -194,6 +256,15 @@ return {
 	-- notify
 	{
 		"rcarriga/nvim-notify",
+		keys = {
+			{
+				"<leader>nn",
+				function()
+					require("notify").dismiss({ silent = true, pending = true })
+				end,
+				desc = "Dismiss notifications",
+			},
+		},
 		opts = {
 			timeout = 3000,
 			max_height = function()

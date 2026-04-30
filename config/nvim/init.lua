@@ -22,7 +22,7 @@ vim.opt.rtp:prepend(lazypath)
 -- Set leader key to space
 vim.g.mapleader = " "
 
-require("lazy").setup("plugins")
 require("config.options")
+require("lazy").setup("plugins")
 require("keymaps.keymaps")
 require("keymaps.copilotchat")
