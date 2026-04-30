@@ -1,0 +1,26 @@
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck and bats
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck bats
+
+      - name: shellcheck
+        run: shellcheck -x -P SCRIPTDIR claude/bin/*.sh claude/hooks/*.sh
+
+      - name: bats
+        run: bats tests/
+
+      - name: doctor
+        run: bash claude/bin/doctor.sh

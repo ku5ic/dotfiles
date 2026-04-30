@@ -5,6 +5,7 @@ brew 'asdf'                         # runtime version manager driving Node, Ruby
 brew 'atuin'                        # shell history sync and search backed by SQLite
 brew 'bash'                         # newer bash than the macOS bundled 3.2, used by scripts requiring associative arrays and modern features
 brew 'bat'                          # syntax-highlighted cat replacement, aliased as the default file viewer
+brew 'bats-core'                    # bash test framework used by tests/guard-bash.bats
 brew 'chafa'                        # terminal image renderer used by fastfetch and similar tools
 brew 'cmake'                        # build system required by Neovim plugins with native components
 brew 'coreutils'                    # GNU core utilities to override BSD versions on macOS
@@ -44,6 +45,7 @@ brew 'reattach-to-user-namespace'   # tmux helper that fixes pasteboard access o
 brew 'redis'                        # in-memory data store for local development
 brew 'ripgrep'                      # fast recursive grep, default search backend in Neovim and shell
 brew 'rust'                         # Rust toolchain required by Neovim plugins with native components (e.g. blink.cmp)
+brew 'shellcheck'                   # static analysis for shell scripts, used by claude/bin/doctor.sh and CI
 brew 'ssh-copy-id'                  # helper for installing public keys onto remote hosts
 brew 'starship'                     # cross-shell prompt configured via config/starship.toml
 brew 'tig'                          # terminal git history browser

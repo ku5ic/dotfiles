@@ -1,18 +1,14 @@
 #!/usr/bin/env bash
 # PostToolUse hook for Write, Edit, MultiEdit.
 # Strips typographic punctuation (em dashes, smart quotes, etc.) from written files.
-set -euo pipefail
+HOOK_NAME="sanitize-output.sh"
+# shellcheck source=_lib.sh
+source "$(dirname "$0")/_lib.sh"
 
-payload="$(cat)"
-command -v jq >/dev/null 2>&1 || exit 0
+read_payload
+require_jq
 
-path="$(printf '%s' "$payload" | jq -r '
-  .tool_input.file_path
-  // .tool_input.path
-  // .tool_input.target_file
-  // empty
-')"
-
+path="$(extract_path)"
 [[ -z "$path" || ! -f "$path" ]] && exit 0
 
 file "$path" 2>/dev/null | grep -qiE 'text|json|xml|html|empty' || exit 0

@@ -9,21 +9,19 @@
 #   exit 2 -> block the tool call. stderr is shown to Claude as the reason.
 # Any other non-zero exit is treated as a soft failure and does not block.
 
-set -euo pipefail
-trap 'echo "guard-bash: unexpected error, failing open" >&2; exit 0' ERR
+HOOK_NAME="guard-bash.sh"
+# shellcheck source=_lib.sh
+source "$(dirname "$0")/_lib.sh"
 
-payload="$(cat)"
+read_payload
+require_jq
 
-if ! command -v jq >/dev/null 2>&1; then
-  echo "guard-bash: jq not found, skipping checks" >&2
-  exit 0
-fi
-
-cmd="$(printf '%s' "$payload" | jq -r '.tool_input.command // empty')"
+cmd="$(extract_command)"
 [[ -z "$cmd" ]] && exit 0
 
+# Override _lib.sh block() to also show the offending command for context.
 block() {
-  echo "Blocked by guard-bash.sh: $1" >&2
+  echo "Blocked by ${HOOK_NAME}: $1" >&2
   echo "Command: $cmd" >&2
   exit 2
 }
@@ -76,18 +74,23 @@ fi
 # allowed: the segment splitter handles them and they match per-segment
 # against the allow list.
 if [[ "$_cmd_sq" =~ \&\& ]]; then
-  echo "Blocked by guard-bash.sh: shell chain operator detected (&&)" >&2
+  echo "Blocked by ${HOOK_NAME}: shell chain operator detected (&&)" >&2
   echo "Run as separate Bash tool calls, or use the tool's native path/dir argument (git -C, tokei <path>, etc.)." >&2
   exit 2
 fi
 if [[ "$_cmd_sq" =~ \|\| ]]; then
-  echo "Blocked by guard-bash.sh: shell chain operator detected (||)" >&2
+  echo "Blocked by ${HOOK_NAME}: shell chain operator detected (||)" >&2
   echo "Run as separate Bash tool calls." >&2
   exit 2
 fi
-if [[ "$_cmd_sq" =~ \; ]]; then
-  echo "Blocked by guard-bash.sh: shell chain operator detected (;)" >&2
-  echo "Run as separate Bash tool calls." >&2
+# For ;, strip structural uses (case terminator ;; and ; before do/done/then/
+# else/elif/fi/case/esac keywords) before checking. What remains is a chain
+# operator. The per-segment scan below still catches dangerous commands inside
+# any chain that slips through.
+_cmd_struct_stripped="$(printf '%s' "$_cmd_sq" | sed -E -e 's/;;/ /g' -e 's/;[[:space:]]*(do|done|then|else|elif|fi|case|esac)([^a-zA-Z0-9_]|$)/ /g')"
+if [[ "$_cmd_struct_stripped" =~ \; ]]; then
+  echo "Blocked by ${HOOK_NAME}: shell chain operator detected (;)" >&2
+  echo "Run as separate Bash tool calls. Control-flow ; (do, done, then, fi, ...) is allowed." >&2
   exit 2
 fi
 

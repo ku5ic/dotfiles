@@ -1,22 +1,19 @@
 #!/usr/bin/env bash
 # PreToolUse hook for Edit, Write, MultiEdit.
 # Blocks writes to risky paths regardless of permission rules.
-set -euo pipefail
+HOOK_NAME="guard-edit.sh"
+# shellcheck source=_lib.sh
+source "$(dirname "$0")/_lib.sh"
 
-payload="$(cat)"
-command -v jq >/dev/null 2>&1 || exit 0
+read_payload
+require_jq
 
-path="$(printf '%s' "$payload" | jq -r '
-  .tool_input.file_path
-  // .tool_input.path
-  // .tool_input.target_file
-  // empty
-')"
-
+path="$(extract_path)"
 [[ -z "$path" ]] && exit 0
 
+# Override _lib.sh block() to also show the offending path for context.
 block() {
-  echo "Blocked by guard-edit.sh: $1" >&2
+  echo "Blocked by ${HOOK_NAME}: $1" >&2
   echo "Path: $path" >&2
   exit 2
 }
@@ -30,7 +27,7 @@ esac
 [[ "$path" =~ /\.git/ ]] && block "edit inside .git/"
 
 case "$path" in
-  $HOME/.zshrc|$HOME/.zprofile|$HOME/.bashrc|$HOME/.bash_profile|$HOME/.profile)
+  "$HOME/.zshrc"|"$HOME/.zprofile"|"$HOME/.bashrc"|"$HOME/.bash_profile"|"$HOME/.profile")
     block "direct edit to a shell rc file. Use the dotfiles repo."
     ;;
 esac
@@ -38,6 +35,7 @@ esac
 # Sensitive credential and key files. Defense in depth: settings.json deny
 # rules cover the same ground, but a misconfigured permission file should
 # not be the only thing standing between an injection and a clobbered key.
+# Patterns must mirror settings.json deny rules. bin/doctor.sh enforces parity.
 case "$(basename "$path")" in
   *.pem|*.key|*.pfx|*.p12)
     block "credential or key file"
@@ -51,25 +49,25 @@ case "$(basename "$path")" in
 esac
 
 case "$path" in
-  $HOME/.ssh/*)
+  "$HOME/.ssh/"*)
     block "edit inside ~/.ssh/"
     ;;
-  $HOME/.gnupg/*)
+  "$HOME/.gnupg/"*)
     block "edit inside ~/.gnupg/"
     ;;
-  $HOME/.aws/credentials|$HOME/.aws/config)
+  "$HOME/.aws/credentials"|"$HOME/.aws/config")
     block "AWS credentials or config"
     ;;
-  $HOME/.docker/config.json)
+  "$HOME/.docker/config.json")
     block "docker auth config"
     ;;
-  $HOME/.config/gh/hosts.yml)
+  "$HOME/.config/gh/hosts.yml")
     block "gh CLI auth"
     ;;
-  $HOME/.netrc|$HOME/.pgpass|$HOME/.npmrc)
+  "$HOME/.netrc"|"$HOME/.pgpass"|"$HOME/.npmrc")
     block "credential file"
     ;;
-  $HOME/Library/Keychains/*)
+  "$HOME/Library/Keychains/"*)
     block "macOS keychain"
     ;;
 esac

@@ -7,7 +7,7 @@ argument-hint: <file, directory, or area name>
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh``. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
+1. Stack is in the injected `<repo-context>` block. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
 2. Load the security-patterns skill. Apply only the sections matching the detected stack.
 3. Scope the target:
    - If $ARGUMENTS is a path: audit that path plus any adjacent auth, validation, or boundary code it depends on.

@@ -10,9 +10,9 @@ model: haiku
 
 Current branch: !`git branch --show-current`
 
-Detected base: !`git-base.sh "$ARGUMENTS"`
+Detected base: !`$HOME/.claude/bin/git-base.sh "$ARGUMENTS"`
 
-Commits on this branch but not on the base: !`git log --oneline --no-merges "$(git-base.sh "$ARGUMENTS")..HEAD"`
+Commits on this branch but not on the base: !`git log --oneline --no-merges "$($HOME/.claude/bin/git-base.sh "$ARGUMENTS")..HEAD"`
 
 ## Procedure
 

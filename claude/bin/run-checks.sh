@@ -4,7 +4,7 @@
 # Each section is independent: failures are reported, not aborted.
 set -uo pipefail
 
-cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)" || exit 1
 
 pass=0
 fail=0
@@ -12,13 +12,17 @@ skip=0
 
 run() {
   local label="$1"; shift
-  if "$@" >/dev/null 2>&1; then
+  local out
+  out="$(mktemp -t run-checks)"
+  if "$@" >"$out" 2>&1; then
     echo "PASS $label"
     pass=$((pass+1))
   else
     echo "FAIL $label ($*)"
+    head -30 "$out"
     fail=$((fail+1))
   fi
+  rm -f "$out"
 }
 
 skip_msg() {
@@ -29,7 +33,6 @@ skip_msg() {
 # JS/TS
 if [[ -f package.json ]]; then
   pm="npm"
-  [[ -f package-lock.json ]] && pm="npm"
   [[ -f pnpm-lock.yaml ]] && pm="pnpm"
   [[ -f yarn.lock ]] && pm="yarn"
   [[ -f bun.lockb ]] && pm="bun"

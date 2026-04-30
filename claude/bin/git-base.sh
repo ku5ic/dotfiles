@@ -9,7 +9,7 @@
 #
 # Exits non-zero if nothing resolves. Prints nothing to stderr on normal use.
 
-set -e
+set -euo pipefail
 
 explicit="${1:-}"
 
