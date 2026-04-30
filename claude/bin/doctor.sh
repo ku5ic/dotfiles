@@ -59,7 +59,9 @@ echo "== credential pattern parity =="
 GUARD_EDIT="$SOURCE_ROOT/hooks/guard-edit.sh"
 SETTINGS="$SOURCE_ROOT/settings.json"
 
-# Canonical credential basenames. Each must appear verbatim in both files.
+# Canonical credential patterns. Each must appear verbatim in both files.
+# Path-tail forms are used so settings.json's `~/...` and guard-edit.sh's
+# `$HOME/...` both contain the substring.
 patterns=(
   "*.pem"
   "*.key"
@@ -70,6 +72,16 @@ patterns=(
   "id_ecdsa"
   ".env"
   ".env.*"
+  ".ssh/"
+  ".gnupg/"
+  ".aws/credentials"
+  ".aws/config"
+  ".docker/config.json"
+  ".config/gh/hosts.yml"
+  ".netrc"
+  ".pgpass"
+  ".npmrc"
+  "Library/Keychains/"
 )
 
 parity_failed=0

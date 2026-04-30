@@ -9,7 +9,13 @@ source "$(dirname "$0")/../bin/_lib.sh"
 read_payload
 session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty' 2>/dev/null || true)"
 safe_session_id="${session_id//[^a-zA-Z0-9_-]/}"
-session_marker="$HOME/.claude/scratch/.injected-${safe_session_id:-$$}"
+# Without a stable session_id we cannot guarantee "first prompt only" injection;
+# falling back to $$ would re-inject every turn. Skip and warn instead.
+if [[ -z "$safe_session_id" ]]; then
+  warn "no session_id in payload, skipping injection"
+  exit 0
+fi
+session_marker="$HOME/.claude/scratch/.injected-${safe_session_id}"
 [[ -f "$session_marker" ]] && exit 0
 
 mkdir -p "$(dirname "$session_marker")"

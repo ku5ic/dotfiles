@@ -5,7 +5,7 @@
 #
 # Resolution order:
 #   1. Git working tree:    `git rev-parse --show-toplevel` (walks up itself)
-#   2. Project anchor walk: nearest ancestor (up to 2 levels) with any
+#   2. Project anchor walk: $PWD plus up to 2 ancestors, with any
 #                           sentinel in STACK_SENTINELS_PROJECT_ROOT
 #                           (see bin/_lib.sh)
 #   3. Current directory:   $PWD

@@ -9,11 +9,9 @@ model: haiku
 ## Procedure
 
 1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
-2. Determine the diff range:
-   - If $ARGUMENTS looks like a git range: use it
-   - Else: use `main..HEAD` if `main` exists, otherwise `master..HEAD`, otherwise `HEAD~1..HEAD`
-3. Pull the diff: !`git diff $ARGUMENTS || git diff main..HEAD || git diff HEAD~1..HEAD`
-4. Pull the log: !`git log --oneline -20 $ARGUMENTS || git log --oneline -20 main..HEAD || git log --oneline -10`
+2. Resolve the base: !`$HOME/.claude/bin/git-base.sh "$ARGUMENTS"`. The helper accepts an explicit ref via $ARGUMENTS or falls through to upstream / origin HEAD / main / master / develop / trunk.
+3. Pull the diff: !`git diff "$($HOME/.claude/bin/git-base.sh "$ARGUMENTS")..HEAD"`
+4. Pull the log: !`git log --oneline -20 "$($HOME/.claude/bin/git-base.sh "$ARGUMENTS")..HEAD"`
 5. Read any referenced issue number in recent commit messages, but do not fetch external data.
 
 ## Output

@@ -278,7 +278,7 @@ If a check is missing entirely (no linter configured), do not introduce one as p
 
 ## Scratch artifact naming
 
-All commands that write to `~/.claude/scratch/` use this pattern:
+All commands that write to `$HOME/.claude/scratch/` use this pattern:
 
 ~/.claude/scratch/<kind>-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md
 
@@ -300,14 +300,14 @@ ls -t ~/.claude/scratch/<kind>-<project-name>-\*.md | head -1
 Never read across projects. If no artifact exists for the current project,
 run the predecessor command first.
 
-All scratch goes to `~/.claude/scratch/` (home, absolute), never
-`.claude/scratch/` (cwd-relative).
+All scratch goes to `$HOME/.claude/scratch/` (home, absolute), never
+`$HOME/.claude/scratch/` (cwd-relative).
 
-Retention: artifacts older than 30 days are pruned by `bin/scratch-rotate.sh`. Run manually (`scratch-rotate.sh`) or wire to launchd. Pass a custom retention window as the first argument: `scratch-rotate.sh 14`.
+Retention: artifacts older than 30 days are pruned by `$HOME/.claude/bin/scratch-rotate.sh`. Run manually (`scratch-rotate.sh`) or wire to launchd. Pass a custom retention window as the first argument: `scratch-rotate.sh 14`.
 
 ## Claude Code command namespace (canonical)
 
-All commands live under `~/.dotfiles/claude/commands/` and are organized into four namespaces. Invocation uses the `/<group>:<name>` form.
+All commands live under `$HOME/.claude/commands/` and are organized into four namespaces. Invocation uses the `/<group>:<name>` form.
 
 ### flow/ - the default feature workflow
 
@@ -323,6 +323,7 @@ Out-of-band:
 
 - `/flow:fix` - surgical fix from a failing signal, no refactor
 - `/flow:resume` - reorient against a partially executed plan
+- `/flow:checks` - run the project's verification checklist via `$HOME/.claude/bin/run-checks.sh`
 
 ### audit/ - invoked when scope warrants, not every change
 
@@ -359,7 +360,7 @@ The `/flow:*` cycle has fixed per-task overhead (preflight context, plan section
 
 ### Definitions
 
-- **Session continuity**: a previous flow artifact for this project exists in `~/.claude/scratch/` from this session, the working tree's set of modified files is unchanged from when that artifact was written, the current branch is unchanged, and no new commits have landed since.
+- **Session continuity**: a previous flow artifact for this project exists in `$HOME/.claude/scratch/` from this session, the working tree's set of modified files is unchanged from when that artifact was written, the current branch is unchanged, and no new commits have landed since.
 - **Mechanical plan**: a plan whose steps are pure file edits with no architectural choice, no API design, no rejected alternatives worth considering. Examples: dropping a frontmatter field across N files, adding entries to a config list, find-and-replace across a directory. The plan author marks the plan with `plan-shape: mechanical` in its frontmatter when this applies.
 - **Substantive plan**: anything that is not mechanical. Default. Marked `plan-shape: substantive` or omitted (substantive is the default).
 
