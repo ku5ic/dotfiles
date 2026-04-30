@@ -45,6 +45,7 @@ brew 'reattach-to-user-namespace'   # tmux helper that fixes pasteboard access o
 brew 'redis'                        # in-memory data store for local development
 brew 'ripgrep'                      # fast recursive grep, default search backend in Neovim and shell
 brew 'rust'                         # Rust toolchain required by Neovim plugins with native components (e.g. blink.cmp)
+brew 'shellcheck'                   # static analysis for shell scripts, used by claude/bin/doctor.sh and CI
 brew 'ssh-copy-id'                  # helper for installing public keys onto remote hosts
 brew 'starship'                     # cross-shell prompt configured via config/starship.toml
 brew 'tig'                          # terminal git history browser

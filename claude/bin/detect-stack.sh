@@ -184,13 +184,15 @@ for stack in "${stacks[@]}"; do
   loc=$(find_stack_dir "$stack")
   [[ -z "$loc" ]] && continue
   fn="${stack_extras_fn[$stack]:-}"
-  parts=""; suffix=""
+  # shellcheck disable=SC2178,SC2128  # extras functions output two strings via mapfile
+  extras_parts=""
+  extras_suffix=""
   if [[ -n "$fn" ]]; then
     mapfile -t out < <("$fn" "$loc")
-    parts="${out[0]:-}"
-    suffix="${out[1]:-}"
+    extras_parts="${out[0]:-}"
+    extras_suffix="${out[1]:-}"
   fi
-  emit_stack "$stack" "$loc" "$parts" "$suffix"
+  emit_stack "$stack" "$loc" "$extras_parts" "$extras_suffix"
   [[ "$stack" == "js" ]] && js_loc="$loc"
 done
 

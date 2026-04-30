@@ -27,7 +27,7 @@ esac
 [[ "$path" =~ /\.git/ ]] && block "edit inside .git/"
 
 case "$path" in
-  $HOME/.zshrc|$HOME/.zprofile|$HOME/.bashrc|$HOME/.bash_profile|$HOME/.profile)
+  "$HOME/.zshrc"|"$HOME/.zprofile"|"$HOME/.bashrc"|"$HOME/.bash_profile"|"$HOME/.profile")
     block "direct edit to a shell rc file. Use the dotfiles repo."
     ;;
 esac
@@ -35,6 +35,7 @@ esac
 # Sensitive credential and key files. Defense in depth: settings.json deny
 # rules cover the same ground, but a misconfigured permission file should
 # not be the only thing standing between an injection and a clobbered key.
+# Patterns must mirror settings.json deny rules. bin/doctor.sh enforces parity.
 case "$(basename "$path")" in
   *.pem|*.key|*.pfx|*.p12)
     block "credential or key file"
@@ -48,25 +49,25 @@ case "$(basename "$path")" in
 esac
 
 case "$path" in
-  $HOME/.ssh/*)
+  "$HOME/.ssh/"*)
     block "edit inside ~/.ssh/"
     ;;
-  $HOME/.gnupg/*)
+  "$HOME/.gnupg/"*)
     block "edit inside ~/.gnupg/"
     ;;
-  $HOME/.aws/credentials|$HOME/.aws/config)
+  "$HOME/.aws/credentials"|"$HOME/.aws/config")
     block "AWS credentials or config"
     ;;
-  $HOME/.docker/config.json)
+  "$HOME/.docker/config.json")
     block "docker auth config"
     ;;
-  $HOME/.config/gh/hosts.yml)
+  "$HOME/.config/gh/hosts.yml")
     block "gh CLI auth"
     ;;
-  $HOME/.netrc|$HOME/.pgpass|$HOME/.npmrc)
+  "$HOME/.netrc"|"$HOME/.pgpass"|"$HOME/.npmrc")
     block "credential file"
     ;;
-  $HOME/Library/Keychains/*)
+  "$HOME/Library/Keychains/"*)
     block "macOS keychain"
     ;;
 esac

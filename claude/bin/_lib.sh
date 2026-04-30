@@ -12,6 +12,7 @@
 
 # Full set: every sentinel any consumer cares about. Used by inject-context.sh
 # for cache invalidation, and by detect-stack.sh as the canonical union.
+# shellcheck disable=SC2034  # consumed by scripts that source this file
 STACK_SENTINELS_FULL=(
   package.json
   pyproject.toml
@@ -30,6 +31,7 @@ STACK_SENTINELS_FULL=(
 # Anchor-walk subset: the small, fast list project-root.sh walks ancestors
 # with. Mirrors the CLAUDE.md "Project boot protocol" sentinel set. Keep this
 # minimal: every entry slows the ancestor walk for repos without that sentinel.
+# shellcheck disable=SC2034  # consumed by scripts that source this file
 STACK_SENTINELS_PROJECT_ROOT=(
   package.json
   pyproject.toml

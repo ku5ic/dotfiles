@@ -4,7 +4,7 @@
 # Each section is independent: failures are reported, not aborted.
 set -uo pipefail
 
-cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)" || exit 1
 
 pass=0
 fail=0
