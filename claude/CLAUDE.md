@@ -303,6 +303,8 @@ run the predecessor command first.
 All scratch goes to `~/.claude/scratch/` (home, absolute), never
 `.claude/scratch/` (cwd-relative).
 
+Retention: artifacts older than 30 days are pruned by `bin/scratch-rotate.sh`. Run manually (`scratch-rotate.sh`) or wire to launchd. Pass a custom retention window as the first argument: `scratch-rotate.sh 14`.
+
 ## Claude Code command namespace (canonical)
 
 All commands live under `~/.dotfiles/claude/commands/` and are organized into four namespaces. Invocation uses the `/<group>:<name>` form.
