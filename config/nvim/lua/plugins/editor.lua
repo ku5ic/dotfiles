@@ -27,6 +27,15 @@ return {
 		"nvim-pack/nvim-spectre",
 		build = false,
 		cmd = "Spectre",
+		keys = {
+			{
+				"<leader>sr",
+				function()
+					require("spectre").open()
+				end,
+				desc = "Search and replace",
+			},
+		},
 		opts = { open_cmd = "noswapfile vnew" },
 	},
 
@@ -80,7 +89,22 @@ return {
 		config = function()
 			vim.o.timeout = true
 			vim.o.timeoutlen = 300
-			require("which-key").setup()
+			local wk = require("which-key")
+			wk.setup()
+			wk.add({
+				{ "<leader>f", group = "find/file" },
+				{ "<leader>s", group = "search" },
+				{ "<leader>g", group = "git" },
+				{ "<leader>w", group = "window" },
+				{ "<leader>t", group = "tab/explorer" },
+				{ "<leader>b", group = "buffer" },
+				{ "<leader>l", group = "lsp" },
+				{ "<leader>x", group = "diagnostics/trouble" },
+				{ "<leader>d", group = "debug" },
+				{ "<leader>a", group = "ai/copilot" },
+				{ "<leader>n", group = "notifications/ui" },
+				{ "<leader>c", group = "copy" },
+			})
 		end,
 	},
 
@@ -89,6 +113,22 @@ return {
 		"folke/todo-comments.nvim",
 		cmd = { "TodoTelescope" },
 		event = { "BufReadPost", "BufNewFile" },
+		keys = {
+			{
+				"]t",
+				function()
+					require("todo-comments").jump_next()
+				end,
+				desc = "Next todo comment",
+			},
+			{
+				"[t",
+				function()
+					require("todo-comments").jump_prev()
+				end,
+				desc = "Previous todo comment",
+			},
+		},
 		config = true,
 	},
 
@@ -136,6 +176,10 @@ return {
 	-- precognition.nvim assists with discovering motions (Both vertical and horizontal) to navigate your current buffer
 	{
 		"tris203/precognition.nvim",
+		cmd = "Precognition",
+		keys = {
+			{ "<leader>np", "<cmd>Precognition toggle<cr>", desc = "Toggle Precognition" },
+		},
 		opts = {
 			startVisible = false,
 			-- showBlankVirtLine = true,

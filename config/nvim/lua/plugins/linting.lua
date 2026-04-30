@@ -4,6 +4,15 @@ return {
 		"BufReadPre",
 		"BufNewFile",
 	},
+	keys = {
+		{
+			"<leader>ll",
+			function()
+				require("lint").try_lint()
+			end,
+			desc = "Lint current file",
+		},
+	},
 	config = function()
 		local lint = require("lint")
 		local filetypes = require("config.filetypes")
