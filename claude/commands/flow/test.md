@@ -8,7 +8,7 @@ argument-hint: <optional: file or area to focus on>
 ## Procedure
 
 1. Get the project name: `!`$HOME/.claude/bin/project-name.sh``. Identify the test runner from the injected `<repo-context>` block.
-2. Load the test-patterns skill.
+2. Load the `test-patterns` skill and the patterns skill matching the detected stack (`react-patterns`, `django-patterns`, etc.) when relevant to the change.
 3. Identify what changed via `git diff HEAD` and `git status`. Scope testing to the delta.
 4. For each changed function, component, or endpoint:
    - Check if tests already exist. If yes, read them and extend.
@@ -40,3 +40,7 @@ Terminal only:
 - Coverage delta, if measured
 
 No scratch report for routine test passes. If something structurally wrong is found while testing (e.g. a function is untestable without refactor), write a short note to `~/.claude/scratch/test-findings-<project-name>-<YYYYMMDD-HHMM>.md`.
+
+## Stop
+
+Stop after reporting results. Do not commit. Do not move to /flow:review unless asked.

@@ -7,7 +7,7 @@ argument-hint: <file, directory, or area name>
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh``. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
+1. Stack is in the injected `<repo-context>` block. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
 2. Load the patterns skill for the detected stack (react-patterns, django-patterns, etc.) for the anti-pattern reference.
 3. Review the target across these categories. Skip categories with no findings.
 

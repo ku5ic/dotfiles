@@ -12,7 +12,7 @@ $ARGUMENTS should point to the code surface to check. Required.
 
 ## Procedure
 
-1. Run `!`$HOME/.claude/bin/detect-stack.sh`` for context. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
+1. Stack is in the injected `<repo-context>` block. Get the project name: `!`$HOME/.claude/bin/project-name.sh``.
 2. Read the code at $ARGUMENTS.
 3. Find relevant docs. Prefer targeted over exhaustive:
    - `README.md` at the project root if $ARGUMENTS is in `src/` or equivalent
