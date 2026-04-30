@@ -35,6 +35,45 @@ case "$path" in
     ;;
 esac
 
+# Sensitive credential and key files. Defense in depth: settings.json deny
+# rules cover the same ground, but a misconfigured permission file should
+# not be the only thing standing between an injection and a clobbered key.
+case "$(basename "$path")" in
+  *.pem|*.key|*.pfx|*.p12)
+    block "credential or key file"
+    ;;
+  id_rsa|id_ed25519|id_ecdsa)
+    block "SSH private key"
+    ;;
+  .env|.env.*)
+    block ".env file"
+    ;;
+esac
+
+case "$path" in
+  $HOME/.ssh/*)
+    block "edit inside ~/.ssh/"
+    ;;
+  $HOME/.gnupg/*)
+    block "edit inside ~/.gnupg/"
+    ;;
+  $HOME/.aws/credentials|$HOME/.aws/config)
+    block "AWS credentials or config"
+    ;;
+  $HOME/.docker/config.json)
+    block "docker auth config"
+    ;;
+  $HOME/.config/gh/hosts.yml)
+    block "gh CLI auth"
+    ;;
+  $HOME/.netrc|$HOME/.pgpass|$HOME/.npmrc)
+    block "credential file"
+    ;;
+  $HOME/Library/Keychains/*)
+    block "macOS keychain"
+    ;;
+esac
+
 if [[ "$path" =~ \.github/workflows/.*\.ya?ml$ ]]; then
   echo "guard-edit: editing CI workflow $path" >&2
 fi
