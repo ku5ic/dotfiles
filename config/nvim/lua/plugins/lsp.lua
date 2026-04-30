@@ -1,3 +1,5 @@
+local filetypes = require("config.filetypes")
+
 -- Toggle between TypeScript LSP servers: "ts_ls" or "vtsls"
 local typescript_lsp = "ts_ls" -- Change this to "vtsls" to switch
 
@@ -16,6 +18,20 @@ local LSP_SERVERS = {
 	"tailwindcss",
 	typescript_lsp,
 }
+
+local css_lint_ignore = { lint = { unknownAtRules = "ignore" } }
+
+local typescript_inlay_hints = {
+	enumMemberValues = { enabled = true },
+	functionLikeReturnTypes = { enabled = true },
+	parameterNames = { enabled = "literals" },
+	parameterTypes = { enabled = true },
+	propertyDeclarationTypes = { enabled = true },
+	variableTypes = { enabled = false },
+}
+
+local emmet_filetypes = vim.list_extend({ "html", "djangohtml", "svelte" }, filetypes.CSS)
+vim.list_extend(emmet_filetypes, filetypes.JS_REACT)
 
 -- Extract server configurations into a separate module-level function
 local function get_server_settings()
@@ -49,25 +65,11 @@ local function get_server_settings()
 				typescript = {
 					updateImportsOnFileMove = { enabled = "always" },
 					suggest = { completeFunctionCalls = true },
-					inlayHints = {
-						enumMemberValues = { enabled = true },
-						functionLikeReturnTypes = { enabled = true },
-						parameterNames = { enabled = "literals" },
-						parameterTypes = { enabled = true },
-						propertyDeclarationTypes = { enabled = true },
-						variableTypes = { enabled = false },
-					},
+					inlayHints = typescript_inlay_hints,
 				},
 				javascript = {
 					updateImportsOnFileMove = { enabled = "always" },
-					inlayHints = {
-						enumMemberValues = { enabled = true },
-						functionLikeReturnTypes = { enabled = true },
-						parameterNames = { enabled = "literals" },
-						parameterTypes = { enabled = true },
-						propertyDeclarationTypes = { enabled = true },
-						variableTypes = { enabled = false },
-					},
+					inlayHints = typescript_inlay_hints,
 				},
 			},
 		},
@@ -109,36 +111,14 @@ local function get_server_settings()
 		},
 
 		emmet_ls = {
-			filetypes = {
-				"css",
-				"djangohtml",
-				"html",
-				"javascriptreact",
-				"less",
-				"sass",
-				"scss",
-				"svelte",
-				"typescriptreact",
-			},
+			filetypes = emmet_filetypes,
 		},
 
 		cssls = {
 			settings = {
-				css = {
-					lint = {
-						unknownAtRules = "ignore",
-					},
-				},
-				scss = {
-					lint = {
-						unknownAtRules = "ignore",
-					},
-				},
-				less = {
-					lint = {
-						unknownAtRules = "ignore",
-					},
-				},
+				css = css_lint_ignore,
+				scss = css_lint_ignore,
+				less = css_lint_ignore,
 			},
 		},
 

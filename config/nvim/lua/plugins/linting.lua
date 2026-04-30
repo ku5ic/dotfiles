@@ -6,17 +6,20 @@ return {
 	},
 	config = function()
 		local lint = require("lint")
+		local filetypes = require("config.filetypes")
 
-		lint.linters_by_ft = {
-			javascript = { "eslint" },
-			typescript = { "eslint" },
-			javascriptreact = { "eslint" },
-			typescriptreact = { "eslint" },
+		local linters_by_ft = {
 			svelte = { "eslint" },
 			css = { "stylelint" },
 			scss = { "stylelint" },
 			sass = { "stylelint" },
 		}
+
+		for _, ft in ipairs(filetypes.JS_TS) do
+			linters_by_ft[ft] = { "eslint" }
+		end
+
+		lint.linters_by_ft = linters_by_ft
 
 		lint.linters.stylelint = require("lint.util").wrap(lint.linters.stylelint, function(diagnostic)
 			if diagnostic.message:find("Stylelint error, run `stylelint") then

@@ -1,25 +1,28 @@
+local filetypes = require("config.filetypes")
+local prettier_first = { "prettier", stop_after_first = true }
+
+local formatters_by_ft = {
+	css = prettier_first,
+	html = prettier_first,
+	htmldjango = { "djlint", stop_after_first = true },
+	json = { "prettier" },
+	yaml = { "prettier" },
+	markdown = { "prettier" },
+	lua = { "stylua" },
+	python = { "ruff_format", "ruff" },
+	php = { "php_cs_fixer" },
+}
+
+for _, ft in ipairs(filetypes.JS_TS) do
+	formatters_by_ft[ft] = prettier_first
+end
+
 return {
 	"stevearc/conform.nvim",
 	event = { "BufWritePre" },
 	cmd = { "ConformInfo" },
 	opts = {
-		-- Define your formatters
-		formatters_by_ft = {
-			javascript = { "prettier", stop_after_first = true },
-			typescript = { "prettier", stop_after_first = true },
-			javascriptreact = { "prettier", stop_after_first = true },
-			typescriptreact = { "prettier", stop_after_first = true },
-			css = { "prettier", stop_after_first = true },
-			html = { "prettier", stop_after_first = true },
-			htmldjango = { "djlint", stop_after_first = true },
-			json = { "prettier" },
-			yaml = { "prettier" },
-			markdown = { "prettier" },
-			lua = { "stylua" },
-			python = { "ruff_format", "ruff" },
-			php = { "php_cs_fixer" },
-		},
-		-- Set up format-on-save
+		formatters_by_ft = formatters_by_ft,
 		format_on_save = {
 			lsp_fallback = true,
 			async = false,

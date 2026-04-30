@@ -6,7 +6,6 @@ local noice = require("noice")
 local noice_lsp = require("noice.lsp")
 local spectre = require("spectre")
 local todo_comments = require("todo-comments")
-local conform = require("conform")
 local lint = require("lint")
 
 local keymap = vim.keymap
@@ -17,6 +16,14 @@ local function map(mode, lhs, rhs, desc, extra_opts)
 	local opts = vim.tbl_extend("force", { noremap = true, silent = true }, extra_opts or {})
 	opts.desc = desc
 	keymap.set(mode, lhs, rhs, opts)
+end
+
+local function format_buffer()
+	require("conform").format({
+		lsp_fallback = true,
+		async = false,
+		timeout_ms = 1000,
+	})
 end
 
 -- Core navigation & editing
@@ -153,13 +160,7 @@ map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", "Find buffers")
 map("n", "<leader>fc", "<cmd>Telescope commands<cr>", "Find commands")
 map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", "Find help")
 map("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", "Find keymaps")
-map("n", "<leader>fm", function()
-	conform.format({
-		lsp_fallback = true,
-		async = false,
-		timeout_ms = 1000,
-	})
-end, "Format file")
+map("n", "<leader>fm", format_buffer, "Format file")
 
 -- Search operations (<leader>s)
 
@@ -198,13 +199,7 @@ map("n", "<leader>gp", "<cmd>Gitsigns prev_hunk<cr>", "Previous git hunk")
 
 map("n", "<leader>lr", vim.lsp.buf.rename, "LSP Rename")
 map({ "n", "v" }, "<leader>la", vim.lsp.buf.code_action, "LSP Code Action")
-map("n", "<leader>lf", function()
-	conform.format({
-		lsp_fallback = true,
-		async = false,
-		timeout_ms = 1000,
-	})
-end, "LSP Format")
+map("n", "<leader>lf", format_buffer, "LSP Format")
 map("n", "<leader>ld", function()
 	vim.diagnostic.setloclist({ open = true })
 end, "LSP Diagnostics to location list")
