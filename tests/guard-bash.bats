@@ -17,7 +17,7 @@ run_guard() {
   printf '%s' "$1" | jq -R '{tool_input: {command: .}}' | "$HOOK"
 }
 
-# ----- positive cases (must allow) --------------------------------------
+# positive cases (must allow)
 
 @test "allow: plain ls" {
   run run_guard 'ls -la'
@@ -94,7 +94,7 @@ run_guard() {
   [ "$status" -eq 0 ]
 }
 
-# ----- negative cases (must block) --------------------------------------
+# negative cases (must block)
 
 @test "block: rm -rf /" {
   run run_guard 'rm -rf /'
