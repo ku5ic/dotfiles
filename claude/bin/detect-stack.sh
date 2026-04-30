@@ -23,11 +23,17 @@
 
 set -euo pipefail
 
+# shellcheck source=_lib.sh
+source "$(dirname "$0")/_lib.sh"
+
 ROOT="$("$HOME/.claude/bin/project-root.sh")"
 cd "$ROOT"
 
 stacks=(js python ruby rust go monorepo)
 
+# Per-stack categorization of sentinels. The union of values here must equal
+# STACK_SENTINELS_FULL in _lib.sh; inject-context.sh relies on that union for
+# cache invalidation. Add new sentinels to _lib.sh AND here.
 declare -A stack_sentinels=(
   [js]="package.json"
   [python]="pyproject.toml requirements.txt Pipfile manage.py"

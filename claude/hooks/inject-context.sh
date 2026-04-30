@@ -2,6 +2,9 @@
 # UserPromptSubmit hook. Prepends repo context to the first prompt of a session.
 set -euo pipefail
 
+# shellcheck source=../bin/_lib.sh
+source "$(dirname "$0")/../bin/_lib.sh"
+
 payload="$(cat)"
 session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty' 2>/dev/null || true)"
 safe_session_id="${session_id//[^a-zA-Z0-9_-]/}"
@@ -25,8 +28,11 @@ cache_file="$cache_dir/$project_name.txt"
 mkdir -p "$cache_dir"
 
 # Invalidate cache when any stack sentinel is newer than the cache.
+# Iterates the full canonical set from _lib.sh, not just the project-root
+# anchor subset, so requirements.txt / Pipfile / manage.py / monorepo files
+# also trigger reinvalidation.
 newest_sentinel=0
-for f in "$project_root/package.json" "$project_root/pyproject.toml" "$project_root/Gemfile" "$project_root/Cargo.toml" "$project_root/go.mod"; do
+for f in "${STACK_SENTINELS_FULL[@]/#/$project_root/}"; do
   [[ -f "$f" ]] || continue
   m="$(stat -f '%m' "$f" 2>/dev/null || echo 0)"
   (( m > newest_sentinel )) && newest_sentinel="$m"

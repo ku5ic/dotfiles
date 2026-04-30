@@ -6,7 +6,7 @@ Global instructions for Claude Code. Applies to every repository. Project level 
 
 On the first substantive action in a repo:
 
-1. Check for an injected `<repo-context>` block. If present, use it for stack info. If absent and the project root has a stack sentinel (`package.json`, `pyproject.toml`, `Gemfile`, `Cargo.toml`, or `go.mod`), surface it: the hook should have fired but did not. If absent and no sentinel exists, proceed normally; the hook intentionally skips non-stack repos.
+1. Check for an injected `<repo-context>` block. If present, use it for stack info. If absent and the project root has a stack sentinel (see `STACK_SENTINELS_PROJECT_ROOT` in `bin/_lib.sh`), surface it: the hook should have fired but did not. If absent and no sentinel exists, proceed normally; the hook intentionally skips non-stack repos.
 2. Read project root CLAUDE.md if present.
 3. Read README.md only if directly relevant to the task.
 4. Check current branch and dirty state. If dirty and the task implies a new feature, surface this and ask before proceeding.
