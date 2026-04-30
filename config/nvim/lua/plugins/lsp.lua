@@ -255,6 +255,7 @@ local function setup_lsp_keymaps(bufnr, client)
 	if client and client.server_capabilities.codeLensProvider then
 		vim.lsp.codelens.enable(true, { buffer = bufnr })
 		vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+			group = "dotfiles_lsp_codelens",
 			buffer = bufnr,
 			callback = function()
 				vim.lsp.codelens.enable(true, { buffer = bufnr })
@@ -286,7 +287,10 @@ return {
 			configure_diagnostics()
 			setup_lsp_servers()
 
+			vim.api.nvim_create_augroup("dotfiles_lsp_codelens", { clear = true })
+
 			vim.api.nvim_create_autocmd("LspAttach", {
+				group = vim.api.nvim_create_augroup("dotfiles_lsp_attach", { clear = true }),
 				callback = function(args)
 					local client = vim.lsp.get_client_by_id(args.data.client_id)
 					setup_lsp_keymaps(args.buf, client)

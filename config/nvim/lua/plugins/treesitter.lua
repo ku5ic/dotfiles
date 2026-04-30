@@ -47,6 +47,7 @@ return {
 
 			-- Highlighting is not automatic on main branch - enable per filetype
 			vim.api.nvim_create_autocmd("FileType", {
+				group = vim.api.nvim_create_augroup("dotfiles_treesitter_highlight", { clear = true }),
 				callback = function()
 					pcall(vim.treesitter.start)
 				end,

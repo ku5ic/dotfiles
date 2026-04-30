@@ -6,7 +6,7 @@ return {
 
 			dap.adapters.php = {
 				type = "executable",
-				command = os.getenv("HOME") .. "/.local/share/nvim/mason/bin/php-debug-adapter",
+				command = vim.fn.stdpath("data") .. "/mason/bin/php-debug-adapter",
 			}
 
 			dap.configurations.php = {
