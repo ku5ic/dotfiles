@@ -1,22 +1,19 @@
 #!/usr/bin/env bash
 # PreToolUse hook for Edit, Write, MultiEdit.
 # Blocks writes to risky paths regardless of permission rules.
-set -euo pipefail
+HOOK_NAME="guard-edit.sh"
+# shellcheck source=_lib.sh
+source "$(dirname "$0")/_lib.sh"
 
-payload="$(cat)"
-command -v jq >/dev/null 2>&1 || exit 0
+read_payload
+require_jq
 
-path="$(printf '%s' "$payload" | jq -r '
-  .tool_input.file_path
-  // .tool_input.path
-  // .tool_input.target_file
-  // empty
-')"
-
+path="$(extract_path)"
 [[ -z "$path" ]] && exit 0
 
+# Override _lib.sh block() to also show the offending path for context.
 block() {
-  echo "Blocked by guard-edit.sh: $1" >&2
+  echo "Blocked by ${HOOK_NAME}: $1" >&2
   echo "Path: $path" >&2
   exit 2
 }

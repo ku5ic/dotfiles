@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # UserPromptSubmit hook. Prepends repo context to the first prompt of a session.
-set -euo pipefail
-
+HOOK_NAME="inject-context.sh"
+# shellcheck source=_lib.sh
+source "$(dirname "$0")/_lib.sh"
 # shellcheck source=../bin/_lib.sh
 source "$(dirname "$0")/../bin/_lib.sh"
 
-payload="$(cat)"
+read_payload
 session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty' 2>/dev/null || true)"
 safe_session_id="${session_id//[^a-zA-Z0-9_-]/}"
 session_marker="$HOME/.claude/scratch/.injected-${safe_session_id:-$$}"
@@ -24,7 +25,9 @@ project_root="$("$HOME/.claude/bin/project-root.sh" 2>/dev/null || echo "")"
 [[ -z "$project_root" ]] && { touch "$session_marker"; exit 0; }
 
 cache_dir="$HOME/.claude/cache/stack"
-cache_file="$cache_dir/$project_name.txt"
+# Hash the project root path into the cache key so projects with the same
+# basename (e.g. ~/work/foo and ~/clients/acme/foo) cannot collide.
+cache_file="$cache_dir/${project_name}-$(printf '%s' "$project_root" | shasum -a 256 | cut -c1-8).txt"
 mkdir -p "$cache_dir"
 
 # Invalidate cache when any stack sentinel is newer than the cache.

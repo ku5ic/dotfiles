@@ -9,21 +9,19 @@
 #   exit 2 -> block the tool call. stderr is shown to Claude as the reason.
 # Any other non-zero exit is treated as a soft failure and does not block.
 
-set -euo pipefail
-trap 'echo "guard-bash: unexpected error, failing open" >&2; exit 0' ERR
+HOOK_NAME="guard-bash.sh"
+# shellcheck source=_lib.sh
+source "$(dirname "$0")/_lib.sh"
 
-payload="$(cat)"
+read_payload
+require_jq
 
-if ! command -v jq >/dev/null 2>&1; then
-  echo "guard-bash: jq not found, skipping checks" >&2
-  exit 0
-fi
-
-cmd="$(printf '%s' "$payload" | jq -r '.tool_input.command // empty')"
+cmd="$(extract_command)"
 [[ -z "$cmd" ]] && exit 0
 
+# Override _lib.sh block() to also show the offending command for context.
 block() {
-  echo "Blocked by guard-bash.sh: $1" >&2
+  echo "Blocked by ${HOOK_NAME}: $1" >&2
   echo "Command: $cmd" >&2
   exit 2
 }
