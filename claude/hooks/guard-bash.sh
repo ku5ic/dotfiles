@@ -74,18 +74,23 @@ fi
 # allowed: the segment splitter handles them and they match per-segment
 # against the allow list.
 if [[ "$_cmd_sq" =~ \&\& ]]; then
-  echo "Blocked by guard-bash.sh: shell chain operator detected (&&)" >&2
+  echo "Blocked by ${HOOK_NAME}: shell chain operator detected (&&)" >&2
   echo "Run as separate Bash tool calls, or use the tool's native path/dir argument (git -C, tokei <path>, etc.)." >&2
   exit 2
 fi
 if [[ "$_cmd_sq" =~ \|\| ]]; then
-  echo "Blocked by guard-bash.sh: shell chain operator detected (||)" >&2
+  echo "Blocked by ${HOOK_NAME}: shell chain operator detected (||)" >&2
   echo "Run as separate Bash tool calls." >&2
   exit 2
 fi
-if [[ "$_cmd_sq" =~ \; ]]; then
-  echo "Blocked by guard-bash.sh: shell chain operator detected (;)" >&2
-  echo "Run as separate Bash tool calls." >&2
+# For ;, strip structural uses (case terminator ;; and ; before do/done/then/
+# else/elif/fi/case/esac keywords) before checking. What remains is a chain
+# operator. The per-segment scan below still catches dangerous commands inside
+# any chain that slips through.
+_cmd_struct_stripped="$(printf '%s' "$_cmd_sq" | sed -E -e 's/;;/ /g' -e 's/;[[:space:]]*(do|done|then|else|elif|fi|case|esac)([^a-zA-Z0-9_]|$)/ /g')"
+if [[ "$_cmd_struct_stripped" =~ \; ]]; then
+  echo "Blocked by ${HOOK_NAME}: shell chain operator detected (;)" >&2
+  echo "Run as separate Bash tool calls. Control-flow ; (do, done, then, fi, ...) is allowed." >&2
   exit 2
 fi
 
