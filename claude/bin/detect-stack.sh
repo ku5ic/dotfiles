@@ -29,7 +29,7 @@ source "$(dirname "$0")/_lib.sh"
 ROOT="$("$HOME/.claude/bin/project-root.sh")"
 cd "$ROOT"
 
-stacks=(js python ruby rust go monorepo)
+stacks=(js python ruby rust go docker monorepo)
 
 # Per-stack categorization of sentinels. The union of values here must equal
 # STACK_SENTINELS_FULL in _lib.sh; inject-context.sh relies on that union for
@@ -40,6 +40,7 @@ declare -A stack_sentinels=(
   [ruby]="Gemfile"
   [rust]="Cargo.toml"
   [go]="go.mod"
+  [docker]="Dockerfile docker-compose.yml docker-compose.yaml compose.yml compose.yaml"
   [monorepo]="pnpm-workspace.yaml turbo.json nx.json lerna.json"
 )
 
@@ -95,7 +96,7 @@ js_extras() {
   if command -v jq >/dev/null 2>&1; then
     local deps
     deps=$(jq -r '((.dependencies // {}) + (.devDependencies // {})) | keys[]' "$loc/package.json" 2>/dev/null || true)
-    for pkg in next react vue @angular/core svelte express fastify @nestjs/core tailwindcss vitest jest @playwright/test cypress eslint prettier @biomejs/biome; do
+    for pkg in next nuxt react vue @angular/core svelte express fastify @nestjs/core tailwindcss vitest jest @playwright/test cypress eslint prettier @biomejs/biome; do
       if echo "$deps" | grep -qx "$pkg"; then
         case "$pkg" in
           @angular/core) parts+=("angular") ;;
@@ -125,6 +126,7 @@ python_extras() {
   for f in "$loc/pyproject.toml" "$loc/requirements.txt" "$loc/Pipfile"; do
     [[ -f "$f" ]] || continue
     grep -qiE '^[ "]*(django|Django)' "$f" 2>/dev/null && parts+=("django")
+    grep -qiE '^[ "]*djangorestframework' "$f" 2>/dev/null && parts+=("drf")
     grep -qiE '^[ "]*fastapi' "$f" 2>/dev/null && parts+=("fastapi")
     grep -qiE '^[ "]*flask' "$f" 2>/dev/null && parts+=("flask")
     grep -qiE '^[ "]*pytest' "$f" 2>/dev/null && parts+=("pytest")

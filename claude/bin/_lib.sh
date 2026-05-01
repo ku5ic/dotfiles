@@ -22,6 +22,11 @@ STACK_SENTINELS_FULL=(
   Gemfile
   Cargo.toml
   go.mod
+  Dockerfile
+  docker-compose.yml
+  docker-compose.yaml
+  compose.yml
+  compose.yaml
   pnpm-workspace.yaml
   turbo.json
   nx.json
