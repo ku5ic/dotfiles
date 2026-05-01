@@ -5,68 +5,51 @@ description: Testing conventions covering test design, fixtures, mocking, query 
 
 # Test patterns
 
-Apply the section that matches the detected test runner.
+Apply the runner-specific reference matching the detected test runner. Principles apply to all stacks.
 
-## Principles (all stacks)
+## Severity rubric
 
-- Test behavior, not implementation. If refactoring internals breaks the test, the test is too coupled.
-- One clear assertion per test where possible. Multiple related assertions are fine; sprawling assertions are not.
-- Arrange, act, assert. Visible in the test structure.
-- Fixtures over factories over repetition. Extract when used three or more times.
-- Name tests as full sentences describing the expected behavior, not the method under test.
-- Flaky tests are failures. Fix or delete, never retry loop.
+- `failure`: a concrete defect or violation that should not ship.
+- `warning`: a smell or pattern that compounds with other findings.
+- `info`: a hardening opportunity or note, not a defect.
 
-## Vitest and Jest (shared patterns)
+## Reference files
 
-- Use `describe` for the unit, `it` for each behavior. Keep nesting to 2 levels max.
-- Mock at the module boundary, not inside the unit under test. Prefer dependency injection.
-- Avoid `beforeEach` state unless truly shared. Explicit setup per test reads better.
-- `toBe` for primitives, `toEqual` for structures, `toStrictEqual` when undefined vs missing matters.
-- Async: return the promise or use `async/await`. No `.then` chains.
-- Snapshots only for stable, meaningful output. Not for DOM trees (use Testing Library queries instead).
+| File                                                                     | Covers                                                                            |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| [reference/principles.md](reference/principles.md)                       | Test design principles + Test Pyramid (Fowler) vs Testing Trophy (Dodds)          |
+| [reference/vitest-and-jest.md](reference/vitest-and-jest.md)             | Shared Jest / Vitest patterns, runner choice, MSW for HTTP mocking                |
+| [reference/react-testing-library.md](reference/react-testing-library.md) | Query priority, full priority order, `getBy` vs `queryBy` vs `findBy` semantics   |
+| [reference/playwright.md](reference/playwright.md)                       | Playwright patterns, page object, property-based testing (fast-check, hypothesis) |
+| [reference/pytest.md](reference/pytest.md)                               | pytest fixtures, parametrize, pytest-django                                       |
+| [reference/coverage-and-skip.md](reference/coverage-and-skip.md)         | Coverage discipline, what to skip, output expectations                            |
 
-## React Testing Library
+## When to load this skill
 
-- Query priority: `getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByTestId` (last resort).
-- `userEvent` over `fireEvent`. Always `await user.click(...)`.
-- Do not query by class name or CSS selector.
-- `waitFor` around async assertions only. Do not wrap synchronous assertions.
-- `findBy*` returns a promise, use for async elements. Do not combine with `waitFor`.
-- No shallow rendering. Render components fully.
+- Project contains test config (`vitest.config.*`, `jest.config.*`, `playwright.config.*`, `pytest.ini`, `conftest.py`) or test directories (`tests/`, `__tests__/`, `spec/`).
+- User asks about tests, testing, unit / integration / e2e tests, mocking, fixtures, coverage, or test failures.
+- Adding or extending tests in any stack.
 
-Accessibility check built into tests: if you cannot find an element by role or label, the component likely has an accessibility issue worth fixing, not working around.
+## When not to load this skill
 
-## Playwright
+- Pure refactor with existing test coverage and no test changes needed.
+- One-off scripts with no testable surface.
 
-- `page.getByRole` mirrors RTL conventions. Prefer role and label selectors.
-- Wait for network idle is an anti pattern. Wait for the thing you actually need (a request, a visible element).
-- Page object pattern for flows used in three or more tests.
-- Use `test.step` to annotate long flows for better failure traces.
-- One browser context per test. Do not share state.
+## References
 
-## pytest (Django and general Python)
+- Vitest: https://vitest.dev/
+- Jest: https://jestjs.io/
+- React Testing Library: https://testing-library.com/docs/react-testing-library/intro/
+- Testing Library guiding principles: https://testing-library.com/docs/guiding-principles/
+- Playwright: https://playwright.dev/
+- pytest: https://docs.pytest.org/en/stable/
+- pytest-django: https://pytest-django.readthedocs.io/
+- Kent C. Dodds (Testing Trophy): https://kentcdodds.com/blog/the-testing-trophy-and-testing-classifications
+- Martin Fowler (Test Pyramid): https://martinfowler.com/articles/practical-test-pyramid.html
+- MSW: https://mswjs.io/
+- fast-check: https://github.com/dubzzz/fast-check
+- hypothesis: https://hypothesis.readthedocs.io/en/latest/
 
-- File layout: mirror source layout under `tests/`. One test module per source module.
-- Fixtures in `conftest.py` at the appropriate scope. Prefer function scope unless setup is expensive.
-- Parametrize with `@pytest.mark.parametrize` for table tests. Include an `id` for readability on failure.
-- Django: use `pytest-django`, `@pytest.mark.django_db` only when DB needed. Prefer `--no-migrations` in CI if migrations are settled.
-- Factory Boy for model fixtures when the same model is used in many tests.
-- Avoid `unittest.TestCase` subclasses in a pytest codebase. Pick one style.
+## Maintenance note
 
-## Coverage
-
-- Coverage is a signal, not a goal. 100% on generated code is meaningless. Focus on core logic and branching.
-- Flag uncovered branches in code that contains business rules, auth, or payment flows.
-
-## What to skip as not worth testing
-
-- Direct pass-through wrappers around library calls with no logic.
-- Trivial getters and setters.
-- Framework defaults (e.g. testing that React re-renders on state change).
-
-## Output when adding tests
-
-- New test file mirrors source path.
-- Each test describes behavior, not function.
-- Include at least one negative case per public function if it has validation.
-- Run the new tests before finishing. Report pass, fail, and coverage delta if measurable.
+Test runner choices shift on a multi-year cycle. Reconcile against current Vitest, Jest, Playwright, pytest releases when the project uses an older config. Property-based and HTTP-mocking choices (fast-check, hypothesis, MSW) have been stable for several years; verify they remain maintained at major version bumps.
