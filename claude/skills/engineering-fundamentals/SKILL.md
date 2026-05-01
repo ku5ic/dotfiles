@@ -9,7 +9,13 @@ Foundation reference for engineering work. Loads alongside language and framewor
 
 The `/flow:*` and `/audit:*` commands enforce these checks as deterministic phase gates at the right moment. When inside one of those commands, defer to the command's enforcement and apply only the sections relevant to ad-hoc questions that arise during execution. When outside any command, apply this checklist as the primary engineering quality reference.
 
-Severity rubric matches `markdown-report`: `failure`, `warning`, `info`. Cite the rubric on findings; do not invent new levels.
+## Severity rubric
+
+Severity rubric matches `markdown-report`: cite on findings, do not invent new levels.
+
+- `failure`: a concrete defect or violation that should not ship.
+- `warning`: a smell or pattern that compounds with other findings.
+- `info`: a hardening opportunity or note, not a defect.
 
 ## When to apply each section
 
@@ -23,83 +29,17 @@ Severity rubric matches `markdown-report`: `failure`, `warning`, `info`. Cite th
 
 Apply only what fits. Do not pad findings to fill sections.
 
-## Requirements clarity
+## Reference files
 
-Before any non-trivial implementation, the request must satisfy:
-
-- **Testable.** Pass or fail is observable without ambiguity. "Improve performance" without a measurable signal fails this.
-- **Unambiguous.** One reasonable interpretation only. Words like "should also handle X if needed" or "be flexible" fail this.
-- **Complete.** Inputs, outputs, and error cases are stated or directly inferable from the codebase. Happy-path-only specs fail this.
-- **Consistent.** Does not contradict project `CLAUDE.md`, existing tests, or recent commit history.
-
-If any of the four flag, surface the gap and ask one focused clarifying question. Do not infer requirements silently.
-
-## Design integrity
-
-Applies when planning a change, evaluating an architecture, or reviewing a design doc. For each, the answer must be a concrete sentence, not yes/no.
-
-- **Modularity.** Which module owns this change? If the change crosses module boundaries, name them and justify.
-- **Abstraction level.** Does any caller need to know an implementation detail to use the new code? If yes, abstraction is wrong.
-- **Separation of concerns.** Does any function or component combine independently changing concerns (data fetching + presentation, validation + persistence)? If yes, split or justify.
-- **KISS.** Is the simplest sufficient solution chosen? Name any non-obvious complexity and why it earns its place.
-- **DRY judgment.** If duplication exists, is it along a stable axis or a divergent one? Duplication with divergent lifecycles is correct, not a violation.
-- **Reversibility.** If this proves wrong after merge, what is the cost to reverse? If high, justify the choice over a more reversible alternative.
-- **Verifiability.** How will the implemented code be verified? Name the test, type check, or manual check. "Manual eyeball" means the design is incomplete.
-
-## Code-level integrity
-
-Applies per file, per function, during implementation or review.
-
-- **Cohesion.** A function does one thing. If the name needs an "and", split.
-- **Coupling.** A new module depends on the fewest concrete other modules possible. More than five non-stdlib imports in a new file: justify.
-- **Naming.** Names describe what, not how. `processItems` is weak; `validatePaymentBatch` is concrete.
-- **Magic values.** Literals beyond `0`, `1`, `-1`, `""`, and obvious enums get a named constant with a comment explaining the value.
-- **Single source of truth.** Data lives in one place. Two stores being kept in sync is a smell.
-- **Comments.** Explain why, not what. Remove comments that paraphrase the next line.
-- **Error handling.** Each error path is intentional. Bare catches that swallow are `failure`. `try/finally` without `catch` is fine when cleanup is the goal.
-
-## Test design
-
-Applies to tests just written, tests being reviewed, or test coverage being evaluated.
-
-- **Behavior, not implementation.** Would the test still pass after a refactor that preserves behavior? Tests that read internal state or assert on call counts of internal helpers are testing implementation.
-- **Boundary coverage.** For inputs with a range, edge values are tested: zero, one, max, max+1, empty, null where allowed.
-- **Equivalence partitioning.** Distinct input classes have at least one test each: valid, invalid, edge, error path.
-- **Negative cases.** At least one test per public surface verifies failure mode (invalid input rejected, error raised, expected exception type).
-- **Independence.** Tests do not depend on order; each sets up and tears down its own state.
-- **Determinism.** No time, random, or network without explicit control. Intermittent CI failure means broken, not flaky.
-- **Worth testing.** Pass-through wrappers, trivial getters, and framework defaults are not worth testing. Coverage of these is noise.
-
-## Verification and validation
-
-Applies during review or post-implementation reflection.
-
-- **Verification (building it right).** Does the code implement what the plan or spec said? If the plan moved while implementing, was the plan updated? Drift between plan and code is `warning`.
-- **Validation (building the right thing).** Does the change actually solve the underlying problem? A change that is technically correct but misses the user's actual need fails validation, regardless of how clean the code is.
-- **Traceability.** Can each behavior change be traced to a line in the spec, plan, or ticket? Behavior in code without a corresponding requirement is a `warning`; surface it.
-
-## Metric thresholds
-
-Statically inferable smells. None are hard limits; each is a signal that compounds with other findings.
-
-- **Function size:** over 50 lines without a clear cohesive reason. `warning`.
-- **Cyclomatic complexity:** nested conditionals deeper than 3, or more than 7 distinct branches in one function. `warning`.
-- **Coupling:** a module with more than ~10 internal imports, or a class with more than 7 public methods. `warning`.
-- **Cohesion:** a class or module whose methods operate on disjoint subsets of fields suggests two responsibilities. `warning`.
-- **File size:** over 500 lines is a candidate for split unless genuinely cohesive (single config, single component with tight internal cohesion).
-
-These compound. A 60-line function with cyclomatic complexity 9 inside a 700-line file is one finding, not three.
-
-## Anti-patterns to flag
-
-- "It works, ship it" without verifiability check
-- "We can refactor later" applied to architecture, not just code
-- Requirements inferred from code rather than stated
-- Tests written to confirm the implementation, not the behavior
-- Metric thresholds dismissed without examining whether they compound
-- "DRY" applied to coincidentally similar code with divergent lifecycles
-- "KISS" used to justify skipping necessary abstractions
-- "SOLID" cited without naming which principle and how
+| File                                                                                 | Covers                                                                                    |
+| ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| [reference/requirements-clarity.md](reference/requirements-clarity.md)               | Testable / Unambiguous / Complete / Consistent before non-trivial implementation          |
+| [reference/design-integrity.md](reference/design-integrity.md)                       | Modularity, abstraction, KISS, DRY, plus SOLID principles and DRY/KISS attribution        |
+| [reference/code-level-integrity.md](reference/code-level-integrity.md)               | Per-file checks plus the Stevens/Myers/Constantine cohesion and coupling hierarchies      |
+| [reference/test-design.md](reference/test-design.md)                                 | Behavior, boundary, equivalence partitioning, negative cases (after Myers's testing book) |
+| [reference/verification-and-validation.md](reference/verification-and-validation.md) | Boehm's V&V distinction with concrete failure modes                                       |
+| [reference/metric-thresholds.md](reference/metric-thresholds.md)                     | Function size, cyclomatic complexity, McCabe < 10, SonarSource Cognitive Complexity       |
+| [reference/anti-patterns.md](reference/anti-patterns.md)                             | Eight anti-patterns covering the gap between citing principles and applying them          |
 
 ## What this skill does not do
 
@@ -111,10 +51,16 @@ These compound. A 60-line function with cyclomatic complexity 9 inside a 700-lin
 
 These checklists distill widely accepted software engineering practice. For deeper background:
 
-- Modularity, abstraction, separation of concerns: Parnas (1972), "On the Criteria To Be Used in Decomposing Systems into Modules"
-- Cyclomatic complexity: McCabe (1976)
-- Cohesion and coupling: Stevens, Myers, Constantine (1974)
-- V&V distinction: Boehm (1981)
-- Test design (boundary, equivalence): Myers, "The Art of Software Testing"
+- Modularity, abstraction, separation of concerns: Parnas (1972), "On the Criteria To Be Used in Decomposing Systems into Modules", CACM 15(12) pp 1053-1058.
+- Cyclomatic complexity: McCabe (1976), "A Complexity Measure", IEEE Transactions on Software Engineering SE-2(4) pp 308-320.
+- Cohesion and coupling: Stevens, Myers, Constantine (1974), "Structured design", IBM Systems Journal 13(2) pp 115-139.
+- V&V distinction: Boehm (1981), "Software Engineering Economics", Prentice-Hall.
+- Test design (boundary, equivalence): Myers, "The Art of Software Testing", Wiley (1979 / revised editions).
+- SOLID: Robert C. Martin (2000), "Design Principles and Design Patterns" (paper). Acronym coined by Michael Feathers (~2004).
+- DRY: Hunt and Thomas, "The Pragmatic Programmer" (1st ed 1999, 20th anniversary ed 2019), Addison-Wesley.
+- Refactoring catalog: Martin Fowler, "Refactoring" (2nd ed, 2018).
+- Construction practice: Steve McConnell, "Code Complete" (2nd ed, 2004).
+- Cognitive Complexity (vendor source): https://www.sonarsource.com/resources/cognitive-complexity/
+- SEI CERT Coding Standards: https://wiki.sei.cmu.edu/confluence/display/seccode
 
 Citations are for context. Do not require Claude to read source material; the checklists above are the operational version.
