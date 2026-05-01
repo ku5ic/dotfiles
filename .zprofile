@@ -14,7 +14,6 @@ HOMEBREW_NO_ENV_HINTS=1
 
 # github
 export GITHUB_PERSONAL_ACCESS_TOKEN="$(gh auth token 2>/dev/null)"
-export GH_COPILOT_TOKEN="$GITHUB_PERSONAL_ACCESS_TOKEN"
 
 # PATH
 export PATH="$(brew --prefix rustup)/bin:$PATH"
