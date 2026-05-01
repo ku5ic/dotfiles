@@ -1,6 +1,6 @@
 ---
 name: react-patterns
-description: React and Next.js patterns, anti-patterns, and review checklist. Load when implementing, reviewing, or auditing React or Next.js code.
+description: React and Next.js patterns, anti-patterns, hooks rules, performance, server/client boundary, App Router data fetching and caching, and review checklist. Use whenever the user asks about React, Next.js, hooks, components, JSX, TSX, server components, client components, App Router, Pages Router, useState, useEffect, useMemo, rendering, hydration, or any frontend work in a React or Next.js project, even if the framework is not mentioned by name.
 ---
 
 # React and Next.js patterns

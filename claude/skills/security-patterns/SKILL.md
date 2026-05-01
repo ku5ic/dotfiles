@@ -1,6 +1,6 @@
 ---
 name: security-patterns
-description: Security checklist for frontend (React, Next.js) and backend (Django, Node APIs). Load when running a security audit or reviewing changes that touch user input, auth, or external data.
+description: Security checklist for frontend (React, Next.js) and backend (Django, Node APIs) covering XSS, injection, auth, sessions, CSRF, CSP, secrets, dependency CVEs, and severity calls. Use whenever the user asks about security, hardening, vulnerabilities, auth, authentication, authorization, sessions, cookies, XSS, CSRF, SQL injection, secrets, environment variables, CSP, headers, or reviews changes that touch user input, auth, or external data, even if "security" is not mentioned by name.
 ---
 
 # Security patterns

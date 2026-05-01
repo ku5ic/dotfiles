@@ -1,6 +1,6 @@
 ---
 name: test-patterns
-description: Testing conventions for Vitest, Jest, React Testing Library, Playwright, and pytest. Load when writing tests, reviewing tests, or extending test coverage.
+description: Testing conventions for Vitest, Jest, React Testing Library, Playwright, and pytest covering test design, fixtures, mocking, query priority, async handling, and what to skip. Use whenever the user asks about tests, testing, unit tests, integration tests, e2e tests, mocking, fixtures, coverage, test failures, or extending test coverage in any stack, even if a specific framework is not mentioned by name.
 ---
 
 # Test patterns

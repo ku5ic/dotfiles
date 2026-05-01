@@ -1,6 +1,6 @@
 ---
 name: django-patterns
-description: Django patterns, anti-patterns, and review checklist. Load when implementing, reviewing, or auditing Django code.
+description: Django patterns, anti-patterns, ORM gotchas, view design, migrations, settings, DRF, and review checklist for Django backend work. Use whenever the user asks about Django, Python web backend, ORM queries, models, views, forms, templates, migrations, admin, settings, signals, middleware, DRF, serializers, viewsets, or any backend Python web work, even if Django is not mentioned by name.
 ---
 
 # Django patterns

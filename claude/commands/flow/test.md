@@ -17,7 +17,7 @@ argument-hint: <optional: file or area to focus on>
    - Happy path
    - At least one negative or edge case per public surface
    - Boundary conditions specific to the change (null, empty, max, etc.)
-     5a. Test design check. For the tests just written, verify each:
+6. Test design check. For the tests just written, verify each:
    - Behavior, not implementation: would the test still pass after a refactor that preserves behavior? If a test reads internal state or asserts on call counts of internal helpers, it is testing implementation.
    - Boundary coverage: for any input with a range, edge values are tested (zero, one, max, max+1, empty, null where allowed).
    - Equivalence partitioning: distinct input classes have at least one test each (valid input, invalid input, edge case, error path).
@@ -27,11 +27,11 @@ argument-hint: <optional: file or area to focus on>
 
    If any test fails this check, fix the test. Do not proceed to step 6 with shape-checking tests masquerading as behavior tests.
 
-6. Run the new tests narrowly first (single file). Then run the adjacent test suite (module or package).
-7. If tests fail:
+7. Run the new tests narrowly first (single file). Then run the adjacent test suite (module or package).
+8. If tests fail:
    - If the test is wrong, fix the test
    - If the implementation is wrong, stop and report. Do not silently change implementation
-8. Report results. Include pass count, fail count, and coverage delta if measurable.
+9. Report results. Include pass count, fail count, and coverage delta if measurable.
 
 ## Rules
 
