@@ -1,6 +1,6 @@
 ---
 name: bash-patterns
-description: Bash and shell script patterns covering safety flags, quoting, conditionals, traps, functions, ShellCheck discipline, and review-worthy anti-patterns. Use whenever the user writes, reviews, or audits shell scripts (.sh, .bash, .zsh), edits dotfiles like .zshrc or .zprofile, authors CI steps, writes Makefile recipes, or any shell-pipeline work, even if "bash" is not mentioned by name.
+description: Bash and shell script patterns covering safety flags, quoting, conditionals, traps, functions, ShellCheck discipline, and review-worthy anti-patterns. Use whenever the project contains `.sh`, `.bash`, `.zsh` files (or files with bash/sh shebangs), scripts in `bin/`, dotfiles like `.zshrc`/`.bashrc`/`.zprofile`, Makefile recipes, OR the user asks about bash, shell, scripts, or any shell-pipeline work, even if "bash" is not mentioned by name.
 ---
 
 # Bash patterns

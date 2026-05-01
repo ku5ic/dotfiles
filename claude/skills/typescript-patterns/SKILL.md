@@ -1,6 +1,6 @@
 ---
 name: typescript-patterns
-description: TypeScript patterns, strictness flags, type-safety anti-patterns, and review checklist covering any vs unknown, satisfies operator, branded types, discriminated unions, generic constraints, and module boundaries. Use whenever the user writes, reviews, or audits TypeScript code, asks about types, type errors, type narrowing, generics, tsconfig, or any work in a .ts or .tsx file, even if "TypeScript" is not mentioned by name.
+description: TypeScript patterns, strictness flags, type-safety anti-patterns, and review checklist covering any vs unknown, satisfies operator, branded types, discriminated unions, generic constraints, and module boundaries. Use whenever the project contains `.ts` or `.tsx` files, `tsconfig.json`, `tsconfig.base.json`, or `typescript` in `package.json` dependencies, OR the user asks about TypeScript, types, type errors, type narrowing, generics, tsconfig, or any work in a `.ts` or `.tsx` file, even if "TypeScript" is not mentioned by name.
 ---
 
 # TypeScript patterns
@@ -124,8 +124,6 @@ When reviewing a TypeScript project's `tsconfig.json`:
 
 - Pure `.js` or `.jsx` work in a project with no TypeScript adoption.
 - Trivial type imports from a known-good third-party package.
-- React or Next.js specific TypeScript patterns: load `react-patterns`.
-- Tailwind-specific styling questions: load `tailwind-patterns`.
 
 ## References
 

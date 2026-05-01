@@ -1,6 +1,6 @@
 ---
 name: python-patterns
-description: Python language-level patterns covering type hints, strictness, project layout, async, error handling, packaging, and review-worthy anti-patterns. Use whenever the user writes, reviews, or audits Python code, asks about type hints, mypy, pyright, async, packaging, pyproject.toml, project structure, or any work in a .py file, even if "Python" is not mentioned by name.
+description: Python language-level patterns covering type hints, strictness, project layout, async, error handling, packaging, and review-worthy anti-patterns. Use whenever the project contains `.py` files, `pyproject.toml`, `requirements.txt`, `Pipfile`, `uv.lock`, `poetry.lock`, OR the user asks about Python, type hints, mypy, pyright, async, packaging, project structure, or any work in a `.py` file, even if "Python" is not mentioned by name.
 ---
 
 # Python patterns

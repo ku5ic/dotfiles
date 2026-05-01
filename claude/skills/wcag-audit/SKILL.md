@@ -1,6 +1,6 @@
 ---
 name: wcag-audit
-description: WCAG 2.2 AA audit checklist, severity rubric, and stack adaptation for accessibility review. Use whenever the user asks about accessibility, a11y, WCAG, screen readers, keyboard navigation, focus management, ARIA, contrast, semantic HTML, alt text, form labels, or audits a component, page, or template for accessibility issues regardless of stack (React, Next.js, Django templates, plain HTML), even if WCAG is not mentioned by name.
+description: WCAG 2.2 AA audit checklist, severity rubric, and stack adaptation for accessibility review. Use whenever the project contains UI code (`.jsx`, `.tsx`, `.vue`, `.svelte`, HTML files, Django templates), OR the user asks about accessibility, a11y, WCAG, screen readers, keyboard navigation, focus management, ARIA, contrast, semantic HTML, alt text, form labels, or audits a component, page, or template for accessibility issues regardless of stack, even if WCAG is not mentioned by name.
 ---
 
 # WCAG 2.2 AA audit

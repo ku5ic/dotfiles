@@ -1,13 +1,13 @@
 ---
 name: engineering-fundamentals
-description: Engineering fundamentals checklist covering requirements clarity, design integrity, code-level quality, test design, verification and validation, and metric thresholds. Use whenever the user asks for review, audit, plan, implementation guidance, refactor, code quality assessment, or any engineering work that is not already running inside a /flow:* or /audit:* command, even if the user does not mention "principles", "SOLID", "DRY", "KISS", or "metrics" explicitly. Companion to the /flow:* and /audit:* commands which enforce these checks as deterministic phase gates; this skill is the standalone reference for ad-hoc work.
+description: Engineering fundamentals reference covering requirements clarity, design integrity, code-level quality, test design, verification and validation, and metric thresholds. Foundation skill that loads alongside language and framework skills for any engineering work, including review, audit, plan, implementation, refactor, or code quality assessment, even if the user does not mention "principles", "SOLID", "DRY", "KISS", or "metrics" explicitly. The /flow:* and /audit:* commands enforce these checks as deterministic phase gates; this skill is the always-available reference that those commands defer to.
 ---
 
 # Engineering fundamentals
 
-Backstop reference for ad-hoc engineering work. The `/flow:*` and `/audit:*` commands enforce these as gates at the right phase. This skill exists for when no such command is running.
+Foundation reference for engineering work. Loads alongside language and framework skills for any review, audit, plan, implementation, refactor, or code quality task.
 
-If you are running `/flow:preflight`, `/flow:plan`, `/flow:implement`, `/flow:test`, `/flow:review`, `/audit:debt`, `/audit:doc-drift`, or any other audit command, the relevant checks are already embedded there. Use this skill only when working outside those commands.
+The `/flow:*` and `/audit:*` commands enforce these checks as deterministic phase gates at the right moment. When inside one of those commands, defer to the command's enforcement and apply only the sections relevant to ad-hoc questions that arise during execution. When outside any command, apply this checklist as the primary engineering quality reference.
 
 Severity rubric matches `markdown-report`: `failure`, `warning`, `info`. Cite the rubric on findings; do not invent new levels.
 
@@ -104,7 +104,7 @@ These compound. A 60-line function with cyclomatic complexity 9 inside a 700-lin
 ## What this skill does not do
 
 - Replace `/flow:*` or `/audit:*` enforcement. Those are deterministic. This is a fallback.
-- Substitute for stack-specific skills. Pair with `react-patterns`, `django-patterns`, `wcag-audit`, etc., as relevant.
+- Substitute for stack-specific skills. Stack-specific patterns load independently when project signals match.
 - Provide implementation patterns. This is principles only.
 
 ## References
