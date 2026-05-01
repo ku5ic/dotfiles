@@ -1,0 +1,25 @@
+{
+  "skill_name": "engineering-fundamentals",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this Django view for engineering quality. I am not running this in /flow:review; just give me a focused review.",
+      "files": ["UserListView.py"],
+      "expected_output": "Loads the engineering-fundamentals skill (does not defer to /flow:review). Produces findings in the failure/warning/info severity rubric matching markdown-report. Identifies cohesion issues if the view mixes data fetching, validation, and serialization. Identifies coupling issues if the view imports many concrete dependencies. Identifies metric threshold breaches (function over 50 lines, complexity over 7 branches, etc.) if present. Does not produce a textbook explanation of SOLID; calls out specific applied violations.",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "I want to make our API faster. Where should I start?",
+      "expected_output": "Recognizes the request fails the testable, unambiguous, and complete criteria from the requirements clarity section. Asks one focused clarifying question rather than producing a generic performance checklist. Does not infer specific performance goals; surfaces the gap.",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "prompt": "I wrote these tests for our payment handler. Are they any good?",
+      "files": ["payment-handler.ts", "payment-handler.test.ts"],
+      "expected_output": "Applies the test design checklist: behavior vs implementation, boundary coverage, equivalence partitioning, negative cases, independence, determinism. Flags tests that assert on internal call counts or private state as testing implementation. Flags missing boundary cases (zero, max, null) and missing negative cases. Does not require tests for trivial pass-through wrappers per the 'worth testing' rule.",
+      "assertions": []
+    }
+  ]
+}
