@@ -1,0 +1,25 @@
+{
+  "skill_name": "python-patterns",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this Python module for type-safety and code quality. Use the python-patterns skill.",
+      "files": ["order_service.py"],
+      "expected_output": "Findings in markdown-report format covering: (1) missing type hints on public function signatures flagged as warnings; (2) Any usage on a public function parameter flagged as failure; (3) mutable default argument flagged as failure; (4) bare except: flagged as failure; (5) == None comparison flagged with recommendation to use 'is None'; (6) outputs failure/warning/info severity rubric.",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "Look at this async handler. Anything wrong with it?",
+      "files": ["webhook_handler.py"],
+      "expected_output": "Identifies time.sleep call inside async function as failure (blocks event loop). Identifies requests library usage in async context as warning, recommends httpx or aiohttp. Identifies sync database calls inside async function. Suggests asyncio.gather or asyncio.TaskGroup for parallel I/O if sequential awaits are present.",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "prompt": "I am setting up a new Python project. Should I use src layout? What about pyproject.toml? What dependency manager?",
+      "expected_output": "Recommends src/ layout with explicit reasoning (prevents accidental imports of in-development package). Recommends pyproject.toml as single source; mentions no setup.py for new projects. Recommends uv or Poetry as dependency manager; does not recommend bare pip + requirements.txt for development. Mentions consolidating tool config in pyproject.toml. Gives concrete decisions; does not produce a from-scratch tutorial.",
+      "assertions": []
+    }
+  ]
+}
