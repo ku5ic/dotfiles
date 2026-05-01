@@ -12,6 +12,14 @@ argument-hint: <optional task description>
 3. Read `CLAUDE.md` at the project root in full. Read any `CLAUDE.md` in the path from project root to the target area.
 4. Read project README only if it explicitly covers the task area, judged from headings.
 5. Identify the minimum file set the task touches: the files that will change, plus the files that the changing files import or depend on. No more, no less.
+   5a. Requirements clarity check. Before reading the minimum file set, evaluate the task statement from $ARGUMENTS or the prior conversation against:
+   - Testable: can pass/fail be observed without ambiguity? If "improve X" or "make Y better" without a measurable signal, flag.
+   - Unambiguous: does the statement admit only one reasonable interpretation? If words like "should also handle X if needed" appear, flag.
+   - Complete: are inputs, outputs, and error cases stated or inferable from the codebase? If only the happy path is described, flag.
+   - Consistent: does the statement contradict anything in CLAUDE.md, the existing tests, or the recent commit history? If yes, flag.
+
+   If any of the four flag, stop and ask one focused clarifying question before proceeding to step 6. Do not infer requirements; surface the gap.
+
 6. Read those files.
 7. File budget: read at most 12 files across steps 3-6. If the minimum set exceeds 12, stop and ask the user to scope the task. The tokei call in step 8 does not count toward this budget.
 8. Run `tokei` once at the project root for repo size context: total lines, language breakdown. This replaces the reflex to read many files just to estimate size. Capture the headline numbers in the preflight report under the Stack summary.

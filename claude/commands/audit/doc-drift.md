@@ -31,6 +31,7 @@ $ARGUMENTS should point to the code surface to check. Required.
 - Configuration instructions that reference renamed or removed options
 - Documented features that have been removed or renamed
 - Feature documented but no longer exists
+- Requirements documented in README, CLAUDE.md, or design docs that no longer match the implementation. Examples: a "supports X" claim with no code implementing X; a "must validate Y" rule with no validation in the relevant handler; a documented invariant that the code violates.
 
 ## What does not count as drift
 

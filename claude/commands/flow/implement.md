@@ -29,6 +29,19 @@ argument-hint: <optional: step number or range>
 - If a drive-by fix is tempting: note it, propose as a separate step or commit. Do not apply.
 - If the change requires editing project-level config (`tsconfig`, `next.config`, `settings.py`, etc.): stop and ask. This matches the CLAUDE.md rule.
 
+## Code-level integrity (per file changed)
+
+Apply during step 4 alongside existing style-matching:
+
+- Cohesion: each function does one thing; if the function name needs an "and", split it.
+- Coupling: a new module or component depends on the fewest concrete other modules possible. If a new file imports more than five non-stdlib modules, name why.
+- Naming: names describe what, not how. `processItems` is weak; `validatePaymentBatch` is concrete.
+- Magic values: literal numbers or strings beyond 0, 1, -1, "", and obvious enums get a named constant with a comment explaining the value.
+- Single source of truth: a piece of data lives in one place. If you find yourself synchronizing two stores, stop and surface.
+- Comments: explain why, not what. Remove comments that paraphrase the next line.
+
+If a file change violates any of these and the violation is not justified by the plan, stop and surface. Do not silently absorb the violation.
+
 ## Output
 
 No report file. Terminal output only:
