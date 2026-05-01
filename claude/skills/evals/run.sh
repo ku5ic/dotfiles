@@ -79,21 +79,21 @@ print_eval() {
   local skill_name
   skill_name="$(jq -r '.skill_name' "$file")"
   local eval_id prompt expected
-  eval_id="$(jq -r ".evals[$idx].id" "$file")"
-  prompt="$(jq -r ".evals[$idx].prompt" "$file")"
-  expected="$(jq -r ".evals[$idx].expected_output" "$file")"
+  eval_id="$(jq -r --argjson idx "$idx" '.evals[$idx].id' "$file")"
+  prompt="$(jq -r --argjson idx "$idx" '.evals[$idx].prompt' "$file")"
+  expected="$(jq -r --argjson idx "$idx" '.evals[$idx].expected_output' "$file")"
 
   printf '\n=== %s / eval %s ===\n' "$skill_name" "$eval_id"
   printf '\nPROMPT:\n%s\n' "$prompt"
 
   local files_count
-  files_count="$(jq ".evals[$idx].files | length // 0" "$file")"
+  files_count="$(jq --argjson idx "$idx" '.evals[$idx].files | length // 0' "$file")"
   if [[ "$files_count" -gt 0 ]]; then
     printf '\nFIXTURES:\n'
     local i=0
     while [[ $i -lt $files_count ]]; do
       local fixture
-      fixture="$(jq -r ".evals[$idx].files[$i]" "$file")"
+      fixture="$(jq -r --argjson idx "$idx" --argjson i "$i" '.evals[$idx].files[$i]' "$file")"
       printf '  %s\n' "${FIXTURES_DIR}/${fixture}"
       i=$((i + 1))
     done
