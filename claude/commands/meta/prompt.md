@@ -2,7 +2,7 @@
 description: Turn a fuzzy ask into a sharp Claude Code prompt with context and acceptance criteria
 argument-hint: <the fuzzy ask, or a file containing it>
 model: haiku
-effort: medium
+effort: low
 ---
 
 **Effort: light.** Rewriting with structure. Does not do the underlying task.

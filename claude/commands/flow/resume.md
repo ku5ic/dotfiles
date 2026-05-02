@@ -2,7 +2,7 @@
 description: Resume a partially executed plan from a scratch file
 argument-hint: <optional: scratch path or task slug>
 model: sonnet
-effort: medium
+effort: low
 ---
 
 **Effort: light.** Reorientation, not work.
