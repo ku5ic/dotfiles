@@ -1,0 +1,24 @@
+{
+  "skill_name": "vue-patterns",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this Vue 3 component. Use the vue-patterns skill.",
+      "files": ["UserCard.vue"],
+      "expected_output": "Findings in markdown-report format covering: (1) v-if and v-for on the same element flagged as failure (precedence trap); (2) missing :key on v-for flagged as warning; (3) destructured reactive object losing reactivity flagged as failure; (4) v-html with user-derived input flagged as failure (XSS); (5) optionally: prop mutation in the child flagged as failure; outputs failure/warning/info severity rubric.",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "Should I use ref or reactive?",
+      "expected_output": "Recommends ref as the primary API per Vue docs. Reasons: works with primitives, allows replacing the entire value, survives destructuring (you destructure .value, not the ref). Notes reactive's three limitations: primitives don't work, cannot replace the whole object reference, destructuring loses reactivity. Recommends toRefs() to safely destructure a reactive object. Mentions shallowRef/shallowReactive for large objects replaced wholesale.",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "prompt": "I have a deep watcher that fires too often. How do I fix it?",
+      "expected_output": "Explains deep watch is expensive: recursively traverses the entire reactive tree on setup and re-traverses on each mutation. Recommends watching a specific computed or path (`watch(() => state.user.email, ...)`). Mentions watchEffect as an alternative because it auto-tracks only the touched fields. Suggests restructuring data so the watched field is at the top level. Does not recommend leaving deep:true as the default.",
+      "assertions": []
+    }
+  ]
+}
