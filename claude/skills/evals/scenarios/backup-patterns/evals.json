@@ -1,0 +1,45 @@
+[
+  {
+    "id": "backup-pg-dump-format",
+    "skill": "backup-patterns",
+    "description": "Recommends custom format over plain SQL for pg_dump",
+    "input": {
+      "task": "explain",
+      "question": "What format should I use for pg_dump backups of a 50GB PostgreSQL database?"
+    },
+    "expected": {
+      "must_mention": ["-F c", "custom", "parallel"],
+      "must_not_mention": ["plain.*large|plain.*recommended"]
+    }
+  },
+  {
+    "id": "backup-restic-retention",
+    "skill": "backup-patterns",
+    "description": "Explains restic forget with --prune for retention policy",
+    "input": {
+      "task": "explain",
+      "question": "I'm using restic and my backup storage keeps growing. How do I set up a retention policy?"
+    },
+    "expected": {
+      "must_mention": ["forget", "--keep-daily", "--prune"],
+      "severity_calls": {
+        "warning": ["forget.*without.*prune|no.*prune|growing"]
+      }
+    }
+  },
+  {
+    "id": "backup-offsite-requirement",
+    "skill": "backup-patterns",
+    "description": "Flags single-location backup as a failure",
+    "input": {
+      "task": "review",
+      "question": "Our backup strategy is: pg_dump daily to /backups on the same server. Is this sufficient?"
+    },
+    "expected": {
+      "must_mention": ["offsite", "3-2-1"],
+      "severity_calls": {
+        "failure": ["same server|single.*location|offsite"]
+      }
+    }
+  }
+]

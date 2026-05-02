@@ -31,6 +31,7 @@ brew 'lazygit'                      # terminal git UI bound to the lg alias
 brew 'less'                         # GNU less from Homebrew, kept current for pager features
 brew 'lua'                          # Lua interpreter required by Neovim Lua plugins and luarocks-based dependencies
 brew 'luarocks'                     # Lua package manager for Neovim plugins that need extensions
+brew 'lynx'                         # Lynx is the text web browser (currently used by CopilotChat.nvim)
 brew 'mkcert'                       # locally trusted dev certificate generator
 brew 'ncurses'                      # terminal UI library used by tools like nvim and tmux
 brew 'neovim'                       # primary editor, configured under config/nvim

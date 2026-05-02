@@ -46,7 +46,25 @@ React re-renders, bundle cost, N+1 queries, unbounded loops, missing pagination.
 
 Names, abstractions, hidden coupling, implicit dependencies.
 
-### 8. Tests
+### 8. Code metrics (statically inferable)
+
+Flag findings, not opinions:
+
+- Function size: any function over 50 lines, flag and ask if it earned its length.
+- Cyclomatic complexity: nested conditionals more than three deep, or a function with more than seven distinct branches. These are smell thresholds, not hard limits.
+- Coupling: a module that imports from more than ~10 internal modules, or a class with more than 7 public methods. Either smell, not failure.
+- Cohesion: a class or module whose methods operate on disjoint subsets of fields suggests two responsibilities.
+- File size: a file over 500 lines is a candidate for split unless the file is genuinely cohesive (a single config, a single large component with tight internal cohesion).
+
+These are heuristics. Severity is `warning` unless the finding compounds with another category.
+
+### 9. Verification and validation
+
+- Verification (building it right): does the diff implement what the plan said? If the plan moved while implementing, was the plan updated? Drift between plan and code is a `warning`.
+- Validation (building the right thing): does the change actually solve the problem stated? If the user asked for X and the change produces Y that is technically X but misses the underlying need, surface it.
+- Traceability: can each behavior change in the diff be traced to a line in the plan? If a behavior appears in code but not in the plan, ask why.
+
+### 10. Tests
 
 Did the change come with tests? Are the tests meaningful or shape-checking?
 

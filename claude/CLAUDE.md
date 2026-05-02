@@ -6,7 +6,7 @@ Global instructions for Claude Code. Applies to every repository. Project level 
 
 On the first substantive action in a repo:
 
-1. Check for an injected `<repo-context>` block. If present, use it for stack info. If absent and the project root has a stack sentinel (see `STACK_SENTINELS_PROJECT_ROOT` in `bin/_lib.sh`), surface it: the hook should have fired but did not. If absent and no sentinel exists, proceed normally; the hook intentionally skips non-stack repos.
+1. Check for an injected `<repo-context>` block. If present, use it for stack info. If absent and the project root has a stack sentinel (see `anchor: true` entries in `_stacks.yml`), surface it: the hook should have fired but did not. If absent and no sentinel exists, proceed normally; the hook intentionally skips non-stack repos.
 2. Read project root CLAUDE.md if present.
 3. Read README.md only if directly relevant to the task.
 4. Check current branch and dirty state. If dirty and the task implies a new feature, surface this and ask before proceeding.
@@ -376,3 +376,59 @@ The `/flow:*` cycle has fixed per-task overhead (preflight context, plan section
 - Short-circuits are opt-in by signal, not silent. The flow command states which short-circuit it applied and why, so the user can override with "do the full preflight" or "give me the full review".
 - A short-circuit failure (e.g. session continuity does not hold because new commits landed) falls through to the full flow step, not to a half-done one.
 - The user can always force a full step by passing `--full` or equivalent in $ARGUMENTS. The agent honors this without argument.
+
+## Skill authoring conventions
+
+Rules for authoring or editing skills in `~/.dotfiles/claude/skills/`. Apply to every skill, present and future.
+
+### Autodetection over named cross-references
+
+Skills load based on their own descriptions matching the project context, not because one skill instructs Claude to load another. A skill's description must:
+
+- Trigger on concrete project signals (file extensions, sentinel files like `manage.py` or `next.config.js`, dependency markers in `package.json` or `pyproject.toml`, distinctive syntax).
+- Trigger on keyword aliases (the user mentioning the technology, even informally).
+- NOT instruct Claude to "load skill X alongside this one" or "see also skill Y".
+- NOT enumerate companion skills in the body as "load these together".
+
+Skills load in combination because each skill's independent triggers all match the same project. A TypeScript Next.js project loads `typescript-patterns`, `react-patterns`, and `next-app-router-patterns` because each description independently matches the project's signals, not because one skill names the others.
+
+Documentation references to other skills as concepts ("framework-specific patterns live in their respective skills") are acceptable. Load instructions that name other skills are not.
+
+### Description shape
+
+> [What the skill is, one phrase]. Use whenever [project signals], OR the user asks about [keyword aliases], even if [the technology] is not mentioned by name.
+
+Both project signals and keyword aliases are required.
+
+### Body conventions
+
+- Imperative voice, terse.
+- Plain ASCII punctuation. ASCII arrows (`->`, `<-`) only.
+- Anti-patterns section with severity calls (`failure`, `warning`, `info`).
+- "When to load this skill" section listing concrete triggers.
+- "When not to load this skill" section listing exclusions (NEVER name other skills).
+- "References" section with verified URLs.
+- Maintenance note acknowledging the ecosystem will evolve.
+
+### Single-file vs Pattern 1 (index + reference files)
+
+The denominator is content shape, not line count.
+
+- **Pattern 1**: when the skill has multiple distinct sub-domains, each substantial enough to be its own reference. Layout: `SKILL.md` as index + `reference/<topic>.md` files for each sub-domain. SKILL.md links to reference files explicitly.
+- **Single SKILL.md**: when the topic is one cohesive flow.
+
+By the sub-domain test, framework and language skills with distinct expertise areas are Pattern 1. Single-topic skills (logging, monitoring, backup, git) are single-file.
+
+Reference files over 100 lines need a table of contents at the top.
+
+### Verification rule
+
+Every version-sensitive claim, library version, syntax form, framework feature, and tooling recommendation must be verified against authoritative sources before shipping. When creating or substantially editing a skill, produce a verification log saved to `~/.claude/scratch/verification-<skill>-<YYYYMMDD-HHMM>.md` listing each claim and its source URL. If a claim cannot be verified, omit it. No freestyling.
+
+### Severity rubric (matches markdown-report)
+
+- `failure`: a concrete defect or violation that should not ship.
+- `warning`: a smell or pattern that compounds with other findings.
+- `info`: a hardening opportunity or note, not a defect.
+
+No new severity levels.

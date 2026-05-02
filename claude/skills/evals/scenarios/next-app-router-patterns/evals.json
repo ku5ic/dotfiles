@@ -1,0 +1,24 @@
+{
+  "skill_name": "next-app-router-patterns",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this Next.js App Router page for caching correctness. Use the next-app-router-patterns skill.",
+      "files": ["dashboard-page.tsx"],
+      "expected_output": "Findings in markdown-report format covering: (1) fetch() relies on default behavior; in current Next, fetch is NOT cached by default, so freshness-sensitive data may be over-cached if force-cache is set or stale if force-cache is missing -- the call out should distinguish these and recommend an explicit cache directive; (2) route segment config (export const revalidate / dynamic) interacts with the fetches -- surface any conflict; (3) use of cookies()/headers() forces dynamic rendering for the segment; (4) recommends revalidatePath/revalidateTag after mutations. Distinguishes failure (data correctness broken, e.g. stale price after mutation) from warning (cache strategy suboptimal but correct).",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "I have a server action that takes form data and writes to the database. Walk me through best practices.",
+      "expected_output": "Mentions the 'use server' directive (file-top or function-inline). Recommends authenticate-and-authorize INSIDE the function (not relying on Proxy / middleware), citing that Server Functions are reachable via direct POST. Recommends input validation at the action boundary with a schema library (Zod or similar). Recommends revalidatePath or revalidateTag after the write. Mentions useActionState for pending state and redirect() for post-mutation navigation. Mentions returning only the data the UI needs, not raw database records.",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "prompt": "What is the difference between server components and client components in App Router?",
+      "expected_output": "Explains server components are the default; 'use client' opts a file (and its transitive imports) into the client module graph. Notes server components cannot use hooks, event handlers, browser APIs, or React context providers. Notes client components cannot do async render, direct database access, or use server-only APIs (cookies, headers). Notes the serialization boundary: props passed across must be serializable. Mentions the 'children' / slot pattern for nesting server components inside client wrappers without losing the server tree.",
+      "assertions": []
+    }
+  ]
+}

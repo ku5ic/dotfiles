@@ -1,0 +1,50 @@
+[
+  {
+    "id": "vps-provisioning-script-review",
+    "skill": "vps-provisioning",
+    "description": "Identifies security failures in a provisioning script",
+    "input": {
+      "task": "review",
+      "file": "evals/fixtures/vps-provisioning/provision.sh"
+    },
+    "expected": {
+      "must_mention": ["root", "password", "firewall", "PermitRootLogin"],
+      "severity_calls": {
+        "failure": [
+          "root.*ssh|PermitRootLogin|ssh.*root",
+          "PasswordAuthentication.*yes|password.*ssh",
+          "firewall|ufw"
+        ],
+        "warning": [
+          "server_tokens|nginx.*version",
+          "EnvironmentFile|chmod|permission"
+        ]
+      }
+    }
+  },
+  {
+    "id": "vps-systemd-service-not-starting",
+    "skill": "vps-provisioning",
+    "description": "Diagnoses a systemd service that fails to start after editing the unit file",
+    "input": {
+      "task": "explain",
+      "question": "I edited my app's systemd unit file but the changes have no effect. systemctl status still shows the old config. What did I miss?"
+    },
+    "expected": {
+      "must_mention": ["daemon-reload", "systemctl daemon-reload"]
+    }
+  },
+  {
+    "id": "vps-nginx-ssl-setup",
+    "skill": "vps-provisioning",
+    "description": "Explains correct nginx SSL setup order including pre-SSL firewall state",
+    "input": {
+      "task": "explain",
+      "question": "Walk me through setting up nginx with HTTPS for a new app. I have a domain pointing at the server and nginx installed."
+    },
+    "expected": {
+      "must_mention": ["certbot", "ufw", "ssl_certificate", "return 301"],
+      "must_not_mention": ["ssl_certificate_key.*example"]
+    }
+  }
+]

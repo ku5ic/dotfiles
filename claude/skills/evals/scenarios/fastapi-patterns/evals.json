@@ -1,0 +1,62 @@
+[
+  {
+    "id": "fastapi-route-review",
+    "skill": "fastapi-patterns",
+    "description": "Identifies anti-patterns in a FastAPI route file",
+    "input": {
+      "task": "review",
+      "file": "evals/fixtures/fastapi-patterns/payment_route.py"
+    },
+    "expected": {
+      "must_mention": [
+        "blocking I/O in async def",
+        "response_model",
+        "raise HTTPException",
+        "auth dependency"
+      ],
+      "severity_calls": {
+        "failure": [
+          "blocking.*async",
+          "return.*HTTPException|HTTPException.*return",
+          "no.*response_model|response_model.*missing"
+        ],
+        "warning": ["auth.*missing|missing.*auth|no.*Depends.*current_user"]
+      }
+    }
+  },
+  {
+    "id": "fastapi-pydantic-validator",
+    "skill": "fastapi-patterns",
+    "description": "Explains correct field_validator and model_validator usage",
+    "input": {
+      "task": "explain",
+      "question": "How do I validate that end_date is after start_date in a Pydantic model? And how do I normalize an email field before validation?"
+    },
+    "expected": {
+      "must_mention": [
+        "model_validator",
+        "mode='after'",
+        "field_validator",
+        "mode='before'"
+      ],
+      "must_not_mention": ["@validator", "orm_mode"]
+    }
+  },
+  {
+    "id": "fastapi-dependency-testing",
+    "skill": "fastapi-patterns",
+    "description": "Explains how to override a database dependency in tests",
+    "input": {
+      "task": "explain",
+      "question": "How do I override the get_db dependency in FastAPI tests to use a test database?"
+    },
+    "expected": {
+      "must_mention": [
+        "dependency_overrides",
+        "app.dependency_overrides[get_db]",
+        "reset",
+        "dependency_overrides = {}"
+      ]
+    }
+  }
+]

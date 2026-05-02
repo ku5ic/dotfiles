@@ -1,0 +1,39 @@
+[
+  {
+    "id": "git-conventional-breaking-change",
+    "skill": "git-patterns",
+    "description": "Identifies correct syntax for a breaking change commit message",
+    "input": {
+      "task": "explain",
+      "question": "I'm removing a deprecated API endpoint. How should I write the commit message to signal a breaking change?"
+    },
+    "expected": {
+      "must_mention": ["BREAKING CHANGE", "feat!", "MAJOR"],
+      "must_not_mention": ["semver.*manually|manually.*bump"]
+    }
+  },
+  {
+    "id": "git-fixup-vs-squash",
+    "skill": "git-patterns",
+    "description": "Explains the difference between squash and fixup in interactive rebase",
+    "input": {
+      "task": "explain",
+      "question": "What's the difference between squash and fixup in git rebase -i?"
+    },
+    "expected": {
+      "must_mention": ["message", "discard", "concatenate"]
+    }
+  },
+  {
+    "id": "git-recover-lost-commit",
+    "skill": "git-patterns",
+    "description": "Guides recovery of a lost commit using reflog",
+    "input": {
+      "task": "explain",
+      "question": "I accidentally ran git reset --hard and lost a commit I hadn't pushed yet. Can I recover it?"
+    },
+    "expected": {
+      "must_mention": ["reflog", "HEAD@{", "cherry-pick"]
+    }
+  }
+]

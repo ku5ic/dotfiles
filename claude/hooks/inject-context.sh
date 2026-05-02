@@ -6,6 +6,7 @@ source "$(dirname "$0")/_lib.sh"
 # shellcheck source=../bin/_lib.sh
 source "$(dirname "$0")/../bin/_lib.sh"
 
+payload=""
 read_payload
 session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty' 2>/dev/null || true)"
 safe_session_id="${session_id//[^a-zA-Z0-9_-]/}"
@@ -32,14 +33,11 @@ project_root="$("$HOME/.claude/bin/project-root.sh" 2>/dev/null || echo "")"
 
 cache_dir="$HOME/.claude/cache/stack"
 # Hash the project root path into the cache key so projects with the same
-# basename (e.g. ~/work/foo and ~/clients/acme/foo) cannot collide.
+# basename cannot collide.
 cache_file="$cache_dir/${project_name}-$(printf '%s' "$project_root" | shasum -a 256 | cut -c1-8).txt"
 mkdir -p "$cache_dir"
 
 # Invalidate cache when any stack sentinel is newer than the cache.
-# Iterates the full canonical set from _lib.sh, not just the project-root
-# anchor subset, so requirements.txt / Pipfile / manage.py / monorepo files
-# also trigger reinvalidation.
 newest_sentinel=0
 for f in "${STACK_SENTINELS_FULL[@]/#/$project_root/}"; do
   [[ -f "$f" ]] || continue
@@ -63,6 +61,85 @@ if [[ -s "$cache_file" ]]; then
   echo "dirty-files: $dirty"
   echo "</repo-context>"
 fi
+
+# Emit required skills derived from the detected stack.
+# Reads skill mappings directly from _stacks.yml (replaces skill-map.conf).
+# Signals are derived from detect-stack.sh output: bare stack name plus
+# compound stack+extra for each token in the extras parenthetical.
+emit_required_skills() {
+  local cache="$1"
+  local yml="$HOME/.claude/_stacks.yml"
+
+  [[ -s "$cache" ]] || return 0
+  [[ -f "$yml" ]]   || return 0
+  command -v yq >/dev/null 2>&1 || return 0
+
+  # Extract signals from detect-stack.sh output.
+  # "js: yes at frontend/ (typescript, react, next) [pnpm]"
+  # -> signals: js, js+typescript, js+react, js+next
+  local -a signals=()
+  while IFS= read -r line; do
+    [[ "$line" =~ ^root: ]] && continue
+    [[ -z "$line" ]]        && continue
+    local stack="${line%%:*}"
+    signals+=("$stack")
+    local extras
+    extras=$(echo "$line" | grep -oE '\([^)]+\)' | head -1 | tr -d '()')
+    if [[ -n "$extras" ]]; then
+      IFS=', ' read -ra parts <<< "$extras"
+      for part in "${parts[@]}"; do
+        part="${part//[[:space:]]/}"
+        [[ -n "$part" ]] && signals+=("${stack}+${part}")
+      done
+    fi
+  done < "$cache"
+
+  # For each matched signal, collect skills from _stacks.yml.
+  # Base signal (js): .stacks.js.skills[]
+  # Extra signal (js+react): .stacks.js.extras[] | select(.name == "react") | .skills[]
+  # Skills are deduplicated in first-seen order.
+  local -A seen=()
+  local -a required=()
+
+  add_skill() {
+    local sk="$1"
+    if [[ -z "${seen[$sk]:-}" ]]; then
+      seen[$sk]=1
+      required+=("$sk")
+    fi
+  }
+
+  # Global skills: added first, before any per-stack signal.
+  while IFS= read -r skill; do
+    [[ -n "$skill" ]] && add_skill "$skill"
+  done < <(yq '.global_skills // [] | .[]' "$yml" 2>/dev/null || true)
+
+  for sig in "${signals[@]}"; do
+    if [[ "$sig" == *"+"* ]]; then
+      # compound signal: stack+extra
+      local stack="${sig%%+*}"
+      local extra="${sig##*+}"
+      while IFS= read -r skill; do
+        [[ -n "$skill" ]] && add_skill "$skill"
+      done < <(yq ".stacks.${stack}.extras[] | select(.name == \"${extra}\") | .skills // [] | .[]" "$yml" 2>/dev/null || true)
+    else
+      # bare stack signal
+      while IFS= read -r skill; do
+        [[ -n "$skill" ]] && add_skill "$skill"
+      done < <(yq ".stacks.${sig}.skills // [] | .[]" "$yml" 2>/dev/null || true)
+    fi
+  done
+
+  if [[ ${#required[@]} -gt 0 ]]; then
+    local IFS=', '
+    echo ""
+    echo "<required-skills>"
+    echo "Load these skills at the start of every task for this project: ${required[*]}"
+    echo "</required-skills>"
+  fi
+}
+
+emit_required_skills "$cache_file"
 
 touch "$session_marker"
 exit 0

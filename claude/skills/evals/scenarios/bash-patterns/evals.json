@@ -1,0 +1,24 @@
+{
+  "skill_name": "bash-patterns",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this deployment shell script for safety and quality issues. Use the bash-patterns skill.",
+      "files": ["deploy.sh"],
+      "expected_output": "Findings in markdown-report format covering: (1) missing set -euo pipefail flagged as warning; (2) unquoted variable expansions flagged as failures; (3) parsing ls output (for f in $(ls)) flagged as failure with the filename-with-spaces explanation; (4) missing trap cleanup for the temp directory; (5) cd without || exit (or subshell) flagged as warning; (6) outputs failure/warning/info severity rubric.",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "I added a shellcheck disable comment to silence SC2086. Is that the right call?",
+      "expected_output": "Explains that SC2086 (unquoted variable to prevent word splitting) should almost always be fixed, not silenced. Recommends quoting the variable expansion as the correct fix. Distinguishes between findings worth silencing (with reason comment) and findings that indicate a real bug. Does not blanket-approve disabling shellcheck warnings.",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "prompt": "I am running cat file | while read line; do count=$((count+1)); done and count is always 0 at the end. What is going on?",
+      "expected_output": "Identifies that the pipe creates a subshell and variables set in the subshell do not survive to the parent. Recommends the pattern: while read -r line; do ...; done < file (input redirection instead of pipe). Or recommends process substitution: while read -r line; do ...; done < <(cmd). Mentions the read -r flag for preserving backslashes. Does not suggest awk or sed as the only alternative; bash has the right pattern.",
+      "assertions": []
+    }
+  ]
+}

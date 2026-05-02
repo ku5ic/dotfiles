@@ -1,0 +1,25 @@
+{
+  "skill_name": "typescript-patterns",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this TypeScript module for type-safety issues. Use the typescript-patterns skill.",
+      "files": ["payment-types.ts"],
+      "expected_output": "Findings in markdown-report format covering: (1) use of any on the exported function signature flagged as failure; (2) as unknown as X cast flagged as failure or warning depending on whether a comment justifies it; (3) recommends unknown over any with a type guard or schema validation at the boundary; (4) distinguishes // @ts-ignore from // @ts-expect-error and recommends the latter; (5) outputs failure/warning/info severity rubric.",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "Look at this tsconfig.json and tell me what should change.",
+      "files": ["tsconfig-loose.json"],
+      "expected_output": "Flags missing strictness flags including noUncheckedIndexedAccess, exactOptionalPropertyTypes, and verbatimModuleSyntax. Recommends strict: true if not already set. Does not flag skipLibCheck: true as a problem (acceptable). Distinguishes failure (strict off) from warning (strict on but additional flags off).",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "prompt": "I have a function that takes a userId and an orderId, both strings, and I keep mixing them up by passing them in the wrong order. How should I prevent this?",
+      "expected_output": "Suggests branded types pattern using intersection with a phantom brand property. Notes that the runtime cost is zero. Provides a concrete short example showing how to construct a branded value. Does not suggest a class-based wrapper (heavier, runtime-allocating) as the first option.",
+      "assertions": []
+    }
+  ]
+}

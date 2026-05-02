@@ -1,0 +1,210 @@
+# _stacks.yml
+#
+# Single source of truth for stack detection. Consumed by:
+#   bin/_lib.sh          -> STACK_SENTINELS_FULL, STACK_SENTINELS_PROJECT_ROOT
+#   bin/detect-stack.sh  -> stack names, sentinels, search_dirs, extras detection
+#   hooks/inject-context.sh (via detect-stack.sh cache) -> required skills
+#
+# Replaces: bin/_lib.sh hand-written arrays, detect-stack.sh declare -A blocks,
+#           per-stack *_extras() functions, skill-map.conf
+#
+# ADDING A NEW STACK
+# ------------------
+# Add one stanza here. Nothing else needs editing.
+#
+#   mystack:
+#     sentinels:
+#       - name: mystack.lock
+#         anchor: true          # include in project-root.sh ancestor walk
+#     skills: [mystack-patterns]
+#     extras:
+#       - name: myframework
+#         dep: myframework      # found in package.json dependencies
+#         skills: [myframework-patterns]
+#
+# DETECTION RULE TYPES (extras)
+# --------------------------------
+# dep: <pkg>                   package.json dep or devDep key match (js only)
+# file: <path>                 file exists relative to stack root
+# grep: <pattern>              ERE grep across files listed in `in:`
+#   in: [file1, file2, ...]
+# any_of:                      OR of any of the above rule types
+#   - file: <path>
+#   - grep: <pattern>
+#     in: [...]
+#
+# SKILLS
+# ------
+# skills: at the stack level  -> loaded for bare stack signal (js, python)
+# skills: at the extra level  -> loaded when that extra is detected
+# Skills are deduplicated in first-seen order across all matched signals.
+#
+# NEVER AUTO-LOAD (no skills: entry; invoke manually when the task warrants)
+#   bash-patterns, engineering-fundamentals, evals, markdown-report,
+#   security-patterns, test-patterns, wcag-audit
+#
+# SENTINEL FIELDS
+# ---------------
+# name: <filename>    the sentinel file (searched in search_dirs)
+# anchor: true        include in the fast ancestor walk (project-root.sh)
+#                     keep this list minimal; every entry slows the walk
+
+# Skills loaded for every project regardless of detected stack.
+# Add skills here that should always be available (e.g. output format skills,
+# universal engineering meta-skills). Keep this list short.
+global_skills:
+  - markdown-report
+  - engineering-fundamentals
+
+stacks:
+  js:
+    sentinels:
+      - name: package.json
+        anchor: true
+    search_dirs: [., frontend, client, web, app, backend, server, api]
+    skills: [javascript-patterns]
+    extras:
+      - name: typescript
+        file: tsconfig.json
+        skills: [typescript-patterns]
+      # next implies react: Next IS React; react rarely appears as a direct dep
+      - name: next
+        dep: next
+        skills: [react-patterns, next-app-router-patterns]
+      - name: react
+        dep: react
+        skills: [react-patterns]
+      # nuxt implies vue: Nuxt bundles Vue; vue rarely appears as a direct dep
+      - name: nuxt
+        dep: nuxt
+        skills: [vue-patterns, nuxt-patterns]
+      - name: vue
+        dep: vue
+        skills: [vue-patterns]
+      - name: tailwindcss
+        dep: tailwindcss
+        skills: [tailwind-patterns]
+      - name: vitest
+        dep: vitest
+        skills: [test-patterns]
+      - name: jest
+        dep: jest
+        skills: [test-patterns]
+      - name: playwright
+        dep: "@playwright/test"
+        skills: [test-patterns]
+        rename: playwright
+      - name: cypress
+        dep: cypress
+        skills: [test-patterns]
+      - name: express
+        dep: express
+      - name: fastify
+        dep: fastify
+      - name: nestjs
+        dep: "@nestjs/core"
+        rename: nestjs
+      - name: angular
+        dep: "@angular/core"
+        rename: angular
+      - name: svelte
+        dep: svelte
+      - name: biome
+        dep: "@biomejs/biome"
+        rename: biome
+      - name: eslint
+        dep: eslint
+      - name: prettier
+        dep: prettier
+    pm_locks:
+      pnpm: pnpm-lock.yaml
+      yarn: yarn.lock
+      bun: bun.lockb
+
+  python:
+    sentinels:
+      - name: pyproject.toml
+        anchor: true
+      - name: requirements.txt
+      - name: Pipfile
+      - name: manage.py
+    skills: [python-patterns]
+    extras:
+      - name: django
+        any_of:
+          - file: manage.py
+          - grep: '^[[:space:]"]*[Dd]jango'
+            in: [pyproject.toml, requirements.txt, Pipfile]
+        skills: [django-patterns]
+      - name: drf
+        grep: '^[[:space:]"]*djangorestframework'
+        in: [pyproject.toml, requirements.txt, Pipfile]
+        skills: [drf-patterns]
+      - name: fastapi
+        grep: '^[[:space:]"]*fastapi'
+        in: [pyproject.toml, requirements.txt, Pipfile]
+      - name: flask
+        grep: '^[[:space:]"]*flask'
+        in: [pyproject.toml, requirements.txt, Pipfile]
+      - name: pytest
+        any_of:
+          - file: pytest.ini
+          - file: conftest.py
+          - grep: '^[[:space:]"]*pytest'
+            in: [pyproject.toml, requirements.txt, Pipfile]
+        skills: [test-patterns]
+      - name: ruff
+        grep: '^[[:space:]"]*ruff'
+        in: [pyproject.toml, requirements.txt, Pipfile]
+      - name: mypy
+        grep: '^[[:space:]"]*mypy'
+        in: [pyproject.toml, requirements.txt, Pipfile]
+
+  ruby:
+    sentinels:
+      - name: Gemfile
+        anchor: true
+    skills: []
+    extras:
+      - name: rails
+        any_of:
+          - file: config/routes.rb
+          - file: app/controllers/application_controller.rb
+
+  rust:
+    sentinels:
+      - name: Cargo.toml
+        anchor: true
+    skills: []
+
+  go:
+    sentinels:
+      - name: go.mod
+        anchor: true
+    skills: []
+
+  docker:
+    sentinels:
+      - name: Dockerfile
+      - name: docker-compose.yml
+      - name: docker-compose.yaml
+      - name: compose.yml
+      - name: compose.yaml
+    skills: []
+
+  monorepo:
+    sentinels:
+      - name: pnpm-workspace.yaml
+      - name: turbo.json
+      - name: nx.json
+      - name: lerna.json
+    skills: []
+    extras:
+      - name: pnpm-workspaces
+        file: pnpm-workspace.yaml
+      - name: turbo
+        file: turbo.json
+      - name: nx
+        file: nx.json
+      - name: lerna
+        file: lerna.json

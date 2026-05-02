@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# ~/.claude/bin/run-checks.sh
 # Detects and runs typecheck, lint, format-check, and tests for the current project.
 # Each section is independent: failures are reported, not aborted.
 set -uo pipefail

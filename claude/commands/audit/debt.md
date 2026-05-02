@@ -25,6 +25,7 @@ argument-hint: <file, directory, or area name>
 - **Observability debt**: silently swallowed errors, no logging on critical paths, no telemetry where it matters
 - **Dead code and duplication**: unused exports, copy-paste logic with divergent lifecycles
 - **Build and dependency health**: deprecated APIs, ejected config, outdated patterns, unmaintained deps
+- **Metric thresholds breached**: files over 500 lines, functions over 50 lines, cyclomatic complexity (nested conditionals deeper than 3, branches greater than 7) in single functions, modules with more than 10 internal imports. Use `tokei` for size and a quick scan for the rest. Each is a smell, not a failure; the audit's value is correlating these with high churn from `git log`.
 
 ## Output per finding
 

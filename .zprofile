@@ -14,7 +14,6 @@ HOMEBREW_NO_ENV_HINTS=1
 
 # github
 export GITHUB_PERSONAL_ACCESS_TOKEN="$(gh auth token 2>/dev/null)"
-export GH_COPILOT_TOKEN="$GITHUB_PERSONAL_ACCESS_TOKEN"
 
 # PATH
 export PATH="$(brew --prefix rustup)/bin:$PATH"
@@ -26,23 +25,3 @@ export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
 export PATH="$HOME/.dotfiles/scripts:$PATH"
 export PATH="$HOME/.claude/bin/:$PATH"
 export PATH
-
-pyclean () {
-  find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
-}
-
-claude_clear() {
-  rm -rf ~/.claude/sessions/*
-  rm -rf ~/.claude/scratch/*
-  rm -rf ~/.claude/cache/*
-  rm -rf ~/.claude/paste-cache/*
-
-}
-
-fix_chromedriver() {
-  xattr -d com.apple.quarantine $(which chromedriver)
-}
-
-fix_node_openssl() {
-  export NODE_OPTIONS=--openssl-legacy-provider
-}

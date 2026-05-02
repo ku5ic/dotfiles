@@ -1,0 +1,50 @@
+[
+  {
+    "id": "docker-dockerfile-review",
+    "skill": "docker-patterns",
+    "description": "Identifies anti-patterns in a Dockerfile",
+    "input": {
+      "task": "review",
+      "file": "evals/fixtures/docker-patterns/Dockerfile"
+    },
+    "expected": {
+      "must_mention": ["root", "layer cach", "apt-get update", "CMD"],
+      "severity_calls": {
+        "failure": ["root|USER", "secret|ENV.*key|ENV.*password"],
+        "warning": [
+          "apt-get update.*separate|separate.*RUN|cach",
+          "COPY.*before|order"
+        ]
+      }
+    }
+  },
+  {
+    "id": "docker-compose-depends-on",
+    "skill": "docker-patterns",
+    "description": "Explains depends_on with service_healthy and healthcheck requirement",
+    "input": {
+      "task": "explain",
+      "question": "My API service uses depends_on with condition: service_healthy for the database, but the API never starts. What's wrong?"
+    },
+    "expected": {
+      "must_mention": [
+        "healthcheck",
+        "condition: service_healthy",
+        "service_started"
+      ]
+    }
+  },
+  {
+    "id": "docker-secrets-vs-env",
+    "skill": "docker-patterns",
+    "description": "Recommends Docker secrets over environment variables for sensitive values",
+    "input": {
+      "task": "explain",
+      "question": "What's the safest way to pass a database password to a PostgreSQL container in Docker Compose?"
+    },
+    "expected": {
+      "must_mention": ["secrets", "/run/secrets", "docker inspect"],
+      "must_not_mention": ["environment:"]
+    }
+  }
+]

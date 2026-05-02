@@ -1,6 +1,6 @@
 ---
 name: markdown-report
-description: Consistent format for audit reports, review output, and workflow artifacts. Apply whenever a command writes a report to .claude/scratch/ or docs/.
+description: Consistent format for audit reports, review output, and workflow artifacts including required sections, severity rubric (failure/warning/info), file naming convention, and summary line rubric. Use whenever a command writes a report to `~/.claude/scratch/` or `docs/`, OR the user asks for a structured audit, review, finding report, or any output requiring the failure/warning/info severity rubric, regardless of domain.
 ---
 
 # Markdown report format
