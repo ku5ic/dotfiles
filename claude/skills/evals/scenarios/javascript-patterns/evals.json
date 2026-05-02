@@ -1,0 +1,25 @@
+{
+  "skill_name": "javascript-patterns",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this Node.js module for code quality issues. Use the javascript-patterns skill.",
+      "files": ["user-service.js"],
+      "expected_output": "Findings in markdown-report format covering: (1) var declarations flagged as warnings; (2) loose equality (==) flagged as warning; (3) at least one async function call that drops the awaited result flagged as failure; (4) a fire-and-forget fetch with no .catch() flagged as a failure (unhandled rejection); (5) mutation of a function argument flagged as warning; (6) thrown string literal flagged as a warning or failure with the recommendation to throw an Error instance; (7) outputs failure/warning/info severity rubric.",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "I keep getting unhandled promise rejection warnings in Node 20. What is going on and how should I fix it?",
+      "expected_output": "Explains that current Node raises an unhandled rejection as an uncaught exception by default and exits the process. Recommends that every promise be either awaited, returned, or attached to a .catch() handler. Distinguishes intentional fire-and-forget patterns (which need an explicit .catch(logAndContinue)) from genuine bugs. Does not suggest disabling the warning via --unhandled-rejections=warn as the default fix.",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "prompt": "I have a script with both `import` and `require` statements. It is throwing errors. What should I do?",
+      "files": ["mixed-modules.js"],
+      "expected_output": "Identifies that mixing CJS require() and ESM import in the same file is invalid. Explains the package.json `type` field and the .mjs/.cjs extension semantics. Recommends picking one module system per file. Mentions dynamic import() as a way to load ESM from CJS, and module.createRequire() as a way to load CJS from ESM, when migration is incremental.",
+      "assertions": []
+    }
+  ]
+}
