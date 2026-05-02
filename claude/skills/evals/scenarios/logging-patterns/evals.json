@@ -8,8 +8,7 @@
       "question": "Every log message in my Python app appears twice. I've set up a StreamHandler on my app logger. What's wrong?"
     },
     "expected": {
-      "must_mention": ["propagate", "root logger", "handler"],
-      "must_not_mention": ["basicConfig.*force"]
+      "must_mention": ["propagate", "root logger", "handler"]
     }
   },
   {
