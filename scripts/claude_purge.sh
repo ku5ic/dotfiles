@@ -1,11 +1,12 @@
-#!/usr/bin/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 
 printf 'Do you want to purge claude cached data? (y/n): '
 read -r response
 
-if [[ "$response" != "y" && "$response" != "Y" ]]; then
+if [[ "$response" == "y" || "$response" == "Y" ]]; then
+  rm -rf ~/.claude/backups/*
   rm -rf ~/.claude/cache/*
   rm -rf ~/.claude/file-history/*
   rm -rf ~/.claude/logs/*
