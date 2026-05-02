@@ -1,0 +1,24 @@
+{
+  "skill_name": "react-patterns",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this React component for correctness and performance issues. Use the react-patterns skill.",
+      "files": ["UserDashboard.jsx"],
+      "expected_output": "Findings in markdown-report format covering: (1) missing dependency in a useEffect dep array flagged as failure (stale closure); (2) an effect doing synchronous computation from state that should be derived during render flagged as failure; (3) a conditional hook call (a hook inside an if or after an early return) flagged as failure; (4) inline object or array literal passed to a memoized child component flagged as warning; (5) outputs failure/warning/info severity rubric.",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "When should I use useMemo and useCallback?",
+      "expected_output": "Explains memoization has a real cost (bookkeeping plus closure capture). Recommends useMemo when the computation is genuinely expensive or when a referentially-stable value is needed for a downstream React.memo or useEffect/useMemo dep. Recommends useCallback only when the callback is passed to a memoized component or used as a dep. Does not recommend wrapping every callback or computed value. May mention that the React Compiler removes the manual pass when adopted.",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "prompt": "I have a component that re-renders too often when typing in an input. How do I fix it?",
+      "expected_output": "Diagnoses likely causes: state lifted too high so the parent re-renders on every keystroke, cascading into siblings; a context value changing on every render; missing memoization on an expensive child. Suggests state colocalization (move the input state down), context splitting by update cadence, React.memo on heavy children with referentially-stable props. Does not jump to React Compiler as the only or primary answer.",
+      "assertions": []
+    }
+  ]
+}
