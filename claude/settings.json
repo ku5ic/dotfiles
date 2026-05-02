@@ -178,29 +178,15 @@
       "Bash(yarn why:*)",
       "Bash(yq *)",
 
-      "Bash(detect-stack.sh:*)",
-      "Bash(git-base.sh:*)",
-      "Bash(git-diff-from-base.sh:*)",
-      "Bash(git-log-from-base.sh:*)",
-      "Bash(project-name.sh:*)",
-      "Bash(project-root.sh:*)",
-      "Bash(run-checks.sh:*)",
-      "Bash(scratch-rotate.sh:*)",
-
-      "Bash($HOME/.claude/bin/detect-stack.sh:*)",
-      "Bash($HOME/.claude/bin/git-base.sh:*)",
-      "Bash($HOME/.claude/bin/git-diff-from-base.sh:*)",
-      "Bash($HOME/.claude/bin/git-log-from-base.sh:*)",
-      "Bash($HOME/.claude/bin/project-name.sh:*)",
-      "Bash($HOME/.claude/bin/project-root.sh:*)",
-      "Bash($HOME/.claude/bin/run-checks.sh:*)",
-      "Bash($HOME/.claude/bin/scratch-rotate.sh:*)",
+      "Bash($HOME/.claude/bin/**)",
+      "Bash(~/.claude/bin/**)",
 
       "Skill(audit:a11y)",
       "Skill(audit:debt)",
       "Skill(audit:doc-drift)",
       "Skill(audit:perf)",
       "Skill(audit:security)",
+
       "Skill(flow:checks)",
       "Skill(flow:fix)",
       "Skill(flow:implement)",
@@ -209,9 +195,11 @@
       "Skill(flow:resume)",
       "Skill(flow:review)",
       "Skill(flow:test)",
+
       "Skill(meta:feature)",
       "Skill(meta:prompt)",
       "Skill(meta:retro)",
+
       "Skill(write:commit)",
       "Skill(write:pr)",
       "Skill(write:release-notes)",
@@ -459,6 +447,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/log-skills.sh",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -473,7 +471,7 @@
         ]
       },
       {
-        "matcher": "Skill",
+        "matcher": "Read",
         "hooks": [
           {
             "type": "command",
