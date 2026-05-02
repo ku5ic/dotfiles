@@ -78,7 +78,7 @@ eval_extra() {
     if command -v jq >/dev/null 2>&1 && [[ -f "$loc/package.json" ]]; then
       local found
       found="$(jq -r '((.dependencies // {}) + (.devDependencies // {})) | keys[]' "$loc/package.json" 2>/dev/null | grep -Fx "$dep" || true)"
-      [[ -n "$found" ]] && echo "$token" || true
+      if [[ -n "$found" ]]; then echo "$token"; fi
     fi
     return
   fi
@@ -87,7 +87,7 @@ eval_extra() {
   local file
   file="$(yq ".stacks.${stack}.extras[${idx}].file // \"\"" "$STACKS_YML")"
   if [[ -n "$file" ]]; then
-    [[ -f "$loc/$file" ]] && echo "$token" || true
+    if [[ -f "$loc/$file" ]]; then echo "$token"; fi
     return
   fi
 
