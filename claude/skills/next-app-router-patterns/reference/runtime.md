@@ -35,7 +35,7 @@ export const config = {
 
 Place the file at the project root (or `src/`), at the same level as `app/` or `pages/`.
 
-The `runtime` config option is not available in Proxy files; the runtime is controlled separately. As of v15.5, Proxy can run on the Node.js runtime (was previously Edge-only). Defaults vary by deployment target.
+The `runtime` config option is not available in Proxy files; the runtime is controlled separately. The file convention (Middleware before v16.0, Proxy after) gained stable Node.js runtime support in v15.5, having been Edge-only previously. Defaults vary by deployment target.
 
 ## Matchers
 
