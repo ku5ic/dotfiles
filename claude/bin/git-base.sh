@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# ~/.dotfiles/claude/bin/git-base.sh
-#
 # Prints the base branch or ref for the current git checkout. Detection order:
 #   1. Explicit argument ($1), if it resolves to a valid ref
 #   2. Upstream tracking branch (@{upstream})
