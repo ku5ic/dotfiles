@@ -1,0 +1,24 @@
+{
+  "skill_name": "drf-patterns",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this DRF viewset.",
+      "files": ["order_viewset.py"],
+      "expected_output": "Findings: fields = '__all__' on serializer flagged as warning (leaks columns on model change); missing permission_classes flagged as failure for write endpoints; queryset.filter(**request.query_params) flagged as failure (information disclosure); missing throttling on auth endpoint flagged as warning; no pagination configured flagged as failure. Outputs severity rubric.",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "What is the difference between IsAuthenticated and IsAuthenticatedOrReadOnly?",
+      "expected_output": "IsAuthenticated: all HTTP methods require authentication. IsAuthenticatedOrReadOnly: GET, HEAD, OPTIONS are allowed without auth (safe methods); POST, PUT, PATCH, DELETE require authentication. Notes that DRF default is AllowAny, which is failure-level for write endpoints. Recommends being explicit rather than relying on the default.",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "prompt": "How should I version my DRF API?",
+      "expected_output": "Names DRF versioning options (URLPathVersioning, NamespaceVersioning, AcceptHeaderVersioning, QueryParameterVersioning, HostNameVersioning). Recommends URLPathVersioning or NamespaceVersioning as most common. Notes AcceptHeaderVersioning is considered best practice by DRF docs for public APIs. Notes that request.version is how views access the version. Recommends setting ALLOWED_VERSIONS explicitly.",
+      "assertions": []
+    }
+  ]
+}
