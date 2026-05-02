@@ -178,8 +178,27 @@
       "Bash(yarn why:*)",
       "Bash(yq *)",
 
-      "Bash($HOME/.claude/bin/**)",
-      "Bash(~/.claude/bin/**)",
+      "Bash(bash *)",
+      "Bash(chmod +x *)",
+      "Bash(chmod 755 *)",
+      "Bash(chmod 644 *)",
+      "Bash(shellcheck *)",
+      "Bash(shfmt *)",
+      "Bash(zsh *)",
+
+      "Bash(bootstrap.sh *)",
+      "Bash(detect-stack.sh *)",
+      "Bash(doctor.sh *)",
+      "Bash(git-base.sh *)",
+      "Bash(git-diff-from-base.sh *)",
+      "Bash(git-log-from-base.sh *)",
+      "Bash(project-name.sh *)",
+      "Bash(project-root.sh *)",
+      "Bash(run-checks.sh *)",
+      "Bash(scratch-rotate.sh *)",
+
+      "Bash($HOME/.claude/bin/*)",
+      "Bash(~/.claude/bin/*)",
 
       "Skill(audit:a11y)",
       "Skill(audit:debt)",
@@ -222,7 +241,6 @@
       "Skill(wcag-audit)",
 
       "Write(**)",
-      "Write($HOME/.claude/scratch/**)",
       "Edit(**)",
       "MultiEdit(**)",
       "Read(**)",
