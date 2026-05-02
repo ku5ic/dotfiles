@@ -5,8 +5,6 @@ model: sonnet
 effort: low
 ---
 
-**Effort: light.** Reorientation, not work.
-
 ## Procedure
 
 1. Get the project name: `!`project-name.sh``.

@@ -5,8 +5,6 @@ model: sonnet
 effort: medium
 ---
 
-**Effort: medium.** Matches existing test style. Does not design new testing infrastructure.
-
 ## Procedure
 
 1. Get the project name: `!`project-name.sh``. Identify the test runner from the injected `<repo-context>` block.

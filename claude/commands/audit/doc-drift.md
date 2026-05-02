@@ -5,8 +5,6 @@ model: haiku
 effort: medium
 ---
 
-**Effort: medium.** Comparison task. Does not rewrite docs.
-
 ## Prerequisites
 
 $ARGUMENTS should point to the code surface to check. Required.

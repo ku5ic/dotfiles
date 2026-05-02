@@ -5,8 +5,6 @@ model: opus
 effort: high
 ---
 
-**Effort: heavy.** Deep review. Read the changed files and their immediate context.
-
 ## Procedure
 
 1. Get the project name: `!`project-name.sh``. Stack is in the injected `<repo-context>` block.

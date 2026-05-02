@@ -5,8 +5,6 @@ model: sonnet
 effort: medium
 ---
 
-**Effort: medium.** Find the bug, fix it, verify. Do not refactor.
-
 ## Procedure
 
 1. Read $ARGUMENTS. Identify: file, line, expected vs actual.

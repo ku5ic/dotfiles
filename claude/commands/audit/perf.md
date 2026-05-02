@@ -5,8 +5,6 @@ model: sonnet
 effort: high
 ---
 
-**Effort: heavy.** Static analysis. Does not run benchmarks. Flags what is likely slow, names what to measure.
-
 ## Procedure
 
 1. Stack is in the injected `<repo-context>` block. Get the project name: `!`project-name.sh``.

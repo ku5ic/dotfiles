@@ -5,8 +5,6 @@ model: haiku
 effort: medium
 ---
 
-**Effort: medium.** Structure-driven, not analysis-heavy. Good for capturing learning quickly.
-
 ## Procedure
 
 1. Get the project name: `!`project-name.sh``.

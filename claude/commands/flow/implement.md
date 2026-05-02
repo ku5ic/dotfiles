@@ -5,8 +5,6 @@ model: sonnet
 effort: medium
 ---
 
-**Effort: heavy.** Actual code changes. Stay strictly within the approved plan.
-
 ## Prerequisites
 
 - An approved plan exists for this project: `ls -t ~/.claude/scratch/plan-<project-name>-*.md | head -1`. If none, run /flow:plan first.

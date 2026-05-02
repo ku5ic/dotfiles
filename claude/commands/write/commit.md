@@ -2,10 +2,8 @@
 description: Generate a commit message from the staged diff, matching project style
 argument-hint: <optional: short hint about the change intent>
 model: haiku
-effort: medium
+effort: low
 ---
-
-**Effort: light.** Staged diff in, commit message out. Does not run `git commit`.
 
 ## Procedure
 

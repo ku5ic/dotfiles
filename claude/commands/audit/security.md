@@ -5,8 +5,6 @@ model: sonnet
 effort: high
 ---
 
-**Effort: heavy.** Defensive review. Assume any input from outside the process boundary is hostile.
-
 ## Procedure
 
 1. Stack is in the injected `<repo-context>` block. Get the project name: `!`project-name.sh``.

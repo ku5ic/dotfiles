@@ -5,8 +5,6 @@ model: sonnet
 effort: high
 ---
 
-**Effort: heavy.** Thinking-heavy. One step before `/flow:plan`. Produces a brief, not a plan.
-
 ## When to use
 
 - A ticket or request arrives fuzzy or ambiguous

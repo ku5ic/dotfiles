@@ -5,8 +5,6 @@ model: opus
 effort: high
 ---
 
-**Effort: heavy.** Thinking-heavy. Read project CLAUDE.md, relevant skills, and the preflight report if one exists.
-
 ## Prerequisites
 
 - A preflight report exists in `~/.claude/scratch/`. If not, run `/flow:preflight` first.

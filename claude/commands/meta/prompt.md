@@ -5,8 +5,6 @@ model: haiku
 effort: low
 ---
 
-**Effort: light.** Rewriting with structure. Does not do the underlying task.
-
 ## When to use
 
 - You want to capture a reusable task as a new slash command

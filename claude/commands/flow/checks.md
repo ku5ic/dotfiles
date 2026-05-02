@@ -4,8 +4,6 @@ model: sonnet
 effort: low
 ---
 
-**Effort: light.** Wrapper. Reports pass/fail and stops.
-
 ## Procedure
 
 1. Run `!`run-checks.sh``.

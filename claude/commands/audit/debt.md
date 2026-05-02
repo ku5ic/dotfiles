@@ -5,8 +5,6 @@ model: sonnet
 effort: high
 ---
 
-**Effort: heavy.** Structural analysis. Be direct and skeptical. Do not list minor style preferences.
-
 ## Procedure
 
 1. Stack is in the injected `<repo-context>` block. Get the project name: `!`project-name.sh``.

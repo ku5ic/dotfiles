@@ -5,8 +5,6 @@ model: sonnet
 effort: medium
 ---
 
-**Effort: medium.** Read, do not write. No code generation in this step.
-
 ## Procedure
 
 1. Get the project name: `!`project-name.sh``. Stack is in the injected `<repo-context>` block.
