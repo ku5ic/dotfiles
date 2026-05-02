@@ -1,0 +1,24 @@
+{
+  "skill_name": "nuxt-patterns",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Should I use useFetch or useAsyncData?",
+      "expected_output": "Distinguishes useFetch (URL-based wrapper around $fetch with SSR-aware dedup; key derived from URL automatically) from useAsyncData (key + arbitrary async function; useFetch is sugar for useAsyncData(url, () => $fetch(url))). Recommends useFetch for HTTP fetches tied to a URL; useAsyncData for non-fetch async work (CMS client, GraphQL, multi-step) or when finer control is needed. Mentions $fetch directly for event handlers and Server Functions where SSR-safety is not relevant.",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "Why does my Nuxt page leak data between users?",
+      "expected_output": "Explains module-level ref/reactive in a Nuxt composable creates cross-request state leakage on the server: the JS module is shared across every request the same Node process handles, so the first user's state persists into subsequent users' requests. Recommends useState(key, init) which is per-request on the server and serialized into the page payload for the client. Provides a concrete before/after example. Distinguishes the SPA case (one JS context per browser tab, module-level state is fine) from the SSR case where it is a defect.",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "prompt": "Review this Nuxt server route for issues. Use the nuxt-patterns skill.",
+      "files": ["api-users.ts"],
+      "expected_output": "Findings in markdown-report format covering: (1) missing input validation at the server route boundary flagged as failure (recommend Zod / Valibot / readValidatedBody); (2) using process.env directly instead of useRuntimeConfig() flagged as failure (especially for secrets); (3) mishandling errors from $fetch (no try/catch or createError) flagged as warning; (4) optionally: missing auth check at the route boundary if implied. Outputs failure/warning/info severity rubric.",
+      "assertions": []
+    }
+  ]
+}
