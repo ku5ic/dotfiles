@@ -9,9 +9,9 @@
 ## Views and middleware
 
 - CSRF: `@csrf_exempt` on mutating views is a failure unless the view is read-only or explicitly API token authenticated.
-- `DEBUG = True` in committed settings: failure.
-- `SECRET_KEY`, DB credentials, API keys in repo: failure. Check `.env` handling, `env.example` vs `.env`.
-- `ALLOWED_HOSTS` wildcard in production settings: failure.
+- `DEBUG = True` in committed settings: `failure`.
+- `SECRET_KEY`, DB credentials, API keys in repo: `failure`. Check `.env` handling, `env.example` vs `.env`.
+- `ALLOWED_HOSTS` wildcard in production settings: `failure`.
 - Middleware order: `SecurityMiddleware` first, `SessionMiddleware` before `AuthenticationMiddleware`, `CsrfViewMiddleware` before views that mutate.
 
 ## Auth and permissions
@@ -23,7 +23,7 @@
 ## Templates
 
 - `{% autoescape off %}` or `|safe`: every use. Must be on trusted content only.
-- `mark_safe()` on user-derived data: failure.
+- `mark_safe()` on user-derived data: `failure`.
 
 ## File uploads
 

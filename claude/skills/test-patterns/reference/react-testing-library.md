@@ -1,6 +1,5 @@
 # React Testing Library
 
-- Query priority: `getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByTestId` (last resort).
 - `userEvent` over `fireEvent`. Always `await user.click(...)`.
 - Do not query by class name or CSS selector.
 - `waitFor` around async assertions only. Do not wrap synchronous assertions.

@@ -17,7 +17,7 @@ Severity rubric matches `markdown-report`: cite on findings, do not invent new l
 - `warning`: a smell or pattern that compounds with other findings.
 - `info`: a hardening opportunity or note, not a defect.
 
-## When to apply each section
+## When to load this skill
 
 | Activity                            | Sections to apply                                         |
 | ----------------------------------- | --------------------------------------------------------- |
@@ -41,7 +41,7 @@ Apply only what fits. Do not pad findings to fill sections.
 | [reference/metric-thresholds.md](reference/metric-thresholds.md)                     | Function size, cyclomatic complexity, McCabe < 10, SonarSource Cognitive Complexity       |
 | [reference/anti-patterns.md](reference/anti-patterns.md)                             | Eight anti-patterns covering the gap between citing principles and applying them          |
 
-## What this skill does not do
+## When not to load this skill
 
 - Replace `/flow:*` or `/audit:*` enforcement. Those are deterministic. This is a fallback.
 - Substitute for stack-specific skills. Stack-specific patterns load independently when project signals match.
@@ -64,3 +64,7 @@ These checklists distill widely accepted software engineering practice. For deep
 - SEI CERT Coding Standards: https://wiki.sei.cmu.edu/confluence/display/seccode
 
 Citations are for context. Do not require Claude to read source material; the checklists above are the operational version.
+
+## Maintenance note
+
+Engineering fundamentals shift on a multi-decade cycle, not a release cycle. Reconcile when foundational sources move (a new SOLID restatement, a successor metric to McCabe / Cognitive Complexity, an updated cohesion or coupling taxonomy) or when the `/flow:*` and `/audit:*` commands change which categories they enforce. Vendor-published metrics (e.g. SonarSource Cognitive Complexity) require a fresh status check; primary sources (Parnas 1972, McCabe 1976, Stevens / Myers / Constantine 1974, Boehm 1981) are stable and rarely need re-verification.

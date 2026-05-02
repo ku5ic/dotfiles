@@ -1,7 +1,7 @@
 # Secrets
 
-- Any hardcoded token, key, or password in the codebase: failure.
-- `.env` committed: failure.
+- Any hardcoded token, key, or password in the codebase: `failure`.
+- `.env` committed: `failure`.
 - Secrets in commit history: note, do not attempt to fix without asking.
 
 ## Detection in CI
@@ -13,7 +13,7 @@ Two complementary tools cover detection at different points in the workflow:
 
 GitHub also provides server-side scanning:
 
-- **Secret-scanning push protection**: enabled at the repo or org level. Blocks any push that contains a secret pattern matching GitHub's detector list. Catches what slips past the local hook. Documented at https://docs.github.com/en/code-security/secret-scanning/.
+- **Secret-scanning push protection**: enabled at the repo or org level. Blocks any push that contains a secret pattern matching GitHub's detector list. Catches what slips past the local hook. Documented at <https://docs.github.com/en/code-security/secret-scanning/>.
 
 ## Rotation, not redaction
 

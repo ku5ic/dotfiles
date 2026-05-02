@@ -19,7 +19,7 @@ The function-size, complexity, and import thresholds in this skill are author ju
 
 ## Cognitive Complexity (Sonar, vendor source)
 
-SonarSource (commercial vendor) publishes Cognitive Complexity as an alternative to McCabe's Cyclomatic Complexity. Per the SonarSource white paper at https://www.sonarsource.com/resources/cognitive-complexity/: "a Sonar exclusive metric formulated to more accurately measure the relative understandability of methods." Cognitive Complexity adjusts for nesting depth and for control-flow constructs that are easier or harder for humans to follow than the count-edges-and-nodes formulation.
+SonarSource (commercial vendor) publishes Cognitive Complexity as an alternative to McCabe's Cyclomatic Complexity. Per the SonarSource white paper at <https://www.sonarsource.com/resources/cognitive-complexity/>: "a Sonar exclusive metric formulated to more accurately measure the relative understandability of methods." Cognitive Complexity adjusts for nesting depth and for control-flow constructs that are easier or harder for humans to follow than the count-edges-and-nodes formulation.
 
 This is cited here as a vendor-published metric. It is NOT a McCabe replacement endorsed by an open standards body. If the project's static-analysis stack already reports it, take its readings as additional input on top of cyclomatic complexity. If it does not, McCabe's < 10 is the safer foundational reference.
 

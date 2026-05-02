@@ -2,7 +2,7 @@
 
 - `import type { Foo } from "..."` for type-only imports; `export type { Foo }` for type-only re-exports. Required when `verbatimModuleSyntax` is on; recommended even without it for legibility.
 - Inline form (since 4.5): `import { run, type Result } from "./mod"` mixes value and type in one statement. Safe under `verbatimModuleSyntax`.
-- Project references for monorepos: `composite: true` per package, `references` array on the consumer's `tsconfig.json`. Implies `declaration: true` and disciplined `rootDir` / `include`. See https://www.typescriptlang.org/docs/handbook/project-references.html.
+- Project references for monorepos: `composite: true` per package, `references` array on the consumer's `tsconfig.json`. Implies `declaration: true` and disciplined `rootDir` / `include`. See <https://www.typescriptlang.org/docs/handbook/project-references.html>.
 - Circular imports: detect with tooling (`madge`, `dependency-cruiser`). `tsc` happily compiles a cycle; the tool catches it before it becomes a runtime hazard. Resolve by extracting a shared module rather than reordering imports.
 
 ## Barrel-file anti-pattern
