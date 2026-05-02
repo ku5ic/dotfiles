@@ -1,0 +1,42 @@
+[
+  {
+    "id": "logging-double-logs",
+    "skill": "logging-patterns",
+    "description": "Diagnoses duplicate log output caused by propagate and duplicate handlers",
+    "input": {
+      "task": "explain",
+      "question": "Every log message in my Python app appears twice. I've set up a StreamHandler on my app logger. What's wrong?"
+    },
+    "expected": {
+      "must_mention": ["propagate", "root logger", "handler"],
+      "must_not_mention": ["basicConfig.*force"]
+    }
+  },
+  {
+    "id": "logging-library-null-handler",
+    "skill": "logging-patterns",
+    "description": "Explains that libraries must not configure logging and should add only a NullHandler",
+    "input": {
+      "task": "explain",
+      "question": "I'm writing a Python library. Should I call logging.basicConfig() at the top of my package __init__.py?"
+    },
+    "expected": {
+      "must_mention": ["NullHandler", "application", "basicConfig"],
+      "severity_calls": {
+        "failure": ["basicConfig.*library|library.*basicConfig"]
+      }
+    }
+  },
+  {
+    "id": "logging-structlog-context",
+    "skill": "logging-patterns",
+    "description": "Recommends contextvars for request-scoped structured logging in async code",
+    "input": {
+      "task": "explain",
+      "question": "I'm using structlog in a FastAPI app. How do I attach a request ID to every log line within a single request without passing it manually everywhere?"
+    },
+    "expected": {
+      "must_mention": ["bind_contextvars", "merge_contextvars", "contextvars"]
+    }
+  }
+]
