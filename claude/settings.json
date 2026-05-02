@@ -1,5 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "sonnet",
+  "effortLevel": "high",
+  "spinnerTipsEnabled": false,
+  "agentPushNotifEnabled": true,
   "cleanupPeriodDays": 30,
   "includeCoAuthoredBy": false,
   "permissions": {
@@ -173,6 +177,7 @@
       "Bash(yarn outdated:*)",
       "Bash(yarn why:*)",
       "Bash(yq *)",
+
       "Bash(detect-stack.sh:*)",
       "Bash(git-base.sh:*)",
       "Bash(git-diff-from-base.sh:*)",
@@ -181,6 +186,7 @@
       "Bash(project-root.sh:*)",
       "Bash(run-checks.sh:*)",
       "Bash(scratch-rotate.sh:*)",
+
       "Bash($HOME/.claude/bin/detect-stack.sh:*)",
       "Bash($HOME/.claude/bin/git-base.sh:*)",
       "Bash($HOME/.claude/bin/git-diff-from-base.sh:*)",
@@ -189,15 +195,12 @@
       "Bash($HOME/.claude/bin/project-root.sh:*)",
       "Bash($HOME/.claude/bin/run-checks.sh:*)",
       "Bash($HOME/.claude/bin/scratch-rotate.sh:*)",
-      "Edit(**)",
-      "MultiEdit(**)",
-      "Read(**)",
+
       "Skill(audit:a11y)",
       "Skill(audit:debt)",
       "Skill(audit:doc-drift)",
       "Skill(audit:perf)",
       "Skill(audit:security)",
-      "Skill(django-patterns)",
       "Skill(flow:checks)",
       "Skill(flow:fix)",
       "Skill(flow:implement)",
@@ -206,21 +209,36 @@
       "Skill(flow:resume)",
       "Skill(flow:review)",
       "Skill(flow:test)",
-      "Skill(markdown-report)",
       "Skill(meta:feature)",
       "Skill(meta:prompt)",
       "Skill(meta:retro)",
-      "Skill(react-patterns)",
-      "Skill(security-patterns)",
-      "Skill(tailwind-patterns)",
-      "Skill(test-patterns)",
-      "Skill(wcag-audit)",
       "Skill(write:commit)",
       "Skill(write:pr)",
       "Skill(write:release-notes)",
       "Skill(write:stakeholder)",
+
+      "Skill(bash-patterns)",
+      "Skill(django-patterns)",
+      "Skill(engineering-fundamentals)",
+      "Skill(javascript-patterns)",
+      "Skill(markdown-report)",
+      "Skill(next-app-router-patterns)",
+      "Skill(nuxt-patterns)",
+      "Skill(python-patterns)",
+      "Skill(react-patterns)",
+      "Skill(security-patterns)",
+      "Skill(tailwind-patterns)",
+      "Skill(test-patterns)",
+      "Skill(typescript-patterns)",
+      "Skill(vue-patterns)",
+      "Skill(wcag-audit)",
+
       "Write(**)",
       "Write($HOME/.claude/scratch/**)",
+      "Edit(**)",
+      "MultiEdit(**)",
+      "Read(**)",
+
       "WebFetch(domain:developer.mozilla.org)",
       "WebFetch(domain:react.dev)",
       "WebFetch(domain:nextjs.org)",
@@ -453,6 +471,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/log-skills.sh",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -461,6 +489,17 @@
           {
             "type": "command",
             "command": "$HOME/.claude/hooks/inject-context.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptExpansion": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/log-skills.sh",
             "timeout": 5
           }
         ]
@@ -474,7 +513,5 @@
     "frontend-design@claude-plugins-official": true,
     "figma@claude-plugins-official": true,
     "github@claude-plugins-official": true
-  },
-  "spinnerTipsEnabled": false,
-  "agentPushNotifEnabled": true
+  }
 }
