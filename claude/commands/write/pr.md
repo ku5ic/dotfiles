@@ -2,6 +2,7 @@
 description: Generate a pull request description from the current diff
 argument-hint: <optional: commit range like main..HEAD>
 model: haiku
+effort: medium
 ---
 
 **Effort: light.** Text generation from diff. No codebase reading beyond the diff provided.

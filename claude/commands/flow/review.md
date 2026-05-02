@@ -1,6 +1,8 @@
 ---
 description: Senior review of recently changed code, stack aware
 argument-hint: <optional: commit range, branch, or path>
+model: opus
+effort: high
 ---
 
 **Effort: heavy.** Deep review. Read the changed files and their immediate context.

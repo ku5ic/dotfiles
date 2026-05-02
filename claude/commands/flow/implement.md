@@ -1,6 +1,8 @@
 ---
 description: Execute an approved plan step by step, staying within scope
 argument-hint: <optional: step number or range>
+model: sonnet
+effort: medium
 ---
 
 **Effort: heavy.** Actual code changes. Stay strictly within the approved plan.

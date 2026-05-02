@@ -1,5 +1,7 @@
 ---
 description: Run the project's verification checklist via run-checks.sh
+model: sonnet
+effort: low
 ---
 
 **Effort: light.** Wrapper. Reports pass/fail and stops.

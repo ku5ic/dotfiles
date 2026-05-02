@@ -1,6 +1,8 @@
 ---
 description: Establish shared understanding of the codebase before any work begins
 argument-hint: <optional task description>
+model: sonnet
+effort: medium
 ---
 
 **Effort: medium.** Read, do not write. No code generation in this step.

@@ -1,6 +1,8 @@
 ---
 description: Add or update tests for recent implementation work, then run them
 argument-hint: <optional: file or area to focus on>
+model: sonnet
+effort: medium
 ---
 
 **Effort: medium.** Matches existing test style. Does not design new testing infrastructure.

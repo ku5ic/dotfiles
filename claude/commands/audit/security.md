@@ -1,6 +1,8 @@
 ---
 description: Security audit covering frontend and backend surface areas
 argument-hint: <file, directory, or area name>
+model: sonnet
+effort: high
 ---
 
 **Effort: heavy.** Defensive review. Assume any input from outside the process boundary is hostile.

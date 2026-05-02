@@ -1,6 +1,8 @@
 ---
 description: Surface technical debt and architectural risks with severity and remediation path
 argument-hint: <file, directory, or area name>
+model: sonnet
+effort: high
 ---
 
 **Effort: heavy.** Structural analysis. Be direct and skeptical. Do not list minor style preferences.

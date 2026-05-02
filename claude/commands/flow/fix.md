@@ -1,6 +1,8 @@
 ---
 description: Surgical fix from a failing signal (test, type error, runtime error, lint)
 argument-hint: <error message, file path, or test name>
+model: sonnet
+effort: medium
 ---
 
 **Effort: medium.** Find the bug, fix it, verify. Do not refactor.

@@ -1,6 +1,8 @@
 ---
 description: Shape a fuzzy feature request into a structured brief before planning
 argument-hint: <feature description or ticket text>
+model: sonnet
+effort: high
 ---
 
 **Effort: heavy.** Thinking-heavy. One step before `/flow:plan`. Produces a brief, not a plan.

@@ -2,6 +2,7 @@
 description: Detect drift between code and markdown or inline documentation
 argument-hint: <code path to check>
 model: haiku
+effort: medium
 ---
 
 **Effort: medium.** Comparison task. Does not rewrite docs.

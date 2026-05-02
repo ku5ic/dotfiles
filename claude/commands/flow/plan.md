@@ -1,6 +1,8 @@
 ---
 description: Turn a confirmed task into an ordered implementation plan with explicit tradeoffs
 argument-hint: <task description or link to preflight report>
+model: opus
+effort: high
 ---
 
 **Effort: heavy.** Thinking-heavy. Read project CLAUDE.md, relevant skills, and the preflight report if one exists.

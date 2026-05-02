@@ -1,6 +1,8 @@
 ---
 description: Performance audit focused on statically detectable issues
 argument-hint: <file, directory, or area name>
+model: sonnet
+effort: high
 ---
 
 **Effort: heavy.** Static analysis. Does not run benchmarks. Flags what is likely slow, names what to measure.
