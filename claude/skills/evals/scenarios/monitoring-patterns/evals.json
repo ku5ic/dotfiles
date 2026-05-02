@@ -1,0 +1,44 @@
+[
+  {
+    "id": "monitoring-counter-vs-gauge",
+    "skill": "monitoring-patterns",
+    "description": "Selects the correct metric type for a value that fluctuates",
+    "input": {
+      "task": "explain",
+      "question": "I want to track the number of jobs currently in my task queue. Should I use a Counter or a Gauge?"
+    },
+    "expected": {
+      "must_mention": ["Gauge", "decrease", "Counter"],
+      "severity_calls": {
+        "failure": ["Counter.*queue|queue.*Counter"]
+      }
+    }
+  },
+  {
+    "id": "monitoring-high-cardinality-labels",
+    "skill": "monitoring-patterns",
+    "description": "Flags high-cardinality label as a failure",
+    "input": {
+      "task": "review",
+      "question": "I'm tracking API usage per customer like this: REQUESTS.labels(customer_id=customer.id).inc() - is this OK?"
+    },
+    "expected": {
+      "must_mention": ["cardinality", "time series"],
+      "severity_calls": {
+        "failure": ["cardinality|customer_id|high.cardinality"]
+      }
+    }
+  },
+  {
+    "id": "monitoring-fastapi-metrics-endpoint",
+    "skill": "monitoring-patterns",
+    "description": "Explains how to expose a /metrics endpoint in a FastAPI app",
+    "input": {
+      "task": "explain",
+      "question": "How do I expose a /metrics endpoint for Prometheus scraping in my FastAPI application?"
+    },
+    "expected": {
+      "must_mention": ["make_asgi_app", "mount", "prometheus_client"]
+    }
+  }
+]
