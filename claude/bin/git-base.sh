@@ -24,8 +24,11 @@ if git rev-parse --abbrev-ref '@{upstream}' >/dev/null 2>&1; then
 fi
 
 if git symbolic-ref refs/remotes/origin/HEAD >/dev/null 2>&1; then
-  git symbolic-ref --short refs/remotes/origin/HEAD
-  exit 0
+  _resolved="$(git symbolic-ref --short refs/remotes/origin/HEAD)"
+  if git rev-parse --verify "$_resolved" >/dev/null 2>&1; then
+    echo "$_resolved"
+    exit 0
+  fi
 fi
 
 for b in main master develop trunk; do
