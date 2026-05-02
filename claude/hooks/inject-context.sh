@@ -6,6 +6,7 @@ source "$(dirname "$0")/_lib.sh"
 # shellcheck source=../bin/_lib.sh
 source "$(dirname "$0")/../bin/_lib.sh"
 
+payload=""
 read_payload
 session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty' 2>/dev/null || true)"
 safe_session_id="${session_id//[^a-zA-Z0-9_-]/}"
@@ -63,6 +64,73 @@ if [[ -s "$cache_file" ]]; then
   echo "dirty-files: $dirty"
   echo "</repo-context>"
 fi
+
+# Emit required skills derived from the detected stack.
+# Reads ~/.dotfiles/claude/skill-map.conf; see that file for format and
+# extension instructions.
+emit_required_skills() {
+  local cache="$1"
+  local map="$HOME/.dotfiles/claude/skill-map.conf"
+
+  [[ -s "$cache" ]] || return 0
+  [[ -f "$map" ]]   || return 0
+
+  # Extract signals from detect-stack.sh output.
+  # Bare stack name (js, python) plus compound stack+extra for each token
+  # inside the extras parenthetical: "js: yes at x/ (react, next) [pnpm]"
+  # yields js, js+react, js+next.
+  local -a signals=()
+  while IFS= read -r line; do
+    [[ "$line" =~ ^root: ]] && continue
+    [[ -z "$line" ]]        && continue
+    local stack="${line%%:*}"
+    signals+=("$stack")
+    local extras
+    extras=$(echo "$line" | grep -oE '\([^)]+\)' | head -1 | tr -d '()')
+    if [[ -n "$extras" ]]; then
+      IFS=', ' read -ra parts <<< "$extras"
+      for part in "${parts[@]}"; do
+        part="${part//[[:space:]]/}"
+        [[ -n "$part" ]] && signals+=("${stack}+${part}")
+      done
+    fi
+  done < "$cache"
+
+  # Match signals against rules; collect skills in first-seen order.
+  local -A seen=()
+  local -a required=()
+  while IFS= read -r rule; do
+    [[ "$rule" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "${rule//[[:space:]]/}" ]] && continue
+    local -a fields
+    read -ra fields <<< "$rule"
+    local signal="${fields[0]}"
+    local matched=0
+    for s in "${signals[@]}"; do
+      [[ "$s" == "$signal" ]] && { matched=1; break; }
+    done
+    [[ $matched -eq 0 ]] && continue
+    local i
+    for i in "${!fields[@]}"; do
+      [[ $i -eq 0 ]] && continue
+      local skill="${fields[$i]}"
+      if [[ -z "${seen[$skill]:-}" ]]; then
+        seen[$skill]=1
+        required+=("$skill")
+      fi
+    done
+  done < "$map"
+
+  if [[ ${#required[@]} -gt 0 ]]; then
+    local IFS=', '
+    echo ""
+    echo "<required-skills>"
+    echo "Load these skills at the start of every task for this project: ${required[*]}"
+    echo "</required-skills>"
+  fi
+}
+
+emit_required_skills "$cache_file"
 
 touch "$session_marker"
 exit 0
