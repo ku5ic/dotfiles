@@ -1,0 +1,24 @@
+{
+  "skill_name": "django-patterns",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this Django view for issues.",
+      "files": ["product_views.py"],
+      "expected_output": "Findings: business logic in model.save() override (warning); signals used for business logic creating hidden control flow (warning); fat view with 200+ lines - extract to service (warning); N+1 query in template loop (failure). Outputs severity rubric.",
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "prompt": "How should I structure my Django settings for dev, staging, prod?",
+      "expected_output": "Recommends split settings: base.py, dev.py, prod.py, test.py with DJANGO_SETTINGS_MODULE env var to choose. Recommends DEBUG = False in prod, ALLOWED_HOSTS explicit, secrets via env not code. Mentions django-environ as a common choice for typed env var parsing.",
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "prompt": "I have a query that is slow because of N+1. How do I fix it?",
+      "expected_output": "Distinguishes prefetch_related (reverse FK and M2M, separate batch query) from select_related (forward FK and OneToOne, SQL JOIN). Recommends measuring with django-debug-toolbar. Suggests .only() and .defer() for column-level optimization. Does not jump to caching as the first answer.",
+      "assertions": []
+    }
+  ]
+}
