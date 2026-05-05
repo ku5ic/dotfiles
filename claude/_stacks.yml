@@ -40,8 +40,7 @@
 # Skills are deduplicated in first-seen order across all matched signals.
 #
 # NEVER AUTO-LOAD (no skills: entry; invoke manually when the task warrants)
-#   bash-patterns, engineering-fundamentals, evals, markdown-report,
-#   security-patterns, test-patterns, wcag-audit
+#   bash-patterns, evals, security-patterns, wcag-audit
 #
 # SENTINEL FIELDS
 # ---------------
@@ -143,6 +142,7 @@ stacks:
       - name: fastapi
         grep: '^[[:space:]"]*fastapi'
         in: [pyproject.toml, requirements.txt, Pipfile]
+        skills: [fastapi-patterns]
       - name: flask
         grep: '^[[:space:]"]*flask'
         in: [pyproject.toml, requirements.txt, Pipfile]
@@ -190,7 +190,7 @@ stacks:
       - name: docker-compose.yaml
       - name: compose.yml
       - name: compose.yaml
-    skills: []
+    skills: [docker-patterns]
 
   monorepo:
     sentinels:
