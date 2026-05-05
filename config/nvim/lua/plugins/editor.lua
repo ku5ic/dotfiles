@@ -99,6 +99,7 @@ return {
 				{ "<leader>t", group = "tab/explorer" },
 				{ "<leader>b", group = "buffer" },
 				{ "<leader>l", group = "lsp" },
+				{ "<leader>lw", group = "workspace" },
 				{ "<leader>x", group = "diagnostics/trouble" },
 				{ "<leader>d", group = "debug" },
 				{ "<leader>a", group = "ai/copilot" },

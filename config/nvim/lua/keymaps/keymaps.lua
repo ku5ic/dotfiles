@@ -119,7 +119,7 @@ map("n", "<leader>ld", function()
 	vim.diagnostic.setloclist({ open = true })
 end, "LSP Diagnostics to location list")
 -- <leader>ll (Lint current file) lives in plugins/linting.lua
-map("n", "<leader>li", "<cmd>LspInfo<cr>", "LSP Info")
+map("n", "<leader>li", "<cmd>checkhealth vim.lsp<cr>", "LSP Info")
 
 -- LSP Workspace management
 map("n", "<leader>lwa", vim.lsp.buf.add_workspace_folder, "LSP Add workspace folder")

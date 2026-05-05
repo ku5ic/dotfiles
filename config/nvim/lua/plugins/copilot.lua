@@ -85,5 +85,16 @@ return {
 			},
 		},
 		-- event = "VeryLazy",
+		config = function(_, opts)
+			require("CopilotChat").setup(opts)
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "copilot-chat",
+				callback = function(ev)
+					require("which-key").add({
+						{ "gm", buffer = ev.buf, group = "copilot-chat" },
+					})
+				end,
+			})
+		end,
 	},
 }

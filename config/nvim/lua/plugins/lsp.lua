@@ -121,6 +121,8 @@ local function setup_lsp_keymaps(bufnr, client)
 	vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, desc = "Hover documentation" })
 	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, { buffer = bufnr, desc = "Signature help" })
 
+	require("which-key").add({ { "g", buffer = bufnr, group = "goto" } })
+
 	if client and client.server_capabilities.codeLensProvider then
 		vim.lsp.codelens.enable(true, { buffer = bufnr })
 		vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
