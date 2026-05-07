@@ -213,7 +213,7 @@ If a check is missing entirely (no linter configured), do not introduce one as p
 
 ## Scope and Planning
 
-- For multi step work, plan first. Use TodoWrite when the task has more than a couple of steps.
+- For multi step work, plan first. Use TaskCreate when the task has more than a couple of steps.
 - Stay in scope. Do not refactor unrelated code as part of a feature change.
 - Do not rewrite working code in a different style unless that is the task.
 - If the task grows during execution, pause and confirm the expanded scope before continuing.
