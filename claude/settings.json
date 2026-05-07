@@ -509,6 +509,26 @@
             "type": "command",
             "command": "$HOME/.claude/hooks/sanitize-output.sh",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/format-shell.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/lint-shell.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/format-lua.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/format-prettier.sh",
+            "timeout": 15
           }
         ]
       },
