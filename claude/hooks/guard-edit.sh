@@ -19,7 +19,7 @@ block() {
 }
 
 case "$(basename "$path")" in
-  package-lock.json|pnpm-lock.yaml|yarn.lock|bun.lockb|Gemfile.lock|Cargo.lock|composer.lock|poetry.lock|uv.lock|requirements.txt.lock)
+  package-lock.json|pnpm-lock.yaml|yarn.lock|bun.lockb|Gemfile.lock|Cargo.lock|composer.lock|poetry.lock|uv.lock|pdm.lock|requirements.txt.lock)
     block "lockfile edit. Use the package manager."
     ;;
 esac
