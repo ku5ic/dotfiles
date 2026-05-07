@@ -53,8 +53,10 @@ No report file. Terminal output only:
 
 ## Stop
 
-If the plan declares its steps as a single phase (all steps under one "Phase" or "Step" heading; mechanical plans typically have this shape), implement all steps in that phase in one turn, then stop at the phase boundary. Pause at phase boundaries only.
-If the plan has multiple phases, stop at the end of each phase and wait
-for the user to say `continue`, or invoke `/flow:test` or `/flow:review`.
+Default rule (any plan with two or more phases): implement exactly one phase per turn, then stop and wait for the user to say `continue`, or to invoke `/flow:test` or `/flow:review`. Every phase boundary is a hard stop. Do not roll consecutive phases into the same turn under any rationale, including: the phases are short, mechanical, thematically related, sequentially numbered, or "obviously" safe to batch. A 12-phase plan produces 11 stops, not fewer.
 
-The user can override at any time with "stop after step N" in $ARGUMENTS, or pass `--step` to force per-step pausing for a substantive plan.
+Counting phases: a phase is anything declared with a `Phase` or `Step` heading in the plan. Numbered subheadings inside a single phase are steps, not phases, and are not pause points on their own.
+
+Exception (single-phase plans only): if the plan declares exactly one phase total, with every step nested under that one heading, implement every step in one turn and stop at the end. This exception does not apply to multi-phase plans where individual phases happen to contain only one step.
+
+The user can override at any time with "stop after step N" in $ARGUMENTS, or pass `--step` to force per-step pausing inside a substantive phase.
