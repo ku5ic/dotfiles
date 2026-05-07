@@ -12,7 +12,7 @@ Personal macOS dotfiles managed as a git repo at `~/.dotfiles`. Files are symlin
 source ~/.dotfiles/install.sh
 ```
 
-This script: pulls the latest repo, installs Homebrew, installs zsh/bash shells, sets zsh as the login shell, runs `brew bundle` from `Brewfile`, creates all symlinks, makes scripts and hooks executable, and sets up asdf for Node/Ruby/Python.
+This script: pulls the latest repo, installs Homebrew, installs zsh/bash shells, sets zsh as the login shell, runs `brew bundle` from `Brewfile`, creates all symlinks, makes scripts and hooks executable, configures Claude Code via `claude/bin/bootstrap.sh`, installs launchd agents from `launchd/` to `~/Library/LaunchAgents/`, and sets up asdf for Node/Ruby/Python.
 
 To re-symlink a single config without running the full installer, re-run the `ln -sfv` manually:
 

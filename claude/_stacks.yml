@@ -127,6 +127,8 @@ stacks:
       - name: requirements.txt
       - name: Pipfile
       - name: manage.py
+      - name: uv.lock
+      - name: pdm.lock
     skills: [python-patterns]
     extras:
       - name: django
