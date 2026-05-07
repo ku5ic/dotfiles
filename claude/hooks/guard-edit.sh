@@ -67,6 +67,15 @@ case "$path" in
   "$HOME/.netrc"|"$HOME/.pgpass"|"$HOME/.npmrc")
     block "credential file"
     ;;
+  "$HOME/.pypirc")
+    block "PyPI credentials"
+    ;;
+  "$HOME/.cargo/credentials")
+    block "cargo registry credentials"
+    ;;
+  "$HOME/.gem/credentials")
+    block "RubyGems credentials"
+    ;;
   "$HOME/Library/Keychains/"*)
     block "macOS keychain"
     ;;

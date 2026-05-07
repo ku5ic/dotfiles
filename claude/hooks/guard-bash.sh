@@ -183,6 +183,11 @@ _check_segment() {
         block "global package install. Use a project-local install or asdf shim."
       fi
       ;;
+    bun)
+      if [[ "$seg" =~ bun[[:space:]]+(add|install)[[:space:]]+.*(-g|--global) ]]; then
+        block "global package install. Use a project-local install or asdf shim."
+      fi
+      ;;
   esac
 }
 
