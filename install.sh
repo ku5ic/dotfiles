@@ -52,6 +52,18 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/config/starship.toml" ~/.config/
 }
 
+install_launchd_agents() {
+  mkdir -p "$HOME/Library/LaunchAgents"
+  brew_bash="$(brew --prefix)/bin/bash"
+  for template in "$DOTFILES_DIR/launchd/"*.plist; do
+    [ -f "$template" ] || continue
+    dest="$HOME/Library/LaunchAgents/$(basename "$template")"
+    sed -e "s|__HOME__|$HOME|g" -e "s|__BREW_BASH__|$brew_bash|g" "$template" > "$dest"
+    echo "launchd: wrote $dest"
+    echo "launchd: to load: launchctl load $dest"
+  done
+}
+
 fix_permissions() {
   find "$DOTFILES_DIR/scripts" \
        "$DOTFILES_DIR/completions/" \
@@ -98,6 +110,7 @@ main() {
   install_packages
   fix_permissions
   create_symlinks
+  install_launchd_agents
   setup_asdf
 }
 

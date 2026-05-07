@@ -71,6 +71,8 @@ log_dir="$HOME/.claude/logs"
 mkdir -p "$log_dir"
 
 ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+log_file="$log_dir/skills.jsonl"
+
 printf '%s' "$payload" | jq -c \
   --arg ts "$ts" \
   --arg hook "$HOOK_NAME" \
@@ -86,6 +88,14 @@ printf '%s' "$payload" | jq -c \
      command_source: (.command_source // null),
      skill_file: (.tool_input.skill // .tool_input.file_path // null),
      tool_name: (.tool_name // null)
-   }' >> "$log_dir/skills.jsonl"
+   }' >> "$log_file"
+
+max_lines=10000
+total="$(wc -l < "$log_file" | tr -d ' ')"
+if (( total > max_lines )); then
+  tmp="$(mktemp)"
+  tail -n "$max_lines" "$log_file" > "$tmp"
+  mv "$tmp" "$log_file"
+fi
 
 exit 0
