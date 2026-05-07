@@ -1,10 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "model": "sonnet",
-  "effortLevel": "high",
-  "spinnerTipsEnabled": false,
-  "agentPushNotifEnabled": true,
   "cleanupPeriodDays": 30,
+  "skillListingBudgetFraction": 0.03,
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
@@ -177,7 +174,6 @@
       "Bash(yarn outdated:*)",
       "Bash(yarn why:*)",
       "Bash(yq *)",
-
       "Bash(bash *)",
       "Bash(chmod +x *)",
       "Bash(chmod 755 *)",
@@ -185,7 +181,6 @@
       "Bash(shellcheck *)",
       "Bash(shfmt *)",
       "Bash(zsh *)",
-
       "Bash(bootstrap.sh *)",
       "Bash(detect-stack.sh *)",
       "Bash(doctor.sh *)",
@@ -196,16 +191,13 @@
       "Bash(project-root.sh *)",
       "Bash(run-checks.sh *)",
       "Bash(scratch-rotate.sh *)",
-
       "Bash($HOME/.claude/bin/*)",
       "Bash(~/.claude/bin/*)",
-
       "Skill(audit:a11y)",
       "Skill(audit:debt)",
       "Skill(audit:doc-drift)",
       "Skill(audit:perf)",
       "Skill(audit:security)",
-
       "Skill(flow:checks)",
       "Skill(flow:fix)",
       "Skill(flow:implement)",
@@ -214,16 +206,13 @@
       "Skill(flow:resume)",
       "Skill(flow:review)",
       "Skill(flow:test)",
-
       "Skill(meta:feature)",
       "Skill(meta:prompt)",
       "Skill(meta:retro)",
-
       "Skill(write:commit)",
       "Skill(write:pr)",
       "Skill(write:release-notes)",
       "Skill(write:stakeholder)",
-
       "Skill(bash-patterns)",
       "Skill(django-patterns)",
       "Skill(engineering-fundamentals)",
@@ -239,12 +228,10 @@
       "Skill(typescript-patterns)",
       "Skill(vue-patterns)",
       "Skill(wcag-audit)",
-
       "Write(**)",
       "Edit(**)",
       "MultiEdit(**)",
       "Read(**)",
-
       "WebFetch(domain:developer.mozilla.org)",
       "WebFetch(domain:react.dev)",
       "WebFetch(domain:nextjs.org)",
@@ -439,6 +426,7 @@
     "defaultMode": "default",
     "additionalDirectories": ["~/.claude", "~/.dotfiles"]
   },
+  "model": "sonnet",
   "hooks": {
     "PreToolUse": [
       {
@@ -528,6 +516,15 @@
     "pyright-lsp@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
     "figma@claude-plugins-official": true,
-    "github@claude-plugins-official": true
-  }
+    "github@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "hookify@claude-plugins-official": true,
+    "ruby-lsp@claude-plugins-official": true
+  },
+  "spinnerTipsEnabled": false,
+  "effortLevel": "high",
+  "agentPushNotifEnabled": true
 }
