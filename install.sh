@@ -58,7 +58,7 @@ install_launchd_agents() {
   for template in "$DOTFILES_DIR/launchd/"*.plist; do
     [ -f "$template" ] || continue
     dest="$HOME/Library/LaunchAgents/$(basename "$template")"
-    sed -e "s|__HOME__|$HOME|g" -e "s|__BREW_BASH__|$brew_bash|g" "$template" > "$dest"
+    sed -e "s|__HOME__|$HOME|g" -e "s|__BREW_BASH__|$brew_bash|g" "$template" >"$dest"
     echo "launchd: wrote $dest"
     echo "launchd: to load: launchctl load $dest"
   done
@@ -66,10 +66,10 @@ install_launchd_agents() {
 
 fix_permissions() {
   find "$DOTFILES_DIR/scripts" \
-       "$DOTFILES_DIR/completions/" \
-       "$DOTFILES_DIR/claude/bin" \
-       "$DOTFILES_DIR/claude/hooks" \
-       "$DOTFILES_DIR/macos" \
+    "$DOTFILES_DIR/completions/" \
+    "$DOTFILES_DIR/claude/bin" \
+    "$DOTFILES_DIR/claude/hooks" \
+    "$DOTFILES_DIR/macos" \
     -type f -name '*.sh' -exec chmod +x {} +
 }
 
@@ -100,7 +100,7 @@ setup_asdf() {
 
     echo "Installing $plugin $version"
     asdf install "$plugin" "$version"
-  done < "$tool_versions"
+  done <"$tool_versions"
 }
 
 main() {

@@ -10,23 +10,24 @@ fail=0
 skip=0
 
 run() {
-  local label="$1"; shift
+  local label="$1"
+  shift
   local out
   out="$(mktemp -t run-checks)"
   if "$@" >"$out" 2>&1; then
     echo "PASS $label"
-    pass=$((pass+1))
+    pass=$((pass + 1))
   else
     echo "FAIL $label ($*)"
     head -30 "$out"
-    fail=$((fail+1))
+    fail=$((fail + 1))
   fi
   rm -f "$out"
 }
 
 skip_msg() {
   echo "SKIP $1"
-  skip=$((skip+1))
+  skip=$((skip + 1))
 }
 
 # JS/TS

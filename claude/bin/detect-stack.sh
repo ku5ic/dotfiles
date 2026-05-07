@@ -35,7 +35,7 @@ find_stack_dir() {
   if [[ -z "$raw_dirs" || "$raw_dirs" == "null" ]]; then
     dirs=("${default_search_dirs[@]}")
   else
-    mapfile -t dirs <<< "$raw_dirs"
+    mapfile -t dirs <<<"$raw_dirs"
   fi
   local sentinels
   mapfile -t sentinels < <(yq ".stacks.${stack}.sentinels[].name" "$STACKS_YML")
@@ -109,9 +109,9 @@ eval_extra() {
   # any_of: OR over sub-rules (supports file: and grep:+in: sub-rules)
   local any_of_count
   any_of_count="$(yq ".stacks.${stack}.extras[${idx}].any_of | length" "$STACKS_YML" 2>/dev/null || echo 0)"
-  if (( any_of_count > 0 )); then
+  if ((any_of_count > 0)); then
     local i
-    for (( i=0; i<any_of_count; i++ )); do
+    for ((i = 0; i < any_of_count; i++)); do
       local sub_file sub_pattern
       sub_file="$(yq ".stacks.${stack}.extras[${idx}].any_of[${i}].file // \"\"" "$STACKS_YML")"
       if [[ -n "$sub_file" ]] && [[ -f "$loc/$sub_file" ]]; then
@@ -143,7 +143,7 @@ for stack in "${STACK_NAMES[@]}"; do
     break
   fi
 done
-(( has_stack )) || exit 0
+((has_stack)) || exit 0
 
 echo "root: $ROOT"
 
@@ -156,7 +156,7 @@ for stack in "${STACK_NAMES[@]}"; do
   # Evaluate extras for this stack
   extra_count="$(yq ".stacks.${stack}.extras | length" "$STACKS_YML" 2>/dev/null || echo 0)"
   extras_parts=()
-  for (( i=0; i<extra_count; i++ )); do
+  for ((i = 0; i < extra_count; i++)); do
     matched="$(eval_extra "$stack" "$loc" "$i")"
     [[ -n "$matched" ]] && extras_parts+=("$matched")
   done
@@ -166,7 +166,7 @@ for stack in "${STACK_NAMES[@]}"; do
   if [[ "$stack" == "js" ]]; then
     pm="npm"
     pm_locks_count="$(yq ".stacks.js.pm_locks | length" "$STACKS_YML" 2>/dev/null || echo 0)"
-    if (( pm_locks_count > 0 )); then
+    if ((pm_locks_count > 0)); then
       while IFS=": " read -r pm_name lock_file; do
         [[ -f "$loc/$lock_file" ]] && pm="$pm_name" && break
       done < <(yq '.stacks.js.pm_locks | to_entries[] | .key + ": " + .value' "$STACKS_YML")
@@ -186,8 +186,8 @@ done
 # Node version. Prefer the JS stack's location, fall back to project root.
 if [[ -n "$js_loc" ]]; then
   if [[ -f "$js_loc/.nvmrc" ]]; then
-    echo "node: $(tr -d 'v\n' < "$js_loc/.nvmrc")"
+    echo "node: $(tr -d 'v\n' <"$js_loc/.nvmrc")"
   elif [[ -f .nvmrc ]]; then
-    echo "node: $(tr -d 'v\n' < .nvmrc)"
+    echo "node: $(tr -d 'v\n' <.nvmrc)"
   fi
 fi

@@ -26,10 +26,10 @@ removed="$(find "$scratch_dir" -type f -name '*.md' -mtime +"$days" -print -dele
 echo "scratch-rotate: pruned $removed artifact(s) older than ${days}d from $scratch_dir"
 
 if [[ -f "$skills_log" ]]; then
-  total="$(wc -l < "$skills_log" | tr -d ' ')"
-  if (( total > max_lines )); then
+  total="$(wc -l <"$skills_log" | tr -d ' ')"
+  if ((total > max_lines)); then
     tmp="$(mktemp)"
-    tail -n "$max_lines" "$skills_log" > "$tmp"
+    tail -n "$max_lines" "$skills_log" >"$tmp"
     mv "$tmp" "$skills_log"
     echo "scratch-rotate: trimmed skills.jsonl from $total to $max_lines lines"
   else

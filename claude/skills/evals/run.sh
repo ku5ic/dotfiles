@@ -145,18 +145,18 @@ main() {
   fi
 
   case "$1" in
-    -h|--help)
-      usage
-      ;;
-    --schema)
-      print_schema
-      ;;
-    list)
-      list_skills
-      ;;
-    *)
-      run_evals "$@"
-      ;;
+  -h | --help)
+    usage
+    ;;
+  --schema)
+    print_schema
+    ;;
+  list)
+    list_skills
+    ;;
+  *)
+    run_evals "$@"
+    ;;
   esac
 }
 

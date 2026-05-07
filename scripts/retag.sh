@@ -18,8 +18,11 @@ if [[ $yes -eq 0 ]]; then
   printf 'About to force-recreate tag %s and force-push it to origin. Proceed? [y/N] ' "$tag"
   read -r response
   case "$response" in
-    y|Y|yes|YES) ;;
-    *) printf 'aborted\n' >&2; exit 1 ;;
+  y | Y | yes | YES) ;;
+  *)
+    printf 'aborted\n' >&2
+    exit 1
+    ;;
   esac
 fi
 

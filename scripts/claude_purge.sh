@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-
 printf 'Do you want to purge claude cached data? (y/n): '
 read -r response
 
@@ -22,4 +21,3 @@ if [[ "$response" == "y" || "$response" == "Y" ]]; then
 else
   echo "Skipping the purge command."
 fi
-

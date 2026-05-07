@@ -11,6 +11,8 @@ local formatters_by_ft = {
 	lua = { "stylua" },
 	python = { "ruff_format", "ruff" },
 	php = { "php_cs_fixer" },
+	sh = { "shfmt" },
+	bash = { "shfmt" },
 }
 
 for _, ft in ipairs(filetypes.JS_TS) do

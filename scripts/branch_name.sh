@@ -67,30 +67,30 @@ EOF
 }
 
 sanitize_issue_id() {
-  printf '%s' "$1" \
-    | tr '[:lower:]' '[:upper:]' \
-    | sed -E 's/[^A-Z0-9_-]+/-/g' \
-    | sed -E 's/^-+//; s/-+$//'
+  printf '%s' "$1" |
+    tr '[:lower:]' '[:upper:]' |
+    sed -E 's/[^A-Z0-9_-]+/-/g' |
+    sed -E 's/^-+//; s/-+$//'
 }
 
 sanitize_title() {
-  printf '%s' "$1" \
-    | tr '[:upper:]' '[:lower:]' \
-    | sed -E 's/[[:space:]]+/_/g' \
-    | sed -E 's/[^a-z0-9_]+/_/g' \
-    | sed -E 's/_+/_/g' \
-    | sed -E 's/^_+//; s/_+$//'
+  printf '%s' "$1" |
+    tr '[:upper:]' '[:lower:]' |
+    sed -E 's/[[:space:]]+/_/g' |
+    sed -E 's/[^a-z0-9_]+/_/g' |
+    sed -E 's/_+/_/g' |
+    sed -E 's/^_+//; s/_+$//'
 }
 
 is_valid_type() {
   case "$1" in
-    feat|fix|refactor|perf|test|docs|build|ci|chore|style|release|\
-    poc|spike|wip|draft|temp|drill|sandbox|personal|exp|try)
-      return 0
-      ;;
-    *)
-      return 1
-      ;;
+  feat | fix | refactor | perf | test | docs | build | ci | chore | style | release | \
+    poc | spike | wip | draft | temp | drill | sandbox | personal | exp | try)
+    return 0
+    ;;
+  *)
+    return 1
+    ;;
   esac
 }
 

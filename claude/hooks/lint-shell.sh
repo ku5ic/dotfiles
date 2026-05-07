@@ -10,8 +10,8 @@ path="$(extract_path)"
 [[ -z "$path" || ! -f "$path" ]] && exit 0
 
 case "$path" in
-  *.sh|*.bash) ;;
-  *) exit 0 ;;
+*.sh | *.bash) ;;
+*) exit 0 ;;
 esac
 
 command -v shellcheck >/dev/null 2>&1 || exit 0

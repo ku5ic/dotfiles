@@ -33,8 +33,8 @@ _branch_name() {
     '*:branch title:_message "branch title"' && return 0
 
   case $state in
-    type)
-      _describe -t types 'branch type' types
-      ;;
+  type)
+    _describe -t types 'branch type' types
+    ;;
   esac
 }

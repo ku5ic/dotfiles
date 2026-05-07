@@ -67,6 +67,7 @@ local function setup_mason()
 			"stylelint",
 			"stylua",
 			"djlint",
+			"shfmt",
 		},
 		automatic_installation = true,
 	})

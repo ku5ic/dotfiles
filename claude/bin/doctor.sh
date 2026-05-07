@@ -96,7 +96,7 @@ for pat in "${patterns[@]}"; do
   fi
 done
 
-if (( parity_failed )); then
+if ((parity_failed)); then
   exit_code=1
 else
   echo "ok             ${#patterns[@]} patterns mirrored across guard-edit.sh and settings.json"

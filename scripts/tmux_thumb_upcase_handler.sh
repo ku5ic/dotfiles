@@ -15,10 +15,10 @@ fi
 
 # URLs and other schemes go straight to Launch Services.
 case "$target" in
-  *://*|mailto:*|file:*)
-    /usr/bin/open "$target"
-    exit $?
-    ;;
+*://* | mailto:* | file:*)
+  /usr/bin/open "$target"
+  exit $?
+  ;;
 esac
 
 # Expand a leading ~ or ~user manually. Bash only expands tildes in unquoted
@@ -28,27 +28,27 @@ expand_tilde() {
   local s="$1"
   # shellcheck disable=SC2088  # case patterns; literal tilde is intentional
   case "$s" in
-    "~")
-      printf '%s\n' "$HOME"
-      ;;
-    "~/"*)
-      printf '%s\n' "$HOME/${s#"~/"}"
-      ;;
-    "~"[!/]*/*)
-      local rest="${s#"~"}"
-      local user="${rest%%/*}"
-      local tail="${rest#*/}"
-      local home
-      home="$(/usr/bin/dscl . -read "/Users/$user" NFSHomeDirectory 2>/dev/null | awk '{print $2}')"
-      if [ -n "$home" ]; then
-        printf '%s\n' "$home/$tail"
-      else
-        printf '%s\n' "$s"
-      fi
-      ;;
-    *)
+  "~")
+    printf '%s\n' "$HOME"
+    ;;
+  "~/"*)
+    printf '%s\n' "$HOME/${s#"~/"}"
+    ;;
+  "~"[!/]*/*)
+    local rest="${s#"~"}"
+    local user="${rest%%/*}"
+    local tail="${rest#*/}"
+    local home
+    home="$(/usr/bin/dscl . -read "/Users/$user" NFSHomeDirectory 2>/dev/null | awk '{print $2}')"
+    if [ -n "$home" ]; then
+      printf '%s\n' "$home/$tail"
+    else
       printf '%s\n' "$s"
-      ;;
+    fi
+    ;;
+  *)
+    printf '%s\n' "$s"
+    ;;
   esac
 }
 
@@ -58,8 +58,14 @@ pane_pwd="$(tmux display-message -p -F '#{pane_current_path}' 2>/dev/null || tru
 
 resolve() {
   local s="$1"
-  if [ -e "$s" ]; then printf '%s\n' "$s"; return 0; fi
-  if [ -n "$pane_pwd" ] && [ -e "$pane_pwd/$s" ]; then printf '%s\n' "$pane_pwd/$s"; return 0; fi
+  if [ -e "$s" ]; then
+    printf '%s\n' "$s"
+    return 0
+  fi
+  if [ -n "$pane_pwd" ] && [ -e "$pane_pwd/$s" ]; then
+    printf '%s\n' "$pane_pwd/$s"
+    return 0
+  fi
   return 1
 }
 

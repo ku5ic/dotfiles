@@ -19,17 +19,17 @@ block() {
 }
 
 case "$(basename "$path")" in
-  package-lock.json|pnpm-lock.yaml|yarn.lock|bun.lockb|Gemfile.lock|Cargo.lock|composer.lock|poetry.lock|uv.lock|pdm.lock|requirements.txt.lock)
-    block "lockfile edit. Use the package manager."
-    ;;
+package-lock.json | pnpm-lock.yaml | yarn.lock | bun.lockb | Gemfile.lock | Cargo.lock | composer.lock | poetry.lock | uv.lock | pdm.lock | requirements.txt.lock)
+  block "lockfile edit. Use the package manager."
+  ;;
 esac
 
 [[ "$path" =~ /\.git/ ]] && block "edit inside .git/"
 
 case "$path" in
-  "$HOME/.zshrc"|"$HOME/.zprofile"|"$HOME/.bashrc"|"$HOME/.bash_profile"|"$HOME/.profile")
-    block "direct edit to a shell rc file. Use the dotfiles repo."
-    ;;
+"$HOME/.zshrc" | "$HOME/.zprofile" | "$HOME/.bashrc" | "$HOME/.bash_profile" | "$HOME/.profile")
+  block "direct edit to a shell rc file. Use the dotfiles repo."
+  ;;
 esac
 
 # Sensitive credential and key files. Defense in depth: settings.json deny
@@ -37,48 +37,48 @@ esac
 # not be the only thing standing between an injection and a clobbered key.
 # Patterns must mirror settings.json deny rules. bin/doctor.sh enforces parity.
 case "$(basename "$path")" in
-  *.pem|*.key|*.pfx|*.p12)
-    block "credential or key file"
-    ;;
-  id_rsa|id_ed25519|id_ecdsa)
-    block "SSH private key"
-    ;;
-  .env|.env.*)
-    block ".env file"
-    ;;
+*.pem | *.key | *.pfx | *.p12)
+  block "credential or key file"
+  ;;
+id_rsa | id_ed25519 | id_ecdsa)
+  block "SSH private key"
+  ;;
+.env | .env.*)
+  block ".env file"
+  ;;
 esac
 
 case "$path" in
-  "$HOME/.ssh/"*)
-    block "edit inside ~/.ssh/"
-    ;;
-  "$HOME/.gnupg/"*)
-    block "edit inside ~/.gnupg/"
-    ;;
-  "$HOME/.aws/credentials"|"$HOME/.aws/config")
-    block "AWS credentials or config"
-    ;;
-  "$HOME/.docker/config.json")
-    block "docker auth config"
-    ;;
-  "$HOME/.config/gh/hosts.yml")
-    block "gh CLI auth"
-    ;;
-  "$HOME/.netrc"|"$HOME/.pgpass"|"$HOME/.npmrc")
-    block "credential file"
-    ;;
-  "$HOME/.pypirc")
-    block "PyPI credentials"
-    ;;
-  "$HOME/.cargo/credentials")
-    block "cargo registry credentials"
-    ;;
-  "$HOME/.gem/credentials")
-    block "RubyGems credentials"
-    ;;
-  "$HOME/Library/Keychains/"*)
-    block "macOS keychain"
-    ;;
+"$HOME/.ssh/"*)
+  block "edit inside ~/.ssh/"
+  ;;
+"$HOME/.gnupg/"*)
+  block "edit inside ~/.gnupg/"
+  ;;
+"$HOME/.aws/credentials" | "$HOME/.aws/config")
+  block "AWS credentials or config"
+  ;;
+"$HOME/.docker/config.json")
+  block "docker auth config"
+  ;;
+"$HOME/.config/gh/hosts.yml")
+  block "gh CLI auth"
+  ;;
+"$HOME/.netrc" | "$HOME/.pgpass" | "$HOME/.npmrc")
+  block "credential file"
+  ;;
+"$HOME/.pypirc")
+  block "PyPI credentials"
+  ;;
+"$HOME/.cargo/credentials")
+  block "cargo registry credentials"
+  ;;
+"$HOME/.gem/credentials")
+  block "RubyGems credentials"
+  ;;
+"$HOME/Library/Keychains/"*)
+  block "macOS keychain"
+  ;;
 esac
 
 if [[ "$path" =~ \.github/workflows/.*\.ya?ml$ ]]; then

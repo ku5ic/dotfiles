@@ -110,84 +110,84 @@ _check_segment() {
   local lead="${seg%% *}"
 
   case "$lead" in
-    rm)
-      if [[ "$seg" =~ rm[[:space:]]+(-[a-zA-Z]*[rRfF][a-zA-Z]*[[:space:]]+)+(/|/\*|~|~/|\$HOME|\$\{HOME\}|\.|\.\.)($|[[:space:]]) ]]; then
-        block "rm with recursive force against root, home, or cwd"
+  rm)
+    if [[ "$seg" =~ rm[[:space:]]+(-[a-zA-Z]*[rRfF][a-zA-Z]*[[:space:]]+)+(/|/\*|~|~/|\$HOME|\$\{HOME\}|\.|\.\.)($|[[:space:]]) ]]; then
+      block "rm with recursive force against root, home, or cwd"
+    fi
+    ;;
+  dd | shred | wipefs | mkfs | mkfs.*)
+    block "low level disk or filesystem tool"
+    ;;
+  chmod)
+    if [[ "$seg" =~ chmod[[:space:]]+(-R[[:space:]]+)?777([[:space:]]|$) ]]; then
+      block "chmod 777"
+    fi
+    if [[ "$seg" =~ chmod[[:space:]] ]] && [[ "$seg" =~ \+x ]]; then
+      if [[ "$seg" =~ [[:space:]](\.|\.\.|/)($|[[:space:]]) ]] ||
+        [[ "$seg" =~ [[:space:]](~|\$HOME|\$\{HOME\})($|[[:space:]]|/) ]]; then
+        block "broad chmod +x against root, home, or cwd"
       fi
-      ;;
-    dd|shred|wipefs|mkfs|mkfs.*)
-      block "low level disk or filesystem tool"
-      ;;
-    chmod)
-      if [[ "$seg" =~ chmod[[:space:]]+(-R[[:space:]]+)?777([[:space:]]|$) ]]; then
-        block "chmod 777"
+    fi
+    ;;
+  git)
+    if [[ "$seg" =~ git[[:space:]]+push[[:space:]].*(--force[^-]|--force$|-f([[:space:]]|$)) ]]; then
+      if [[ ! "$seg" =~ --force-with-lease ]]; then
+        block "git push --force. Use --force-with-lease if you must."
       fi
-      if [[ "$seg" =~ chmod[[:space:]] ]] && [[ "$seg" =~ \+x ]]; then
-        if [[ "$seg" =~ [[:space:]](\.|\.\.|/)($|[[:space:]]) ]] || \
-           [[ "$seg" =~ [[:space:]](~|\$HOME|\$\{HOME\})($|[[:space:]]|/) ]]; then
-          block "broad chmod +x against root, home, or cwd"
-        fi
+    fi
+    if [[ "$seg" =~ git[[:space:]]+push[[:space:]].*(main|master|develop|production|release) ]]; then
+      if [[ "$seg" =~ (--force[^-]|--force$|[[:space:]]-f([[:space:]]|$)) ]]; then
+        block "force push to a protected branch"
       fi
-      ;;
-    git)
-      if [[ "$seg" =~ git[[:space:]]+push[[:space:]].*(--force[^-]|--force$|-f([[:space:]]|$)) ]]; then
-        if [[ ! "$seg" =~ --force-with-lease ]]; then
-          block "git push --force. Use --force-with-lease if you must."
-        fi
+    fi
+    if [[ "$seg" =~ git[[:space:]]+reset[[:space:]]+--hard[[:space:]]+(origin/)?(main|master|develop|production) ]]; then
+      block "git reset --hard on protected branch"
+    fi
+    if [[ "$seg" =~ git[[:space:]]+(commit|push|merge|rebase)[[:space:]].*--no-verify ]]; then
+      block "use of --no-verify bypasses pre-commit and pre-push hooks"
+    fi
+    if [[ "$seg" =~ git[[:space:]]+config[[:space:]]+--global ]]; then
+      block "git config --global from a project session"
+    fi
+    ;;
+  psql)
+    if [[ "$seg" =~ psql[[:space:]].*(-c|--command)[[:space:]] ]]; then
+      if [[ "$seg" =~ (DROP[[:space:]]+(DATABASE|SCHEMA|TABLE)|TRUNCATE[[:space:]]+TABLE|DELETE[[:space:]]+FROM[[:space:]]+[a-zA-Z_]+[[:space:]]*;|DELETE[[:space:]]+FROM[[:space:]]+[a-zA-Z_]+[[:space:]]*$) ]]; then
+        block "destructive SQL via psql -c"
       fi
-      if [[ "$seg" =~ git[[:space:]]+push[[:space:]].*(main|master|develop|production|release) ]]; then
-        if [[ "$seg" =~ (--force[^-]|--force$|[[:space:]]-f([[:space:]]|$)) ]]; then
-          block "force push to a protected branch"
-        fi
-      fi
-      if [[ "$seg" =~ git[[:space:]]+reset[[:space:]]+--hard[[:space:]]+(origin/)?(main|master|develop|production) ]]; then
-        block "git reset --hard on protected branch"
-      fi
-      if [[ "$seg" =~ git[[:space:]]+(commit|push|merge|rebase)[[:space:]].*--no-verify ]]; then
-        block "use of --no-verify bypasses pre-commit and pre-push hooks"
-      fi
-      if [[ "$seg" =~ git[[:space:]]+config[[:space:]]+--global ]]; then
-        block "git config --global from a project session"
-      fi
-      ;;
-    psql)
-      if [[ "$seg" =~ psql[[:space:]].*(-c|--command)[[:space:]] ]]; then
-        if [[ "$seg" =~ (DROP[[:space:]]+(DATABASE|SCHEMA|TABLE)|TRUNCATE[[:space:]]+TABLE|DELETE[[:space:]]+FROM[[:space:]]+[a-zA-Z_]+[[:space:]]*;|DELETE[[:space:]]+FROM[[:space:]]+[a-zA-Z_]+[[:space:]]*$) ]]; then
-          block "destructive SQL via psql -c"
-        fi
-      fi
-      ;;
-    redis-cli)
-      if [[ "$seg" =~ redis-cli[[:space:]].*(FLUSHALL|FLUSHDB|CONFIG[[:space:]]+SET|DEBUG[[:space:]]+SLEEP) ]]; then
-        block "destructive redis-cli command"
-      fi
-      ;;
-    find)
-      if [[ "$seg" =~ find[[:space:]].*-delete($|[[:space:]]) ]]; then
-        block "find -delete"
-      fi
-      if [[ "$seg" =~ find[[:space:]].*-exec[[:space:]]+rm([[:space:]]|$) ]]; then
-        block "find -exec rm"
-      fi
-      ;;
-    security)
-      if [[ "$seg" =~ security[[:space:]]+delete-keychain ]]; then
-        block "keychain deletion"
-      fi
-      ;;
-    npm|pnpm|yarn)
-      if [[ "$seg" =~ (npm|pnpm|yarn)[[:space:]]+(install|add|i)[[:space:]]+.*(-g|--global) ]]; then
-        block "global package install. Use a project-local install or asdf shim."
-      fi
-      if [[ "$seg" =~ yarn[[:space:]]+global[[:space:]]+add[[:space:]] ]]; then
-        block "global package install. Use a project-local install or asdf shim."
-      fi
-      ;;
-    bun)
-      if [[ "$seg" =~ bun[[:space:]]+(add|install)[[:space:]]+.*(-g|--global) ]]; then
-        block "global package install. Use a project-local install or asdf shim."
-      fi
-      ;;
+    fi
+    ;;
+  redis-cli)
+    if [[ "$seg" =~ redis-cli[[:space:]].*(FLUSHALL|FLUSHDB|CONFIG[[:space:]]+SET|DEBUG[[:space:]]+SLEEP) ]]; then
+      block "destructive redis-cli command"
+    fi
+    ;;
+  find)
+    if [[ "$seg" =~ find[[:space:]].*-delete($|[[:space:]]) ]]; then
+      block "find -delete"
+    fi
+    if [[ "$seg" =~ find[[:space:]].*-exec[[:space:]]+rm([[:space:]]|$) ]]; then
+      block "find -exec rm"
+    fi
+    ;;
+  security)
+    if [[ "$seg" =~ security[[:space:]]+delete-keychain ]]; then
+      block "keychain deletion"
+    fi
+    ;;
+  npm | pnpm | yarn)
+    if [[ "$seg" =~ (npm|pnpm|yarn)[[:space:]]+(install|add|i)[[:space:]]+.*(-g|--global) ]]; then
+      block "global package install. Use a project-local install or asdf shim."
+    fi
+    if [[ "$seg" =~ yarn[[:space:]]+global[[:space:]]+add[[:space:]] ]]; then
+      block "global package install. Use a project-local install or asdf shim."
+    fi
+    ;;
+  bun)
+    if [[ "$seg" =~ bun[[:space:]]+(add|install)[[:space:]]+.*(-g|--global) ]]; then
+      block "global package install. Use a project-local install or asdf shim."
+    fi
+    ;;
   esac
 }
 

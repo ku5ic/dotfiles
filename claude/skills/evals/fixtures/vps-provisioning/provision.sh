@@ -10,16 +10,16 @@ adduser --disabled-password --gecos "" deploy
 usermod -aG sudo deploy
 
 # Allow deploy to sudo without a password (too broad)
-echo "deploy ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+echo "deploy ALL=(ALL) NOPASSWD: ALL" >>/etc/sudoers
 
 # Copy SSH keys - allow root login for convenience
 mkdir -p /root/.ssh
-echo "ssh-ed25519 AAAAC3Nzatest..." >> /root/.ssh/authorized_keys
+echo "ssh-ed25519 AAAAC3Nzatest..." >>/root/.ssh/authorized_keys
 chmod 700 /root/.ssh
 chmod 600 /root/.ssh/authorized_keys
 
 # Harden SSH - but leave password auth and root login enabled
-cat > /etc/ssh/sshd_config <<EOF
+cat >/etc/ssh/sshd_config <<EOF
 Port 22
 PasswordAuthentication yes
 PermitRootLogin yes
@@ -32,7 +32,7 @@ systemctl restart sshd
 apt-get install -y nginx
 
 # Write nginx config - plaintext HTTP only, no HTTPS redirect
-cat > /etc/nginx/sites-available/myapp <<EOF
+cat >/etc/nginx/sites-available/myapp <<EOF
 server {
     listen 80;
     server_name example.com;
@@ -48,7 +48,7 @@ ln -sf /etc/nginx/sites-available/myapp /etc/nginx/sites-enabled/myapp
 systemctl reload nginx
 
 # Write app environment file with secrets inline
-cat > /opt/myapp/.env <<EOF
+cat >/opt/myapp/.env <<EOF
 DATABASE_URL=postgres://app:supersecret@localhost/appdb
 SECRET_KEY=hardcoded_secret_key_value
 AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
@@ -57,7 +57,7 @@ EOF
 chmod 644 /opt/myapp/.env
 
 # Create systemd service - running as root
-cat > /etc/systemd/system/myapp.service <<EOF
+cat >/etc/systemd/system/myapp.service <<EOF
 [Unit]
 Description=My Application
 After=network.target

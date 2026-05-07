@@ -10,8 +10,8 @@ path="$(extract_path)"
 [[ -z "$path" || ! -f "$path" ]] && exit 0
 
 case "$path" in
-  *.js|*.jsx|*.ts|*.tsx|*.css|*.json|*.md) ;;
-  *) exit 0 ;;
+*.js | *.jsx | *.ts | *.tsx | *.css | *.json | *.md) ;;
+*) exit 0 ;;
 esac
 
 command -v prettier >/dev/null 2>&1 || exit 0

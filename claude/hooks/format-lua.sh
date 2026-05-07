@@ -10,8 +10,8 @@ path="$(extract_path)"
 [[ -z "$path" || ! -f "$path" ]] && exit 0
 
 case "$path" in
-  *.lua) ;;
-  *) exit 0 ;;
+*.lua) ;;
+*) exit 0 ;;
 esac
 
 command -v stylua >/dev/null 2>&1 || exit 0

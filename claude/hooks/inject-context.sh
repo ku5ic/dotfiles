@@ -25,11 +25,17 @@ project_name="$("$HOME/.claude/bin/project-name.sh" 2>/dev/null || echo "unknown
 
 # Skip injection for non-project contexts.
 case "$project_name" in
-  home|root|unknown) touch "$session_marker"; exit 0 ;;
+home | root | unknown)
+  touch "$session_marker"
+  exit 0
+  ;;
 esac
 
 project_root="$("$HOME/.claude/bin/project-root.sh" 2>/dev/null || echo "")"
-[[ -z "$project_root" ]] && { touch "$session_marker"; exit 0; }
+[[ -z "$project_root" ]] && {
+  touch "$session_marker"
+  exit 0
+}
 
 cache_dir="$HOME/.claude/cache/stack"
 # Hash the project root path into the cache key so projects with the same
@@ -42,14 +48,14 @@ newest_sentinel=0
 for f in "${STACK_SENTINELS_FULL[@]/#/$project_root/}"; do
   [[ -f "$f" ]] || continue
   m="$(stat -f '%m' "$f" 2>/dev/null || echo 0)"
-  (( m > newest_sentinel )) && newest_sentinel="$m"
+  ((m > newest_sentinel)) && newest_sentinel="$m"
 done
 
 cache_mtime=0
 [[ -f "$cache_file" ]] && cache_mtime="$(stat -f '%m' "$cache_file" 2>/dev/null || echo 0)"
 
-if (( cache_mtime < newest_sentinel )) || [[ ! -s "$cache_file" ]]; then
-  bash "$HOME/.claude/bin/detect-stack.sh" > "$cache_file" 2>/dev/null || true
+if ((cache_mtime < newest_sentinel)) || [[ ! -s "$cache_file" ]]; then
+  bash "$HOME/.claude/bin/detect-stack.sh" >"$cache_file" 2>/dev/null || true
 fi
 
 if [[ -s "$cache_file" ]]; then
@@ -71,7 +77,7 @@ emit_required_skills() {
   local yml="$HOME/.claude/_stacks.yml"
 
   [[ -s "$cache" ]] || return 0
-  [[ -f "$yml" ]]   || return 0
+  [[ -f "$yml" ]] || return 0
   command -v yq >/dev/null 2>&1 || return 0
 
   # Extract signals from detect-stack.sh output.
@@ -80,19 +86,19 @@ emit_required_skills() {
   local -a signals=()
   while IFS= read -r line; do
     [[ "$line" =~ ^root: ]] && continue
-    [[ -z "$line" ]]        && continue
+    [[ -z "$line" ]] && continue
     local stack="${line%%:*}"
     signals+=("$stack")
     local extras
     extras=$(echo "$line" | grep -oE '\([^)]+\)' | head -1 | tr -d '()')
     if [[ -n "$extras" ]]; then
-      IFS=', ' read -ra parts <<< "$extras"
+      IFS=', ' read -ra parts <<<"$extras"
       for part in "${parts[@]}"; do
         part="${part//[[:space:]]/}"
         [[ -n "$part" ]] && signals+=("${stack}+${part}")
       done
     fi
-  done < "$cache"
+  done <"$cache"
 
   # For each matched signal, collect skills from _stacks.yml.
   # Base signal (js): .stacks.js.skills[]

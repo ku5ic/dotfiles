@@ -5,9 +5,9 @@ APP_DIR=/var/www/myapp
 TARGET_DIR=/var/www/myapp/releases/$(date +%s)
 
 if [ $env = "prod" ]; then
-    BRANCH=main
+  BRANCH=main
 else
-    BRANCH=develop
+  BRANCH=develop
 fi
 
 echo "Deploying $BRANCH to $env"
@@ -26,9 +26,9 @@ mkdir -p $TARGET_DIR
 cp -r /tmp/deploy-temp/source/* $TARGET_DIR/
 
 for f in $(ls /var/log/myapp); do
-    if [ -f /var/log/myapp/$f ]; then
-        gzip /var/log/myapp/$f
-    fi
+  if [ -f /var/log/myapp/$f ]; then
+    gzip /var/log/myapp/$f
+  fi
 done
 
 ln -sfn $TARGET_DIR $APP_DIR/current
@@ -37,7 +37,7 @@ systemctl restart myapp
 
 PREV_DIR=$(ls -t $APP_DIR/releases | tail -n +6)
 for d in $PREV_DIR; do
-    rm -rf "$APP_DIR/releases/$d/"
+  rm -rf "$APP_DIR/releases/$d/"
 done
 
 rm -rf "$TARGET_DIR/"

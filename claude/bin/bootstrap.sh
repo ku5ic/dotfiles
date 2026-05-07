@@ -15,21 +15,21 @@ INTERACTIVE=1
 FORCE=0
 for arg in "$@"; do
   case "$arg" in
-    --non-interactive) INTERACTIVE=0 ;;
-    --force) FORCE=1 ;;
-    -h|--help)
-      cat <<EOF
+  --non-interactive) INTERACTIVE=0 ;;
+  --force) FORCE=1 ;;
+  -h | --help)
+    cat <<EOF
 Usage: bootstrap.sh [--non-interactive] [--force]
   --non-interactive  Do not prompt; error on any conflict. For install.sh.
   --force            Overwrite non-symlink files without prompting.
                      Never removes non-symlink directories.
 EOF
-      exit 0
-      ;;
-    *)
-      echo "Unknown argument: $arg" >&2
-      exit 2
-      ;;
+    exit 0
+    ;;
+  *)
+    echo "Unknown argument: $arg" >&2
+    exit 2
+    ;;
   esac
 done
 
@@ -56,10 +56,10 @@ for entry in "${ENTRIES[@]}"; do
       continue
     fi
     echo "wrong    $dst -> $actual (expected $src)"
-    if (( FORCE == 1 )); then
+    if ((FORCE == 1)); then
       ln -sfn "$src" "$dst"
       echo "fixed    $dst"
-    elif (( INTERACTIVE == 1 )); then
+    elif ((INTERACTIVE == 1)); then
       read -r -p "Replace symlink? [y/N] " ans
       if [[ "$ans" =~ ^[Yy]$ ]]; then
         ln -sfn "$src" "$dst"
@@ -80,11 +80,11 @@ for entry in "${ENTRIES[@]}"; do
       # Never auto-remove a directory; it may hold user data not in dotfiles.
       echo "ERROR    not removing non-symlink directory; resolve manually: $dst" >&2
       exit_code=1
-    elif (( FORCE == 1 )); then
+    elif ((FORCE == 1)); then
       rm -f "$dst"
       ln -s "$src" "$dst"
       echo "fixed    $dst"
-    elif (( INTERACTIVE == 1 )); then
+    elif ((INTERACTIVE == 1)); then
       read -r -p "Remove file and create symlink? [y/N] " ans
       if [[ "$ans" =~ ^[Yy]$ ]]; then
         rm -f "$dst"

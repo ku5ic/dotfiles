@@ -15,17 +15,23 @@ set -euo pipefail
 src="$("$HOME/.claude/bin/project-root.sh")"
 
 case "$src" in
-  "$HOME") echo "home"; exit 0 ;;
-  "/")     echo "root"; exit 0 ;;
+"$HOME")
+  echo "home"
+  exit 0
+  ;;
+"/")
+  echo "root"
+  exit 0
+  ;;
 esac
 
 base="$(basename "$src")"
 
-slug="$(printf '%s' "$base" \
-  | sed -E 's/^\.+//' \
-  | tr '[:upper:]' '[:lower:]' \
-  | sed -E 's/[^a-z0-9]+/-/g' \
-  | sed -E 's/^-+|-+$//g')"
+slug="$(printf '%s' "$base" |
+  sed -E 's/^\.+//' |
+  tr '[:upper:]' '[:lower:]' |
+  sed -E 's/[^a-z0-9]+/-/g' |
+  sed -E 's/^-+|-+$//g')"
 
 [[ -z "$slug" ]] && slug="unknown"
 

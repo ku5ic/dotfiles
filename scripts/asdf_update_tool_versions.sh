@@ -37,11 +37,28 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -w|--write)   WRITE=1; shift ;;
-    -i|--install) WRITE=1; INSTALL=1; shift ;;
-    -h|--help)    usage; exit 0 ;;
-    -*)           echo "unknown flag: $1" >&2; usage >&2; exit 2 ;;
-    *)            TOOL_VERSIONS_FILE="$1"; shift ;;
+  -w | --write)
+    WRITE=1
+    shift
+    ;;
+  -i | --install)
+    WRITE=1
+    INSTALL=1
+    shift
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  -*)
+    echo "unknown flag: $1" >&2
+    usage >&2
+    exit 2
+    ;;
+  *)
+    TOOL_VERSIONS_FILE="$1"
+    shift
+    ;;
   esac
 done
 
@@ -53,7 +70,10 @@ fi
 # ---------- deps ----------
 
 need() {
-  command -v "$1" >/dev/null 2>&1 || { echo "error: $1 is required" >&2; exit 1; }
+  command -v "$1" >/dev/null 2>&1 || {
+    echo "error: $1 is required" >&2
+    exit 1
+  }
 }
 need curl
 need awk
@@ -101,9 +121,9 @@ resolve_nodejs() {
   else
     # awk fallback: parse the array, keep only LTS entries, find the highest major,
     # then within that major emit the first (newest) version.
-    echo "$json" \
-      | tr ',{}' '\n' \
-      | awk '
+    echo "$json" |
+      tr ',{}' '\n' |
+      awk '
           /"version"/ { gsub(/[" ]/,""); split($0,a,":"); v=a[2]; sub(/^v/,"",v); next }
           /"lts"/ {
             gsub(/[" ]/,"");
@@ -114,10 +134,10 @@ resolve_nodejs() {
               print maj, v;
             }
           }
-        ' \
-      | sort -k1,1nr -k2,2Vr \
-      | awk 'NR==1 { for (i=2;i<=NF;i++) printf "%s%s", $i, (i==NF?"\n":" ") }' \
-      | awk '{ print $1 }'
+        ' |
+      sort -k1,1nr -k2,2Vr |
+      awk 'NR==1 { for (i=2;i<=NF;i++) printf "%s%s", $i, (i==NF?"\n":" ") }' |
+      awk '{ print $1 }'
   fi
 }
 
@@ -142,9 +162,9 @@ resolve_python() {
     # Crude fallback: take the first "latest" field whose cycle is highest.
     # endoflife.date returns newest cycle first, so this is usually the first
     # entry with eol==false. Good enough for the no-jq path.
-    echo "$json" \
-      | tr ',{}' '\n' \
-      | awk '
+    echo "$json" |
+      tr ',{}' '\n' |
+      awk '
           /"cycle"/   { gsub(/[" ]/,""); split($0,a,":"); cyc=a[2]; next }
           /"latest"/  { gsub(/[" ]/,""); split($0,a,":"); lat=a[2]; next }
           /"eol"/     {
@@ -154,8 +174,8 @@ resolve_python() {
               print cyc, lat; exit
             }
           }
-        ' \
-      | awk '{ print $2 }'
+        ' |
+      awk '{ print $2 }'
   fi
 }
 
@@ -173,19 +193,19 @@ resolve_default() {
 resolve_for_plugin() {
   local plugin="$1"
   case "$plugin" in
-    nodejs|node) resolve_nodejs ;;
-    python)      resolve_python ;;
-    ruby)        resolve_ruby ;;
-    *)           resolve_default "$plugin" ;;
+  nodejs | node) resolve_nodejs ;;
+  python) resolve_python ;;
+  ruby) resolve_ruby ;;
+  *) resolve_default "$plugin" ;;
   esac
 }
 
 policy_for_plugin() {
   case "$1" in
-    nodejs|node) echo "lts (latest major, latest patch)" ;;
-    python)      echo "latest patch on highest non-EOL minor" ;;
-    ruby)        echo "latest stable" ;;
-    *)           echo "asdf latest (fallback)" ;;
+  nodejs | node) echo "lts (latest major, latest patch)" ;;
+  python) echo "latest patch on highest non-EOL minor" ;;
+  ruby) echo "latest stable" ;;
+  *) echo "asdf latest (fallback)" ;;
   esac
 }
 
@@ -194,16 +214,16 @@ policy_for_plugin() {
 # Read the file, preserving order. We process line by line so comments and
 # blank lines round-trip cleanly.
 declare -a ORDERED_LINES=()
-declare -a UPDATES=()  # rows: "plugin|current|proposed|policy|status"
+declare -a UPDATES=() # rows: "plugin|current|proposed|policy|status"
 
 while IFS= read -r line || [[ -n "$line" ]]; do
   ORDERED_LINES+=("$line")
-done < "$TOOL_VERSIONS_FILE"
+done <"$TOOL_VERSIONS_FILE"
 
 # Build the proposal table.
 for line in "${ORDERED_LINES[@]}"; do
   # Skip blanks and comments.
-  if [[ -z "${line// }" || "$line" =~ ^[[:space:]]*# ]]; then
+  if [[ -z "${line// /}" || "$line" =~ ^[[:space:]]*# ]]; then
     continue
   fi
 
@@ -276,7 +296,7 @@ for row in "${UPDATES[@]}"; do
 done
 
 for line in "${ORDERED_LINES[@]}"; do
-  if [[ -z "${line// }" || "$line" =~ ^[[:space:]]*# ]]; then
+  if [[ -z "${line// /}" || "$line" =~ ^[[:space:]]*# ]]; then
     printf '%s\n' "$line" >>"$tmp"
     continue
   fi

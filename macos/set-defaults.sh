@@ -11,7 +11,11 @@ osascript -e 'tell application "System Preferences" to quit'
 sudo -v
 
 # Keep-alive: update existing `sudo` time stamp until `.macos` has finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+while true; do
+  sudo -n true
+  sleep 60
+  kill -0 "$$" || exit
+done 2>/dev/null &
 
 # General UI/UX
 
@@ -221,9 +225,9 @@ sudo chflags nohidden /Volumes
 # Expand the following File Info panes:
 # "General", "Open with", and "Sharing & Permissions"
 defaults write com.apple.finder FXInfoPanesExpanded -dict \
-	General -bool true \
-	OpenWith -bool true \
-	Privileges -bool true
+  General -bool true \
+  OpenWith -bool true \
+  Privileges -bool true
 
 # Dock, Dashboard, and hot corners
 
