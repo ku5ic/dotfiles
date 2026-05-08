@@ -30,6 +30,8 @@ return {
 
 		lint.linters_by_ft = linters_by_ft
 
+		vim.list_extend(lint.linters.eslint.args, { "--no-warn-ignored" })
+
 		lint.linters.stylelint = require("lint.util").wrap(lint.linters.stylelint, function(diagnostic)
 			if diagnostic.message:find("Stylelint error, run `stylelint") then
 				return nil
@@ -37,14 +39,22 @@ return {
 			return diagnostic
 		end)
 
-		local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+		local function resolve_eslint(buf)
+			local path = vim.api.nvim_buf_get_name(buf)
+			if path == "" then
+				return "eslint"
+			end
+			local dir = vim.fn.fnamemodify(path, ":h")
+			local found = vim.fn.findfile("node_modules/.bin/eslint", dir .. ";") --[[@as string]]
+			return found ~= "" and vim.fn.fnamemodify(found, ":p") or "eslint"
+		end
+
+		local lint_augroup = vim.api.nvim_create_augroup("dotfiles_lint", { clear = true })
 
 		vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
 			group = lint_augroup,
-			callback = function()
-				local bufdir = vim.fn.expand("%:p:h")
-				local local_eslint = vim.fn.findfile("node_modules/.bin/eslint", bufdir .. ";")
-				lint.linters.eslint.cmd = local_eslint ~= "" and vim.fn.fnamemodify(local_eslint, ":p") or "eslint"
+			callback = function(args)
+				lint.linters.eslint.cmd = resolve_eslint(args.buf)
 				lint.try_lint()
 			end,
 		})
