@@ -73,6 +73,7 @@ cask '1password'                  # password manager desktop app
 cask '1password-cli'              # 1Password CLI for shell and SSH agent integration
 cask 'adguard'                    # system-wide ad and tracker blocker
 cask 'boop'                       # scratchpad for ad-hoc text transformations
+cask 'chatgpt'                    # ChatGPT desktop app
 cask 'claude'                     # Claude desktop app
 cask 'claude-code@latest'         # Claude Code CLI pinned to the latest channel
 cask 'cleanshot'                  # screenshot and screen recording tool
