@@ -53,11 +53,10 @@ return {
 			-- Default list of enabled providers defined so that you can extend it
 			-- elsewhere in your config, without redefining it, due to `opts_extend`
 			sources = {
-				default = { "lsp", "path", "snippets", "buffer", "copilot" },
+				default = { "lsp", "path", "buffer", "copilot" },
 				providers = {
 					lsp = { name = "LSP" },
 					path = { name = "Path" },
-					snippets = { name = "Snippets" },
 					buffer = { name = "Buffer" },
 					copilot = {
 						name = "Copilot",
