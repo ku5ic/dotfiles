@@ -156,3 +156,16 @@ map("n", "<D-v>", '"+p', "Neovide paste")
 map("i", "<D-v>", "<C-r>+", "Neovide paste")
 map("v", "<D-v>", '"+p', "Neovide paste")
 map("v", "<D-c>", '"+y', "Neovide copy")
+
+-- Open file or URL under cursor with gx
+vim.keymap.set("n", "gx", function()
+	local target = vim.fn.expand("<cfile>")
+	if target:match("^https?://") or target:match("^mailto:") then
+		vim.ui.open(target)
+	else
+		if not target:match("^/") then
+			target = vim.fn.expand("%:p:h") .. "/" .. target
+		end
+		vim.cmd.edit(vim.fn.fnamemodify(target, ":p"))
+	end
+end, { desc = "Open file or URL under cursor" })
