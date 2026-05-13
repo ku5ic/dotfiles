@@ -5,7 +5,7 @@ description: JavaScript language patterns, modern syntax, async handling, module
 
 # JavaScript patterns
 
-Default assumption: a project running on the current Node.js Active LTS (Node 24, "Krypton") or a modern browser baseline. If the project also uses TypeScript, the type-aware skill applies on top of these language patterns.
+Default assumption: a project running on the current Node.js Active LTS (Node 24, "Krypton") or a modern browser baseline. If the project also uses TypeScript, the type-aware skill applies on top of these language patterns. Adapt advice to the Node version in the project's `.nvmrc`, `.tool-versions`, or `engines` field in `package.json`.
 
 ## Severity rubric
 

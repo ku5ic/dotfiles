@@ -5,7 +5,7 @@ description: Python language-level patterns covering type hints, strictness, pro
 
 # Python patterns
 
-Default assumption: Python 3.11 or later, type hints required on public function signatures, mypy or pyright in strict mode. 3.11 is the floor because TaskGroup, `Self`, `StrEnum`, and `ExceptionGroup` all landed there. 3.14 (current stable, released 2025-10-07) made deferred annotation evaluation the default; on older supported versions the `from __future__ import annotations` import is still useful for forward references.
+Default assumption: Python 3.11 or later, type hints required on public function signatures, mypy or pyright in strict mode. 3.11 is the floor because TaskGroup, `Self`, `StrEnum`, and `ExceptionGroup` all landed there. 3.14 (current stable, released 2025-10-07) made deferred annotation evaluation the default; on older supported versions the `from __future__ import annotations` import is still useful for forward references. Adapt advice to the version in the project's `.tool-versions`, `pyproject.toml`, or `.python-version`.
 
 ## Severity rubric
 

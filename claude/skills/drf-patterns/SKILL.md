@@ -5,7 +5,7 @@ description: Django REST Framework patterns, serializers, viewsets, permissions,
 
 # Django REST Framework patterns
 
-DRF approximately v3.16. Supports Django 4.2, 5.0, 5.1, 5.2, 6.0 and Python 3.10-3.14. Verify current version at https://pypi.org/project/djangorestframework/.
+DRF approximately v3.16. Supports Django 4.2, 5.0, 5.1, 5.2, 6.0 and Python 3.10-3.14. Verify current version at https://pypi.org/project/djangorestframework/. Adapt advice to the version in the project's `requirements.txt`, `pyproject.toml`, or lockfile.
 
 ## When to load this skill
 

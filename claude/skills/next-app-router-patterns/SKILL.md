@@ -5,7 +5,7 @@ description: Next.js App Router patterns covering server/client boundary, data f
 
 # Next.js App Router patterns
 
-Default assumption: Next.js 16 (current stable as of writing) with the App Router. Pages Router patterns are out of scope. Cache Components is the new caching model in 16 (opt-in via `cacheComponents: true`); the previous caching model is still supported when the flag is off.
+Default assumption: Next.js 16 (current stable as of writing) with the App Router. Pages Router patterns are out of scope. Cache Components is the new caching model in 16 (opt-in via `cacheComponents: true`); the previous caching model is still supported when the flag is off. Verify via `package.json` or lockfile; caching model and `cacheComponents` flag differ between 15.x and 16.x.
 
 ## Severity rubric
 

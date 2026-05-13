@@ -5,7 +5,7 @@ description: Nuxt 3+ patterns covering rendering modes, data fetching (useFetch,
 
 # Nuxt patterns
 
-Default assumption: Nuxt 4 (current stable, latest 4.4.x as of writing) with Universal Rendering (SSR). Nuxt 3 reached End-of-Life in mid-2024; legacy Nuxt 3 projects are still common and most patterns here apply, but the maintenance note below covers deltas.
+Default assumption: Nuxt 4 (current stable, latest 4.4.x as of writing) with Universal Rendering (SSR). Nuxt 3 reached End-of-Life in mid-2024; legacy Nuxt 3 projects are still common and most patterns here apply, but the maintenance note below covers deltas. Verify the installed version via `nuxt --version` or `package.json`; minor-version deltas may affect module resolution and Nitro config.
 
 ## Severity rubric
 

@@ -5,7 +5,7 @@ description: Django patterns, anti-patterns, ORM gotchas, view design, migration
 
 # Django patterns
 
-Django 5.2 LTS (extended support through April 2028). Django 6.0 is current stable (non-LTS). Baseline for this skill is 5.2 LTS.
+Django 5.2 LTS (extended support through April 2028). Django 6.0 is current stable (non-LTS). Baseline for this skill is 5.2 LTS. Adapt advice to the version in the project's `requirements.txt`, `pyproject.toml`, or lockfile.
 
 DRF-specific patterns load when the project includes `djangorestframework` in dependencies.
 

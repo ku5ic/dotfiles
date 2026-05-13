@@ -5,7 +5,7 @@ description: React patterns, anti-patterns, hooks rules, performance, component 
 
 # React patterns
 
-Default assumption: React 19 with the modern (concurrent) renderer. Most rules apply unchanged to React 18; deltas (`use`, `useActionState`, `useFormStatus`, `useOptimistic`, Actions) are called out where they matter. Server Components are a feature of frameworks built on React; framework-specific patterns load when those framework signals are present in the project.
+Default assumption: React 19 with the modern (concurrent) renderer. Most rules apply unchanged to React 18; deltas (`use`, `useActionState`, `useFormStatus`, `useOptimistic`, Actions) are called out where they matter. Server Components are a feature of frameworks built on React; framework-specific patterns load when those framework signals are present in the project. Adapt advice to the version in the project's `package.json` or lockfile.
 
 ## Severity rubric
 
