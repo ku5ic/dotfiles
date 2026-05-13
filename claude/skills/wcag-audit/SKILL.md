@@ -21,6 +21,7 @@ Go through the references in order. Skip criteria that do not apply to the scope
 
 | File                                                               | Covers                                                                                                     |
 | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| [reference/anti-patterns.md](reference/anti-patterns.md)           | Severity-labeled anti-patterns: non-semantic interactives, contrast, missing labels                        |
 | [reference/perceivable.md](reference/perceivable.md)               | 1.1, 1.3, 1.4 (alt, semantics, contrast, reflow, text spacing) plus contrast tooling and APCA status       |
 | [reference/operable.md](reference/operable.md)                     | 2.1, 2.4, 2.5 (keyboard, focus, target size, drag) plus SPA focus management and 2.2 new criteria examples |
 | [reference/understandable.md](reference/understandable.md)         | 3.2, 3.3 (consistent nav, errors, labels) plus 3.3.7 / 3.3.8 cognitive accessibility implementations       |

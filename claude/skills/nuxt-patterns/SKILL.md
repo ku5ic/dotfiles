@@ -17,6 +17,7 @@ Default assumption: Nuxt 4 (current stable, latest 4.4.x as of writing) with Uni
 
 | File                                                     | Covers                                                                              |
 | -------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| [reference/anti-patterns.md](reference/anti-patterns.md) | Severity-labeled anti-patterns: SSR state leakage, fetch dedup, runtimeConfig       |
 | [reference/rendering.md](reference/rendering.md)         | SSR, SPA, SSG, hybrid via `routeRules`, edge rendering                              |
 | [reference/data-fetching.md](reference/data-fetching.md) | `useFetch`, `useAsyncData`, `$fetch`, dedup, lazy fetching                          |
 | [reference/state.md](reference/state.md)                 | `useState` SSR-safety, module-level leakage, Pinia, composables                     |
