@@ -3,9 +3,12 @@ name: backup-patterns
 description: >
   Backup patterns for Linux servers and applications covering the 3-2-1 rule,
   rsync file backups, PostgreSQL dumps with pg_dump, encrypted backups with
-  restic, retention policies, and restore testing. Use whenever the user asks
-  about backups, disaster recovery, data retention, pg_dump, rsync, or restic,
-  even if "backup" is not mentioned by name.
+  restic, retention policies, and restore testing. Use whenever the project
+  contains shell scripts using pg_dump, rsync, or restic, a Brewfile or
+  requirements file with restic or pgbackup tooling, cron job definitions for
+  backups, or backup-related systemd units, OR the user asks about backups,
+  disaster recovery, data retention, pg_dump, rsync, or restic, even if
+  "backup" is not mentioned by name.
 ---
 
 # Backup Patterns
