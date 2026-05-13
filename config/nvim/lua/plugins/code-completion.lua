@@ -1,9 +1,7 @@
 return {
 	{
 		"saghen/blink.cmp",
-		-- optional: provides snippets for the snippet source
 		dependencies = {
-			"rafamadriz/friendly-snippets",
 			{
 				"giuxtaposition/blink-cmp-copilot",
 				dependencies = {
@@ -54,6 +52,14 @@ return {
 			-- elsewhere in your config, without redefining it, due to `opts_extend`
 			sources = {
 				default = { "lsp", "path", "buffer", "copilot" },
+				-- Drop Snippet-kind items from all providers. Standalone snippet templates
+				-- (kind = Snippet) are unwanted; LSP items that merely use snippet
+				-- insertTextFormat for placeholders are handled separately by snippets.expand.
+				transform_items = function(_, items)
+					return vim.tbl_filter(function(item)
+						return item.kind ~= require("blink.cmp.types").CompletionItemKind.Snippet
+					end, items)
+				end,
 				providers = {
 					lsp = { name = "LSP" },
 					path = { name = "Path" },
@@ -76,6 +82,19 @@ return {
 			--
 			-- See the fuzzy documentation for more information
 			fuzzy = { implementation = "prefer_rust_with_warning" },
+			-- Strip snippet placeholder syntax before expansion so LSP completions insert
+			-- as plain text. Without this, blink delegates insertion entirely to expand()
+			-- and a no-op expand means nothing gets inserted.
+			-- snippets = {
+			-- 	expand = function(snippet)
+			-- 		local body = snippet
+			-- 			:gsub("%${(%d+):([^}]*)}", "%2") -- ${1:placeholder} -> placeholder text
+			-- 			:gsub("%${%d+}", "") -- ${1} -> nothing
+			-- 			:gsub("%$%d+", "") -- $1 -> nothing
+			-- 			:gsub("%$0", "") -- final cursor marker -> nothing
+			-- 		vim.snippet.expand(body)
+			-- 	end,
+			-- },
 		},
 		opts_extend = { "sources.default" },
 	},
