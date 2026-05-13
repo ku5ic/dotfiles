@@ -5,7 +5,7 @@ description: Vue 3 Composition API patterns, reactivity, single-file components,
 
 # Vue patterns
 
-Default assumption: Vue 3 with the Composition API and `<script setup>` syntax. Current stable is Vue 3.5; deltas in 3.5+ (Reactive Props Destructure, `onWatcherCleanup`, `defineModel`) are called out where they matter. Options API is acceptable for legacy code; flag as legacy when reviewed.
+Default assumption: Vue 3 with the Composition API and `<script setup>` syntax. Current stable is Vue 3.5; deltas in 3.5+ (Reactive Props Destructure, `onWatcherCleanup`, `defineModel`) are called out where they matter. Options API is acceptable for legacy code; flag as legacy when reviewed. Adapt advice to the version in the project's `package.json` or lockfile.
 
 ## Severity rubric
 

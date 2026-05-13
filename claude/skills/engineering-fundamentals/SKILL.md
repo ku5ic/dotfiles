@@ -1,6 +1,6 @@
 ---
 name: engineering-fundamentals
-description: Engineering fundamentals reference covering requirements clarity, design integrity, code-level quality, test design, verification and validation, and metric thresholds. Foundation skill that loads alongside language and framework skills for any engineering work, including review, audit, plan, implementation, refactor, or code quality assessment, even if the user does not mention "principles", "SOLID", "DRY", "KISS", or "metrics" explicitly. The /flow:* and /audit:* commands enforce these checks as deterministic phase gates; this skill is the always-available reference that those commands defer to.
+description: Engineering fundamentals reference covering requirements clarity, design integrity, code-level quality, test design, verification and validation, and metric thresholds. Use whenever the project contains source files in any compiled or scripted language (`.js`, `.ts`, `.py`, `.rb`, `.go`, `.rs`, `.java`, `.sh`, etc.), OR the user asks about code quality, design principles, SOLID, DRY, KISS, requirements clarity, test design, metrics, or any engineering review, audit, plan, or refactor task, even if "principles" or "fundamentals" are not mentioned by name.
 ---
 
 # Engineering fundamentals

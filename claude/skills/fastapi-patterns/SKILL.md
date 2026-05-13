@@ -5,7 +5,7 @@ description: FastAPI patterns, Pydantic schemas, dependency injection, async cor
 
 # FastAPI patterns
 
-FastAPI 0.136.1, Pydantic 2.13.3. Verify current versions at https://pypi.org/project/fastapi/ and https://pypi.org/project/pydantic/.
+FastAPI 0.136.1, Pydantic 2.13.3 (baseline at time of writing). Verify current versions at https://pypi.org/project/fastapi/ and https://pypi.org/project/pydantic/. Adapt advice to the versions in the project's `requirements.txt`, `pyproject.toml`, or lockfile.
 
 Install: `pip install "fastapi[standard]"`
 

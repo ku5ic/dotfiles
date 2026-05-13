@@ -66,3 +66,31 @@ The "overall health in one word" at the end of the Summary helps quick scanning:
 - `moderate` (warnings, no failures)
 - `serious` (failures present)
 - `broken` (multiple critical failures, work should pause)
+
+## Anti-patterns
+
+- `failure`: writing the report body to terminal output instead of a file -- the artifact becomes ephemeral and unreferenceable.
+- `failure`: omitting the `## Summary` section or the `## Findings` section when findings exist.
+- `warning`: inventing severity levels outside `failure`, `warning`, `info` -- e.g. `critical`, `high`, `medium`, `low`, `error`. The rubric has three levels; anything else breaks downstream tooling that parses reports.
+- `warning`: leaving placeholder text in empty sections (e.g. `<none>`, `N/A`) rather than omitting the section.
+- `warning`: using a cwd-relative path (`.claude/scratch/`) instead of the home-absolute path (`~/.claude/scratch/`). Cwd-relative paths break when the user opens the link from a different directory.
+- `warning`: not printing the absolute file path after writing -- the user cannot open the file without it.
+- `info`: not sorting findings by severity (failures first, then warnings, then info).
+
+## When to load this skill
+
+- A flow or audit command is about to write a scratch report
+- The user asks for an audit, security review, debt analysis, doc-drift report, a11y audit, or any structured finding report
+- Any task requires the `failure`/`warning`/`info` severity rubric
+- Writing output to `~/.claude/scratch/` or `docs/`
+
+## When not to load this skill
+
+- Short conversational answers that stay in the terminal
+- In-chat code snippets or explanations
+- `write/*` command output (commit messages, PR descriptions, release notes, stakeholder summaries) -- those have their own formats
+
+## References
+
+- Scratch artifact naming convention: `~/.dotfiles/CLAUDE.md`, section "Scratch artifact naming"
+- Skill authoring body conventions: `~/.dotfiles/CLAUDE.md`, section "Skill authoring conventions"

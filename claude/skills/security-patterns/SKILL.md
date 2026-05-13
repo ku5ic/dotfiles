@@ -17,6 +17,7 @@ Apply the references that match the detected stack. Severity rubric below applie
 
 | File                                                       | Covers                                                                                                      |
 | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| [reference/anti-patterns.md](reference/anti-patterns.md)   | Cross-cutting severity-labeled anti-patterns: SQLi, XSS injection, CSRF, secrets                            |
 | [reference/frontend.md](reference/frontend.md)             | XSS, Next.js client/server boundary, auth/sessions, JWT vs sessions, strict CSP (nonce/strict-dynamic/hash) |
 | [reference/backend-django.md](reference/backend-django.md) | ORM safety, views/middleware, auth, templates, file uploads                                                 |
 | [reference/backend-node.md](reference/backend-node.md)     | Express/Fastify/Nest hardening, CSRF on JSON-only APIs                                                      |
