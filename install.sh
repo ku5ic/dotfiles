@@ -1,6 +1,5 @@
-#!/bin/sh
-
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
 DOTFILES_DIR="$HOME/.dotfiles"
 
@@ -43,6 +42,7 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/.default-gems" ~
   ln -sfv "$DOTFILES_DIR/.tool-versions" ~
   ln -sfv "$DOTFILES_DIR/.tmuxinator" ~
+  ln -sfv "$DOTFILES_DIR/.editorconfig" ~
 
   bash "$DOTFILES_DIR/claude/bin/bootstrap.sh" --non-interactive
 

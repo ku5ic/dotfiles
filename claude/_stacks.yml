@@ -54,6 +54,7 @@
 global_skills:
   - markdown-report
   - engineering-fundamentals
+  - git-patterns
 
 stacks:
   js:
@@ -193,6 +194,12 @@ stacks:
       - name: compose.yml
       - name: compose.yaml
     skills: [docker-patterns]
+
+  dotfiles:
+    sentinels:
+      - name: Brewfile
+        anchor: true
+    skills: [bash-patterns]
 
   monorepo:
     sentinels:

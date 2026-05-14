@@ -40,6 +40,4 @@ for d in $PREV_DIR; do
   rm -rf "$APP_DIR/releases/$d/"
 done
 
-rm -rf "$TARGET_DIR/"
-
 echo "Deploy complete"

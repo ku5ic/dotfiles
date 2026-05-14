@@ -55,7 +55,13 @@ cache_mtime=0
 [[ -f "$cache_file" ]] && cache_mtime="$(stat -f '%m' "$cache_file" 2>/dev/null || echo 0)"
 
 if ((cache_mtime < newest_sentinel)) || [[ ! -s "$cache_file" ]]; then
-  bash "$HOME/.claude/bin/detect-stack.sh" >"$cache_file" 2>/dev/null || true
+  _cache_tmp="$(mktemp)"
+  trap 'rm -f "$_cache_tmp"' EXIT
+  if bash "$HOME/.claude/bin/detect-stack.sh" >"$_cache_tmp" 2>/dev/null; then
+    mv "$_cache_tmp" "$cache_file"
+  else
+    rm -f "$_cache_tmp"
+  fi
 fi
 
 if [[ -s "$cache_file" ]]; then
@@ -90,7 +96,7 @@ emit_required_skills() {
     local stack="${line%%:*}"
     signals+=("$stack")
     local extras
-    extras=$(echo "$line" | grep -oE '\([^)]+\)' | head -1 | tr -d '()')
+    extras=$(echo "$line" | grep -oE '\([^)]+\)' | head -1 | tr -d '()') || true
     if [[ -n "$extras" ]]; then
       IFS=', ' read -ra parts <<<"$extras"
       for part in "${parts[@]}"; do
@@ -140,8 +146,24 @@ emit_required_skills() {
     local IFS=', '
     echo ""
     echo "<required-skills>"
-    echo "Load these skills at the start of every task for this project: ${required[*]}"
+    echo "BLOCKING REQUIREMENT: invoke the Skill tool for each of these skills NOW, before any other action: ${required[*]}"
     echo "</required-skills>"
+    if command -v jq >/dev/null 2>&1; then
+      local log_dir ts cwd_val sk
+      log_dir="$HOME/.claude/logs"
+      mkdir -p "$log_dir"
+      ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      cwd_val="$(printf '%s' "$payload" | jq -r '.cwd // ""' 2>/dev/null || true)"
+      for sk in "${required[@]}"; do
+        jq -cn \
+          --arg ts "$ts" \
+          --arg sess "$session_id" \
+          --arg cwd "$cwd_val" \
+          --arg skill "$sk" \
+          '{ts:$ts,hook:"inject-context.sh",event:"required-skill",session_id:$sess,cwd:$cwd,expansion_type:null,command_name:null,command_args:null,command_source:null,skill_file:$skill,tool_name:null}' \
+          >>"$log_dir/skills.jsonl"
+      done
+    fi
   fi
 }
 

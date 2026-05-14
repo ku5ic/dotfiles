@@ -16,8 +16,8 @@ if [[ "$response" == "y" || "$response" == "Y" ]]; then
   rm -rf ~/.claude/session-env/*
   rm -rf ~/.claude/sessions/*
   rm -rf ~/.claude/tasks/*
-  rm ~/.claude/history.jsonl
-  rm ~/.claude/stats-cache.json
+  rm -f ~/.claude/history.jsonl
+  rm -f ~/.claude/stats-cache.json
 else
   echo "Skipping the purge command."
 fi

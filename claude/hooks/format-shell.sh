@@ -16,5 +16,5 @@ esac
 
 command -v shfmt >/dev/null 2>&1 || exit 0
 
-shfmt -w "$path"
+shfmt -i 2 -w "$path"
 exit 0

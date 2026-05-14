@@ -4,7 +4,11 @@
 # pick the registered handler (browser for URLs, default app per file UTI).
 
 notify() {
-  /usr/bin/osascript -e "display notification \"$1\" with title \"tmux-thumbs\"" 2>/dev/null || true
+  /usr/bin/osascript \
+    -e 'on run argv' \
+    -e 'display notification (item 1 of argv) with title "tmux-thumbs"' \
+    -e 'end run' \
+    -- "$1" 2>/dev/null || true
 }
 
 target="${1:-}"

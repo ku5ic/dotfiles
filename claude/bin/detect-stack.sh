@@ -167,7 +167,8 @@ for stack in "${STACK_NAMES[@]}"; do
     pm="npm"
     pm_locks_count="$(yq ".stacks.js.pm_locks | length" "$STACKS_YML" 2>/dev/null || echo 0)"
     if ((pm_locks_count > 0)); then
-      while IFS=": " read -r pm_name lock_file; do
+      while IFS=: read -r pm_name lock_file; do
+        lock_file="${lock_file# }"
         [[ -f "$loc/$lock_file" ]] && pm="$pm_name" && break
       done < <(yq '.stacks.js.pm_locks | to_entries[] | .key + ": " + .value' "$STACKS_YML")
     fi

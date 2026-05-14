@@ -33,35 +33,33 @@ HOOK_NAME="log-skills.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
 
-payload=""
 read_payload
 require_jq
 
-event="$(printf '%s' "$payload" | jq -r '.hook_event_name // empty')"
+# Parse all routing fields in one jq pass to avoid repeated subshells.
+IFS=$'\t' read -r event expansion_type tool_name file_path < <(
+  printf '%s' "$payload" | jq -r '[
+    (.hook_event_name // ""),
+    (.expansion_type // ""),
+    (.tool_name // ""),
+    (.tool_input.file_path // "")
+  ] | join("\t")'
+)
 
 case "$event" in
 UserPromptExpansion)
-  expansion_type="$(printf '%s' "$payload" | jq -r '.expansion_type // empty')"
-  [[ "$expansion_type" != "slash_command" ]] && exit 0
+  [[ "$expansion_type" == "slash_command" ]] || exit 0
   ;;
-
 PreToolUse)
-  tool_name="$(printf '%s' "$payload" | jq -r '.tool_name // empty')"
-  [[ "$tool_name" != "Skill" ]] && exit 0
+  [[ "$tool_name" == "Skill" ]] || exit 0
   ;;
-
 PostToolUse)
-  tool_name="$(printf '%s' "$payload" | jq -r '.tool_name // empty')"
-  if [[ "$tool_name" == "Skill" ]]; then
-    : # always log
-  elif [[ "$tool_name" == "Read" ]]; then
-    file_path="$(printf '%s' "$payload" | jq -r '.tool_input.file_path // empty')"
-    [[ "$file_path" == *"/skills/"*"/SKILL.md" ]] || exit 0
-  else
-    exit 0
-  fi
+  case "$tool_name" in
+  Skill) ;;
+  Read) [[ "$file_path" == *"/skills/"*"/SKILL.md" ]] || exit 0 ;;
+  *) exit 0 ;;
+  esac
   ;;
-
 *)
   exit 0
   ;;
@@ -69,9 +67,9 @@ esac
 
 log_dir="$HOME/.claude/logs"
 mkdir -p "$log_dir"
+log_file="$log_dir/skills.jsonl"
 
 ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-log_file="$log_dir/skills.jsonl"
 
 printf '%s' "$payload" | jq -c \
   --arg ts "$ts" \
@@ -91,9 +89,9 @@ printf '%s' "$payload" | jq -c \
    }' >>"$log_file"
 
 max_lines=10000
-total="$(wc -l <"$log_file" | tr -d ' ')"
-if ((total > max_lines)); then
-  tmp="$(mktemp)"
+if (($(wc -l <"$log_file") > max_lines)); then
+  tmp=$(mktemp)
+  trap 'rm -f "$tmp"' EXIT
   tail -n "$max_lines" "$log_file" >"$tmp"
   mv "$tmp" "$log_file"
 fi

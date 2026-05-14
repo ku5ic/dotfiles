@@ -14,6 +14,7 @@ run() {
   shift
   local out
   out="$(mktemp -t run-checks)"
+  trap 'rm -f "$out"' RETURN
   if "$@" >"$out" 2>&1; then
     echo "PASS $label"
     pass=$((pass + 1))

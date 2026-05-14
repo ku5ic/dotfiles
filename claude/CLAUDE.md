@@ -2,6 +2,10 @@
 
 Global instructions for Claude Code. Applies to every repository. Project level CLAUDE.md files extend these rules.
 
+## Required skills
+
+If a `<required-skills>` block is present in the conversation context, you MUST invoke the Skill tool for every skill listed in it before taking any other action - before file reads, before tool calls, before responding to the task. This is a blocking requirement. Do not skip it, defer it, or treat it as advisory. No exceptions.
+
 ## Project boot protocol
 
 On the first substantive action in a repo:
