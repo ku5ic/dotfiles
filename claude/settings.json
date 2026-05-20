@@ -205,6 +205,7 @@
       "Skill(audit:security)",
       "Skill(flow:checks)",
       "Skill(flow:fix)",
+      "Skill(flow:quick)",
       "Skill(flow:implement)",
       "Skill(flow:plan)",
       "Skill(flow:preflight)",

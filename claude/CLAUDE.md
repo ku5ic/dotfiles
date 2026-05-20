@@ -41,6 +41,10 @@ Canonical for both Claude Code and the userPreferences field in claude.ai chat p
 - Code blocks have the language tag.
 - No "let me know if you have questions" closers.
 
+## Markdown output
+
+Markdown is prose, not code. Sentences flow naturally on one line regardless of length. Never break sentences across lines, not in paragraphs, not in list items, not anywhere. Hard line breaks belong only between paragraphs, between list items, and around code fences. Inside a sentence, no wrapping, ever.
+
 ## Token discipline
 
 - Prefer `rg` and `grep` over `Read` when locating, not understanding. Read only the matched section.
@@ -325,6 +329,7 @@ Main path:
 
 Out-of-band:
 
+- `/flow:quick` - small net-new feature, no plan artifact, hard stop on scope growth
 - `/flow:fix` - surgical fix from a failing signal, no refactor
 - `/flow:resume` - reorient against a partially executed plan
 - `/flow:checks` - run the project's verification checklist via `$HOME/.claude/bin/run-checks.sh`
