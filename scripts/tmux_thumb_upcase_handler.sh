@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
 # tmux-thumbs upcase handler.
 # Routes the captured target through macOS `open`, letting Launch Services
 # pick the registered handler (browser for URLs, default app per file UTI).

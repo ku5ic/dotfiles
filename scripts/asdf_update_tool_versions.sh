@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
 # asdf-update-tool-versions
 #
 # Inspects a .tool-versions file and proposes updates per language policy:
@@ -11,8 +13,6 @@
 # Pass --install to also run `asdf install` for each new version (implies --write).
 #
 # Requires: asdf (>= 0.16), curl, awk, sed, sort. jq is optional but recommended.
-
-set -euo pipefail
 
 # ---------- config ----------
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # git_branch_name
 #
@@ -41,8 +42,6 @@
 #   - Unknown branch types are rejected early.
 #   - Intended for execution inside a git repository when using --checkout.
 #   - Uses Bash + sed/tr with POSIX character classes; behavior assumes typical GNU/BSD userland.
-
-set -euo pipefail
 
 die() {
   echo "Error: $*" >&2
