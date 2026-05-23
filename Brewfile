@@ -3,7 +3,7 @@ tap 'jesseduffield/lazygit'
 # CLI tools
 brew 'asdf'                         # runtime version manager driving Node, Ruby, Python via .tool-versions
 brew 'atuin'                        # shell history sync and search backed by SQLite
-brew 'bash'                         # newer bash than the macOS bundled 3.2, used by scripts requiring associative arrays and modern features
+brew 'bash'                         # newer bash than the macOS bundled 3.2
 brew 'bat'                          # syntax-highlighted cat replacement, aliased as the default file viewer
 brew 'bats-core'                    # bash test framework used by tests/guard-bash.bats
 brew 'chafa'                        # terminal image renderer used by fastfetch and similar tools
@@ -85,6 +85,7 @@ cask 'font-fira-code-nerd-font'   # Nerd Font used by WezTerm and Neovim
 cask 'google-chrome'              # primary browser for web development
 cask 'neovide-app'                # GUI frontend for Neovim
 cask 'onyx'                       # macOS system maintenance utility
+cask 'owenthereal/upterm/upterm'  # Share terminal sessions securely over the web
 cask 'postman'                    # HTTP API client for manual request building
 cask 'slack'                      # team chat client
 cask 'spotify'                    # music player

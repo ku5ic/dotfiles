@@ -1,0 +1,15 @@
+# upterm config -- macOS path: ~/Library/Application Support/upterm/config.yaml
+# Managed by dotfiles. Edit at ~/.dotfiles/config/upterm/config.yaml.
+
+# Authorize connections from this GitHub account's public keys.
+# Fetches live from github.com/ku5ic.keys -- no local authorized_keys file needed.
+github_user:
+  - ku5ic
+
+# Auto-accept incoming connections without a per-connection prompt.
+# Remove this line when sharing with unknown parties to confirm each connection manually.
+accept: true
+
+# SSH key used to authenticate with the upterm server.
+private_key:
+  - ~/.ssh/id_rsa
