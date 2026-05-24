@@ -68,11 +68,14 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # 1Password-cli completions
 eval "$(op completion zsh)"; compdef _op op
 
-# Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
+# Editor: nvim for interactive shells, no-op for scripts and background contexts
+if [[ -o interactive ]]; then
   export EDITOR='nvim'
+  export VISUAL='nvim'
 else
-  export EDITOR='nvim'
+  export EDITOR='true'
+  export VISUAL='true'
+  export GIT_EDITOR='true'
 fi
 
 HISTFILE=$HOME/.zsh_history
