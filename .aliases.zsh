@@ -44,8 +44,14 @@ alias grep='grep --color=auto' # Adds color to `grep` output to highlight matche
 alias mux='tmuxinator'
 # uptmux <session-name>: host an upterm pair-programming session backed by a named tmux session.
 # Clients are forced into 'tmux attach -t <name>' so both parties share the same pane.
+# Switch to the "upterm" window inside the session to see the SSH sharing link at any time.
 uptmux() {
   local session="${1:?usage: uptmux <session-name>}"
+  tmux new-session -d -s "$session" 2>/dev/null || true
+  if ! tmux list-windows -t "$session" -F "#{window_name}" 2>/dev/null | grep -q "^upterm$"; then
+    tmux new-window -t "${session}:" -n upterm \
+      "until upterm session list | grep -q ssh; do sleep 0.3; done; upterm session list; printf '\nPress enter to close...' && read -r"
+  fi
   upterm host --force-command "tmux attach -t $session" -- tmux new-session -A -s "$session"
 }
 alias brew_all="brew update; brew upgrade; brew upgrade --cask; brew cleanup --prune=all; brew autoremove; brew doctor; brew_upgrade_casks" # Update all brew packages
