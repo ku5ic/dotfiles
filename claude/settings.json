@@ -597,6 +597,7 @@
     "skill-creator@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true,
+    "42crunch-api-security-testing@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true,
     "hookify@claude-plugins-official": true,
     "ruby-lsp@claude-plugins-official": true
