@@ -2,7 +2,9 @@ tap 'jesseduffield/lazygit'
 
 # CLI tools
 brew 'asdf'                         # runtime version manager driving Node, Ruby, Python via .tool-versions
+brew 'ast-grep'                     # AST-aware structural code search and rewrite, complements ripgrep for syntax-level matches
 brew 'atuin'                        # shell history sync and search backed by SQLite
+brew 'bandwhich'                    # per-process network bandwidth monitor, completes procs/dust with the network layer
 brew 'bash'                         # newer bash than the macOS bundled 3.2
 brew 'bat'                          # syntax-highlighted cat replacement, aliased as the default file viewer
 brew 'bats-core'                    # bash test framework used by tests/guard-bash.bats
@@ -18,10 +20,12 @@ brew 'fd'                           # simpler find replacement, used as the file
 brew 'fzf'                          # fuzzy finder, integrated into shell history and Neovim Telescope
 brew 'gh'                           # GitHub CLI for PR, issue, and repo workflows
 brew 'git'                          # version control, kept current independent of the Xcode Command Line Tools
+brew 'git-absorb'                   # auto-generate fixup commits that absorb staged hunks into the right prior commit
 brew 'git-delta'                    # diff pager with syntax highlighting, set as core.pager
 brew 'gitleaks'                     # secret scanner for git repositories
 brew 'gnu-sed'                      # GNU sed for portable script behavior across macOS and Linux
 brew 'grep'                         # GNU grep on macOS to match Linux flag behavior
+brew 'gron'                         # flattens JSON into greppable path=value lines, faster than writing jq paths blind
 brew 'httpie'                       # human-friendly HTTP client for API testing
 brew 'hyperfine'                    # command-line benchmarking tool
 brew 'imagemagick'                  # image manipulation library used by Neovim image plugins
@@ -33,6 +37,7 @@ brew 'lua'                          # Lua interpreter required by Neovim Lua plu
 brew 'luarocks'                     # Lua package manager for Neovim plugins that need extensions
 brew 'lynx'                         # Lynx is the text web browser (currently used by CopilotChat.nvim)
 brew 'mkcert'                       # locally trusted dev certificate generator
+brew 'moreutils'                    # sponge, ts, vipe and other shell pipeline utilities missing from coreutils
 brew 'ncurses'                      # terminal UI library used by tools like nvim and tmux
 brew 'neovim'                       # primary editor, configured under config/nvim
 brew 'openssl'                      # TLS toolkit linked against by asdf-built Rubies, Pythons, and other compiled deps
@@ -42,10 +47,12 @@ brew 'pgcli'                        # PostgreSQL CLI with autocompletion and syn
 brew 'pnpm'                         # fast disk-efficient JavaScript package manager
 brew 'postgresql@18'                # local PostgreSQL server for development databases
 brew 'procs'                        # modern ps replacement with tree and color output
+brew 'qsv'                          # fast CSV/TSV toolkit (select, join, stats), the CSV counterpart to jq and yq
 brew 'reattach-to-user-namespace'   # tmux helper that fixes pasteboard access on macOS
 brew 'redis'                        # in-memory data store for local development
 brew 'ripgrep'                      # fast recursive grep, default search backend in Neovim and shell
 brew 'rust'                         # Rust toolchain required by Neovim plugins with native components (e.g. blink.cmp)
+brew 'sd'                           # intuitive find-and-replace CLI, a safer modern sed for scripted substitutions
 brew 'shellcheck'                   # static analysis for shell scripts, used by claude/bin/doctor.sh and CI
 brew 'shfmt'                        # Formatter for shell scripts
 brew 'ssh-copy-id'                  # helper for installing public keys onto remote hosts
@@ -57,6 +64,7 @@ brew 'tokei'                        # source code line counter by language
 brew 'tpm'                          # tmux plugin manager loaded from .tmux.conf
 brew 'tree'                         # directory listing tool
 brew 'tree-sitter-cli'              # parser CLI used by nvim-treesitter to compile grammars on the main branch
+brew 'trufflehog'                   # deep secrets scanner for git history, broader credential coverage than gitleaks
 brew 'uv'                           # fast Python package and virtualenv manager
 brew 'watchexec'                    # filesystem-driven command runner
 brew 'wget'                         # HTTP and FTP downloader for scripts
