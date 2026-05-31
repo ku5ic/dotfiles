@@ -21,7 +21,8 @@ effort: high
    - Do not upgrade or add dependencies unless the plan explicitly includes them.
    - Comments only where the code does not explain itself. Explain why, not what.
 5. Run the narrow verification the plan prescribed (one file's tests, one type check).
-6. Pause. Report what was done, what was verified, what is left in the step.
+6. Run Skill(/flow:checks) after each Phase.
+7. Pause. Report what was done, what was verified, what is left in the step.
 
 ## Scope rules
 
