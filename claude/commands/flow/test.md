@@ -2,7 +2,7 @@
 description: Add or update tests for recent implementation work, then run them
 argument-hint: <optional: file or area to focus on>
 model: sonnet
-effort: medium
+effort: high
 ---
 
 ## Procedure

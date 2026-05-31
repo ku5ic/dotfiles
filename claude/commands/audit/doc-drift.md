@@ -1,7 +1,7 @@
 ---
 description: Detect drift between code and markdown or inline documentation
 argument-hint: <code path to check>
-model: haiku
+model: opus
 effort: medium
 ---
 

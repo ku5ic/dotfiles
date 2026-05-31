@@ -1,7 +1,7 @@
 ---
 description: Surface technical debt and architectural risks with severity and remediation path
 argument-hint: <file, directory, or area name>
-model: sonnet
+model: opus
 effort: high
 ---
 

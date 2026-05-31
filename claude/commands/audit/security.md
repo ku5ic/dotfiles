@@ -1,7 +1,7 @@
 ---
 description: Security audit covering frontend and backend surface areas
 argument-hint: <file, directory, or area name>
-model: sonnet
+model: opus
 effort: high
 ---
 

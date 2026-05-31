@@ -1,7 +1,7 @@
 ---
 description: Performance audit focused on statically detectable issues
 argument-hint: <file, directory, or area name>
-model: sonnet
+model: opus
 effort: high
 ---
 
