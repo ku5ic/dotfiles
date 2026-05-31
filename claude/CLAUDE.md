@@ -336,6 +336,7 @@ Out-of-band:
 
 - `/flow:quick` - small net-new feature, no plan artifact, hard stop on scope growth
 - `/flow:fix` - surgical fix from a failing signal, no refactor
+- `/flow:debug` - investigate unexpected behavior without a clear failing signal; produces a root cause artifact and handoff
 - `/flow:resume` - reorient against a partially executed plan
 - `/flow:checks` - run the project's verification checklist via `$HOME/.claude/bin/run-checks.sh`
 
