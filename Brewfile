@@ -1,4 +1,5 @@
 tap 'jesseduffield/lazygit'
+tap 'owenthereal/upterm'
 
 # CLI tools
 brew 'asdf'                         # runtime version manager driving Node, Ruby, Python via .tool-versions

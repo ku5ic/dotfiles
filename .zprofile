@@ -10,7 +10,8 @@ export PYTHON_CONFIGURE_OPTS="--enable-framework"
 
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
-HOMEBREW_NO_ENV_HINTS=1
+export HOMEBREW_NO_ENV_HINTS=1
+export HOMEBREW_NO_REQUIRE_TAP_TRUST=1
 
 # github
 export GITHUB_PERSONAL_ACCESS_TOKEN="$(gh auth token 2>/dev/null)"
