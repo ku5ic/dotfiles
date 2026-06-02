@@ -42,29 +42,29 @@ Entry point: `config/nvim/init.lua` - bootstraps lazy.nvim, sets leader to `<Spa
 
 Top-level layout under `config/nvim/lua/`:
 
-- `plugins/` - one file per plugin category, auto-discovered by lazy.nvim (top-level files only; subdirectories without `init.lua` are not treated as specs)
+- `plugins/` - one file per plugin spec, named after the plugin (e.g. `gitsigns.lua`, `which-key.lua`), auto-discovered by lazy.nvim (top-level files only; subdirectories without `init.lua` are not treated as specs)
 - `config/options.lua` - vim options
 - `config/icons.lua` - icon set used by lualine, bufferline, diagnostics
 - `config/filetypes.lua` - filetype constants (`JS`, `TS`, `JS_TS`, `JS_REACT`, `CSS`, `WEB`) consumed by formatting, linting, and LSP filetype lists
-- `lsp/servers/` - per-server LSP settings, one file per server. Adding a server is dropping a file here; `plugins/lsp.lua` discovers them at startup via `readdir` and feeds Mason
+- `lsp/servers/` - per-server LSP settings, one file per server. Adding a server is dropping a file here; `lsp/discovery.lua` discovers them via `readdir` and feeds Mason. Switch TypeScript LSP between `ts_ls`/`vtsls` via the `typescript_lsp` variable in `lsp/discovery.lua`
 - `keymaps/keymaps.lua` - global / built-in / cmd-form keymaps (window, tab, buffer, telescope, git, LSP, Trouble, copy paths, Neovide). Plugin-specific keymaps live with their plugin spec via lazy `keys = {...}`
 - `keymaps/copilotchat.lua` - AI keymaps
 - `utils/copilotchat.lua`, `utils/copilotchat/prompts.lua` - CopilotChat helpers and prompt templates
 
-**Plugin categories:**
+**Plugin files** (one file per plugin spec, named after the plugin):
 
-- `lsp.lua` - Mason + nvim-lspconfig; LSP server list is built dynamically from `lua/lsp/servers/`. Switch TypeScript LSP between `ts_ls`/`vtsls` via the `typescript_lsp` variable at the top; the inactive one is filtered out of the discovered list.
+Notable files and exceptions:
+
+- `mason.lua` - mason.nvim; `mason-lspconfig` and `mason-tool-installer` are declared as `dependencies` inside this spec (not separate files)
+- `nvim-lspconfig.lua` - nvim-lspconfig; diagnostic config, server setup, LSP keymaps, codelens autocmd
+- `copilot.lua` - GitHub Copilot and CopilotChat.nvim (two specs kept together by design)
 - `code-completion.lua` - blink.cmp
-- `copilot.lua` - GitHub Copilot and CopilotChat.nvim
-- `coding.lua` - nvim-surround, nvim-autopairs, vim-rbenv (commenting uses native `gc`/`gb`)
-- `editor.lua` - gitsigns, which-key (with group labels for every `<leader>` prefix), grug-far, todo-comments, vim-fugitive, vim-tmux-navigator, precognition
+- `which-key.lua` - group labels for every `<leader>` prefix live here
 - `formatting.lua` / `linting.lua` - conform.nvim / nvim-lint; both consume `config.filetypes` for JS/TS filetype lists
-- `treesitter.lua` - syntax highlighting
-- `debuggers.lua` - nvim-dap (all DAP keymaps colocated here via lazy `keys`)
-- `ui.lua` - catppuccin, noice, bufferline, lualine
 - `snacks.lua` - snacks.nvim (picker, explorer, notifier, input, statuscolumn, toggle, indent, dim, words, scope, scroll, bigfile, quickfile)
 - `flash.lua` - flash.nvim (labeled jump via `<leader>j`/`<leader>J`; enhances `/` search and `f`/`t` motions)
 - `harpoon.lua` - harpoon2 (curated file marks; `<leader>ha` add, `<leader>hh` menu, `<leader>h1-4` slots)
+- `nvim-dap.lua` - nvim-dap; all DAP keymaps colocated via lazy `keys`
 
 **Augroups:**
 
