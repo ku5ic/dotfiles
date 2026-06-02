@@ -117,6 +117,7 @@ return {
         { "<leader>n", group = "notifications/ui" },
         { "<leader>c", group = "copy" },
         { "<leader>h", group = "harpoon" },
+        { "<leader>u", group = "ui/toggles" },
       })
     end,
   },
