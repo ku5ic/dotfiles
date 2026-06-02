@@ -150,7 +150,7 @@ map("n", "<leader>xq", "<cmd>Trouble qflist toggle<cr>", "Show quickfix list")
 
 -- Notifications & UI (<leader>n)
 -- Sub-mappings live in their owning plugin specs:
---   <leader>nn -> plugins/ui.lua (nvim-notify)
+--   <leader>nn -> plugins/snacks.lua (snacks.notifier)
 --   <leader>nl/nH/na/nd -> plugins/ui.lua (noice.nvim)
 --   <leader>np -> plugins/editor.lua (precognition.nvim)
 -- <c-f>/<c-b> noice scrolls and <S-Enter> redirect also live in plugins/ui.lua.
