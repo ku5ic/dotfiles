@@ -56,12 +56,15 @@ Top-level layout under `config/nvim/lua/`:
 - `lsp.lua` - Mason + nvim-lspconfig; LSP server list is built dynamically from `lua/lsp/servers/`. Switch TypeScript LSP between `ts_ls`/`vtsls` via the `typescript_lsp` variable at the top; the inactive one is filtered out of the discovered list.
 - `code-completion.lua` - blink.cmp
 - `copilot.lua` - GitHub Copilot and CopilotChat.nvim
-- `coding.lua` - vim-surround, Comment.nvim, nvim-autopairs, vim-rbenv
-- `editor.lua` - Telescope, Neo-tree, gitsigns, which-key (with group labels for every `<leader>` prefix), etc.
+- `coding.lua` - nvim-surround, nvim-autopairs, vim-rbenv (commenting uses native `gc`/`gb`)
+- `editor.lua` - Telescope, Neo-tree, gitsigns, which-key (with group labels for every `<leader>` prefix), grug-far, etc.
 - `formatting.lua` / `linting.lua` - conform.nvim / nvim-lint; both consume `config.filetypes` for JS/TS filetype lists
 - `treesitter.lua` - syntax highlighting
 - `debuggers.lua` - nvim-dap (all DAP keymaps colocated here via lazy `keys`)
-- `ui.lua` - noice, bufferline, lualine, nvim-notify, dressing
+- `ui.lua` - catppuccin, noice, bufferline, lualine
+- `snacks.lua` - snacks.nvim (notifier, input, statuscolumn, words, scope, scroll, bigfile, quickfile)
+- `flash.lua` - flash.nvim (labeled jump via `<leader>j`/`<leader>J`; enhances `/` search and `f`/`t` motions)
+- `harpoon.lua` - harpoon2 (curated file marks; `<leader>ha` add, `<leader>hh` menu, `<leader>h1-4` slots)
 
 **Augroups:**
 
@@ -70,7 +73,7 @@ All custom autocmds belong to a `dotfiles_*` augroup created with `clear = true`
 **Keymap prefix conventions** (leader = `<Space>`):
 
 - `<leader>f` - Find/files (Telescope)
-- `<leader>s` - Search/grep (Telescope, Spectre, todo-comments)
+- `<leader>s` - Search/grep (Telescope, grug-far, todo-comments)
 - `<leader>g` - Git (LazyGit, Telescope, fugitive blame, gitsigns)
 - `<leader>w` - Window splits
 - `<leader>t` - Tabs/explorer toggle
@@ -79,8 +82,10 @@ All custom autocmds belong to a `dotfiles_*` augroup created with `clear = true`
 - `<leader>x` - Trouble diagnostics
 - `<leader>d` - DAP debugger (also F5/F10/F11/F12)
 - `<leader>a` - AI/Copilot (see `keymaps/copilotchat.lua`)
-- `<leader>n` - Notifications/UI (notify, noice, precognition)
+- `<leader>n` - Notifications/UI (snacks notifier, noice, precognition)
 - `<leader>c` - Copy file path
+- `<leader>h` - Harpoon file marks
+- `<leader>j` / `<leader>J` - Flash jump / Flash treesitter select
 
 ## Scripts
 
