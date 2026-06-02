@@ -1,5 +1,5 @@
 return {
-	init_options = {
-		camelCase = "dashes",
-	},
+  init_options = {
+    camelCase = "dashes",
+  },
 }

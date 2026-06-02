@@ -1,9 +1,9 @@
 local M = {}
 
 local CODING_DYNAMIC_CONTEXT = {
-	repo_root_docs = { "README.md", "CLAUDE.md" },
-	upward_docs = { "README.md", "CLAUDE.md" },
-	repo_anywhere_docs = { "architecture.md", "testing.md", "brand.md" },
+  repo_root_docs = { "README.md", "CLAUDE.md" },
+  upward_docs = { "README.md", "CLAUDE.md" },
+  repo_anywhere_docs = { "architecture.md", "testing.md", "brand.md" },
 }
 
 local BASE_CODE_RULES = [[
@@ -36,7 +36,7 @@ Code change behavior:
 ]]
 
 local CODING_SYSTEM_PROMPT = BASE_CODE_RULES
-	.. [[
+  .. [[
 You are assisting with code changes inside an existing project.
 
 Your job is to produce safe, complete, reviewable, production minded updates that respect the current architecture, comments, documentation, accessibility requirements, testing expectations, and review discipline.
@@ -207,11 +207,11 @@ Output discipline:
 ---   because commit generation requires stricter output discipline than code assistance.
 ---@type table<string, { description?: string, system_prompt?: string, prompt: string, mapping?: string }>
 local prompts = {
-	Explain = {
-		description = "Explain code",
-		system_prompt = CODING_SYSTEM_PROMPT,
-		dynamic_context = CODING_DYNAMIC_CONTEXT,
-		prompt = [[
+  Explain = {
+    description = "Explain code",
+    system_prompt = CODING_SYSTEM_PROMPT,
+    dynamic_context = CODING_DYNAMIC_CONTEXT,
+    prompt = [[
 Explain the provided code clearly and practically.
 
 Cover:
@@ -224,13 +224,13 @@ Cover:
 Do not over explain obvious syntax.
 Focus on intent, structure, and behavior.
 ]],
-	},
+  },
 
-	Review = {
-		description = "Review code",
-		system_prompt = CODING_SYSTEM_PROMPT,
-		dynamic_context = CODING_DYNAMIC_CONTEXT,
-		prompt = [[
+  Review = {
+    description = "Review code",
+    system_prompt = CODING_SYSTEM_PROMPT,
+    dynamic_context = CODING_DYNAMIC_CONTEXT,
+    prompt = [[
 Review the code and identify meaningful issues.
 
 Focus on:
@@ -250,13 +250,13 @@ If no code changes are required, provide:
 2. Findings by severity: high, medium, low
 3. Recommended next actions
 ]],
-	},
+  },
 
-	Tests = {
-		description = "Write tests",
-		system_prompt = CODING_SYSTEM_PROMPT,
-		dynamic_context = CODING_DYNAMIC_CONTEXT,
-		prompt = [[
+  Tests = {
+    description = "Write tests",
+    system_prompt = CODING_SYSTEM_PROMPT,
+    dynamic_context = CODING_DYNAMIC_CONTEXT,
+    prompt = [[
 Write or improve tests for the provided code.
 
 Requirements:
@@ -276,13 +276,13 @@ If no code changes are required, provide:
 2. Recommended test cases
 3. Remaining gaps, if any
 ]],
-	},
+  },
 
-	Refactor = {
-		description = "Refactor code",
-		system_prompt = CODING_SYSTEM_PROMPT,
-		dynamic_context = CODING_DYNAMIC_CONTEXT,
-		prompt = [[
+  Refactor = {
+    description = "Refactor code",
+    system_prompt = CODING_SYSTEM_PROMPT,
+    dynamic_context = CODING_DYNAMIC_CONTEXT,
+    prompt = [[
 Refactor the code to improve clarity and maintainability without changing behavior.
 
 Priorities:
@@ -304,13 +304,13 @@ If no code changes are required, explain:
 - why it would be better
 - tradeoffs, if any
 ]],
-	},
+  },
 
-	Fix = {
-		description = "Fix code issues",
-		system_prompt = CODING_SYSTEM_PROMPT,
-		dynamic_context = CODING_DYNAMIC_CONTEXT,
-		prompt = [[
+  Fix = {
+    description = "Fix code issues",
+    system_prompt = CODING_SYSTEM_PROMPT,
+    dynamic_context = CODING_DYNAMIC_CONTEXT,
+    prompt = [[
 Analyze the code and fix the actual issue with the smallest safe change.
 
 Focus on:
@@ -334,13 +334,13 @@ If no code changes are required, explain:
 - why no code change is needed
 - any remaining assumptions or risks
 ]],
-	},
+  },
 
-	RenameForClarity = {
-		description = "Improve naming",
-		system_prompt = CODING_SYSTEM_PROMPT,
-		dynamic_context = CODING_DYNAMIC_CONTEXT,
-		prompt = [[
+  RenameForClarity = {
+    description = "Improve naming",
+    system_prompt = CODING_SYSTEM_PROMPT,
+    dynamic_context = CODING_DYNAMIC_CONTEXT,
+    prompt = [[
 Review the code and improve naming for clarity.
 
 Focus on:
@@ -365,13 +365,13 @@ If no code changes are required, explain:
 - recommended renames
 - why the new names would be clearer
 ]],
-	},
+  },
 
-	Docs = {
-		description = "Write documentation",
-		system_prompt = CODING_SYSTEM_PROMPT,
-		dynamic_context = CODING_DYNAMIC_CONTEXT,
-		prompt = [[
+  Docs = {
+    description = "Write documentation",
+    system_prompt = CODING_SYSTEM_PROMPT,
+    dynamic_context = CODING_DYNAMIC_CONTEXT,
+    prompt = [[
 Generate or improve documentation for the code.
 
 Document:
@@ -390,13 +390,13 @@ If no code changes are required, provide:
 - updated documentation
 - short note on what was clarified
 ]],
-	},
+  },
 
-	WCAG = {
-		description = "Improve accessibility",
-		system_prompt = CODING_SYSTEM_PROMPT,
-		dynamic_context = CODING_DYNAMIC_CONTEXT,
-		prompt = [[
+  WCAG = {
+    description = "Improve accessibility",
+    system_prompt = CODING_SYSTEM_PROMPT,
+    dynamic_context = CODING_DYNAMIC_CONTEXT,
+    prompt = [[
 Review and improve the code toward WCAG 2.2 AA compliance.
 
 Priorities:
@@ -416,38 +416,38 @@ If no code changes are required, provide:
 3. Why the changes help
 4. Remaining limitations, if any
 ]],
-	},
+  },
 
-	Summarize = {
-		description = "Summarize text",
-		system_prompt = WRITING_SYSTEM_PROMPT,
-		prompt = "Summarize the following text clearly and concisely.",
-	},
+  Summarize = {
+    description = "Summarize text",
+    system_prompt = WRITING_SYSTEM_PROMPT,
+    prompt = "Summarize the following text clearly and concisely.",
+  },
 
-	Spelling = {
-		description = "Correct spelling",
-		system_prompt = WRITING_SYSTEM_PROMPT,
-		prompt = "Correct grammar and spelling errors in the following text.",
-	},
+  Spelling = {
+    description = "Correct spelling",
+    system_prompt = WRITING_SYSTEM_PROMPT,
+    prompt = "Correct grammar and spelling errors in the following text.",
+  },
 
-	Wording = {
-		description = "Improve wording",
-		system_prompt = WRITING_SYSTEM_PROMPT,
-		prompt = "Improve the wording of the following text while preserving meaning.",
-	},
+  Wording = {
+    description = "Improve wording",
+    system_prompt = WRITING_SYSTEM_PROMPT,
+    prompt = "Improve the wording of the following text while preserving meaning.",
+  },
 
-	Concise = {
-		description = "Make concise",
-		system_prompt = WRITING_SYSTEM_PROMPT,
-		prompt = "Rewrite the following text to make it more concise while preserving meaning.",
-	},
+  Concise = {
+    description = "Make concise",
+    system_prompt = WRITING_SYSTEM_PROMPT,
+    prompt = "Rewrite the following text to make it more concise while preserving meaning.",
+  },
 
-	Commit = {
-		description = "Write conventional commit message",
-		context = { "#gitdiff:staged" },
-		system_prompt = COMMIT_SYSTEM_PROMPT,
-		dynamic_context = CODING_DYNAMIC_CONTEXT,
-		prompt = [[
+  Commit = {
+    description = "Write conventional commit message",
+    context = { "#gitdiff:staged" },
+    system_prompt = COMMIT_SYSTEM_PROMPT,
+    dynamic_context = CODING_DYNAMIC_CONTEXT,
+    prompt = [[
 Write a git commit message from the staged changes.
 
 Use Conventional Commits format:
@@ -488,7 +488,7 @@ Return the result inside a fenced code block using the language tag `gitcommit`.
 
 If there is no meaningful body, still include one short explanatory sentence.
 ]],
-	},
+  },
 }
 
 M.prompts = prompts

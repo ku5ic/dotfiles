@@ -4,5 +4,5 @@ local emmet_filetypes = vim.list_extend({ "html", "djangohtml", "svelte" }, file
 vim.list_extend(emmet_filetypes, filetypes.JS_REACT)
 
 return {
-	filetypes = emmet_filetypes,
+  filetypes = emmet_filetypes,
 }

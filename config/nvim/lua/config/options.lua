@@ -4,11 +4,11 @@ local o, g = vim.opt, vim.g
 -- Resolve via PATH; fall back to asdf shim location for GUI launches that don't
 -- inherit a shell PATH.
 local function resolve_host(name, fallback)
-	local path = vim.fn.exepath(name)
-	if path == "" then
-		path = vim.fn.expand(fallback)
-	end
-	return path ~= "" and path or nil
+  local path = vim.fn.exepath(name)
+  if path == "" then
+    path = vim.fn.expand(fallback)
+  end
+  return path ~= "" and path or nil
 end
 
 g.python3_host_prog = resolve_host("python3", "~/.asdf/shims/python")
@@ -43,12 +43,12 @@ o.shiftwidth = 2
 o.autoindent = true
 o.list = true
 o.listchars = {
-	eol = "¬",
-	tab = ">-",
-	trail = "␣",
-	extends = "»",
-	precedes = "«",
-	space = "·",
+  eol = "¬",
+  tab = ">-",
+  trail = "␣",
+  extends = "»",
+  precedes = "«",
+  space = "·",
 }
 
 -- 6. Folding (Treesitter-driven)
@@ -61,11 +61,11 @@ o.foldlevel = 99 -- keep everything open by default
 o.foldlevelstart = 99
 o.foldcolumn = "1"
 o.fillchars = { -- table form parses faster in 0.11+
-	eob = " ",
-	fold = " ",
-	foldopen = "",
-	foldsep = " ",
-	foldclose = "",
+  eob = " ",
+  fold = " ",
+  foldopen = "",
+  foldsep = " ",
+  foldclose = "",
 }
 
 -- 7. Completion & search
@@ -87,36 +87,36 @@ o.backspace = { "indent", "eol", "start" }
 o.iskeyword:append("-")
 
 vim.api.nvim_create_user_command("CopyPath", function()
-	local path = vim.fn.expand("%:p")
-	vim.fn.setreg("+", path)
-	vim.notify('Copied "' .. path .. '" to the clipboard!')
+  local path = vim.fn.expand("%:p")
+  vim.fn.setreg("+", path)
+  vim.notify('Copied "' .. path .. '" to the clipboard!')
 end, {})
 
 vim.api.nvim_create_user_command("CopyRelPath", function()
-	local path = vim.fn.expand("%:.")
-	vim.fn.setreg("+", path)
-	vim.notify('Copied "' .. path .. '" to the clipboard!')
+  local path = vim.fn.expand("%:.")
+  vim.fn.setreg("+", path)
+  vim.notify('Copied "' .. path .. '" to the clipboard!')
 end, {})
 
 -- Prefer :prepend when you *want* fzf earlier in rtp
 local fzf_path = vim.fn.exepath("fzf")
 if fzf_path ~= "" then
-	o.runtimepath:prepend(vim.fn.fnamemodify(fzf_path, ":h"))
+  o.runtimepath:prepend(vim.fn.fnamemodify(fzf_path, ":h"))
 end
 
 -- 10. Auto-reload files changed on disk
 o.autoread = true
 local autoreload = vim.api.nvim_create_augroup("dotfiles_autoreload", { clear = true })
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
-	group = autoreload,
-	command = "checktime",
+  group = autoreload,
+  command = "checktime",
 })
 
 -- 11. File types
 vim.filetype.add({
-	filename = {
-		["Brewfile"] = "ruby",
-	},
+  filename = {
+    ["Brewfile"] = "ruby",
+  },
 })
 
 -- 12. Neovide

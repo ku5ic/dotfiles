@@ -11,9 +11,9 @@ local keymap = vim.keymap
 -- Utility function for setting keymaps with descriptions.
 -- Deliberately does not close over a shared opts table to avoid mutation bugs.
 local function map(mode, lhs, rhs, desc, extra_opts)
-	local opts = vim.tbl_extend("force", { noremap = true, silent = true }, extra_opts or {})
-	opts.desc = desc
-	keymap.set(mode, lhs, rhs, opts)
+  local opts = vim.tbl_extend("force", { noremap = true, silent = true }, extra_opts or {})
+  opts.desc = desc
+  keymap.set(mode, lhs, rhs, opts)
 end
 
 -- Core navigation & editing
@@ -116,7 +116,7 @@ map("n", "<leader>lr", vim.lsp.buf.rename, "LSP Rename")
 map({ "n", "v" }, "<leader>la", vim.lsp.buf.code_action, "LSP Code Action")
 -- <leader>lf (LSP Format) lives in plugins/formatting.lua
 map("n", "<leader>ld", function()
-	vim.diagnostic.setloclist({ open = true })
+  vim.diagnostic.setloclist({ open = true })
 end, "LSP Diagnostics to location list")
 -- <leader>ll (Lint current file) lives in plugins/linting.lua
 map("n", "<leader>li", "<cmd>checkhealth vim.lsp<cr>", "LSP Info")
@@ -125,7 +125,7 @@ map("n", "<leader>li", "<cmd>checkhealth vim.lsp<cr>", "LSP Info")
 map("n", "<leader>lwa", vim.lsp.buf.add_workspace_folder, "LSP Add workspace folder")
 map("n", "<leader>lwr", vim.lsp.buf.remove_workspace_folder, "LSP Remove workspace folder")
 map("n", "<leader>lwl", function()
-	print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+  print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
 end, "LSP List workspace folders")
 
 -- Diagnostics/Trouble (<leader>x)
@@ -159,13 +159,13 @@ map("v", "<D-c>", '"+y', "Neovide copy")
 
 -- Open file or URL under cursor with gx
 vim.keymap.set("n", "gx", function()
-	local target = vim.fn.expand("<cfile>")
-	if target:match("^https?://") or target:match("^mailto:") then
-		vim.ui.open(target)
-	else
-		if not target:match("^/") then
-			target = vim.fn.expand("%:p:h") .. "/" .. target
-		end
-		vim.cmd.edit(vim.fn.fnamemodify(target, ":p"))
-	end
+  local target = vim.fn.expand("<cfile>")
+  if target:match("^https?://") or target:match("^mailto:") then
+    vim.ui.open(target)
+  else
+    if not target:match("^/") then
+      target = vim.fn.expand("%:p:h") .. "/" .. target
+    end
+    vim.cmd.edit(vim.fn.fnamemodify(target, ":p"))
+  end
 end, { desc = "Open file or URL under cursor" })
