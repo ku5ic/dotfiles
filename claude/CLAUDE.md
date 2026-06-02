@@ -58,7 +58,7 @@ Markdown is prose, not code. Sentences flow naturally on one line regardless of 
 
 ## Preferred CLI tools
 
-When a deterministic CLI exists for a question, call it instead of reading files and reasoning. The tools below are installed via Brewfile and permitted in settings.json.
+When a deterministic CLI exists for a question, call it instead of reading files and reasoning. The tools below are installed via Brewfile and permitted in settings.json. Before using any CLI not in this list, confirm it appears in `~/.dotfiles/Brewfile` - that is the authoritative inventory of what is installed on this machine. When multiple tools could answer the same question, prefer the one that uses fewer tokens: a single CLI call beats a targeted file read; a targeted file read beats a broad grep; any of these beats model reasoning from memory.
 
 - `rg` for code search and locating, over `grep`, `find -name`, or `Read` walks.
 - `sg` (ast-grep) for syntax-aware structural code search and rewrite. Prefer over `rg` when the question is about code shape, not text: "find every useEffect with an empty dep array", "rename this call pattern". `sg` understands AST; `rg` matches strings.
