@@ -116,6 +116,7 @@ return {
         { "<leader>a", group = "ai/copilot" },
         { "<leader>n", group = "notifications/ui" },
         { "<leader>c", group = "copy" },
+        { "<leader>h", group = "harpoon" },
       })
     end,
   },
