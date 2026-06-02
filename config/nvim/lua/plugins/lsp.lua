@@ -114,12 +114,16 @@ local function setup_lsp_servers()
 end
 
 local function setup_lsp_keymaps(bufnr, client)
-  vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = bufnr, desc = "Go to definition" })
-  vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = bufnr, desc = "Go to declaration" })
-  vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, desc = "References" })
-  vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { buffer = bufnr, desc = "Go to implementation" })
-  vim.keymap.set("n", "gy", vim.lsp.buf.type_definition, { buffer = bufnr, desc = "Go to type definition" })
-  vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, desc = "Hover documentation" })
+  -- Neovim 0.10+ sets these automatically on LspAttach; do not redefine:
+  --   K      -> hover
+  --   grr    -> references
+  --   gri    -> implementation
+  --   grn    -> rename
+  --   gra    -> code action
+  --   grt    -> type definition
+  --   grx    -> codelens run
+  -- C-]      -> definition (via LSP tagfunc)
+  -- gd / gD / gi are Vim built-ins and are intentionally left alone.
   vim.keymap.set("n", "<leader>lk", vim.lsp.buf.signature_help, { buffer = bufnr, desc = "Signature help" })
 
   require("which-key").add({ { "g", buffer = bufnr, group = "goto" } })

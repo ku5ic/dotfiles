@@ -36,21 +36,23 @@ map("v", "<A-k>", ":m '<-2<CR>gv=gv", "Move selection up")
 map("v", "<", "<gv", "Unindent and reselect")
 map("v", ">", ">gv", "Indent and reselect")
 
--- LSP navigation (buffer-local, set via autocmd in LSP config)
+-- LSP navigation reference
 --
--- These keymaps are automatically set when LSP attaches to a buffer.
--- They remain in lsp.lua for proper buffer-local scoping:
+-- Neovim 0.10+ sets these automatically on LspAttach (no custom mapping needed):
+--   K      - Hover documentation
+--   grr    - References
+--   gri    - Implementation
+--   grn    - Rename
+--   gra    - Code action
+--   grt    - Type definition
+--   grx    - Run codelens
+--   C-]    - Go to definition (via LSP tagfunc)
 --
--- gd          - Go to definition
--- gD          - Go to declaration
--- gr          - Go to references
--- gi          - Go to implementation
--- gy          - Go to type definition
--- K           - Hover documentation
--- <leader>lk  - Signature help
--- <leader>lc  - Run code lens (only if LSP supports codelens)
+-- Custom buffer-local (set in lsp.lua):
+--   <leader>lk  - Signature help
+--   <leader>lc  - Run codelens (only if server supports it)
 --
--- Note: LSP action keymaps using <leader>l* prefix are defined below
+-- Custom global (defined below under <leader>l*):
 
 -- Window management (<leader>w)
 map("n", "<leader>wv", "<C-w>v", "Split window vertically")
