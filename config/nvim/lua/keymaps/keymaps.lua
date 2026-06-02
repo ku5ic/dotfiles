@@ -47,7 +47,7 @@ map("v", ">", ">gv", "Indent and reselect")
 -- gi          - Go to implementation
 -- gy          - Go to type definition
 -- K           - Hover documentation
--- <C-k>       - Signature help
+-- <leader>lk  - Signature help
 -- <leader>lc  - Run code lens (only if LSP supports codelens)
 --
 -- Note: LSP action keymaps using <leader>l* prefix are defined below
