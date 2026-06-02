@@ -57,7 +57,15 @@ map("n", "<leader>wv", "<C-w>v", "Split window vertically")
 map("n", "<leader>wh", "<C-w>s", "Split window horizontally")
 map("n", "<leader>we", "<C-w>=", "Equalize window sizes")
 map("n", "<leader>wc", ":close<CR>", "Close current window")
-map("n", "<leader>wm", "<Cmd>MaximizerToggle<CR>", "Toggle maximize window")
+-- Open current buffer in a new full-screen tab; close that tab to restore the original layout.
+-- State is derived from actual window/tab count so it self-heals if the tab is closed another way.
+map("n", "<leader>wm", function()
+  if vim.fn.winnr("$") == 1 and vim.fn.tabpagenr("$") > 1 then
+    vim.cmd("tabclose")
+  else
+    vim.cmd("tab split")
+  end
+end, "Toggle maximize window")
 
 -- Tab management (<leader>t)
 map("n", "<leader>tn", ":tabnew<CR>", "New tab")
@@ -91,7 +99,7 @@ map("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", "Find keymaps")
 -- Search operations (<leader>s)
 map("n", "<leader>ss", "<cmd>Telescope current_buffer_fuzzy_find<cr>", "Search in current buffer")
 map("n", "<leader>sg", "<cmd>Telescope live_grep_args<cr>", "Search with live grep")
--- <leader>sr (Search and replace) lives in plugins/editor.lua under nvim-spectre
+-- <leader>sr (Search and replace) lives in plugins/editor.lua under grug-far.nvim
 map("n", "<leader>st", "<cmd>TodoTelescope<cr>", "Search todos")
 map("n", "<leader>sd", "<cmd>Telescope diagnostics<cr>", "Search diagnostics")
 map("n", "<leader>sa", "<cmd>Telescope autocommands<cr>", "Search autocommands")

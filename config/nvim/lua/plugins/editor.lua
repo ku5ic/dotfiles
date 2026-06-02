@@ -24,19 +24,18 @@ return {
 
   -- search/replace in multiple files
   {
-    "nvim-pack/nvim-spectre",
-    build = false,
-    cmd = "Spectre",
+    "MagicDuck/grug-far.nvim",
+    cmd = "GrugFar",
     keys = {
       {
         "<leader>sr",
         function()
-          require("spectre").open()
+          require("grug-far").open()
         end,
         desc = "Search and replace",
       },
     },
-    opts = { open_cmd = "noswapfile vnew" },
+    config = true,
   },
 
   -- git signs
