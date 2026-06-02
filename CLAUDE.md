@@ -57,12 +57,12 @@ Top-level layout under `config/nvim/lua/`:
 - `code-completion.lua` - blink.cmp
 - `copilot.lua` - GitHub Copilot and CopilotChat.nvim
 - `coding.lua` - nvim-surround, nvim-autopairs, vim-rbenv (commenting uses native `gc`/`gb`)
-- `editor.lua` - Telescope, Neo-tree, gitsigns, which-key (with group labels for every `<leader>` prefix), grug-far, etc.
+- `editor.lua` - gitsigns, which-key (with group labels for every `<leader>` prefix), grug-far, todo-comments, vim-fugitive, vim-tmux-navigator, precognition
 - `formatting.lua` / `linting.lua` - conform.nvim / nvim-lint; both consume `config.filetypes` for JS/TS filetype lists
 - `treesitter.lua` - syntax highlighting
 - `debuggers.lua` - nvim-dap (all DAP keymaps colocated here via lazy `keys`)
 - `ui.lua` - catppuccin, noice, bufferline, lualine
-- `snacks.lua` - snacks.nvim (notifier, input, statuscolumn, words, scope, scroll, bigfile, quickfile)
+- `snacks.lua` - snacks.nvim (picker, explorer, notifier, input, statuscolumn, toggle, indent, dim, words, scope, scroll, bigfile, quickfile)
 - `flash.lua` - flash.nvim (labeled jump via `<leader>j`/`<leader>J`; enhances `/` search and `f`/`t` motions)
 - `harpoon.lua` - harpoon2 (curated file marks; `<leader>ha` add, `<leader>hh` menu, `<leader>h1-4` slots)
 
@@ -72,9 +72,11 @@ All custom autocmds belong to a `dotfiles_*` augroup created with `clear = true`
 
 **Keymap prefix conventions** (leader = `<Space>`):
 
-- `<leader>f` - Find/files (Telescope)
-- `<leader>s` - Search/grep (Telescope, grug-far, todo-comments)
-- `<leader>g` - Git (LazyGit, Telescope, fugitive blame, gitsigns)
+- `<leader><space>` - Smart find (snacks.picker)
+- `<leader>e` / `<leader>E` - Explorer toggle / Reveal current file in explorer
+- `<leader>f` - Find/files (snacks.picker: files, recent, buffers, config, git-files, projects)
+- `<leader>s` - Search (snacks.picker: grep, LSP symbols, diagnostics, help, marks, undo, registers, jumps, man, icons, etc.; grug-far for replace)
+- `<leader>g` - Git + GitHub (snacks.picker: status, log, diff, stash, branches; GitHub PRs/issues; Snacks.lazygit; gitsigns hunks; fugitive)
 - `<leader>w` - Window splits
 - `<leader>t` - Tabs/explorer toggle
 - `<leader>b` - Buffer management
@@ -82,7 +84,8 @@ All custom autocmds belong to a `dotfiles_*` augroup created with `clear = true`
 - `<leader>x` - Trouble diagnostics
 - `<leader>d` - DAP debugger (also F5/F10/F11/F12)
 - `<leader>a` - AI/Copilot (see `keymaps/copilotchat.lua`)
-- `<leader>n` - Notifications/UI (snacks notifier, noice, precognition)
+- `<leader>n` - Notifications (notification history picker; snacks notifier, noice, precognition)
+- `<leader>u` - UI toggles (spell, wrap, relativenumber, diagnostics, conceallevel, treesitter, background, inlay hints, indent, dim; colorscheme picker)
 - `<leader>c` - Copy file path
 - `<leader>h` - Harpoon file marks
 - `<leader>j` / `<leader>J` - Flash jump / Flash treesitter select
