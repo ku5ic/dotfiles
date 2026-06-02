@@ -1,27 +1,4 @@
 return {
-  -- file explorer
-  {
-    "nvim-neo-tree/neo-tree.nvim",
-    branch = "v3.x",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-      "MunifTanjim/nui.nvim",
-    },
-    lazy = false,
-    opts = {
-      close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
-      popup_border_style = "rounded",
-      window = {
-        position = "left",
-        width = 50,
-      },
-      symlink_target = {
-        enabled = true,
-      },
-    },
-  },
-
   -- search/replace in multiple files
   {
     "MagicDuck/grug-far.nvim",
@@ -43,56 +20,6 @@ return {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
     config = true,
-  },
-
-  -- fuzzy finder
-  {
-    "nvim-telescope/telescope.nvim",
-    dependencies = {
-      { "nvim-lua/plenary.nvim" },
-      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-      { "nvim-telescope/telescope-ui-select.nvim" },
-      { "nvim-telescope/telescope-live-grep-args.nvim" },
-    },
-    cmd = "Telescope",
-    version = false, -- telescope did only one release, so use HEAD for now
-    config = function()
-      local telescope = require("telescope")
-      local lga_actions = require("telescope-live-grep-args.actions")
-      telescope.setup({
-        defaults = {
-          mappings = {
-            i = {
-              ["<c-d>"] = "delete_buffer",
-            },
-            n = {
-              ["<c-d>"] = "delete_buffer",
-            },
-          },
-        },
-        extensions = {
-          live_grep_args = {
-            auto_quoting = true, -- enable/disable auto-quoting
-            -- define mappings, e.g.
-            mappings = { -- extend mappings
-              i = {
-                ["<C-k>"] = lga_actions.quote_prompt(),
-                ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
-                -- freeze the current list and start a fuzzy search in the frozen list
-                ["<C-f>"] = lga_actions.to_fuzzy_refine,
-              },
-            },
-            -- ... also accepts theme settings, for example:
-            -- theme = "dropdown", -- use dropdown theme
-            -- theme = { }, -- use own theme spec
-            -- layout_config = { mirror=true }, -- mirror preview pane
-          },
-        },
-      })
-      telescope.load_extension("fzf")
-      telescope.load_extension("live_grep_args")
-      telescope.load_extension("ui-select")
-    end,
   },
 
   {
@@ -118,6 +45,7 @@ return {
         { "<leader>c", group = "copy" },
         { "<leader>h", group = "harpoon" },
         { "<leader>u", group = "ui/toggles" },
+        { "<leader>e", group = "explorer" },
       })
     end,
   },
@@ -125,7 +53,6 @@ return {
   -- todo comments
   {
     "folke/todo-comments.nvim",
-    cmd = { "TodoTelescope" },
     event = { "BufReadPost", "BufNewFile" },
     keys = {
       {
@@ -148,24 +75,6 @@ return {
 
   -- vim-fugitive is a Git wrapper so awesome, it should be illegal
   { "tpope/vim-fugitive" },
-  { "tpope/vim-rhubarb" },
-
-  -- lazygit.nvim is a plugin for managing git repositories
-  {
-    "kdheepak/lazygit.nvim",
-    lazy = true,
-    cmd = {
-      "LazyGit",
-      "LazyGitConfig",
-      "LazyGitCurrentFile",
-      "LazyGitFilter",
-      "LazyGitFilterCurrentFile",
-    },
-    -- optional for floating window border decoration
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-  },
 
   -- vim-tmux-navigator: jump between vim splits and tmux panes with C-hjkl + C-\
   -- Tmux side configured in ~/.tmux.conf.

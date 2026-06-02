@@ -28,14 +28,6 @@ return {
             .. (diag.warning and icons.Warn .. diag.warning or "")
           return vim.trim(ret)
         end,
-        offsets = {
-          {
-            filetype = "neo-tree",
-            text = "Neo-tree",
-            highlight = "Directory",
-            text_align = "left",
-          },
-        },
       },
     },
   },
@@ -120,7 +112,6 @@ return {
             end,
           },
         },
-        extensions = { "neo-tree" },
       }
     end,
   },
