@@ -28,6 +28,8 @@ end
 
 local function setup_lsp_servers()
   local capabilities = require("blink.cmp").get_lsp_capabilities()
+  capabilities.workspace = capabilities.workspace or {}
+  capabilities.workspace.didChangeWatchedFiles = { dynamicRegistration = true }
 
   -- Defensive: explicitly disable the inactive TS server.
   local disabled_ts_lsp = discovery.typescript_lsp == "vtsls" and "ts_ls" or "vtsls"
