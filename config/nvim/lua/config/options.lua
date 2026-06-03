@@ -17,6 +17,7 @@ g.ruby_host_prog = resolve_host("neovim-ruby-host", "~/.asdf/shims/neovim-ruby-h
 -- 2. Built-in plugins
 g.loaded_netrw = 1
 g.loaded_netrwPlugin = 1 -- use oil.nvim / telescope-file-browser, etc.
+g.loaded_perl_provider = 0
 
 -- 3. History / backups / undo
 o.swapfile = false
