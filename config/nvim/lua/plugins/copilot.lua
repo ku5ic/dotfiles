@@ -86,7 +86,11 @@ return {
     -- event = "VeryLazy",
     config = function(_, opts)
       require("CopilotChat").setup(opts)
-      -- load tiktoken eagerly so package.cpath includes the build dir for :checkhealth
+      -- Prepend the plugin's build dir so tiktoken_core.dylib is found before any
+      -- stale system .so of the same name that may sit earlier in package.cpath.
+      local build = vim.fn.stdpath("data") .. "/lazy/CopilotChat.nvim/build"
+      local ext = vim.uv.os_uname().sysname == "Darwin" and "dylib" or "so"
+      package.cpath = build .. "/?." .. ext .. ";" .. package.cpath
       require("CopilotChat.tiktoken")
       vim.api.nvim_create_autocmd("FileType", {
         pattern = "copilot-chat",
