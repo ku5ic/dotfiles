@@ -104,4 +104,34 @@ for entry in "${ENTRIES[@]}"; do
   fi
 done
 
+setup_mcps() {
+  if ! command -v claude >/dev/null 2>&1; then
+    echo "skipped  claude CLI not found; re-run bootstrap.sh after installing Claude Code"
+    return
+  fi
+
+  if ! claude mcp get context7 >/dev/null 2>&1; then
+    claude mcp add -s user context7 -- npx -y @upstash/context7-mcp
+    echo "created  mcp:context7"
+  else
+    echo "ok       mcp:context7"
+  fi
+
+  if ! claude mcp get foxhole >/dev/null 2>&1; then
+    claude mcp add -s user foxhole -- foxhole mcp
+    echo "created  mcp:foxhole"
+  else
+    echo "ok       mcp:foxhole"
+  fi
+
+  if ! claude mcp get playwright >/dev/null 2>&1; then
+    claude mcp add -s user playwright -- npx @playwright/mcp@latest
+    echo "created  mcp:playwright"
+  else
+    echo "ok       mcp:playwright"
+  fi
+}
+
+setup_mcps
+
 exit "$exit_code"
