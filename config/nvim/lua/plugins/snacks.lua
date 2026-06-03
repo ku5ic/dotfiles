@@ -20,6 +20,7 @@ return {
       toggle = { enabled = true },
       indent = { enabled = true },
       dim = { enabled = true },
+      image = { enabled = true },
     },
     keys = {
       {
