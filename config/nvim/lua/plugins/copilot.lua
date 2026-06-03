@@ -86,6 +86,8 @@ return {
     -- event = "VeryLazy",
     config = function(_, opts)
       require("CopilotChat").setup(opts)
+      -- load tiktoken eagerly so package.cpath includes the build dir for :checkhealth
+      require("CopilotChat.tiktoken")
       vim.api.nvim_create_autocmd("FileType", {
         pattern = "copilot-chat",
         callback = function(ev)
