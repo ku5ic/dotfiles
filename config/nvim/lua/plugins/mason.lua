@@ -22,8 +22,6 @@ local function setup_mason()
       "cspell",
       "eslint",
       "js-debug-adapter",
-      "php-cs-fixer",
-      "php-debug-adapter",
       "prettier",
       "prettierd",
       "black",
