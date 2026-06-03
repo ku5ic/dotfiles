@@ -67,10 +67,6 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 # Disable auto-correct
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
-# WezTerm: show spell-check underlines; correct only when you choose to
-defaults write com.github.wez.wezterm NSContinuousSpellCheckingEnabled -bool true
-defaults write com.github.wez.wezterm NSAutomaticSpellingCorrectionEnabled -bool false
-
 # Trackpad, mouse, keyboard, Bluetooth accessories, and input
 
 # Trackpad: enable tap to click for this user and for the login screen
