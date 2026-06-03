@@ -83,23 +83,6 @@ return {
       },
     },
     config = function()
-      local dap = require("dap")
-
-      dap.adapters.php = {
-        type = "executable",
-        command = vim.fn.stdpath("data") .. "/mason/bin/php-debug-adapter",
-      }
-
-      dap.configurations.php = {
-        {
-          type = "php",
-          request = "launch",
-          name = "Listen for xdebug",
-          port = "9003",
-          log = true,
-        },
-      }
-
       vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "DiagnosticSignError", linehl = "", numhl = "" })
     end,
   },
