@@ -2,7 +2,6 @@
 description: Reframe a technical finding or proposal for a non-technical audience
 argument-hint: <technical content, or path to a file with it>
 model: haiku
-effort: low
 ---
 
 ## Procedure

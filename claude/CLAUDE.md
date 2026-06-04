@@ -361,6 +361,14 @@ Out-of-band:
 - `/write:release-notes` - release notes
 - `/write:stakeholder` - stakeholder-facing summary
 
+### question/ - read-only Q&A, tiered by difficulty and model
+
+Answer questions at the right depth without reaching for a full flow cycle. All three tiers are read-only: no edits, no commits.
+
+- `/question:hard` - deep reasoning, cross-layer analysis, architectural judgment (opus/high)
+- `/question:medium` - real reasoning without deep analysis, the default tier (sonnet/high)
+- `/question:easy` - lookup, recall, short factual answer (sonnet/low)
+
 ### Hard rules
 
 - pause after each `/flow:*` step and wait for user approval before continuing.

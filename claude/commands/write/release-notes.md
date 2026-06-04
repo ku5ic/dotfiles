@@ -2,7 +2,6 @@
 description: Generate release notes from commits unique to the current branch vs its base
 argument-hint: <optional: explicit range like main..HEAD, or base branch name>
 model: haiku
-effort: low
 ---
 
 ## Context

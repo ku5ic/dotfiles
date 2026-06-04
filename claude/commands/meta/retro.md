@@ -2,7 +2,6 @@
 description: Structured retrospective for an incident, sprint, or completed feature
 argument-hint: <context: incident summary, sprint label, or feature name>
 model: haiku
-effort: medium
 ---
 
 ## Procedure
