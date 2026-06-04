@@ -14,6 +14,8 @@ return {
       { "<leader>gD", "<cmd>DiffviewOpen<cr>", desc = "Diff view" },
       { "<leader>gh", "<cmd>DiffviewFileHistory<cr>", desc = "File history" },
       { "<leader>gH", "<cmd>DiffviewFileHistory %<cr>", desc = "File history (current)" },
+      { "q", "<cmd>DiffviewClose<cr>", desc = "Close diffview", ft = "DiffviewFiles" },
+      { "q", "<cmd>DiffviewClose<cr>", desc = "Close diffview", ft = "DiffviewFileHistory" },
     },
     opts = {},
   },
