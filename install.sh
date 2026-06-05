@@ -3,6 +3,18 @@ set -euo pipefail
 
 DOTFILES_DIR="$HOME/.dotfiles"
 
+# Stage tracking so a mid-run failure tells you exactly where it died,
+# instead of leaving you to reverse-engineer it from a wall of output.
+CURRENT_STAGE="startup"
+on_error() {
+  local exit_code=$?
+  echo "" >&2
+  echo "install.sh: FAILED during stage '${CURRENT_STAGE}' (exit ${exit_code})" >&2
+  echo "install.sh: stages after this one did not run." >&2
+  exit "$exit_code"
+}
+trap on_error ERR
+
 update_dotfiles() {
   if [ -d "$DOTFILES_DIR/.git" ]; then
     git --work-tree="$DOTFILES_DIR" --git-dir="$DOTFILES_DIR/.git" pull origin main
@@ -13,19 +25,49 @@ install_homebrew() {
   if ! command -v brew >/dev/null 2>&1; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
+
+  # The Homebrew installer writes the shellenv line to ~/.zprofile, but that
+  # file is not sourced mid-script, so /opt/homebrew/bin is not on PATH yet.
+  # Evaluate it here so every later stage can call brew, asdf, mas, etc.
+  if [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [ -x /usr/local/bin/brew ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+
+  if ! command -v brew >/dev/null 2>&1; then
+    echo "install.sh: brew is still not on PATH after install; cannot continue." >&2
+    return 1
+  fi
 }
 
 install_shells() {
   brew install zsh bash
 
-  echo "$(brew --prefix)/bin/zsh" | sudo tee -a /private/etc/shells
-  echo "$(brew --prefix)/bin/bash" | sudo tee -a /private/etc/shells
+  local brew_prefix
+  brew_prefix="$(brew --prefix)"
 
-  chsh -s "$(brew --prefix)/bin/zsh"
+  # Append to /etc/shells only if not already present, to keep re-runs clean.
+  grep -qxF "$brew_prefix/bin/zsh" /private/etc/shells ||
+    echo "$brew_prefix/bin/zsh" | sudo tee -a /private/etc/shells >/dev/null
+  grep -qxF "$brew_prefix/bin/bash" /private/etc/shells ||
+    echo "$brew_prefix/bin/bash" | sudo tee -a /private/etc/shells >/dev/null
+
+  chsh -s "$brew_prefix/bin/zsh"
 }
 
 install_packages() {
-  brew bundle --file="$DOTFILES_DIR/Brewfile"
+  # mas (App Store) entries can fail when the signed-in Apple ID does not own
+  # the app, or when an ADAM ID has been pulled from the store. Those failures
+  # must NOT abort the bootstrap and leave dotfiles unlinked, so brew bundle is
+  # explicitly non-fatal here. Formula/cask failures are surfaced but also do
+  # not halt the run; inspect the output if something core is missing.
+  if ! brew bundle --file="$DOTFILES_DIR/Brewfile"; then
+    echo "install.sh: WARN: brew bundle reported failures." >&2
+    echo "install.sh: WARN: this is usually mas/App Store apps not owned by the" >&2
+    echo "install.sh: WARN: current Apple ID, or a pulled ADAM ID. Continuing so" >&2
+    echo "install.sh: WARN: symlinks and the rest of bootstrap still run." >&2
+  fi
 }
 
 create_symlinks() {
@@ -57,9 +99,11 @@ create_symlinks() {
 
 install_launchd_agents() {
   mkdir -p "$HOME/Library/LaunchAgents"
+  local brew_bash
   brew_bash="$(brew --prefix)/bin/bash"
   for template in "$DOTFILES_DIR/launchd/"*.plist; do
     [ -f "$template" ] || continue
+    local dest
     dest="$HOME/Library/LaunchAgents/$(basename "$template")"
     sed -e "s|__HOME__|$HOME|g" -e "s|__BREW_BASH__|$brew_bash|g" "$template" >"$dest"
     echo "launchd: wrote $dest"
@@ -107,14 +151,25 @@ setup_asdf() {
 }
 
 main() {
+  CURRENT_STAGE="update_dotfiles"
   update_dotfiles
+  CURRENT_STAGE="install_homebrew"
   install_homebrew
+  CURRENT_STAGE="install_shells"
   install_shells
+  CURRENT_STAGE="install_packages"
   install_packages
+  CURRENT_STAGE="fix_permissions"
   fix_permissions
+  CURRENT_STAGE="create_symlinks"
   create_symlinks
+  CURRENT_STAGE="install_launchd_agents"
   install_launchd_agents
+  CURRENT_STAGE="setup_asdf"
   setup_asdf
+
+  echo ""
+  echo "install.sh: completed."
 }
 
 main "$@"

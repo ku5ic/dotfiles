@@ -35,7 +35,7 @@ This pulls the repo, installs Homebrew, installs zsh and bash, sets zsh as the l
 To re-run the full installer (pulls the repo and refreshes Homebrew packages, symlinks, permissions, and asdf runtimes):
 
 ```bash
-source ~/.dotfiles/install.sh
+~/.dotfiles/install.sh
 ```
 
 To update Homebrew packages:
