@@ -112,4 +112,80 @@ else
   echo "ok             ${#patterns[@]} patterns mirrored across guard-edit.sh, guard-bash.sh, and settings.json"
 fi
 
+echo
+echo "== command frontmatter lint =="
+
+if ! command -v yq >/dev/null 2>&1; then
+  echo "skip           yq not found; install via Brewfile to enable frontmatter lint"
+else
+  COMMANDS_DIR="$SOURCE_ROOT/commands"
+  fm_failed=0
+  fm_count=0
+
+  while IFS= read -r f; do
+    fm_count=$((fm_count + 1))
+    # Extract YAML frontmatter between the first pair of --- delimiters.
+    fm=$(awk 'NR==1 && /^---$/{in_fm=1;next} in_fm && /^---$/{exit} in_fm{print}' "$f")
+    rel="${f#"$SOURCE_ROOT/"}"
+
+    if [[ -z "$fm" ]]; then
+      echo "missing-frontmatter  $rel"
+      fm_failed=1
+      continue
+    fi
+
+    # Filter to just model/effort lines before passing to yq: other frontmatter
+    # fields (e.g. argument-hint: <...>) contain angle brackets that yq rejects
+    # as invalid YAML.
+    fm_safe=$(printf '%s\n' "$fm" | grep -E '^(model|effort):')
+    model=$(printf '%s\n' "$fm_safe" | yq '.model // ""' 2>/dev/null || true)
+    effort=$(printf '%s\n' "$fm_safe" | yq '.effort // ""' 2>/dev/null || true)
+    # yq may emit the literal string "null" for absent keys; normalize to empty.
+    [[ "$model" == "null" ]] && model=""
+    [[ "$effort" == "null" ]] && effort=""
+
+    if [[ -z "$model" ]]; then
+      echo "missing-model    $rel"
+      fm_failed=1
+    else
+      case "$model" in
+      fable | opus | sonnet | haiku | best | opusplan | "sonnet[1m]" | "opus[1m]" | inherit | default | claude-*)
+        ;;
+      *)
+        echo "invalid-model    $rel: '$model'"
+        fm_failed=1
+        ;;
+      esac
+    fi
+
+    if [[ "$model" == "sonnet" || "$model" == "opus" ]] && [[ -z "$effort" ]]; then
+      echo "missing-effort   $rel: model=$model requires effort"
+      fm_failed=1
+    fi
+
+    if [[ "$model" == "haiku" && -n "$effort" ]]; then
+      echo "extra-effort     $rel: haiku does not support effort (got '$effort')"
+      fm_failed=1
+    fi
+
+    if [[ -n "$effort" ]]; then
+      case "$effort" in
+      low | medium | high | xhigh | max)
+        ;;
+      *)
+        echo "invalid-effort   $rel: '$effort'"
+        fm_failed=1
+        ;;
+      esac
+    fi
+
+  done < <(find "$COMMANDS_DIR" -name "*.md" -type f | sort)
+
+  if ((fm_failed)); then
+    exit_code=1
+  else
+    echo "ok             $fm_count commands passed frontmatter lint"
+  fi
+fi
+
 exit "$exit_code"
