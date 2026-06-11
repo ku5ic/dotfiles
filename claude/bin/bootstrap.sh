@@ -33,7 +33,7 @@ EOF
   esac
 done
 
-ENTRIES=(settings.json CLAUDE.md commands hooks skills bin _stacks.yml)
+ENTRIES=(settings.json CLAUDE.md commands hooks skills rules bin _stacks.yml)
 
 mkdir -p "$TARGET_ROOT"
 
