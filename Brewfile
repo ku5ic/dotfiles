@@ -81,6 +81,7 @@ brew 'zsh-syntax-highlighting'      # live command-line syntax coloring
 cask '1password'                  # password manager desktop app
 cask '1password-cli'              # 1Password CLI for shell and SSH agent integration
 cask 'adguard'                    # system-wide ad and tracker blocker
+cask 'affinity'                   # design suite (photo, designer, publisher) for creative work and asset editing
 cask 'boop'                       # scratchpad for ad-hoc text transformations
 cask 'chatgpt'                    # ChatGPT desktop app
 cask 'claude'                     # Claude desktop app
@@ -108,8 +109,6 @@ cask 'zoom'                       # video conferencing client
 
 # Mac App Store
 mas '1Password for Safari', id: 1_569_813_296 # 1Password browser extension for Safari
-mas 'Affinity Designer 2', id: 1_616_831_348 # vector graphics editor
-mas 'Affinity Photo 2', id: 1_616_822_987 # raster image editor
 mas 'DuckDuckGo Privacy for Safari', id: 1_482_920_575 # tracker blocker for Safari
 mas 'GarageBand', id: 682_658_836 # audio workstation
 mas 'JSONPeep', id: 1_458_969_831 # Safari JSON viewer extension
