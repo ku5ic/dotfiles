@@ -25,8 +25,8 @@
 #     {
 #       "matcher": "Read",
 #       "hooks": [{ "type": "command", "command": "$HOME/.claude/hooks/log-skills.sh", "timeout": 5 }]
-#     },
-#     ... existing Edit|Write|MultiEdit entry ...
+#     }
+#     ... other PostToolUse entries (Edit|Write|MultiEdit) are unrelated ...
 #   ]
 
 HOOK_NAME="log-skills.sh"
