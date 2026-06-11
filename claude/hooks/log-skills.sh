@@ -36,15 +36,21 @@ source "$(dirname "$0")/_lib.sh"
 read_payload
 require_jq
 
-# Parse all routing fields in one jq pass to avoid repeated subshells.
-IFS=$'\t' read -r event expansion_type tool_name file_path < <(
-  printf '%s' "$payload" | jq -r '[
+# Parse all routing fields via newline-delimited jq output so that empty fields
+# (e.g. expansion_type on PreToolUse/PostToolUse events) are preserved as empty
+# array elements. IFS=$'\t' read merges consecutive tabs and would shift later
+# fields left whenever expansion_type is empty, corrupting tool_name/file_path.
+mapfile -t _fields < <(
+  printf '%s' "$payload" | jq -r '
     (.hook_event_name // ""),
     (.expansion_type // ""),
     (.tool_name // ""),
-    (.tool_input.file_path // "")
-  ] | join("\t")'
+    (.tool_input.file_path // "")'
 )
+event="${_fields[0]:-}"
+expansion_type="${_fields[1]:-}"
+tool_name="${_fields[2]:-}"
+file_path="${_fields[3]:-}"
 
 case "$event" in
 UserPromptExpansion)

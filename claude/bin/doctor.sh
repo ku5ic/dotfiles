@@ -19,6 +19,8 @@
 # Adding a credential pattern: add it to the `patterns` array below AND to
 # hooks/guard-edit.sh's "Sensitive credential and key files" case block AND
 # hooks/guard-bash.sh's _is_sensitive_arg block AND settings.json's deny array.
+#
+# Exit codes: 0 = all checks passed, 1 = one or more checks failed.
 
 set -euo pipefail
 
