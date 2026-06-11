@@ -14,7 +14,7 @@ cmd="$(extract_command)"
 # multi-line message. Search $cmd directly -- line-by-line grep finds the
 # trailer since it appears on its own line. Avoids -z (GNU-only, not macOS).
 if printf '%s' "$cmd" | grep -qiE 'Co-Authored-By:[[:space:]]*Claude|Generated[[:space:]]+(by|with)[[:space:]]+Claude|🤖[[:space:]]*Generated'; then
-  block "AI signature in commit message"
+  block "AI signature in commit message" "ai-commit-sig"
 fi
 
 # Extract subject (first line of -m value) for AI-tell phrase check.
@@ -26,7 +26,7 @@ subject="$(printf '%s' "${msg_dq}${msg_sq}" | head -1)"
 [[ -z "$subject" ]] && exit 0
 
 if echo "$subject" | grep -qiE '^(feat|fix|chore|refactor|docs|test|perf|build|ci|style)?:?[[:space:]]*(certainly|here is|i have|let me|in this commit|this commit)'; then
-  block "AI-tell phrasing in commit subject"
+  block "AI-tell phrasing in commit subject" "ai-commit-tell"
 fi
 
 exit 0
