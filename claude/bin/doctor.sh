@@ -113,6 +113,31 @@ else
 fi
 
 echo
+echo "== PM table parity =="
+
+GUARD_BASH_PM="$SOURCE_ROOT/hooks/guard-bash.sh"
+STACKS_YML="$HOME/.claude/_stacks.yml"
+pm_parity_failed=0
+
+if ! command -v yq >/dev/null 2>&1; then
+  echo "skip           yq not found; skipping PM table parity check"
+else
+  yml_pm="$(yq '.package_managers[] | .lockfile + ":" + .manager' "$STACKS_YML" 2>/dev/null | sort)"
+  bash_pm="$(awk '/<<.*PM_LOCKFILES/{f=1; next} /^PM_LOCKFILES$/{f=0} f{print}' "$GUARD_BASH_PM" 2>/dev/null | sort)"
+  if [[ "$yml_pm" == "$bash_pm" ]]; then
+    echo "ok             guard-bash.sh PM table matches _stacks.yml"
+  else
+    echo "FAIL           guard-bash.sh PM table drifted from _stacks.yml"
+    diff <(printf '%s\n' "$yml_pm") <(printf '%s\n' "$bash_pm") | head -20
+    pm_parity_failed=1
+  fi
+fi
+
+if ((pm_parity_failed)); then
+  exit_code=1
+fi
+
+echo
 echo "== command frontmatter lint =="
 
 if ! command -v yq >/dev/null 2>&1; then

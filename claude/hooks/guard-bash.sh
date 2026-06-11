@@ -27,6 +27,7 @@ block() {
   exit 2
 }
 
+_cwd="$(printf '%s' "$payload" | jq -r '.cwd // ""' 2>/dev/null || true)"
 norm="$(printf '%s' "$cmd" | tr '\t' ' ' | tr -s ' ')"
 
 # Full-string checks: patterns that need the complete command chain, or are
@@ -106,6 +107,33 @@ if [[ "$_cmd_struct_stripped" =~ \; ]]; then
   echo "Run as separate Bash tool calls. Control-flow ; (do, done, then, fi, ...) is allowed." >&2
   exit 2
 fi
+
+# _resolve_pm_for_dir <dir>: prints "manager:lockfile" for the first lockfile
+# match in <dir> or its git toplevel; prints nothing when no lockfile is found.
+# Hardcoded table mirrors _stacks.yml package_managers (verified by bin/doctor.sh).
+# Editing here: also update _stacks.yml and run bin/doctor.sh to verify parity.
+_resolve_pm_for_dir() {
+  local dir="${1:-.}"
+  local toplevel
+  toplevel="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
+  local lf mgr
+  while IFS=: read -r lf mgr; do
+    if [[ -f "$dir/$lf" || (-n "$toplevel" && -f "$toplevel/$lf") ]]; then
+      printf '%s:%s\n' "$mgr" "$lf"
+      return 0
+    fi
+  done <<'PM_LOCKFILES'
+bun.lockb:bun
+bun.lock:bun
+pnpm-lock.yaml:pnpm
+yarn.lock:yarn
+package-lock.json:npm
+uv.lock:uv
+poetry.lock:poetry
+Pipfile.lock:pipenv
+requirements.txt:pip
+PM_LOCKFILES
+}
 
 # Returns 0 (true) when $1 names a sensitive credential or key file.
 # Normalizes ~ and $HOME before matching so both forms are caught.
@@ -242,18 +270,60 @@ _check_segment() {
       block "keychain deletion" "keychain-delete"
     fi
     ;;
-  npm | pnpm | yarn)
-    if [[ "$seg" =~ (npm|pnpm|yarn)[[:space:]]+(install|add|i)[[:space:]]+.*(-g|--global) ]]; then
+  npm | npx | pnpm | yarn | bun | bunx | pip | pip3 | poetry | uv | pipenv)
+    # Global install guards (JS package managers only).
+    if [[ "$lead" =~ ^(npm|pnpm|yarn)$ ]] && [[ "$seg" =~ (npm|pnpm|yarn)[[:space:]]+(install|add|i)[[:space:]]+.*(-g|--global) ]]; then
       block "global package install. Use a project-local install or asdf shim." "pkg-global-install"
     fi
-    if [[ "$seg" =~ yarn[[:space:]]+global[[:space:]]+add[[:space:]] ]]; then
+    if [[ "$lead" == "yarn" ]] && [[ "$seg" =~ yarn[[:space:]]+global[[:space:]]+add[[:space:]] ]]; then
       block "global package install. Use a project-local install or asdf shim." "pkg-global-install"
     fi
-    ;;
-  bun)
-    if [[ "$seg" =~ bun[[:space:]]+(add|install)[[:space:]]+.*(-g|--global) ]]; then
+    if [[ "$lead" == "bun" ]] && [[ "$seg" =~ bun[[:space:]]+(add|install)[[:space:]]+.*(-g|--global) ]]; then
       block "global package install. Use a project-local install or asdf shim." "pkg-global-install"
     fi
+    # PM mismatch guard: block when the invoked PM differs from the lockfile-detected PM.
+    # Allow --version / -v (version queries never affect project files).
+    local _pm_rest
+    _pm_rest="${seg#"$lead"}"
+    _pm_rest="${_pm_rest#"${_pm_rest%%[![:space:]]*}"}"
+    [[ "$_pm_rest" == "--version" || "$_pm_rest" == "-v" ]] && return 0
+    # Canonical invoked PM (aliases: npx->npm, bunx->bun, pip3->pip).
+    # Known gap: python -m pip bypasses this check (lead token is python, not pip).
+    local _invoked
+    case "$lead" in
+    npx) _invoked="npm" ;;
+    bunx) _invoked="bun" ;;
+    pip3) _invoked="pip" ;;
+    *) _invoked="$lead" ;;
+    esac
+    # Resolve expected PM from repo lockfiles; greenfield (no lockfile) always allowed.
+    local _pm_info
+    _pm_info="$(_resolve_pm_for_dir "${_cwd:-$PWD}")"
+    [[ -z "$_pm_info" ]] && return 0
+    local _expected="${_pm_info%%:*}"
+    local _lf_found="${_pm_info#*:}"
+    [[ "$_invoked" == "$_expected" ]] && return 0
+    # Build suggested replacement command; npx/bunx get their dlx equivalents.
+    local _tail="${seg#"$lead"}"
+    local _suggest
+    if [[ "$lead" == "npx" ]]; then
+      case "$_expected" in
+      bun) _suggest="bunx${_tail}" ;;
+      pnpm) _suggest="pnpm dlx${_tail}" ;;
+      yarn) _suggest="yarn dlx${_tail}" ;;
+      *) _suggest="${_expected}${_tail}" ;;
+      esac
+    elif [[ "$lead" == "bunx" ]]; then
+      case "$_expected" in
+      npm) _suggest="npx${_tail}" ;;
+      pnpm) _suggest="pnpm dlx${_tail}" ;;
+      yarn) _suggest="yarn dlx${_tail}" ;;
+      *) _suggest="${_expected}${_tail}" ;;
+      esac
+    else
+      _suggest="${_expected}${_tail}"
+    fi
+    block "this repo uses ${_expected} (${_lf_found}); rerun as: ${_suggest}" "pm-mismatch"
     ;;
   cat | bat | head | tail | less | more | strings)
     # Block reads of sensitive credential and key files.
