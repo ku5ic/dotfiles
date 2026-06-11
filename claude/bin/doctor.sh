@@ -22,7 +22,7 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 SOURCE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TARGET_ROOT="$HOME/.claude"
 
@@ -122,7 +122,7 @@ echo
 echo "== PM table parity =="
 
 GUARD_BASH_PM="$SOURCE_ROOT/hooks/guard-bash.sh"
-STACKS_YML="$HOME/.claude/_stacks.yml"
+STACKS_YML="$SOURCE_ROOT/_stacks.yml"
 pm_parity_failed=0
 
 if ! command -v yq >/dev/null 2>&1; then
@@ -134,7 +134,7 @@ else
     echo "ok             guard-bash.sh PM table matches _stacks.yml"
   else
     echo "FAIL           guard-bash.sh PM table drifted from _stacks.yml"
-    diff <(printf '%s\n' "$yml_pm") <(printf '%s\n' "$bash_pm") | head -20
+    diff <(printf '%s\n' "$yml_pm") <(printf '%s\n' "$bash_pm") | head -20 || true
     pm_parity_failed=1
   fi
 fi
