@@ -45,36 +45,6 @@ Canonical for both Claude Code and the userPreferences field in claude.ai chat p
 
 Markdown is prose, not code. Sentences flow naturally on one line regardless of length. Never break sentences across lines, not in paragraphs, not in list items, not anywhere. Hard line breaks belong only between paragraphs, between list items, and around code fences. Inside a sentence, no wrapping, ever.
 
-## Token discipline
-
-- Prefer `rg` and `grep` over `Read` when locating, not understanding. Read only the matched section.
-- Cap `git log` to `-20` unless a wider window is justified.
-- Do not `cat` files larger than 500 lines without a specific reason. Use line ranges.
-- Do not re-read a file in the same session unless an edit has changed it.
-- Skip these directories for any glob, grep, or read: `node_modules/**`, `.next/**`, `dist/**`, `build/**`, `coverage/**`, `.turbo/**`, `.cache/**`, `vendor/**`, `target/**`, `out/**`, `storybook-static/**`, `.pnpm-store/**`, `__pycache__/**`, `.venv/**`, `venv/**`.
-- For diffs, prefer `git diff <base>..HEAD -- <path>` over unfiltered diff.
-- Reports should reference scratch artifacts by path, not inline their full contents.
-- See "Preferred CLI tools" below for the full toolbox. The principle: if a CLI gives a deterministic answer, use it before reading and reasoning.
-
-## Preferred CLI tools
-
-When a deterministic CLI exists for a question, call it instead of reading files and reasoning. The tools below are installed via Brewfile and permitted in settings.json. Before using any CLI not in this list, confirm it appears in `~/.dotfiles/Brewfile` - that is the authoritative inventory of what is installed on this machine. When multiple tools could answer the same question, prefer the one that uses fewer tokens: a single CLI call beats a targeted file read; a targeted file read beats a broad grep; any of these beats model reasoning from memory.
-
-- `rg` for code search and locating, over `grep`, `find -name`, or `Read` walks.
-- `sg` (ast-grep) for syntax-aware structural code search and rewrite. Prefer over `rg` when the question is about code shape, not text: "find every useEffect with an empty dep array", "rename this call pattern". `sg` understands AST; `rg` matches strings.
-- `fd` for filename and path search, over `find`.
-- `tokei` for repo size, language breakdown, and largest-file selection. One call replaces "read several files to estimate".
-- `gitleaks` for quick secret detection. `trufflehog git file://.` for deeper history scanning and broader credential coverage.
-- `hyperfine` for command-level timing measurement. Use it when a perf claim needs a number, not an opinion.
-- `jq` for JSON inspection and transformation, over substring matching on raw output. `yq` for YAML and TOML. `gron` to flatten JSON into greppable `path = value` lines when writing a jq path blind is slower than grepping.
-- `sd 'find' 'replace' file` for in-place substitution, over `sed -i`. Safer syntax, no quoting footguns.
-- `qsv` for CSV/TSV operations (select, join, stats, frequency). The CSV counterpart to `jq`.
-- `sponge` (from moreutils) to buffer stdin before writing: `cmd | sponge file` avoids the temp-file pattern and is safe for in-place pipeline rewrites.
-- `git absorb` to auto-generate fixup commits from staged hunks, over manual `rebase -i` + fixup.
-- `git -C <dir> <subcmd>` for any git operation outside the current working directory. Do not `cd <dir> && git ...`; the chain triggers a permission prompt that `git -C` avoids.
-
-Rule: if the question is factual (how big, what secrets, how fast, what is in this JSON), reach for the tool. If the question is interpretive (is this code correct, does this design hold up), reading and reasoning is correct.
-
 ## Code Style
 
 - No decorative comments. No banners, dividers, or section headers made of symbols like `===`, `---`, `***`, `###`, or similar.
@@ -288,35 +258,6 @@ If a check is missing entirely (no linter configured), do not introduce one as p
 2. Make the correction.
 3. Surface any other places the same misunderstanding might apply.
 4. Do not over-correct: a single correction does not justify rewriting unrelated work.
-
-## Scratch artifact naming
-
-All commands that write to `$HOME/.claude/scratch/` use this pattern:
-
-~/.claude/scratch/<kind>-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md
-
-If the kind has no scope slug:
-
-~/.claude/scratch/<kind>-<project-name>-<YYYYMMDD-HHMM>.md
-
-`<project-name>` is the output of `$HOME/.claude/bin/project-name.sh`.
-It is the slugified basename of the git repo root: lowercased, leading dots
-stripped, non-alphanumeric characters replaced with dashes, collapsed dashes,
-trimmed. Outside a git working tree it returns the slug of $PWD basename
-(e.g. "tmp" for /tmp, "dotfiles" for ~/.dotfiles).
-
-When reading "the most recent X" of a kind, always filter by the current
-project name:
-
-ls -t ~/.claude/scratch/<kind>-<project-name>-\*.md | head -1
-
-Never read across projects. If no artifact exists for the current project,
-run the predecessor command first.
-
-All scratch goes to `$HOME/.claude/scratch/` (home, absolute), never
-`$HOME/.claude/scratch/` (cwd-relative).
-
-Retention: artifacts older than 30 days are pruned by `$HOME/.claude/bin/scratch-rotate.sh`. Run manually (`scratch-rotate.sh`) or wire to launchd. Pass a custom retention window as the first argument: `scratch-rotate.sh 14`.
 
 ## Claude Code command namespace (canonical)
 
