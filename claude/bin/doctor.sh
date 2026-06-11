@@ -30,7 +30,9 @@ ENTRIES=(settings.json CLAUDE.md commands hooks skills bin)
 
 exit_code=0
 
-if [[ -d "$TARGET_ROOT" ]]; then
+if [[ "${CI:-}" == "true" ]]; then
+  echo "== symlinks == (skipped: running in CI)"
+elif [[ -d "$TARGET_ROOT" ]]; then
   echo "== symlinks =="
   for entry in "${ENTRIES[@]}"; do
     src="$SOURCE_ROOT/$entry"
@@ -56,7 +58,7 @@ if [[ -d "$TARGET_ROOT" ]]; then
     echo "ok             $dst"
   done
 else
-  echo "== symlinks == (skipped: $TARGET_ROOT does not exist; running outside an installed-dotfiles environment, e.g. CI)"
+  echo "== symlinks == (skipped: $TARGET_ROOT does not exist)"
 fi
 
 echo

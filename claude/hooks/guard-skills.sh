@@ -70,8 +70,14 @@ skills_log="$HOME/.claude/logs/skills.jsonl"
 declare -a missing=()
 for sk in "${required_skills[@]}"; do
   found=""
+  # Accept: exact skill_file match (PreToolUse Skill or required-skill events) OR
+  # path-based match (PostToolUse Read of <skill>/SKILL.md, which is the reliable
+  # logged signal when the Skill tool loads a skill and Claude reads its file).
   found="$(jq -rs --arg sid "$session_id" --arg sk "$sk" \
-    'any(.[]; .session_id == $sid and .event == "PreToolUse" and .skill_file == $sk)' \
+    'any(.[]; .session_id == $sid and .skill_file != null and (
+      .skill_file == $sk or
+      (.skill_file | contains("/skills/" + $sk + "/"))
+    ))' \
     "$skills_log" 2>/dev/null)" || true
   [[ "$found" == "true" ]] || missing+=("$sk")
 done
