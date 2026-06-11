@@ -32,6 +32,7 @@ ENTRIES=(settings.json CLAUDE.md commands hooks skills bin)
 
 exit_code=0
 
+# CI runners have no ~/.claude install, so symlink targets never resolve correctly.
 if [[ "${CI:-}" == "true" ]]; then
   echo "== symlinks == (skipped: running in CI)"
 elif [[ -d "$TARGET_ROOT" ]]; then
