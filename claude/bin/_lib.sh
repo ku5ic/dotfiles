@@ -17,6 +17,7 @@ if ! command -v yq >/dev/null 2>&1; then
   STACK_SENTINELS_FULL=()
   STACK_SENTINELS_PROJECT_ROOT=()
   STACK_DETECT_FILES=()
+  resolve_package_manager() { return 0; }
   return 0
 fi
 
@@ -52,3 +53,31 @@ mapfile -t STACK_DETECT_FILES < <(
     yq '.stacks[].extras[] | .any_of // [] | .[] | select(has("in")) | .in[]' "$_STACKS_YML"
   } 2>/dev/null | sort -u
 )
+
+# resolve_package_manager <dir>
+# Prints the package manager name for <dir> by walking the package_managers
+# table in _stacks.yml (first lockfile match wins). Checks <dir> first, then
+# the git toplevel of <dir> to handle monorepos where lockfiles live at the
+# root. Prints nothing when no lockfile is found; callers should apply their
+# own default (e.g. npm) when empty output means "no preference".
+resolve_package_manager() {
+  local dir="${1:-.}"
+  local toplevel
+  toplevel="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
+
+  local -a lockfiles managers
+  mapfile -t lockfiles < <(yq '.package_managers[].lockfile' "$_STACKS_YML" 2>/dev/null)
+  mapfile -t managers < <(yq '.package_managers[].manager' "$_STACKS_YML" 2>/dev/null)
+
+  local i lf mgr
+  for ((i = 0; i < ${#lockfiles[@]}; i++)); do
+    lf="${lockfiles[$i]}"
+    mgr="${managers[$i]}"
+    [[ -z "$lf" || "$lf" == "null" ]] && continue
+    [[ -z "$mgr" || "$mgr" == "null" ]] && continue
+    if [[ -f "$dir/$lf" || (-n "$toplevel" && -f "$toplevel/$lf") ]]; then
+      printf '%s\n' "$mgr"
+      return 0
+    fi
+  done
+}

@@ -56,6 +56,31 @@ global_skills:
   - engineering-fundamentals
   - git-patterns
 
+# Ordered lockfile-to-manager table. First match wins.
+# Consumed by bin/_lib.sh resolve_package_manager and (as a hardcoded copy)
+# by hooks/guard-bash.sh for the PM mismatch guard.
+# Editing here: also update the hardcoded table in guard-bash.sh and run
+# bin/doctor.sh to verify parity.
+package_managers:
+  - lockfile: bun.lockb
+    manager: bun
+  - lockfile: bun.lock
+    manager: bun
+  - lockfile: pnpm-lock.yaml
+    manager: pnpm
+  - lockfile: yarn.lock
+    manager: yarn
+  - lockfile: package-lock.json
+    manager: npm
+  - lockfile: uv.lock
+    manager: uv
+  - lockfile: poetry.lock
+    manager: poetry
+  - lockfile: Pipfile.lock
+    manager: pipenv
+  - lockfile: requirements.txt
+    manager: pip
+
 stacks:
   js:
     sentinels:
@@ -116,10 +141,6 @@ stacks:
         dep: eslint
       - name: prettier
         dep: prettier
-    pm_locks:
-      pnpm: pnpm-lock.yaml
-      yarn: yarn.lock
-      bun: bun.lockb
 
   python:
     sentinels:
