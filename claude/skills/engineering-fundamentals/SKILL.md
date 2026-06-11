@@ -19,13 +19,14 @@ Severity rubric matches `markdown-report`: cite on findings, do not invent new l
 
 ## When to load this skill
 
-| Activity                            | Sections to apply                                         |
-| ----------------------------------- | --------------------------------------------------------- |
-| Reviewing someone else's PR or diff | Code-level integrity, Test design, Metric thresholds, V&V |
-| Planning a change ad-hoc            | Requirements clarity, Design integrity                    |
-| Writing code without a plan         | Code-level integrity                                      |
-| Triaging a "this feels wrong" hunch | Metric thresholds, V&V                                    |
-| Sanity-checking docs or specs       | Requirements clarity                                      |
+| Activity                                    | Sections to apply                                         |
+| ------------------------------------------- | --------------------------------------------------------- |
+| Reviewing someone else's PR or diff         | Code-level integrity, Test design, Metric thresholds, V&V |
+| Planning a change ad-hoc                    | Requirements clarity, Design integrity                    |
+| Writing code without a plan                 | Code-level integrity                                      |
+| Triaging a "this feels wrong" hunch         | Metric thresholds, V&V                                    |
+| Sanity-checking docs or specs               | Requirements clarity                                      |
+| Deciding extract / test / commit / refactor | Decision frameworks                                       |
 
 Apply only what fits. Do not pad findings to fill sections.
 
@@ -40,6 +41,7 @@ Apply only what fits. Do not pad findings to fill sections.
 | [reference/verification-and-validation.md](reference/verification-and-validation.md) | Boehm's V&V distinction with concrete failure modes                                       |
 | [reference/metric-thresholds.md](reference/metric-thresholds.md)                     | Function size, cyclomatic complexity, McCabe < 10, SonarSource Cognitive Complexity       |
 | [reference/anti-patterns.md](reference/anti-patterns.md)                             | Eight anti-patterns covering the gap between citing principles and applying them          |
+| [reference/decision-frameworks.md](reference/decision-frameworks.md)                 | When to extract, add a test, commit, or refactor in place vs. defer                       |
 
 ## When not to load this skill
 
