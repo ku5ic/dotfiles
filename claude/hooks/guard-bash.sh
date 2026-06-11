@@ -188,6 +188,24 @@ _check_segment() {
       block "global package install. Use a project-local install or asdf shim."
     fi
     ;;
+  sh | bash | zsh | dash)
+    # -c wrapping runs an arbitrary command string that never surfaces as its
+    # own Bash tool call, bypassing the permission allow list entirely.
+    # Scan short-option clusters only (single dash); long options like --login
+    # are not flag clusters and cannot carry -c.
+    local _iarg _interp_c=0
+    for _iarg in ${seg#"$lead"}; do
+      case "$_iarg" in
+      --) break ;;
+      --*) ;;
+      -*) [[ "$_iarg" == *c* ]] && _interp_c=1 ;;
+      *) break ;;
+      esac
+    done
+    if ((_interp_c)); then
+      block "interpreter -c wrapping bypasses the permission allow list; run the command directly as a Bash tool call" "interpreter-c-wrap"
+    fi
+    ;;
   esac
 }
 
