@@ -149,7 +149,7 @@ If a file claimed to exist by the user is not found, surface that immediately an
 All commands live under `$HOME/.claude/commands/` and are organized into five namespaces. Invocation uses the `/<group>:<name>` form. The canonical inventory is the output of `/skills` inside Claude Code.
 
 - `flow/` - the default feature workflow: preflight, plan, implement, test, review, plus fix, debug, quick, resume, checks
-- `audit/` - targeted audits invoked when scope warrants: a11y, debt, doc-drift, perf, security
+- `audit/` - targeted audits invoked when scope warrants: a11y, claude, debt, doc-drift, perf, security
 - `meta/` - authoring and reflection: feature, prompt, retro
 - `write/` - outward-facing communication: commit, pr, release-notes, stakeholder
 - `question/` - read-only Q&A tiered by reasoning depth: hard (opus/high), medium (sonnet/high), easy (sonnet/low)

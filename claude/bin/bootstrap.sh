@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Idempotent symlink installer for the Claude config layout.
-# Maps ~/.dotfiles/claude/{settings.json,CLAUDE.md,commands,hooks,skills,bin}
+# Maps ~/.dotfiles/claude/{settings.json,CLAUDE.md,commands,hooks,skills,rules,bin,_stacks.yml}
 # onto ~/.claude/<same>. Refuses to clobber non-symlinks unless --force, and
 # never auto-removes a non-symlink directory (would destroy user data).
 # Invoke with --non-interactive from install.sh; bare runs prompt on conflict.

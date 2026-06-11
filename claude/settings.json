@@ -474,7 +474,10 @@
       "Write(**/.prettierrc*)"
     ],
     "defaultMode": "default",
-    "additionalDirectories": ["~/.claude", "~/.dotfiles"]
+    "additionalDirectories": [
+      "~/.claude",
+      "~/.dotfiles"
+    ]
   },
   "model": "sonnet",
   "hooks": {
