@@ -82,7 +82,7 @@ No new severity levels.
 
 ## References
 
-- Scratch artifact naming: `~/.dotfiles/CLAUDE.md`, section "Scratch artifact naming"
+- Scratch artifact naming: `~/.dotfiles/claude/rules/scratch-conventions.md`
 
 ## Maintenance note
 

@@ -8,7 +8,7 @@ effort: high
 ## Procedure
 
 1. Get the project name: `!`project-name.sh``. Stack is in the injected `<repo-context>` block.
-2. Mechanical-skip check. If the most recent plan for this project was marked `plan-shape: mechanical` and the implement step's verification passed cleanly (no failures recorded in the implement output), emit a one-line review ("verification passed, no findings, mechanical change per plan-<project-name>-<task-slug>-<HHMM>") and stop. Otherwise proceed to step 3.
+2. Mechanical-skip check. If the most recent plan for this project was marked `plan-shape: mechanical` and the implement step's verification passed cleanly (no failures recorded in the implement output), emit a one-line review ("verification passed, no findings, mechanical change per plan-<project-name>-<task-slug>-<HHMM>") and stop. Otherwise proceed to step 3. This short-circuit is opt-in by signal: when it fires, state that it fired and why; when it does not hold, fall through to the full review. `--full` in $ARGUMENTS skips this check and forces a full review.
 3. If the diff exceeds 500 changed lines, propose splitting the review into logical chunks before starting.
 4. Determine the review scope:
    - If $ARGUMENTS looks like a commit range (`main..HEAD`, SHA range): review that range
