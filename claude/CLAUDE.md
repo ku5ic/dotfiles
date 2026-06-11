@@ -63,6 +63,7 @@ Markdown is prose, not code. Sentences flow naturally on one line regardless of 
 - Before running a script, check the project actually defines it: `scripts` in `package.json`, Makefile, justfile, task runner.
 - When a question concerns current versions, features, or APIs of a fast moving tool, verify against the authoritative source or the project's lockfile. Training memory is not sufficient.
 - Do not assume file paths, directory structure, or naming conventions. Look first.
+- Never declare a task complete with failing checks. Run the project's checks (`/flow:checks` or `run-checks.sh`); if any fail, fix them or report and stop.
 
 ## Anti-fabrication
 
@@ -115,28 +116,6 @@ If a file claimed to exist by the user is not found, surface that immediately an
 - On commit requests, show the proposed message and the staged diff summary before committing. Wait for confirmation unless told to proceed without asking.
 - Do not stage or commit unrelated changes. If you notice incidental fixes, flag them and propose a separate commit.
 
-## Quality Gates
-
-- For accessibility work, validate against WCAG 2.2 AA explicitly. Do not claim compliance without checking.
-- For performance sensitive changes, state the tradeoff. Do not claim improvements without measurement.
-- Start tests narrow (single file or single test) before running the full suite.
-
-## Verification checklist
-
-Run only what the project defines. Detect runners from lockfile and scripts.
-
-- Type check: `tsc --noEmit`, `mypy`, `pyright`, `sorbet tc`, `cargo check`, `go vet` (whichever exists)
-- Lint: `eslint`, `biome lint`, `ruff check`, `rubocop`, `clippy` (whichever exists)
-- Format check (not write): `prettier --check`, `biome format`, `ruff format --check`, `rubocop --autocorrect-all --dry-run`
-- Tests narrow first: single file or single test. Then the suite for the touched module.
-
-If a check fails:
-
-- Fix it, or
-- Report the failure and stop. Do not declare the task complete with failing checks.
-
-If a check is missing entirely (no linter configured), do not introduce one as part of an unrelated task. Note it as a "Cannot be verified statically" item.
-
 ## Scope and Planning
 
 - For multi step work, plan first. Use TaskCreate when the task has more than a couple of steps.
@@ -184,19 +163,3 @@ All commands live under `$HOME/.claude/commands/` and are organized into five na
 - The older `cmd-*` naming convention is stale. Any reference found in docs, workflow guides, `CLAUDE.md` files, or prompts must be corrected on touch to the new namespaced form.
 - Unprefixed references (`/preflight`, `/plan`, `/implement`) are ambiguous and should be normalized to the full `/<group>:<name>` form.
 - The canonical source of truth for available commands is the output of `/skills` inside Claude Code, not any UI label.
-
-## Flow optimization
-
-The `/flow:*` cycle has fixed per-task overhead (preflight context, plan sections, review pass) that pays off for substantive single-task work and wastes tokens when several related tasks land in the same session. Each flow command must apply the short-circuits below when their preconditions hold.
-
-### Definitions
-
-- **Session continuity**: a previous flow artifact for this project exists in `$HOME/.claude/scratch/` from this session, the working tree's set of modified files is unchanged from when that artifact was written, the current branch is unchanged, and no new commits have landed since.
-- **Mechanical plan**: a plan whose steps are pure file edits with no architectural choice, no API design, no rejected alternatives worth considering. Examples: dropping a frontmatter field across N files, adding entries to a config list, find-and-replace across a directory. The plan author marks the plan with `plan-shape: mechanical` in its frontmatter when this applies.
-- **Substantive plan**: anything that is not mechanical. Default. Marked `plan-shape: substantive` or omitted (substantive is the default).
-
-### Rules
-
-- Short-circuits are opt-in by signal, not silent. The flow command states which short-circuit it applied and why, so the user can override with "do the full preflight" or "give me the full review".
-- A short-circuit failure (e.g. session continuity does not hold because new commits landed) falls through to the full flow step, not to a half-done one.
-- The user can always force a full step by passing `--full` or equivalent in $ARGUMENTS. The agent honors this without argument.

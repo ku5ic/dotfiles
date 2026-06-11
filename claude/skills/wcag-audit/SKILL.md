@@ -11,6 +11,8 @@ Target: WCAG 2.2 Level AA. Includes all Level A. Does not include AAA unless exp
 
 Go through the references in order. Skip criteria that do not apply to the scope (e.g. no forms -> skip form labeling). Record what was checked, what passed, what failed. Note items that require runtime or user testing.
 
+For accessibility work, validate against WCAG 2.2 AA explicitly. Do not claim compliance without checking it against this list; an unaudited claim of conformance is a fabrication.
+
 ## Severity rubric
 
 - `failure`: a direct Level AA violation that will block certification or cause a usable defect.
