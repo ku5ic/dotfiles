@@ -254,6 +254,7 @@
       "Skill(logging-patterns)",
       "Skill(git-patterns)",
       "Skill(monitoring-patterns)",
+      "Skill(skill-authoring)",
       "Write(**)",
       "Edit(**)",
       "MultiEdit(**)",
