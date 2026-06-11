@@ -596,6 +596,6 @@
     "ruby-lsp@claude-plugins-official": true
   },
   "spinnerTipsEnabled": false,
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "agentPushNotifEnabled": true
 }

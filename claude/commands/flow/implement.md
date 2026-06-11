@@ -2,7 +2,7 @@
 description: Execute an approved plan step by step, staying within scope
 argument-hint: <optional: step number or range>
 model: sonnet
-effort: high
+effort: xhigh
 ---
 
 ## Prerequisites
