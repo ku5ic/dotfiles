@@ -16,6 +16,7 @@ if ! command -v yq >/dev/null 2>&1; then
   echo "_lib.sh: yq not found; stack detection disabled" >&2
   STACK_SENTINELS_FULL=()
   STACK_SENTINELS_PROJECT_ROOT=()
+  STACK_DETECT_FILES=()
   return 0
 fi
 
@@ -33,4 +34,21 @@ mapfile -t STACK_SENTINELS_FULL < <(
 # shellcheck disable=SC2034
 mapfile -t STACK_SENTINELS_PROJECT_ROOT < <(
   yq '.stacks[].sentinels[] | select(.anchor == true) | .name' "$_STACKS_YML" 2>/dev/null
+)
+
+# Union of every file that influences stack detection: sentinels plus every
+# path referenced in extras rules (file:, in:, any_of[].file, any_of[].in[]).
+# Used by inject-context.sh for cache invalidation so that adding tsconfig.json
+# or conftest.py to an existing project triggers re-detection.
+# Known limit: only $project_root/<file> is checked, not search_dirs subdirs;
+# this matches the sentinel walk scope and is intentional.
+# shellcheck disable=SC2034
+mapfile -t STACK_DETECT_FILES < <(
+  {
+    yq '.stacks[].sentinels[].name' "$_STACKS_YML"
+    yq '.stacks[].extras[] | select(has("file")) | .file' "$_STACKS_YML"
+    yq '.stacks[].extras[] | select(has("in")) | .in[]' "$_STACKS_YML"
+    yq '.stacks[].extras[] | .any_of // [] | .[] | select(has("file")) | .file' "$_STACKS_YML"
+    yq '.stacks[].extras[] | .any_of // [] | .[] | select(has("in")) | .in[]' "$_STACKS_YML"
+  } 2>/dev/null | sort -u
 )

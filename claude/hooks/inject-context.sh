@@ -43,9 +43,11 @@ cache_dir="$HOME/.claude/cache/stack"
 cache_file="$cache_dir/${project_name}-$(printf '%s' "$project_root" | shasum -a 256 | cut -c1-8).txt"
 mkdir -p "$cache_dir"
 
-# Invalidate cache when any stack sentinel is newer than the cache.
+# Invalidate cache when any detection-relevant file is newer than the cache.
+# Checks $project_root/<file> only; search_dirs subdirectories are not walked
+# (same scope as the original sentinel walk, intentional).
 newest_sentinel=0
-for f in "${STACK_SENTINELS_FULL[@]/#/$project_root/}"; do
+for f in "${STACK_DETECT_FILES[@]/#/$project_root/}"; do
   [[ -f "$f" ]] || continue
   m="$(stat -f '%m' "$f" 2>/dev/null || echo 0)"
   ((m > newest_sentinel)) && newest_sentinel="$m"
@@ -68,9 +70,9 @@ if [[ -s "$cache_file" ]]; then
   echo ""
   echo "<repo-context>"
   cat "$cache_file"
-  echo "branch: $(git -C "$project_root" branch --show-current 2>/dev/null || echo unknown)"
+  echo "branch (at session start): $(git -C "$project_root" branch --show-current 2>/dev/null || echo unknown)"
   dirty="$(git -C "$project_root" status --porcelain 2>/dev/null | wc -l | tr -d ' ')"
-  echo "dirty-files: $dirty"
+  echo "dirty-files (at session start): $dirty"
   echo "</repo-context>"
 fi
 
