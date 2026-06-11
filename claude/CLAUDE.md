@@ -4,7 +4,7 @@ Global instructions for Claude Code. Applies to every repository. Project level 
 
 ## Required skills
 
-If a `<required-skills>` block is present in the conversation context, you MUST invoke the Skill tool for every skill listed in it before taking any other action - before file reads, before tool calls, before responding to the task. This is a blocking requirement. Do not skip it, defer it, or treat it as advisory. No exceptions.
+Skills surface in three layers. Required (`<required-skills>` block): the global core -- invoke every listed skill immediately via the Skill tool before any other action; blocking, no exceptions. Suggested (`<suggested-skills>` block): action-conditioned stack skills -- each line names the trigger action; load the skill when you are about to take that action. Enforced: `guard-skills` blocks the first edit to any file type mapped in `_stacks.yml` until the relevant patterns skill is loaded for the session. The source of truth for all skill mappings and trigger phrases is `_stacks.yml`.
 
 ## Project boot protocol
 

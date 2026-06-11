@@ -76,10 +76,9 @@ if [[ -s "$cache_file" ]]; then
   echo "</repo-context>"
 fi
 
-# Emit required skills derived from the detected stack.
-# Reads skill mappings directly from _stacks.yml (replaces skill-map.conf).
-# Signals are derived from detect-stack.sh output: bare stack name plus
-# compound stack+extra for each token in the extras parenthetical.
+# Emit the global required skills (blocking).
+# Only global_skills are emitted here; stack-derived skills move to
+# emit_suggested_skills so session start only blocks on the core set.
 emit_required_skills() {
   local cache="$1"
   local yml="$HOME/.claude/_stacks.yml"
@@ -88,30 +87,6 @@ emit_required_skills() {
   [[ -f "$yml" ]] || return 0
   command -v yq >/dev/null 2>&1 || return 0
 
-  # Extract signals from detect-stack.sh output.
-  # "js: yes at frontend/ (typescript, react, next) [pnpm]"
-  # -> signals: js, js+typescript, js+react, js+next
-  local -a signals=()
-  while IFS= read -r line; do
-    [[ "$line" =~ ^root: ]] && continue
-    [[ -z "$line" ]] && continue
-    local stack="${line%%:*}"
-    signals+=("$stack")
-    local extras
-    extras=$(echo "$line" | grep -oE '\([^)]+\)' | head -1 | tr -d '()') || true
-    if [[ -n "$extras" ]]; then
-      IFS=', ' read -ra parts <<<"$extras"
-      for part in "${parts[@]}"; do
-        part="${part//[[:space:]]/}"
-        [[ -n "$part" ]] && signals+=("${stack}+${part}")
-      done
-    fi
-  done <"$cache"
-
-  # For each matched signal, collect skills from _stacks.yml.
-  # Base signal (js): .stacks.js.skills[]
-  # Extra signal (js+react): .stacks.js.extras[] | select(.name == "react") | .skills[]
-  # Skills are deduplicated in first-seen order.
   local -A seen=()
   local -a required=()
 
@@ -123,26 +98,9 @@ emit_required_skills() {
     fi
   }
 
-  # Global skills: added first, before any per-stack signal.
   while IFS= read -r skill; do
     [[ -n "$skill" ]] && add_skill "$skill"
   done < <(yq '.global_skills // [] | .[]' "$yml" 2>/dev/null || true)
-
-  for sig in "${signals[@]}"; do
-    if [[ "$sig" == *"+"* ]]; then
-      # compound signal: stack+extra
-      local stack="${sig%%+*}"
-      local extra="${sig##*+}"
-      while IFS= read -r skill; do
-        [[ -n "$skill" ]] && add_skill "$skill"
-      done < <(yq ".stacks.${stack}.extras[] | select(.name == \"${extra}\") | .skills // [] | .[]" "$yml" 2>/dev/null || true)
-    else
-      # bare stack signal
-      while IFS= read -r skill; do
-        [[ -n "$skill" ]] && add_skill "$skill"
-      done < <(yq ".stacks.${sig}.skills // [] | .[]" "$yml" 2>/dev/null || true)
-    fi
-  done
 
   if [[ ${#required[@]} -gt 0 ]]; then
     local IFS=', '
@@ -167,6 +125,95 @@ emit_required_skills() {
       done
     fi
   fi
+}
+
+# Emit action-conditioned skill suggestions derived from the detected stack.
+# Skills already in global_skills are excluded (they are required, not suggested).
+# Suggested skills are not logged here; log-skills.sh captures them on invocation.
+emit_suggested_skills() {
+  local cache="$1"
+  local yml="$HOME/.claude/_stacks.yml"
+
+  [[ -s "$cache" ]] || return 0
+  [[ -f "$yml" ]] || return 0
+  command -v yq >/dev/null 2>&1 || return 0
+
+  # Build the global skill exclusion set.
+  local -A global_set=()
+  while IFS= read -r sk; do
+    [[ -n "$sk" ]] && global_set[$sk]=1
+  done < <(yq '.global_skills // [] | .[]' "$yml" 2>/dev/null || true)
+
+  # Extract signals from detect-stack.sh cache output.
+  # "js: yes at frontend/ (typescript, react, next) [pnpm]"
+  # -> signals: js, js+typescript, js+react, js+next
+  local -a signals=()
+  while IFS= read -r line; do
+    [[ "$line" =~ ^root: ]] && continue
+    [[ -z "$line" ]] && continue
+    local stack="${line%%:*}"
+    signals+=("$stack")
+    local extras
+    extras=$(echo "$line" | grep -oE '\([^)]+\)' | head -1 | tr -d '()') || true
+    if [[ -n "$extras" ]]; then
+      IFS=', ' read -ra parts <<<"$extras"
+      for part in "${parts[@]}"; do
+        part="${part//[[:space:]]/}"
+        [[ -n "$part" ]] && signals+=("${stack}+${part}")
+      done
+    fi
+  done <"$cache"
+
+  if [[ ${#signals[@]} -eq 0 ]]; then
+    return 0
+  fi
+
+  # Collect per-stack/extra skills, excluding global skills, dedup first-seen.
+  local -A seen_sugg=()
+  local -a suggested=()
+
+  add_suggested() {
+    local sk="$1"
+    if [[ -n "${global_set[$sk]:-}" ]]; then
+      return 0
+    fi
+    if [[ -z "${seen_sugg[$sk]:-}" ]]; then
+      seen_sugg[$sk]=1
+      suggested+=("$sk")
+    fi
+  }
+
+  for sig in "${signals[@]}"; do
+    if [[ "$sig" == *"+"* ]]; then
+      local stack="${sig%%+*}"
+      local extra="${sig##*+}"
+      while IFS= read -r skill; do
+        [[ -n "$skill" ]] && add_suggested "$skill"
+      done < <(yq ".stacks.${stack}.extras[] | select(.name == \"${extra}\") | .skills // [] | .[]" "$yml" 2>/dev/null || true)
+    else
+      while IFS= read -r skill; do
+        [[ -n "$skill" ]] && add_suggested "$skill"
+      done < <(yq ".stacks.${sig}.skills // [] | .[]" "$yml" 2>/dev/null || true)
+    fi
+  done
+
+  if [[ ${#suggested[@]} -eq 0 ]]; then
+    return 0
+  fi
+
+  echo ""
+  echo "<suggested-skills>"
+  local sk trigger
+  for sk in "${suggested[@]}"; do
+    trigger="$(yq ".skill_triggers.\"${sk}\" // \"\"" "$yml" 2>/dev/null || true)"
+    if [[ -n "$trigger" && "$trigger" != "null" ]]; then
+      echo "${trigger}: load ${sk} via the Skill tool"
+    else
+      echo "load ${sk} via the Skill tool"
+    fi
+  done
+  echo "Patterns skills are also enforced automatically: the first edit to a matching file type will be blocked until the relevant skill is loaded."
+  echo "</suggested-skills>"
 }
 
 # emit_tooling_block <root>
@@ -288,6 +335,8 @@ emit_tooling_block() {
 }
 
 emit_required_skills "$cache_file"
+
+emit_suggested_skills "$cache_file"
 
 emit_tooling_block "$project_root"
 
