@@ -66,7 +66,7 @@ case "$path" in
   block "gh CLI auth" "gh-auth"
   ;;
 "$HOME/.netrc" | "$HOME/.pgpass" | "$HOME/.npmrc")
-  block "credential file" "cred-file"
+  block "credential file" "dotfile-cred"
   ;;
 "$HOME/.pypirc")
   block "PyPI credentials" "pypi-creds"

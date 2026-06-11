@@ -197,7 +197,7 @@ emit_tooling_block() {
 
       if jq -e 'has("scripts") and (.scripts | length > 0)' "$root/package.json" >/dev/null 2>&1; then
         echo "scripts (package.json):"
-        jq -r '.scripts | to_entries[] | "  \(.key): \(.value)"' "$root/package.json" 2>/dev/null
+        jq -r '.scripts | to_entries[] | "  \(.key): \(.value[0:120])\(if (.value | length) > 120 then "..." else "" end)"' "$root/package.json" 2>/dev/null
       fi
 
       local is_ws=0
@@ -221,15 +221,20 @@ emit_tooling_block() {
           (
             cd "$root" 2>/dev/null || exit 0
             shopt -s nullglob globstar 2>/dev/null || true
-            local _pat _dir _sc
+            local _pat _dir _sc _ws_shown=0 _ws_max=20
             for _pat in "${ws_pats[@]}"; do
               # shellcheck disable=SC2231
               for _dir in $_pat; do
                 [[ -d "$_dir" && -f "$_dir/package.json" ]] || continue
                 _sc="$(jq '.scripts | length' "$_dir/package.json" 2>/dev/null || echo 0)"
                 [[ "${_sc:-0}" -gt 0 ]] || continue
+                if [[ $_ws_shown -ge $_ws_max ]]; then
+                  echo "  (workspace packages capped at $_ws_max; run-checks.sh covers all)"
+                  break 2
+                fi
                 echo "scripts ($_dir/package.json):"
-                jq -r '.scripts | to_entries[] | "  \(.key): \(.value)"' "$_dir/package.json" 2>/dev/null
+                jq -r '.scripts | to_entries[] | "  \(.key): \(.value[0:120])\(if (.value | length) > 120 then "..." else "" end)"' "$_dir/package.json" 2>/dev/null
+                _ws_shown=$((_ws_shown + 1))
               done
             done
           ) 2>/dev/null
