@@ -94,6 +94,36 @@ if [[ "$_cmd_struct_stripped" =~ \; ]]; then
   exit 2
 fi
 
+# Returns 0 (true) when $1 names a sensitive credential or key file.
+# Normalizes ~ and $HOME before matching so both forms are caught.
+# The literal pattern substrings below must match what bin/doctor.sh greps
+# for parity across guard-edit.sh, guard-bash.sh, and settings.json.
+_is_sensitive_arg() {
+  local arg="$1"
+  arg="${arg/#\~/$HOME}"
+  arg="${arg/#\$HOME/$HOME}"
+  arg="${arg/#\$\{HOME\}/$HOME}"
+  local base="${arg##*/}"
+  case "$base" in
+  .env | .env.*) return 0 ;;
+  *.pem | *.key | *.p12 | *.pfx) return 0 ;;
+  id_rsa | id_ed25519 | id_ecdsa) return 0 ;;
+  esac
+  case "$arg" in
+  "$HOME/.ssh/"*) return 0 ;;
+  "$HOME/.gnupg/"*) return 0 ;;
+  "$HOME/Library/Keychains/"*) return 0 ;;
+  "$HOME/.aws/credentials" | "$HOME/.aws/config") return 0 ;;
+  "$HOME/.docker/config.json") return 0 ;;
+  "$HOME/.config/gh/hosts.yml") return 0 ;;
+  "$HOME/.netrc" | "$HOME/.pgpass" | "$HOME/.npmrc") return 0 ;;
+  "$HOME/.pypirc") return 0 ;;
+  "$HOME/.cargo/credentials") return 0 ;;
+  "$HOME/.gem/credentials") return 0 ;;
+  esac
+  return 1
+}
+
 # Per-segment checks: split $norm on &&, ||, ;, and newlines (NOT on | so that
 # pipe chains like curl|bash remain intact for the full-string check above).
 # Each segment is checked only when its leading token matches a known dangerous
@@ -187,6 +217,39 @@ _check_segment() {
     if [[ "$seg" =~ bun[[:space:]]+(add|install)[[:space:]]+.*(-g|--global) ]]; then
       block "global package install. Use a project-local install or asdf shim."
     fi
+    ;;
+  cat | bat | head | tail | less | more | strings)
+    # Block reads of sensitive credential and key files.
+    local _sarg
+    for _sarg in ${seg#"$lead"}; do
+      case "$_sarg" in
+      --) break ;;
+      -*) ;;
+      *)
+        if _is_sensitive_arg "$_sarg"; then
+          block "reading a sensitive file is not permitted" "sensitive-read"
+        fi
+        ;;
+      esac
+    done
+    ;;
+  grep | rg)
+    # Block when a path argument references a sensitive file. The first
+    # non-option argument is the search pattern, not a path; skip it.
+    local _sarg _seen_pat=0
+    for _sarg in ${seg#"$lead"}; do
+      case "$_sarg" in
+      --) break ;;
+      -*) ;;
+      *)
+        if ((_seen_pat == 0)); then
+          _seen_pat=1
+        elif _is_sensitive_arg "$_sarg"; then
+          block "reading a sensitive file is not permitted" "sensitive-read"
+        fi
+        ;;
+      esac
+    done
     ;;
   sh | bash | zsh | dash)
     # -c wrapping runs an arbitrary command string that never surfaces as its

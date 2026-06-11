@@ -57,11 +57,14 @@ echo
 echo "== credential pattern parity =="
 
 GUARD_EDIT="$SOURCE_ROOT/hooks/guard-edit.sh"
+GUARD_BASH="$SOURCE_ROOT/hooks/guard-bash.sh"
 SETTINGS="$SOURCE_ROOT/settings.json"
 
-# Canonical credential patterns. Each must appear verbatim in both files.
-# Path-tail forms are used so settings.json's `~/...` and guard-edit.sh's
+# Canonical credential patterns. Each must appear verbatim in all three files.
+# Path-tail forms are used so settings.json's `~/...` and the guard hooks'
 # `$HOME/...` both contain the substring.
+# Adding a pattern: add it here AND to guard-edit.sh, guard-bash.sh (_is_sensitive_arg),
+# and settings.json deny rules.
 patterns=(
   "*.pem"
   "*.key"
@@ -82,12 +85,19 @@ patterns=(
   ".pgpass"
   ".npmrc"
   "Library/Keychains/"
+  ".pypirc"
+  ".cargo/credentials"
+  ".gem/credentials"
 )
 
 parity_failed=0
 for pat in "${patterns[@]}"; do
   if ! grep -qF "$pat" "$GUARD_EDIT"; then
     echo "missing-pattern  guard-edit.sh: '$pat'"
+    parity_failed=1
+  fi
+  if ! grep -qF "$pat" "$GUARD_BASH"; then
+    echo "missing-pattern  guard-bash.sh: '$pat'"
     parity_failed=1
   fi
   if ! grep -qF "$pat" "$SETTINGS"; then
@@ -99,7 +109,7 @@ done
 if ((parity_failed)); then
   exit_code=1
 else
-  echo "ok             ${#patterns[@]} patterns mirrored across guard-edit.sh and settings.json"
+  echo "ok             ${#patterns[@]} patterns mirrored across guard-edit.sh, guard-bash.sh, and settings.json"
 fi
 
 exit "$exit_code"
