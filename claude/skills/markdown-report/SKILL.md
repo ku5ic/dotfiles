@@ -93,4 +93,4 @@ The "overall health in one word" at the end of the Summary helps quick scanning:
 ## References
 
 - Scratch artifact naming convention: `~/.dotfiles/CLAUDE.md`, section "Scratch artifact naming"
-- Skill authoring body conventions: `~/.dotfiles/CLAUDE.md`, section "Skill authoring conventions"
+- Skill authoring body conventions: `~/.dotfiles/claude/skills/skill-authoring/SKILL.md`

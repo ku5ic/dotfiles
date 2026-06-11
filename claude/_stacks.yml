@@ -3,7 +3,7 @@
 # Single source of truth for stack detection. Consumed by:
 #   bin/_lib.sh          -> STACK_SENTINELS_FULL, STACK_SENTINELS_PROJECT_ROOT
 #   bin/detect-stack.sh  -> stack names, sentinels, search_dirs, extras detection
-#   hooks/inject-context.sh (via detect-stack.sh cache) -> required skills
+#   hooks/inject-context.sh -> required skills (from global_skills) + suggested skills (via detect-stack.sh cache)
 #
 # Replaces: bin/_lib.sh hand-written arrays, detect-stack.sh declare -A blocks,
 #           per-stack *_extras() functions, skill-map.conf
@@ -40,7 +40,7 @@
 # Skills are deduplicated in first-seen order across all matched signals.
 #
 # NEVER AUTO-LOAD (no skills: entry; invoke manually when the task warrants)
-#   bash-patterns, evals, security-patterns, wcag-audit
+#   security-patterns, wcag-audit
 #
 # SENTINEL FIELDS
 # ---------------

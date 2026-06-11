@@ -82,9 +82,8 @@ No new severity levels.
 
 ## References
 
-- Skill authoring conventions: `~/.dotfiles/CLAUDE.md`, section "Skill authoring conventions" (canonical; this skill mirrors it)
 - Scratch artifact naming: `~/.dotfiles/CLAUDE.md`, section "Scratch artifact naming"
 
 ## Maintenance note
 
-Skill conventions evolve when new structural patterns emerge (new layout patterns beyond single-file and Pattern 1), when the description contract changes (new required fields), or when the severity rubric changes. Reconcile this skill with `~/.dotfiles/CLAUDE.md` on any change to either.
+Skill conventions evolve when new structural patterns emerge (new layout patterns beyond single-file and Pattern 1), when the description contract changes (new required fields), or when the severity rubric changes.

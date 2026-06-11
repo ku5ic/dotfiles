@@ -5,14 +5,20 @@
 # Checks:
 #   1. Symlinks: each top-level claude/ entry is symlinked to the dotfiles
 #      source. Verifies link existence and target path.
-#   2. Credential pattern parity: settings.json deny rules and guard-edit.sh
-#      both list every credential pattern. Both layers exist as defense in
-#      depth (a misconfigured permission file should not be the only thing
-#      standing between an injection and a clobbered key).
+#   2. Credential pattern parity: guard-edit.sh, guard-bash.sh, and
+#      settings.json all list every credential pattern. Both hook layers exist
+#      as defense in depth (a misconfigured permission file should not be the
+#      only thing standing between an injection and a clobbered key).
+#   3. PM table parity: guard-bash.sh lockfile->manager table matches
+#      _stacks.yml package_managers list.
+#   4. Command frontmatter lint: every command .md has a valid model field and
+#      matching effort field.
+#   5. Skill map validation: skill_file_map and skill_triggers reference only
+#      skills that exist, and every stack/extra skill has a trigger entry.
 #
 # Adding a credential pattern: add it to the `patterns` array below AND to
 # hooks/guard-edit.sh's "Sensitive credential and key files" case block AND
-# settings.json's deny array.
+# hooks/guard-bash.sh's _is_sensitive_arg block AND settings.json's deny array.
 
 set -euo pipefail
 
