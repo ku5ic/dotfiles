@@ -56,6 +56,13 @@ fi
 # and force permission prompts. Strip quoted content first so grep patterns that
 # contain these literals as search strings (e.g. grep '2>&1') are not blocked.
 _cmd_sq="$(printf '%s' "$cmd" | sed -E "s/'[^']*'//g" | sed -E 's/"[^"]*"//g')"
+
+# xargs rm: full-string check because xargs and rm straddle a | boundary;
+# the per-segment splitter does not split on |.
+if [[ "$_cmd_sq" =~ xargs[[:space:]]+((-[^[:space:]]+[[:space:]]+)*)rm[[:space:]]+-[a-zA-Z]*[rRfF] ]]; then
+  block "xargs rm with recursive or force flag" "xargs-rm"
+fi
+
 if [[ "$_cmd_sq" =~ 2\>\&1 ]]; then
   echo "Blocked by guard-bash.sh: shell redirect detected (2>&1)" >&2
   echo "The Bash tool merges stderr by default. Drop the redirect and retry." >&2
@@ -124,6 +131,19 @@ _is_sensitive_arg() {
   return 1
 }
 
+# Returns 0 (true) when $1 names a shell rc file that should not be edited
+# in-place. Mirrors the path set in the full-string rc-file redirect guard.
+_is_rc_file() {
+  local arg="$1"
+  arg="${arg/#\~/$HOME}"
+  arg="${arg/#\$HOME/$HOME}"
+  arg="${arg/#\$\{HOME\}/$HOME}"
+  case "$arg" in
+  "$HOME/.zshrc" | "$HOME/.zprofile" | "$HOME/.bashrc" | "$HOME/.bash_profile" | "$HOME/.profile") return 0 ;;
+  esac
+  return 1
+}
+
 # Per-segment checks: split $norm on &&, ||, ;, and newlines (NOT on | so that
 # pipe chains like curl|bash remain intact for the full-string check above).
 # Each segment is checked only when its leading token matches a known dangerous
@@ -178,6 +198,17 @@ _check_segment() {
     fi
     if [[ "$seg" =~ git[[:space:]]+config[[:space:]]+--global ]]; then
       block "git config --global from a project session"
+    fi
+    # Block tree-wide discard of working-tree changes. Tree-wide pathspecs:
+    # bare dot, double-dash-dot, :/, or bare star. Allow --staged without
+    # --worktree (unstaging is non-destructive). git -C <dir> variants work
+    # because the segment splitter sees 'git' as the lead token regardless.
+    if [[ "$seg" =~ [[:space:]](restore|checkout)[[:space:]] ]]; then
+      if [[ "$seg" =~ [[:space:]](\.|\*|--[[:space:]]?\.|:/)([[:space:]]|$) ]]; then
+        if ! [[ "$seg" =~ --staged ]] || [[ "$seg" =~ --worktree ]]; then
+          block "tree-wide discard of working-tree changes; restore individual files explicitly" "git-tree-discard"
+        fi
+      fi
     fi
     ;;
   psql)
@@ -268,6 +299,45 @@ _check_segment() {
     if ((_interp_c)); then
       block "interpreter -c wrapping bypasses the permission allow list; run the command directly as a Bash tool call" "interpreter-c-wrap"
     fi
+    ;;
+  sed)
+    # Block in-place edits (-i) targeting shell rc files. Complements the
+    # full-string redirect guard which catches > ~/.zshrc but not sed -i.
+    local _has_i=0 _sarg
+    for _sarg in ${seg#"$lead"}; do
+      case "$_sarg" in
+      --) break ;;
+      -*) [[ "$_sarg" == *i* ]] && _has_i=1 ;;
+      esac
+    done
+    if ((_has_i)); then
+      for _sarg in ${seg#"$lead"}; do
+        case "$_sarg" in
+        --) break ;;
+        -*) ;;
+        *)
+          if _is_rc_file "$_sarg"; then
+            block "in-place edit of a shell rc file. Use the dotfiles repo." "rc-inplace-edit"
+          fi
+          ;;
+        esac
+      done
+    fi
+    ;;
+  sd)
+    # sd is always in-place when given a file argument; no flag check needed.
+    local _sarg
+    for _sarg in ${seg#"$lead"}; do
+      case "$_sarg" in
+      --) break ;;
+      -*) ;;
+      *)
+        if _is_rc_file "$_sarg"; then
+          block "in-place edit of a shell rc file. Use the dotfiles repo." "rc-inplace-edit"
+        fi
+        ;;
+      esac
+    done
     ;;
   esac
 }
