@@ -213,4 +213,66 @@ else
   fi
 fi
 
+echo
+echo "== skill map validation =="
+
+if ! command -v yq >/dev/null 2>&1; then
+  echo "skip           yq not found; skipping skill map validation"
+else
+  STACKS_YML_SRC="$SOURCE_ROOT/_stacks.yml"
+  SKILLS_DIR="$SOURCE_ROOT/skills"
+  sm_failed=0
+
+  # Collect every skill named in skill_file_map[].skills[].
+  mapfile -t sfm_skills < <(yq '.skill_file_map // [] | .[].skills // [] | .[]' "$STACKS_YML_SRC" 2>/dev/null | sort -u)
+  for sk in "${sfm_skills[@]}"; do
+    if [[ ! -d "$SKILLS_DIR/$sk" ]]; then
+      echo "missing-skill    skill_file_map references '$sk' but $SKILLS_DIR/$sk/ does not exist"
+      sm_failed=1
+    fi
+  done
+
+  # Collect every key in skill_triggers.
+  mapfile -t trigger_skills < <(yq '.skill_triggers // {} | keys | .[]' "$STACKS_YML_SRC" 2>/dev/null | sort -u)
+  for sk in "${trigger_skills[@]}"; do
+    if [[ ! -d "$SKILLS_DIR/$sk" ]]; then
+      echo "missing-skill    skill_triggers references '$sk' but $SKILLS_DIR/$sk/ does not exist"
+      sm_failed=1
+    fi
+  done
+
+  # Every skill mapped in stacks[].skills[] or stacks[].extras[].skills[]
+  # (stack/extra skills; global_skills excluded) must have a skill_triggers entry.
+  # Plugin skills are out of scope: no mapped skill is a plugin skill.
+  mapfile -t stack_skills < <(
+    {
+      yq '.stacks | to_entries[] | .value.skills // [] | .[]' "$STACKS_YML_SRC" 2>/dev/null
+      yq '.stacks | to_entries[] | .value.extras // [] | .[].skills // [] | .[]' "$STACKS_YML_SRC" 2>/dev/null
+    } | sort -u
+  )
+  mapfile -t global_skill_list < <(yq '.global_skills // [] | .[]' "$STACKS_YML_SRC" 2>/dev/null | sort -u)
+
+  for sk in "${stack_skills[@]}"; do
+    [[ -z "$sk" ]] && continue
+    # Skip skills that are in global_skills; they are required, not suggested.
+    is_global=0
+    for gsk in "${global_skill_list[@]}"; do
+      [[ "$gsk" == "$sk" ]] && is_global=1 && break
+    done
+    ((is_global)) && continue
+
+    trigger="$(yq ".skill_triggers.\"${sk}\" // \"\"" "$STACKS_YML_SRC" 2>/dev/null || true)"
+    if [[ -z "$trigger" || "$trigger" == "null" ]]; then
+      echo "missing-trigger  stack/extra maps '$sk' but skill_triggers has no entry for it"
+      sm_failed=1
+    fi
+  done
+
+  if ((sm_failed)); then
+    exit_code=1
+  else
+    echo "ok             skill_file_map (${#sfm_skills[@]} skills), skill_triggers (${#trigger_skills[@]} entries), stack coverage all valid"
+  fi
+fi
+
 exit "$exit_code"

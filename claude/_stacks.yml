@@ -56,6 +56,64 @@ global_skills:
   - engineering-fundamentals
   - git-patterns
 
+# File-to-skills map consumed by hooks/guard-skills.sh.
+# Evaluated against every Edit/Write/MultiEdit target; matching is cumulative
+# (a single file can satisfy multiple entries). Order matters: test entries
+# precede extension entries so a .test.tsx file picks up test-patterns first.
+#
+# on: basename  -> match against basename only
+# on: path      -> match against the full file path
+# globs: [...]  -> shell globs, tested with bash [[ $target == $glob ]]
+skill_file_map:
+  - on: basename
+    globs: ["*.test.*", "*.spec.*", "test_*.py", "*_test.py"]
+    skills: [test-patterns]
+  - on: basename
+    globs: ["*.tsx"]
+    skills: [typescript-patterns, react-patterns]
+  - on: basename
+    globs: ["*.ts"]
+    skills: [typescript-patterns]
+  - on: basename
+    globs: ["*.jsx"]
+    skills: [javascript-patterns, react-patterns]
+  - on: basename
+    globs: ["*.js", "*.mjs", "*.cjs"]
+    skills: [javascript-patterns]
+  - on: basename
+    globs: ["*.vue"]
+    skills: [vue-patterns]
+  - on: basename
+    globs: ["*.py"]
+    skills: [python-patterns]
+  - on: basename
+    globs: ["*.sh", "*.bash", "*.zsh"]
+    skills: [bash-patterns]
+  - on: path
+    globs: ["*/skills/*/SKILL.md"]
+    skills: [skill-authoring]
+
+# Action-conditioned trigger phrases for every skill any stack/extra maps to.
+# Consumed by hooks/inject-context.sh to build the <suggested-skills> block.
+# Phrases name a concrete action, not a topic, so the reader knows when to load.
+# global_skills (markdown-report, engineering-fundamentals, git-patterns) are
+# excluded; they are always required, not suggested.
+skill_triggers:
+  javascript-patterns: "before writing or restructuring JavaScript modules, functions, or async flow"
+  typescript-patterns: "before adding or changing types, generics, or type-level APIs"
+  react-patterns: "before building or restructuring React components, hooks, or state"
+  next-app-router-patterns: "before creating or restructuring routes, layouts, or server components in app/"
+  vue-patterns: "before building or restructuring Vue components, composables, or reactivity"
+  nuxt-patterns: "before working on Nuxt routing, server routes, or module config"
+  tailwind-patterns: "before utility-class styling or design-token work"
+  test-patterns: "before writing or restructuring tests, fixtures, or assertions"
+  python-patterns: "before writing or restructuring Python modules, classes, or packaging"
+  django-patterns: "before modeling, migrations, or view work in a Django app"
+  drf-patterns: "before building serializers, viewsets, or API endpoints with Django REST Framework"
+  fastapi-patterns: "before defining FastAPI routes, dependencies, or Pydantic models"
+  docker-patterns: "before authoring or changing Dockerfiles or compose services"
+  bash-patterns: "before writing or modifying shell scripts"
+
 # Ordered lockfile-to-manager table. First match wins.
 # Consumed by bin/_lib.sh resolve_package_manager and (as a hardcoded copy)
 # by hooks/guard-bash.sh for the PM mismatch guard.
