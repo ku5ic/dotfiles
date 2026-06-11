@@ -88,10 +88,10 @@ cask 'claude-code@latest'         # Claude Code CLI pinned to the latest channel
 cask 'cleanshot'                  # screenshot and screen recording tool
 cask 'dbeaver-community'          # GUI database client for SQL development
 cask 'figma'                      # design tool for UI work
-cask 'firefox'                    # secondary browser
+cask 'firefox@developer-edition'  # primary browser for web development with built-in devtools features
 cask 'fliqlo'                     # flip clock screensaver
 cask 'font-fira-code-nerd-font'   # Nerd Font used by WezTerm and Neovim
-cask 'google-chrome'              # primary browser for web development
+cask 'google-chrome'              # browser for web development
 cask 'neovide-app'                # GUI frontend for Neovim
 cask 'onyx'                       # macOS system maintenance utility
 cask 'owenthereal/upterm/upterm'  # Share terminal sessions securely over the web
