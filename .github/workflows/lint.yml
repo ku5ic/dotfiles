@@ -23,4 +23,4 @@ jobs:
         run: bats tests/
 
       - name: doctor
-        run: bash claude/bin/doctor.sh
+        run: CI=true bash claude/bin/doctor.sh

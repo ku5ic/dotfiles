@@ -21,11 +21,13 @@ cmd="$(extract_command)"
 
 # Override _lib.sh block() to also show the offending command for context.
 block() {
+  log_block "${2:-unknown}" "$cmd"
   echo "Blocked by ${HOOK_NAME}: $1" >&2
   echo "Command: $cmd" >&2
   exit 2
 }
 
+_cwd="$(printf '%s' "$payload" | jq -r '.cwd // ""' 2>/dev/null || true)"
 norm="$(printf '%s' "$cmd" | tr '\t' ' ' | tr -s ' ')"
 
 # Full-string checks: patterns that need the complete command chain, or are
@@ -33,35 +35,44 @@ norm="$(printf '%s' "$cmd" | tr '\t' ' ' | tr -s ' ')"
 
 # Fork bomb.
 if [[ "$norm" =~ :\(\)[[:space:]]*\{ ]]; then
-  block "fork bomb pattern"
+  block "fork bomb pattern" "fork-bomb"
 fi
 
 # Piping network downloads into a shell. Not per-segment because curl/wget
 # and the interpreter are on opposite sides of a pipe boundary.
 if [[ "$norm" =~ (curl|wget)[[:space:]].*\|[[:space:]]*(sh|bash|zsh|fish|python|node|ruby|perl) ]]; then
-  block "piping network content into an interpreter"
+  block "piping network content into an interpreter" "pipe-to-shell"
 fi
 
 # Writing to device nodes.
 if [[ "$norm" =~ \>[[:space:]]*/dev/(sd|nvme|disk|rdisk) ]]; then
-  block "write to raw disk device"
+  block "write to raw disk device" "device-write"
 fi
 
 # Writes to shell rc files.
 if [[ "$norm" =~ \>+[[:space:]]*(\$HOME|\$\{HOME\}|~|$HOME)/\.(zshrc|zprofile|bashrc|bash_profile|profile)([[:space:]]|$) ]]; then
-  block "direct write to a shell rc file. Use the dotfiles repo."
+  block "direct write to a shell rc file. Use the dotfiles repo." "rc-redirect"
 fi
 
 # 2>&1 and &> redirects: redundant in the Bash tool (stderr merged by default)
 # and force permission prompts. Strip quoted content first so grep patterns that
 # contain these literals as search strings (e.g. grep '2>&1') are not blocked.
 _cmd_sq="$(printf '%s' "$cmd" | sed -E "s/'[^']*'//g" | sed -E 's/"[^"]*"//g')"
+
+# xargs rm: full-string check because xargs and rm straddle a | boundary;
+# the per-segment splitter does not split on |.
+if [[ "$_cmd_sq" =~ xargs[[:space:]]+((-[^[:space:]]+[[:space:]]+)*)rm[[:space:]]+-[a-zA-Z]*[rRfF] ]]; then
+  block "xargs rm with recursive or force flag" "xargs-rm"
+fi
+
 if [[ "$_cmd_sq" =~ 2\>\&1 ]]; then
+  log_block "redirect-stderr" "$cmd"
   echo "Blocked by guard-bash.sh: shell redirect detected (2>&1)" >&2
   echo "The Bash tool merges stderr by default. Drop the redirect and retry." >&2
   exit 2
 fi
 if [[ "$_cmd_sq" =~ \&\>\>? ]]; then
+  log_block "redirect-combined" "$cmd"
   echo "Blocked by guard-bash.sh: shell redirect detected (&> or &>>)" >&2
   echo "The Bash tool merges stderr by default. Drop the redirect and retry." >&2
   exit 2
@@ -74,11 +85,13 @@ fi
 # allowed: the segment splitter handles them and they match per-segment
 # against the allow list.
 if [[ "$_cmd_sq" =~ \&\& ]]; then
+  log_block "chain-and" "$cmd"
   echo "Blocked by ${HOOK_NAME}: shell chain operator detected (&&)" >&2
   echo "Run as separate Bash tool calls, or use the tool's native path/dir argument (git -C, tokei <path>, etc.)." >&2
   exit 2
 fi
 if [[ "$_cmd_sq" =~ \|\| ]]; then
+  log_block "chain-or" "$cmd"
   echo "Blocked by ${HOOK_NAME}: shell chain operator detected (||)" >&2
   echo "Run as separate Bash tool calls." >&2
   exit 2
@@ -89,10 +102,81 @@ fi
 # any chain that slips through.
 _cmd_struct_stripped="$(printf '%s' "$_cmd_sq" | sed -E -e 's/;;/ /g' -e 's/;[[:space:]]*(do|done|then|else|elif|fi|case|esac)([^a-zA-Z0-9_]|$)/ /g')"
 if [[ "$_cmd_struct_stripped" =~ \; ]]; then
+  log_block "chain-semi" "$cmd"
   echo "Blocked by ${HOOK_NAME}: shell chain operator detected (;)" >&2
   echo "Run as separate Bash tool calls. Control-flow ; (do, done, then, fi, ...) is allowed." >&2
   exit 2
 fi
+
+# _resolve_pm_for_dir <dir>: prints "manager:lockfile" for the first lockfile
+# match in <dir> or its git toplevel; prints nothing when no lockfile is found.
+# Hardcoded table mirrors _stacks.yml package_managers (verified by bin/doctor.sh).
+# Editing here: also update _stacks.yml and run bin/doctor.sh to verify parity.
+_resolve_pm_for_dir() {
+  local dir="${1:-.}"
+  local toplevel
+  toplevel="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
+  local lf mgr
+  while IFS=: read -r lf mgr; do
+    if [[ -f "$dir/$lf" || (-n "$toplevel" && -f "$toplevel/$lf") ]]; then
+      printf '%s:%s\n' "$mgr" "$lf"
+      return 0
+    fi
+  done <<'PM_LOCKFILES'
+bun.lockb:bun
+bun.lock:bun
+pnpm-lock.yaml:pnpm
+yarn.lock:yarn
+package-lock.json:npm
+uv.lock:uv
+poetry.lock:poetry
+Pipfile.lock:pipenv
+requirements.txt:pip
+PM_LOCKFILES
+}
+
+# Returns 0 (true) when $1 names a sensitive credential or key file.
+# Normalizes ~ and $HOME before matching so both forms are caught.
+# The literal pattern substrings below must match what bin/doctor.sh greps
+# for parity across guard-edit.sh, guard-bash.sh, and settings.json.
+_is_sensitive_arg() {
+  local arg="$1"
+  arg="${arg/#\~/$HOME}"
+  arg="${arg/#\$HOME/$HOME}"
+  arg="${arg/#\$\{HOME\}/$HOME}"
+  local base="${arg##*/}"
+  case "$base" in
+  .env | .env.*) return 0 ;;
+  *.pem | *.key | *.p12 | *.pfx) return 0 ;;
+  id_rsa | id_ed25519 | id_ecdsa) return 0 ;;
+  esac
+  case "$arg" in
+  "$HOME/.ssh/"*) return 0 ;;
+  "$HOME/.gnupg/"*) return 0 ;;
+  "$HOME/Library/Keychains/"*) return 0 ;;
+  "$HOME/.aws/credentials" | "$HOME/.aws/config") return 0 ;;
+  "$HOME/.docker/config.json") return 0 ;;
+  "$HOME/.config/gh/hosts.yml") return 0 ;;
+  "$HOME/.netrc" | "$HOME/.pgpass" | "$HOME/.npmrc") return 0 ;;
+  "$HOME/.pypirc") return 0 ;;
+  "$HOME/.cargo/credentials") return 0 ;;
+  "$HOME/.gem/credentials") return 0 ;;
+  esac
+  return 1
+}
+
+# Returns 0 (true) when $1 names a shell rc file that should not be edited
+# in-place. Mirrors the path set in the full-string rc-file redirect guard.
+_is_rc_file() {
+  local arg="$1"
+  arg="${arg/#\~/$HOME}"
+  arg="${arg/#\$HOME/$HOME}"
+  arg="${arg/#\$\{HOME\}/$HOME}"
+  case "$arg" in
+  "$HOME/.zshrc" | "$HOME/.zprofile" | "$HOME/.bashrc" | "$HOME/.bash_profile" | "$HOME/.profile") return 0 ;;
+  esac
+  return 1
+}
 
 # Per-segment checks: split $norm on &&, ||, ;, and newlines (NOT on | so that
 # pipe chains like curl|bash remain intact for the full-string check above).
@@ -112,81 +196,224 @@ _check_segment() {
   case "$lead" in
   rm)
     if [[ "$seg" =~ rm[[:space:]]+(-[a-zA-Z]*[rRfF][a-zA-Z]*[[:space:]]+)+(/|/\*|~|~/|\$HOME|\$\{HOME\}|\.|\.\.)($|[[:space:]]) ]]; then
-      block "rm with recursive force against root, home, or cwd"
+      block "rm with recursive force against root, home, or cwd" "rm-recursive"
     fi
     ;;
   dd | shred | wipefs | mkfs | mkfs.*)
-    block "low level disk or filesystem tool"
+    block "low level disk or filesystem tool" "disk-tool"
     ;;
   chmod)
     if [[ "$seg" =~ chmod[[:space:]]+(-R[[:space:]]+)?777([[:space:]]|$) ]]; then
-      block "chmod 777"
+      block "chmod 777" "chmod-777"
     fi
     if [[ "$seg" =~ chmod[[:space:]] ]] && [[ "$seg" =~ \+x ]]; then
       if [[ "$seg" =~ [[:space:]](\.|\.\.|/)($|[[:space:]]) ]] ||
         [[ "$seg" =~ [[:space:]](~|\$HOME|\$\{HOME\})($|[[:space:]]|/) ]]; then
-        block "broad chmod +x against root, home, or cwd"
+        block "broad chmod +x against root, home, or cwd" "chmod-broad-x"
       fi
     fi
     ;;
   git)
     if [[ "$seg" =~ git[[:space:]]+push[[:space:]].*(--force[^-]|--force$|-f([[:space:]]|$)) ]]; then
       if [[ ! "$seg" =~ --force-with-lease ]]; then
-        block "git push --force. Use --force-with-lease if you must."
+        block "git push --force. Use --force-with-lease if you must." "git-force-push"
       fi
     fi
     if [[ "$seg" =~ git[[:space:]]+push[[:space:]].*(main|master|develop|production|release) ]]; then
       if [[ "$seg" =~ (--force[^-]|--force$|[[:space:]]-f([[:space:]]|$)) ]]; then
-        block "force push to a protected branch"
+        block "force push to a protected branch" "git-force-push-protected"
       fi
     fi
     if [[ "$seg" =~ git[[:space:]]+reset[[:space:]]+--hard[[:space:]]+(origin/)?(main|master|develop|production) ]]; then
-      block "git reset --hard on protected branch"
+      block "git reset --hard on protected branch" "git-reset-hard"
     fi
     if [[ "$seg" =~ git[[:space:]]+(commit|push|merge|rebase)[[:space:]].*--no-verify ]]; then
-      block "use of --no-verify bypasses pre-commit and pre-push hooks"
+      block "use of --no-verify bypasses pre-commit and pre-push hooks" "git-no-verify"
     fi
     if [[ "$seg" =~ git[[:space:]]+config[[:space:]]+--global ]]; then
-      block "git config --global from a project session"
+      block "git config --global from a project session" "git-config-global"
+    fi
+    # Block tree-wide discard of working-tree changes. Tree-wide pathspecs:
+    # bare dot, double-dash-dot, :/, or bare star. Allow --staged without
+    # --worktree (unstaging is non-destructive). git -C <dir> variants work
+    # because the segment splitter sees 'git' as the lead token regardless.
+    if [[ "$seg" =~ [[:space:]](restore|checkout)[[:space:]] ]]; then
+      if [[ "$seg" =~ [[:space:]](\.|\*|--[[:space:]]?\.|:/)([[:space:]]|$) ]]; then
+        if ! [[ "$seg" =~ --staged ]] || [[ "$seg" =~ --worktree ]]; then
+          block "tree-wide discard of working-tree changes; restore individual files explicitly" "git-tree-discard"
+        fi
+      fi
     fi
     ;;
   psql)
     if [[ "$seg" =~ psql[[:space:]].*(-c|--command)[[:space:]] ]]; then
       if [[ "$seg" =~ (DROP[[:space:]]+(DATABASE|SCHEMA|TABLE)|TRUNCATE[[:space:]]+TABLE|DELETE[[:space:]]+FROM[[:space:]]+[a-zA-Z_]+[[:space:]]*;|DELETE[[:space:]]+FROM[[:space:]]+[a-zA-Z_]+[[:space:]]*$) ]]; then
-        block "destructive SQL via psql -c"
+        block "destructive SQL via psql -c" "psql-destructive"
       fi
     fi
     ;;
   redis-cli)
     if [[ "$seg" =~ redis-cli[[:space:]].*(FLUSHALL|FLUSHDB|CONFIG[[:space:]]+SET|DEBUG[[:space:]]+SLEEP) ]]; then
-      block "destructive redis-cli command"
+      block "destructive redis-cli command" "redis-destructive"
     fi
     ;;
   find)
     if [[ "$seg" =~ find[[:space:]].*-delete($|[[:space:]]) ]]; then
-      block "find -delete"
+      block "find -delete" "find-delete"
     fi
     if [[ "$seg" =~ find[[:space:]].*-exec[[:space:]]+rm([[:space:]]|$) ]]; then
-      block "find -exec rm"
+      block "find -exec rm" "find-exec-rm"
     fi
     ;;
   security)
     if [[ "$seg" =~ security[[:space:]]+delete-keychain ]]; then
-      block "keychain deletion"
+      block "keychain deletion" "keychain-delete"
     fi
     ;;
-  npm | pnpm | yarn)
-    if [[ "$seg" =~ (npm|pnpm|yarn)[[:space:]]+(install|add|i)[[:space:]]+.*(-g|--global) ]]; then
-      block "global package install. Use a project-local install or asdf shim."
+  npm | npx | pnpm | yarn | bun | bunx | pip | pip3 | poetry | uv | pipenv)
+    # Global install guards (JS package managers only).
+    if [[ "$lead" =~ ^(npm|pnpm|yarn)$ ]] && [[ "$seg" =~ (npm|pnpm|yarn)[[:space:]]+(install|add|i)[[:space:]]+.*(-g|--global) ]]; then
+      block "global package install. Use a project-local install or asdf shim." "pkg-global-install"
     fi
-    if [[ "$seg" =~ yarn[[:space:]]+global[[:space:]]+add[[:space:]] ]]; then
-      block "global package install. Use a project-local install or asdf shim."
+    if [[ "$lead" == "yarn" ]] && [[ "$seg" =~ yarn[[:space:]]+global[[:space:]]+add[[:space:]] ]]; then
+      block "global package install. Use a project-local install or asdf shim." "pkg-global-install"
+    fi
+    if [[ "$lead" == "bun" ]] && [[ "$seg" =~ bun[[:space:]]+(add|install)[[:space:]]+.*(-g|--global) ]]; then
+      block "global package install. Use a project-local install or asdf shim." "pkg-global-install"
+    fi
+    # PM mismatch guard: block when the invoked PM differs from the lockfile-detected PM.
+    # Allow --version / -v (version queries never affect project files).
+    local _pm_rest
+    _pm_rest="${seg#"$lead"}"
+    _pm_rest="${_pm_rest#"${_pm_rest%%[![:space:]]*}"}"
+    [[ "$_pm_rest" == "--version" || "$_pm_rest" == "-v" ]] && return 0
+    # Canonical invoked PM (aliases: npx->npm, bunx->bun, pip3->pip).
+    # Known gap: python -m pip bypasses this check (lead token is python, not pip).
+    local _invoked
+    case "$lead" in
+    npx) _invoked="npm" ;;
+    bunx) _invoked="bun" ;;
+    pip3) _invoked="pip" ;;
+    *) _invoked="$lead" ;;
+    esac
+    # Resolve expected PM from repo lockfiles; greenfield (no lockfile) always allowed.
+    local _pm_info
+    _pm_info="$(_resolve_pm_for_dir "${_cwd:-$PWD}")"
+    [[ -z "$_pm_info" ]] && return 0
+    local _expected="${_pm_info%%:*}"
+    local _lf_found="${_pm_info#*:}"
+    [[ "$_invoked" == "$_expected" ]] && return 0
+    # Build suggested replacement command; npx/bunx get their dlx equivalents.
+    local _tail="${seg#"$lead"}"
+    local _suggest
+    if [[ "$lead" == "npx" ]]; then
+      case "$_expected" in
+      bun) _suggest="bunx${_tail}" ;;
+      pnpm) _suggest="pnpm dlx${_tail}" ;;
+      yarn) _suggest="yarn dlx${_tail}" ;;
+      *) _suggest="${_expected}${_tail}" ;;
+      esac
+    elif [[ "$lead" == "bunx" ]]; then
+      case "$_expected" in
+      npm) _suggest="npx${_tail}" ;;
+      pnpm) _suggest="pnpm dlx${_tail}" ;;
+      yarn) _suggest="yarn dlx${_tail}" ;;
+      *) _suggest="${_expected}${_tail}" ;;
+      esac
+    else
+      _suggest="${_expected}${_tail}"
+    fi
+    block "this repo uses ${_expected} (${_lf_found}); rerun as: ${_suggest}" "pm-mismatch"
+    ;;
+  cat | bat | head | tail | less | more | strings)
+    # Block reads of sensitive credential and key files.
+    local _sarg
+    for _sarg in ${seg#"$lead"}; do
+      case "$_sarg" in
+      --) break ;;
+      -*) ;;
+      *)
+        if _is_sensitive_arg "$_sarg"; then
+          block "reading a sensitive file is not permitted" "sensitive-read"
+        fi
+        ;;
+      esac
+    done
+    ;;
+  grep | rg)
+    # Block when a path argument references a sensitive file. The first
+    # non-option argument is the search pattern, not a path; skip it.
+    local _sarg _seen_pat=0
+    for _sarg in ${seg#"$lead"}; do
+      case "$_sarg" in
+      --) break ;;
+      -*) ;;
+      *)
+        if ((_seen_pat == 0)); then
+          _seen_pat=1
+        elif _is_sensitive_arg "$_sarg"; then
+          block "reading a sensitive file is not permitted" "sensitive-read"
+        fi
+        ;;
+      esac
+    done
+    ;;
+  sh | bash | zsh | dash)
+    # -c wrapping runs an arbitrary command string that never surfaces as its
+    # own Bash tool call, bypassing the permission allow list entirely.
+    # Scan short-option clusters only (single dash); long options like --login
+    # are not flag clusters and cannot carry -c.
+    local _iarg _interp_c=0
+    for _iarg in ${seg#"$lead"}; do
+      case "$_iarg" in
+      --) break ;;
+      --*) ;;
+      -*) [[ "$_iarg" == *c* ]] && _interp_c=1 ;;
+      *) break ;;
+      esac
+    done
+    if ((_interp_c)); then
+      block "interpreter -c wrapping bypasses the permission allow list; run the command directly as a Bash tool call" "interpreter-c-wrap"
     fi
     ;;
-  bun)
-    if [[ "$seg" =~ bun[[:space:]]+(add|install)[[:space:]]+.*(-g|--global) ]]; then
-      block "global package install. Use a project-local install or asdf shim."
+  sed)
+    # Block in-place edits (-i) targeting shell rc files. Complements the
+    # full-string redirect guard which catches > ~/.zshrc but not sed -i.
+    local _has_i=0 _sarg
+    for _sarg in ${seg#"$lead"}; do
+      case "$_sarg" in
+      --) break ;;
+      -*) [[ "$_sarg" == *i* ]] && _has_i=1 ;;
+      esac
+    done
+    if ((_has_i)); then
+      for _sarg in ${seg#"$lead"}; do
+        case "$_sarg" in
+        --) break ;;
+        -*) ;;
+        *)
+          if _is_rc_file "$_sarg"; then
+            block "in-place edit of a shell rc file. Use the dotfiles repo." "rc-inplace-edit"
+          fi
+          ;;
+        esac
+      done
     fi
+    ;;
+  sd)
+    # sd is always in-place when given a file argument; no flag check needed.
+    local _sarg
+    for _sarg in ${seg#"$lead"}; do
+      case "$_sarg" in
+      --) break ;;
+      -*) ;;
+      *)
+        if _is_rc_file "$_sarg"; then
+          block "in-place edit of a shell rc file. Use the dotfiles repo." "rc-inplace-edit"
+        fi
+        ;;
+      esac
+    done
     ;;
   esac
 }

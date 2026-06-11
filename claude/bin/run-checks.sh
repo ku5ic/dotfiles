@@ -5,6 +5,9 @@ set -uo pipefail
 
 cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)" || exit 1
 
+# shellcheck source=_lib.sh
+source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
+
 pass=0
 fail=0
 skip=0
@@ -33,27 +36,25 @@ skip_msg() {
 
 # JS/TS
 if [[ -f package.json ]]; then
-  pm="npm"
-  [[ -f pnpm-lock.yaml ]] && pm="pnpm"
-  [[ -f yarn.lock ]] && pm="yarn"
-  [[ -f bun.lockb ]] && pm="bun"
+  pm="$(resolve_package_manager ".")"
+  pm="${pm:-npm}"
 
   if [[ -f tsconfig.json ]]; then
-    run "ts: typecheck" $pm exec tsc --noEmit
+    run "ts: typecheck" "$pm" exec tsc --noEmit
   else
     skip_msg "ts: typecheck (no tsconfig)"
   fi
 
   if jq -e '.scripts.lint' package.json >/dev/null 2>&1; then
-    run "js: lint" $pm run lint
+    run "js: lint" "$pm" run lint
   elif [[ -f biome.json || -f biome.jsonc ]]; then
-    run "js: lint (biome)" $pm exec biome lint .
+    run "js: lint (biome)" "$pm" exec biome lint .
   else
     skip_msg "js: lint (no script)"
   fi
 
   if jq -e '.scripts["format:check"]' package.json >/dev/null 2>&1; then
-    run "js: format-check" $pm run format:check
+    run "js: format-check" "$pm" run format:check
   elif jq -e '.scripts.format' package.json >/dev/null 2>&1; then
     skip_msg "js: format-check (no format:check script; format would mutate)"
   fi
@@ -62,7 +63,7 @@ if [[ -f package.json ]]; then
     if [[ "$pm" == "bun" ]]; then
       run "js: test" bun test
     else
-      run "js: test" $pm test --silent
+      run "js: test" "$pm" test --silent
     fi
   else
     skip_msg "js: test (no script)"

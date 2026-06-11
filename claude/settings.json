@@ -189,13 +189,15 @@
       "Bash(yarn outdated:*)",
       "Bash(yarn why:*)",
       "Bash(yq *)",
-      "Bash(bash *)",
+      "Bash(bash $HOME/.claude/bin/*)",
+      "Bash(bash $HOME/.dotfiles/claude/bin/*)",
+      "Bash(bash -n *)",
       "Bash(chmod +x *)",
       "Bash(chmod 755 *)",
       "Bash(chmod 644 *)",
       "Bash(shellcheck *)",
       "Bash(shfmt *)",
-      "Bash(zsh *)",
+      "Bash(zsh -n *)",
       "Bash(bootstrap.sh *)",
       "Bash(detect-stack.sh *)",
       "Bash(doctor.sh *)",
@@ -252,6 +254,7 @@
       "Skill(logging-patterns)",
       "Skill(git-patterns)",
       "Skill(monitoring-patterns)",
+      "Skill(skill-authoring)",
       "Write(**)",
       "Edit(**)",
       "MultiEdit(**)",
@@ -498,6 +501,11 @@
             "type": "command",
             "command": "$HOME/.claude/hooks/guard-edit.sh",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-skills.sh",
+            "timeout": 5
           }
         ]
       },
@@ -603,6 +611,6 @@
     "ruby-lsp@claude-plugins-official": true
   },
   "spinnerTipsEnabled": false,
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "agentPushNotifEnabled": true
 }

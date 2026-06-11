@@ -4,7 +4,7 @@ Global instructions for Claude Code. Applies to every repository. Project level 
 
 ## Required skills
 
-If a `<required-skills>` block is present in the conversation context, you MUST invoke the Skill tool for every skill listed in it before taking any other action - before file reads, before tool calls, before responding to the task. This is a blocking requirement. Do not skip it, defer it, or treat it as advisory. No exceptions.
+Skills surface in three layers. Required (`<required-skills>` block): the global core -- invoke every listed skill immediately via the Skill tool before any other action; blocking, no exceptions. Suggested (`<suggested-skills>` block): action-conditioned stack skills -- each line names the trigger action; load the skill when you are about to take that action. Enforced: `guard-skills` blocks the first edit to any file type mapped in `_stacks.yml` until the relevant patterns skill is loaded for the session. The source of truth for all skill mappings and trigger phrases is `_stacks.yml`.
 
 ## Project boot protocol
 
@@ -320,54 +320,13 @@ Retention: artifacts older than 30 days are pruned by `$HOME/.claude/bin/scratch
 
 ## Claude Code command namespace (canonical)
 
-All commands live under `$HOME/.claude/commands/` and are organized into four namespaces. Invocation uses the `/<group>:<name>` form.
+All commands live under `$HOME/.claude/commands/` and are organized into five namespaces. Invocation uses the `/<group>:<name>` form. The canonical inventory is the output of `/skills` inside Claude Code.
 
-### flow/ - the default feature workflow
-
-Main path:
-
-1. `/flow:preflight` - inspect repo state, confirm scope, surface risks
-2. `/flow:plan` - produce a short, atomic plan before any edits
-3. `/flow:implement` - execute the plan in small, reviewable steps
-4. `/flow:test` - add or update tests at the right level
-5. `/flow:review` - self-review the change before handing off
-
-Out-of-band:
-
-- `/flow:quick` - small net-new feature, no plan artifact, hard stop on scope growth
-- `/flow:fix` - surgical fix from a failing signal, no refactor
-- `/flow:debug` - investigate unexpected behavior without a clear failing signal; produces a root cause artifact and handoff
-- `/flow:resume` - reorient against a partially executed plan
-- `/flow:checks` - run the project's verification checklist via `$HOME/.claude/bin/run-checks.sh`
-
-### audit/ - invoked when scope warrants, not every change
-
-- `/audit:a11y` - accessibility audit (WCAG 2.2, semantics, keyboard, focus)
-- `/audit:debt` - technical debt and architectural drift
-- `/audit:doc-drift` - detect implementation vs. documentation divergence
-- `/audit:perf` - performance audit
-- `/audit:security` - security hardening review
-
-### meta/ - authoring and reflection
-
-- `/meta:feature` - feature brief authoring
-- `/meta:prompt` - prompt authoring and refinement
-- `/meta:retro` - post-work retrospective
-
-### write/ - outward-facing communication
-
-- `/write:commit` - commit message
-- `/write:pr` - pull request title and description
-- `/write:release-notes` - release notes
-- `/write:stakeholder` - stakeholder-facing summary
-
-### question/ - read-only Q&A, tiered by difficulty and model
-
-Answer questions at the right depth without reaching for a full flow cycle. All three tiers are read-only: no edits, no commits.
-
-- `/question:hard` - deep reasoning, cross-layer analysis, architectural judgment (opus/high)
-- `/question:medium` - real reasoning without deep analysis, the default tier (sonnet/high)
-- `/question:easy` - lookup, recall, short factual answer (sonnet/low)
+- `flow/` - the default feature workflow: preflight, plan, implement, test, review, plus fix, debug, quick, resume, checks
+- `audit/` - targeted audits invoked when scope warrants: a11y, debt, doc-drift, perf, security
+- `meta/` - authoring and reflection: feature, prompt, retro
+- `write/` - outward-facing communication: commit, pr, release-notes, stakeholder
+- `question/` - read-only Q&A tiered by reasoning depth: hard (opus/high), medium (sonnet/high), easy (sonnet/low)
 
 ### Hard rules
 
@@ -387,71 +346,8 @@ The `/flow:*` cycle has fixed per-task overhead (preflight context, plan section
 - **Mechanical plan**: a plan whose steps are pure file edits with no architectural choice, no API design, no rejected alternatives worth considering. Examples: dropping a frontmatter field across N files, adding entries to a config list, find-and-replace across a directory. The plan author marks the plan with `plan-shape: mechanical` in its frontmatter when this applies.
 - **Substantive plan**: anything that is not mechanical. Default. Marked `plan-shape: substantive` or omitted (substantive is the default).
 
-### Short-circuits
-
-1. `/flow:preflight`: if session continuity holds and the previous preflight covered the same target area, emit a delta-only report ("same context as preflight-X-HHMM, no new findings") instead of re-establishing full context. Skip the file budget walk and skip re-reading project CLAUDE.md (it has not changed since the last preflight in this session).
-2. `/flow:plan`: when the user signals a mechanical plan in $ARGUMENTS ("mechanical:" prefix or explicit "plan-shape: mechanical" hint), or when the agent judges the work mechanical based on the preflight, omit the "Rejected alternatives" section, omit the elaborate per-step test strategy (verification at the end is enough), and omit "Open questions" unless an actual question exists.
-3. `/flow:implement`: when the plan declares its steps as a single phase (one logical concern, all steps in the same commit), do not pause between sub-steps within that phase. Pause at phase boundaries only. This collapses N approval gates into 1 for tightly coupled work.
-4. `/flow:review`: when the plan was marked mechanical and the implement step's verification passed cleanly, emit a one-line review ("verification passed, no findings") instead of running the full eight-category review. The full review remains the default for substantive work.
-
 ### Rules
 
 - Short-circuits are opt-in by signal, not silent. The flow command states which short-circuit it applied and why, so the user can override with "do the full preflight" or "give me the full review".
 - A short-circuit failure (e.g. session continuity does not hold because new commits landed) falls through to the full flow step, not to a half-done one.
 - The user can always force a full step by passing `--full` or equivalent in $ARGUMENTS. The agent honors this without argument.
-
-## Skill authoring conventions
-
-Rules for authoring or editing skills in `~/.dotfiles/claude/skills/`. Apply to every skill, present and future.
-
-### Autodetection over named cross-references
-
-Skills load based on their own descriptions matching the project context, not because one skill instructs Claude to load another. A skill's description must:
-
-- Trigger on concrete project signals (file extensions, sentinel files like `manage.py` or `next.config.js`, dependency markers in `package.json` or `pyproject.toml`, distinctive syntax).
-- Trigger on keyword aliases (the user mentioning the technology, even informally).
-- NOT instruct Claude to "load skill X alongside this one" or "see also skill Y".
-- NOT enumerate companion skills in the body as "load these together".
-
-Skills load in combination because each skill's independent triggers all match the same project. A TypeScript Next.js project loads `typescript-patterns`, `react-patterns`, and `next-app-router-patterns` because each description independently matches the project's signals, not because one skill names the others.
-
-Documentation references to other skills as concepts ("framework-specific patterns live in their respective skills") are acceptable. Load instructions that name other skills are not.
-
-### Description shape
-
-> [What the skill is, one phrase]. Use whenever [project signals], OR the user asks about [keyword aliases], even if [the technology] is not mentioned by name.
-
-Both project signals and keyword aliases are required.
-
-### Body conventions
-
-- Imperative voice, terse.
-- Plain ASCII punctuation. ASCII arrows (`->`, `<-`) only.
-- Anti-patterns section with severity calls (`failure`, `warning`, `info`).
-- "When to load this skill" section listing concrete triggers.
-- "When not to load this skill" section listing exclusions (NEVER name other skills).
-- "References" section with verified URLs.
-- Maintenance note acknowledging the ecosystem will evolve.
-
-### Single-file vs Pattern 1 (index + reference files)
-
-The denominator is content shape, not line count.
-
-- **Pattern 1**: when the skill has multiple distinct sub-domains, each substantial enough to be its own reference. Layout: `SKILL.md` as index + `reference/<topic>.md` files for each sub-domain. SKILL.md links to reference files explicitly.
-- **Single SKILL.md**: when the topic is one cohesive flow.
-
-By the sub-domain test, framework and language skills with distinct expertise areas are Pattern 1. Single-topic skills (logging, monitoring, backup, git) are single-file.
-
-Reference files over 100 lines need a table of contents at the top.
-
-### Verification rule
-
-Every version-sensitive claim, library version, syntax form, framework feature, and tooling recommendation must be verified against authoritative sources before shipping. When creating or substantially editing a skill, produce a verification log saved to `~/.claude/scratch/verification-<skill>-<YYYYMMDD-HHMM>.md` listing each claim and its source URL. If a claim cannot be verified, omit it. No freestyling.
-
-### Severity rubric (matches markdown-report)
-
-- `failure`: a concrete defect or violation that should not ship.
-- `warning`: a smell or pattern that compounds with other findings.
-- `info`: a hardening opportunity or note, not a defect.
-
-No new severity levels.
