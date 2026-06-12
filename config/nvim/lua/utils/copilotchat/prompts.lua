@@ -205,7 +205,7 @@ Output discipline:
 ---   functional changes, not cosmetic edits.
 --- - "Commit" intentionally uses dedicated guardrails instead of `CODING_SYSTEM_PROMPT`
 ---   because commit generation requires stricter output discipline than code assistance.
----@type table<string, { description?: string, system_prompt?: string, prompt: string, mapping?: string }>
+---@type table<string, { description?: string, system_prompt?: string, model?: string, prompt: string, mapping?: string }>
 local prompts = {
   Explain = {
     description = "Explain code",
@@ -420,33 +420,37 @@ If no code changes are required, provide:
 
   Summarize = {
     description = "Summarize text",
+    model = "claude-haiku-4.5",
     system_prompt = WRITING_SYSTEM_PROMPT,
     prompt = "Summarize the following text clearly and concisely.",
   },
 
   Spelling = {
     description = "Correct spelling",
+    model = "claude-haiku-4.5",
     system_prompt = WRITING_SYSTEM_PROMPT,
     prompt = "Correct grammar and spelling errors in the following text.",
   },
 
   Wording = {
     description = "Improve wording",
+    model = "claude-haiku-4.5",
     system_prompt = WRITING_SYSTEM_PROMPT,
     prompt = "Improve the wording of the following text while preserving meaning.",
   },
 
   Concise = {
     description = "Make concise",
+    model = "claude-haiku-4.5",
     system_prompt = WRITING_SYSTEM_PROMPT,
     prompt = "Rewrite the following text to make it more concise while preserving meaning.",
   },
 
   Commit = {
     description = "Write conventional commit message",
+    model = "claude-haiku-4.5",
     context = { "#gitdiff:staged" },
     system_prompt = COMMIT_SYSTEM_PROMPT,
-    dynamic_context = CODING_DYNAMIC_CONTEXT,
     prompt = [[
 Write a git commit message from the staged changes.
 

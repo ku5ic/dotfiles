@@ -224,7 +224,7 @@ local function collect_repo_files_by_name(names)
 
     if has_fd() then
       matches =
-        vim.fn.systemlist(string.format("fd --type f --name %s %s", vim.fn.shellescape(name), vim.fn.shellescape(root)))
+        vim.fn.systemlist(string.format("fd --type f %s %s", vim.fn.shellescape(name), vim.fn.shellescape(root)))
       if vim.v.shell_error ~= 0 then
         matches = vim.fn.globpath(root, "**/" .. name, false, true)
       end
@@ -358,6 +358,10 @@ function M.ask(user_prompt, opts)
     ask_opts.system_prompt = opts.system_prompt
   end
 
+  if opts.model then
+    ask_opts.model = opts.model
+  end
+
   local success, err = pcall(mod.ask, prompt, ask_opts)
 
   if not success then
@@ -390,6 +394,7 @@ function M.prompt(name, opts)
       system_prompt = prompt_def.system_prompt,
       context = prompt_def.context,
       dynamic_context = prompt_def.dynamic_context,
+      model = prompt_def.model,
     })
     return M.ask(prompt_def.prompt, merged_opts)
   end
