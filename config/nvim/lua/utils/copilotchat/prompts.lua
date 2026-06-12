@@ -3,7 +3,7 @@ local M = {}
 local CODING_DYNAMIC_CONTEXT = {
   repo_root_docs = { "README.md", "CLAUDE.md" },
   upward_docs = { "README.md", "CLAUDE.md" },
-  repo_anywhere_docs = { "architecture.md", "testing.md", "brand.md" },
+  repo_anywhere_docs = {},
 }
 
 local BASE_CODE_RULES = [[
