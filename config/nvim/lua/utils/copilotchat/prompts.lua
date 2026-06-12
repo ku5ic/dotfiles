@@ -184,6 +184,32 @@ Output discipline:
 - Do not add explanations, notes, headings, or alternatives.
 ]]
 
+--- Returns a coding prompt entry with the shared coding system prompt and dynamic context.
+---@param description string Short UI label for the prompt.
+---@param prompt string Task-specific instruction body.
+---@return table
+local function coding(description, prompt)
+  return {
+    description = description,
+    system_prompt = CODING_SYSTEM_PROMPT,
+    dynamic_context = CODING_DYNAMIC_CONTEXT,
+    prompt = prompt,
+  }
+end
+
+--- Returns a writing prompt entry with the shared writing system prompt and haiku model.
+---@param description string Short UI label for the prompt.
+---@param prompt string Task-specific instruction body.
+---@return table
+local function writing(description, prompt)
+  return {
+    description = description,
+    model = "claude-haiku-4.5",
+    system_prompt = WRITING_SYSTEM_PROMPT,
+    prompt = prompt,
+  }
+end
+
 --- Prompt definitions consumed by CopilotChat prompt-picker/config.
 ---
 --- Purpose and intent:
@@ -196,6 +222,9 @@ Output discipline:
 --- - Value (`table`):
 ---   - `description?` (`string`): short UI/help label.
 ---   - `system_prompt?` (`string`): optional role/behavior constraints prepended by caller.
+---   - `dynamic_context?` (`table`): optional context resolution config (coding prompts only).
+---   - `model?` (`string`): optional model override.
+---   - `context?` (`table`): optional static context sources (e.g. "#gitdiff:staged").
 ---   - `prompt` (`string`): task-specific instruction body sent with user/context input.
 ---   - `mapping?` (`string`): optional keybinding hint for picker/integration layers.
 ---
@@ -205,13 +234,13 @@ Output discipline:
 ---   functional changes, not cosmetic edits.
 --- - "Commit" intentionally uses dedicated guardrails instead of `CODING_SYSTEM_PROMPT`
 ---   because commit generation requires stricter output discipline than code assistance.
----@type table<string, { description?: string, system_prompt?: string, model?: string, prompt: string, mapping?: string }>
+--- - `coding()` and `writing()` are module-private helpers that attach shared defaults;
+---   use the raw table form for entries that need unique field combinations (e.g. Commit).
+---@type table<string, { description?: string, system_prompt?: string, dynamic_context?: table, model?: string, context?: table, prompt: string, mapping?: string }>
 local prompts = {
-  Explain = {
-    description = "Explain code",
-    system_prompt = CODING_SYSTEM_PROMPT,
-    dynamic_context = CODING_DYNAMIC_CONTEXT,
-    prompt = [[
+  Explain = coding(
+    "Explain code",
+    [[
 Explain the provided code clearly and practically.
 
 Cover:
@@ -223,14 +252,12 @@ Cover:
 
 Do not over explain obvious syntax.
 Focus on intent, structure, and behavior.
-]],
-  },
+]]
+  ),
 
-  Review = {
-    description = "Review code",
-    system_prompt = CODING_SYSTEM_PROMPT,
-    dynamic_context = CODING_DYNAMIC_CONTEXT,
-    prompt = [[
+  Review = coding(
+    "Review code",
+    [[
 Review the code and identify meaningful issues.
 
 Focus on:
@@ -249,14 +276,12 @@ If no code changes are required, provide:
 1. Summary
 2. Findings by severity: high, medium, low
 3. Recommended next actions
-]],
-  },
+]]
+  ),
 
-  Tests = {
-    description = "Write tests",
-    system_prompt = CODING_SYSTEM_PROMPT,
-    dynamic_context = CODING_DYNAMIC_CONTEXT,
-    prompt = [[
+  Tests = coding(
+    "Write tests",
+    [[
 Write or improve tests for the provided code.
 
 Requirements:
@@ -275,14 +300,12 @@ If no code changes are required, provide:
 1. Test plan
 2. Recommended test cases
 3. Remaining gaps, if any
-]],
-  },
+]]
+  ),
 
-  Refactor = {
-    description = "Refactor code",
-    system_prompt = CODING_SYSTEM_PROMPT,
-    dynamic_context = CODING_DYNAMIC_CONTEXT,
-    prompt = [[
+  Refactor = coding(
+    "Refactor code",
+    [[
 Refactor the code to improve clarity and maintainability without changing behavior.
 
 Priorities:
@@ -303,14 +326,12 @@ If no code changes are required, explain:
 - what should change
 - why it would be better
 - tradeoffs, if any
-]],
-  },
+]]
+  ),
 
-  Fix = {
-    description = "Fix code issues",
-    system_prompt = CODING_SYSTEM_PROMPT,
-    dynamic_context = CODING_DYNAMIC_CONTEXT,
-    prompt = [[
+  Fix = coding(
+    "Fix code issues",
+    [[
 Analyze the code and fix the actual issue with the smallest safe change.
 
 Focus on:
@@ -333,14 +354,12 @@ If no code changes are required, explain:
 - root cause
 - why no code change is needed
 - any remaining assumptions or risks
-]],
-  },
+]]
+  ),
 
-  RenameForClarity = {
-    description = "Improve naming",
-    system_prompt = CODING_SYSTEM_PROMPT,
-    dynamic_context = CODING_DYNAMIC_CONTEXT,
-    prompt = [[
+  RenameForClarity = coding(
+    "Improve naming",
+    [[
 Review the code and improve naming for clarity.
 
 Focus on:
@@ -364,14 +383,12 @@ If no code changes are required, explain:
 - naming issues found
 - recommended renames
 - why the new names would be clearer
-]],
-  },
+]]
+  ),
 
-  Docs = {
-    description = "Write documentation",
-    system_prompt = CODING_SYSTEM_PROMPT,
-    dynamic_context = CODING_DYNAMIC_CONTEXT,
-    prompt = [[
+  Docs = coding(
+    "Write documentation",
+    [[
 Generate or improve documentation for the code.
 
 Document:
@@ -389,14 +406,12 @@ If code changes are required, follow the system output contract exactly.
 If no code changes are required, provide:
 - updated documentation
 - short note on what was clarified
-]],
-  },
+]]
+  ),
 
-  WCAG = {
-    description = "Improve accessibility",
-    system_prompt = CODING_SYSTEM_PROMPT,
-    dynamic_context = CODING_DYNAMIC_CONTEXT,
-    prompt = [[
+  WCAG = coding(
+    "Improve accessibility",
+    [[
 Review and improve the code toward WCAG 2.2 AA compliance.
 
 Priorities:
@@ -415,36 +430,13 @@ If no code changes are required, provide:
 2. Recommended changes
 3. Why the changes help
 4. Remaining limitations, if any
-]],
-  },
+]]
+  ),
 
-  Summarize = {
-    description = "Summarize text",
-    model = "claude-haiku-4.5",
-    system_prompt = WRITING_SYSTEM_PROMPT,
-    prompt = "Summarize the following text clearly and concisely.",
-  },
-
-  Spelling = {
-    description = "Correct spelling",
-    model = "claude-haiku-4.5",
-    system_prompt = WRITING_SYSTEM_PROMPT,
-    prompt = "Correct grammar and spelling errors in the following text.",
-  },
-
-  Wording = {
-    description = "Improve wording",
-    model = "claude-haiku-4.5",
-    system_prompt = WRITING_SYSTEM_PROMPT,
-    prompt = "Improve the wording of the following text while preserving meaning.",
-  },
-
-  Concise = {
-    description = "Make concise",
-    model = "claude-haiku-4.5",
-    system_prompt = WRITING_SYSTEM_PROMPT,
-    prompt = "Rewrite the following text to make it more concise while preserving meaning.",
-  },
+  Summarize = writing("Summarize text", "Summarize the following text clearly and concisely."),
+  Spelling = writing("Correct spelling", "Correct grammar and spelling errors in the following text."),
+  Wording = writing("Improve wording", "Improve the wording of the following text while preserving meaning."),
+  Concise = writing("Make concise", "Rewrite the following text to make it more concise while preserving meaning."),
 
   Commit = {
     description = "Write conventional commit message",
