@@ -40,7 +40,7 @@ if [[ -f package.json ]]; then
   pm="${pm:-npm}"
 
   if [[ -f tsconfig.json ]]; then
-    run "ts: typecheck" "$pm" exec tsc --noEmit
+    run "ts: typecheck" "$pm" exec -- tsc --noEmit
   else
     skip_msg "ts: typecheck (no tsconfig)"
   fi
