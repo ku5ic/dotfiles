@@ -75,10 +75,10 @@ sanitize_issue_id() {
 sanitize_title() {
   printf '%s' "$1" |
     tr '[:upper:]' '[:lower:]' |
-    sed -E 's/[[:space:]]+/_/g' |
-    sed -E 's/[^a-z0-9_]+/_/g' |
-    sed -E 's/_+/_/g' |
-    sed -E 's/^_+//; s/_+$//'
+    sed -E 's/[[:space:]]+/-/g' |
+    sed -E 's/[^a-z0-9_]+/-/g' |
+    sed -E 's/-+/-/g' |
+    sed -E 's/^-+//; s/-+$//'
 }
 
 is_valid_type() {
