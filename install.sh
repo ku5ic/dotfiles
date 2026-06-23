@@ -92,6 +92,7 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/config/nvim" ~/.config/
   ln -sfv "$DOTFILES_DIR/config/wezterm" ~/.config/
   ln -sfv "$DOTFILES_DIR/config/starship.toml" ~/.config/
+  ln -sfv "$DOTFILES_DIR/config/git" ~/.config/
 
   mkdir -p "$HOME/Library/Application Support/upterm"
   ln -sfv "$DOTFILES_DIR/config/upterm/config.yaml" "$HOME/Library/Application Support/upterm/config.yaml"

@@ -113,3 +113,4 @@ tags
 .vim
 
 **/.claude/settings.local.json
+allowed_signers.work

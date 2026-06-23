@@ -1,7 +1,7 @@
 [user]
 	name = Sinisa Kusic
 	email = contact.sinisa@gmail.com
-	signingkey = ~/.ssh/id_rsa.pub
+	signingkey = key::ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKJAfZTtUkJZcgjTBbZVdWmdLS6YaFPPvkHWCU+MflBr
 
 [init]
 	defaultBranch = main
@@ -77,6 +77,7 @@
 
 [gpg "ssh"]
 	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+	allowedSignersFile = ~/.config/git/allowed_signers
 
 [filter "lfs"]
 	clean = git-lfs clean -- %f
