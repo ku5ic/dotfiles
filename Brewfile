@@ -5,6 +5,7 @@ tap 'owenthereal/upterm'
 brew 'asdf'                         # runtime version manager driving Node, Ruby, Python via .tool-versions
 brew 'ast-grep'                     # AST-aware structural code search and rewrite, complements ripgrep for syntax-level matches
 brew 'atuin'                        # shell history sync and search backed by SQLite
+brew 'awscli'                       # amazon Web Services CLI for managing cloud resources
 brew 'bandwhich'                    # per-process network bandwidth monitor, completes procs/dust with the network layer
 brew 'bash'                         # newer bash than the macOS bundled 3.2
 brew 'bat'                          # syntax-highlighted cat replacement, aliased as the default file viewer
@@ -25,6 +26,7 @@ brew 'git-absorb'                   # auto-generate fixup commits that absorb st
 brew 'git-delta'                    # diff pager with syntax highlighting, set as core.pager
 brew 'gitleaks'                     # secret scanner for git repositories
 brew 'gnu-sed'                      # GNU sed for portable script behavior across macOS and Linux
+brew 'gnupg'                        # cryptography and signing tool for SSH and Git commit verification
 brew 'grep'                         # GNU grep on macOS to match Linux flag behavior
 brew 'gron'                         # flattens JSON into greppable path=value lines, faster than writing jq paths blind
 brew 'httpie'                       # human-friendly HTTP client for API testing
@@ -70,6 +72,7 @@ brew 'uv'                           # fast Python package and virtualenv manager
 brew 'watchexec'                    # filesystem-driven command runner
 brew 'wget'                         # HTTP and FTP downloader for scripts
 brew 'yarn'                         # JavaScript package manager for Node projects
+brew 'ykman'                        # authenticator CLI for managing Yubikeys, used by GitHub and 1Password
 brew 'yq'                           # YAML and TOML processor with jq-compatible syntax
 brew 'zoxide'                       # directory jumper that learns frequently visited paths
 brew 'zsh'                          # modern zsh from Homebrew, set as the login shell
@@ -109,7 +112,6 @@ cask 'zoom'                       # video conferencing client
 
 # Mac App Store
 mas '1Password for Safari', id: 1_569_813_296 # 1Password browser extension for Safari
-mas 'DuckDuckGo Privacy for Safari', id: 1_482_920_575 # tracker blocker for Safari
 mas 'GarageBand', id: 682_658_836 # audio workstation
 mas 'JSONPeep', id: 1_458_969_831 # Safari JSON viewer extension
 mas 'Keynote', id: 361_285_480 # presentation editor
