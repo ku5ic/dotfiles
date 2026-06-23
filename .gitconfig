@@ -3,9 +3,6 @@
 	email = contact.sinisa@gmail.com
 	signingkey = ~/.ssh/id_rsa.pub
 
-[includeIf "gitdir:~/Projects/2e/"]
-	path = ~/Projects/2e/.gitconfig
-
 [init]
 	defaultBranch = main
 
@@ -86,3 +83,6 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+
+[includeIf "gitdir:~/Projects/Spacelift/"]
+	path = ~/Projects/Spacelift/.gitconfig
