@@ -1,4 +1,5 @@
 # General Navigation and File Management
+alias ls='ls --color'          # enable colorized output for `ls` (if supported)
 alias ll='ls -lh'              # Human-readable long listing (with file sizes)
 alias la='ls -lha'             # Human-readable listing including hidden files
 alias l='ls -CF'               # Lists files in columns, appends '/' to directories
