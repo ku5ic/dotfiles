@@ -1,0 +1,20 @@
+name: spacelift-frontend
+root: ~/Projects/Spacelift/frontend
+enable_pane_titles: true
+
+windows:
+  - editor:
+      layout: main-horizontal
+      panes:
+        - nvim:
+            - nvim
+        - terminal:
+  - claude:
+      - claude
+  - dev:
+      layout: even-horizontal
+      panes:
+        - server:
+            - pnpm start
+        - tests:
+            - pnpm test:watch

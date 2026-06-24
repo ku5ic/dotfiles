@@ -1,0 +1,19 @@
+name: spacelift-local-dev
+root: ~/Projects/Spacelift/local.dev
+enable_pane_titles: true
+
+windows:
+  - editor:
+      layout: main-horizontal
+      panes:
+        - nvim:
+            - nvim
+        - terminal:
+  - claude:
+      - claude
+  - tilt:
+      layout: even-horizontal
+      panes:
+        - tilt:
+            - tilt up
+        - terminal:
