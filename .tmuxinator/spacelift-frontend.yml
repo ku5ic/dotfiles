@@ -1,5 +1,5 @@
 name: spacelift-frontend
-root: ~/Projects/Spacelift/frontend
+root: ~/Projects/Spacelift/local.dev/frontend/
 enable_pane_titles: true
 
 windows:

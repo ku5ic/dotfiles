@@ -62,6 +62,7 @@ brew 'ssh-copy-id'                  # helper for installing public keys onto rem
 brew 'starship'                     # cross-shell prompt configured via config/starship.toml
 brew 'stylua'                       # Formatter for Lua code
 brew 'tig'                          # terminal git history browser
+brew 'tilt'                         # tilt.dev local dev environment for Kubernetes, used by Tiltfile and Tiltfile.lock
 brew 'tmuxinator'                   # tmux session manager driven by .tmuxinator configs
 brew 'tokei'                        # source code line counter by language
 brew 'tpm'                          # tmux plugin manager loaded from .tmux.conf
