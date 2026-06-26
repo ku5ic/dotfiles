@@ -21,6 +21,14 @@ alias gcm='git checkout main'  # Check out the main branch
 alias gscf='git diff --name-only --diff-filter=U --relative' # Show conflicted files in a merge
 alias lg='lazygit'             # Open lazygit
 
+# Git Submodule Shortcuts
+alias gsmi='git submodule update --init --recursive'                                                              # Initialize and update all submodules (run after cloning a repo with submodules)
+alias gsmst='git submodule foreach "git stash"'                                                                   # Stash working-tree changes inside each submodule (git stash cannot stash gitlink pointer changes -- use gsmwip for that)
+alias gsmstp='git submodule foreach "git stash pop"'                                                              # Pop stash inside each submodule
+alias gsmup='git submodule foreach "git fetch && git checkout \$(git symbolic-ref refs/remotes/origin/HEAD | cut -d/ -f4) && git pull"'  # Checkout each submodule's default branch and pull; requires origin/HEAD to be set (run: git remote set-head origin --auto)
+alias gsmwip='git add -u && git commit -m "wip: submodule pointer updates"'                                       # Save staged submodule pointer changes as a WIP commit (workaround: git stash cannot stash gitlinks)
+alias gsmwippop='git reset --soft HEAD~1'                                                                         # Restore the last WIP submodule commit back to staged state
+
 # System Management
 alias df='df -h'               # Shows disk usage in human-readable format
 alias du='du -h'               # Displays directory size in human-readable format
