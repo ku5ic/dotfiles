@@ -8,17 +8,17 @@ model: haiku
 
 Current branch: !`git branch --show-current`
 
-Detected base: !`git-base.sh "$ARGUMENTS"`
+Detected base: !`git-base.sh`
 
-Commits on this branch but not on the base: !`git-log-from-base.sh "$ARGUMENTS" "--no-merges"`
+Commits on this branch but not on the base: !`git-log-from-base.sh "--no-merges"`
 
 ## Procedure
 
 1. Get the project name: `!`project-name.sh``.
 2. Interpret $ARGUMENTS:
    - If it looks like an explicit range (`ref..HEAD`, `sha1..sha2`): trust it. Pull commits with `git log --oneline --no-merges $ARGUMENTS`.
-   - If it is a single ref (e.g. `develop`): the Context block already used it as the base.
-   - If empty: the Context block used the auto-detected base.
+   - If it is a single ref (e.g. `develop`): use it as the explicit base. Pull commits with `git log --oneline --no-merges "$ARGUMENTS"..HEAD`.
+   - If empty or not a valid git ref: the Context block used the auto-detected base; use those commits.
 3. The commit list in the Context block is authoritative unless $ARGUMENTS specified an explicit range.
 4. For conventional-commits-style history (subjects like `feat:`, `fix:`, `chore:`), group by type. Otherwise group by inferred category (user-facing, internal, tooling).
 5. Filter out noise: formatting-only commits, CI-only changes, revert pairs that cancel out, chore commits with no user impact.

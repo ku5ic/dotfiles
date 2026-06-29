@@ -194,7 +194,11 @@
       "Bash($HOME/.claude/bin/detect-stack.sh)",
       "Bash($HOME/.claude/bin/doctor.sh)",
       "Bash($HOME/.claude/bin/git-base.sh)",
+      "Bash($HOME/.claude/bin/git-base.sh *)",
       "Bash($HOME/.claude/bin/git-diff-from-base.sh)",
+      "Bash($HOME/.claude/bin/git-diff-from-base.sh *)",
+      "Bash($HOME/.claude/bin/git-log-from-base.sh)",
+      "Bash($HOME/.claude/bin/git-log-from-base.sh *)",
       "Bash($HOME/.claude/bin/project-name.sh)",
       "Bash($HOME/.claude/bin/project-root.sh)",
       "Bash($HOME/.claude/bin/run-checks.sh)",
@@ -204,7 +208,11 @@
       "Bash(~/.claude/bin/detect-stack.sh)",
       "Bash(~/.claude/bin/doctor.sh)",
       "Bash(~/.claude/bin/git-base.sh)",
+      "Bash(~/.claude/bin/git-base.sh *)",
       "Bash(~/.claude/bin/git-diff-from-base.sh)",
+      "Bash(~/.claude/bin/git-diff-from-base.sh *)",
+      "Bash(~/.claude/bin/git-log-from-base.sh)",
+      "Bash(~/.claude/bin/git-log-from-base.sh *)",
       "Bash(~/.claude/bin/project-name.sh)",
       "Bash(~/.claude/bin/project-root.sh)",
       "Bash(~/.claude/bin/run-checks.sh)",
@@ -214,7 +222,11 @@
       "Bash(detect-stack.sh)",
       "Bash(doctor.sh)",
       "Bash(git-base.sh)",
+      "Bash(git-base.sh *)",
       "Bash(git-diff-from-base.sh)",
+      "Bash(git-diff-from-base.sh *)",
+      "Bash(git-log-from-base.sh)",
+      "Bash(git-log-from-base.sh *)",
       "Bash(project-name.sh)",
       "Bash(project-root.sh)",
       "Bash(run-checks.sh)",
@@ -224,7 +236,11 @@
       "Bash($HOME/.dotfiles/claude/bin/detect-stack.sh)",
       "Bash($HOME/.dotfiles/claude/bin/doctor.sh)",
       "Bash($HOME/.dotfiles/claude/bin/git-base.sh)",
+      "Bash($HOME/.dotfiles/claude/bin/git-base.sh *)",
       "Bash($HOME/.dotfiles/claude/bin/git-diff-from-base.sh)",
+      "Bash($HOME/.dotfiles/claude/bin/git-diff-from-base.sh *)",
+      "Bash($HOME/.dotfiles/claude/bin/git-log-from-base.sh)",
+      "Bash($HOME/.dotfiles/claude/bin/git-log-from-base.sh *)",
       "Bash($HOME/.dotfiles/claude/bin/project-name.sh)",
       "Bash($HOME/.dotfiles/claude/bin/project-root.sh)",
       "Bash($HOME/.dotfiles/claude/bin/run-checks.sh)",
@@ -637,7 +653,16 @@
     "42crunch-api-security-testing@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true,
     "hookify@claude-plugins-official": true,
-    "ruby-lsp@claude-plugins-official": true
+    "ruby-lsp@claude-plugins-official": true,
+    "frontend-spacelift@spacelift-engineering": true
+  },
+  "extraKnownMarketplaces": {
+    "spacelift-engineering": {
+      "source": {
+        "source": "github",
+        "repo": "spacelift-io/engineering-agent-skills"
+      }
+    }
   },
   "spinnerTipsEnabled": false,
   "effortLevel": "xhigh",

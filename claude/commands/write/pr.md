@@ -7,9 +7,9 @@ model: haiku
 ## Procedure
 
 1. Get the project name: `!`project-name.sh``.
-2. Resolve the base: !`git-base.sh "$ARGUMENTS"`. The helper accepts an explicit ref via $ARGUMENTS or falls through to upstream / origin HEAD / main / master / develop / trunk.
-3. Pull the diff: !`git-diff-from-base.sh "$ARGUMENTS"`
-4. Pull the log (last 20): !`git-log-from-base.sh "$ARGUMENTS"`
+2. Resolve the base: !`git-base.sh`. Falls through upstream / origin HEAD / main / master / develop / trunk. If $ARGUMENTS is a valid single-word git ref (no spaces, not a sentence), use it as the explicit base instead by running `git-base.sh "$ARGUMENTS"` via Bash.
+3. Pull the diff: !`git-diff-from-base.sh`
+4. Pull the log (last 20): !`git-log-from-base.sh`
 5. Read any referenced issue number in recent commit messages, but do not fetch external data.
 
 ## Output
