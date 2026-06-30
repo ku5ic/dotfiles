@@ -26,6 +26,3 @@ Temporary Items
 .apdisk
 workspaceStorage
 globalStorage
-
-# Claude Code
-*.local.md
