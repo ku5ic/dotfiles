@@ -28,6 +28,7 @@ alias gsmstp='git submodule foreach "git stash pop"'                            
 alias gsmup='git submodule foreach "git fetch && git checkout \$(git symbolic-ref refs/remotes/origin/HEAD | cut -d/ -f4) && git pull"'  # Checkout each submodule's default branch and pull; requires origin/HEAD to be set (run: git remote set-head origin --auto)
 alias gsmwip='git add -u && git commit -m "wip: submodule pointer updates"'                                       # Save staged submodule pointer changes as a WIP commit (workaround: git stash cannot stash gitlinks)
 alias gsmwippop='git reset --soft HEAD~1'                                                                         # Restore the last WIP submodule commit back to staged state
+alias update_submodules='git submodule update --init --recursive && git submodule foreach "git fetch && git checkout \$(git symbolic-ref refs/remotes/origin/HEAD | cut -d/ -f4) && git pull"' # Update all submodules to their latest commit on their default branch
 
 # System Management
 alias df='df -h'               # Shows disk usage in human-readable format
