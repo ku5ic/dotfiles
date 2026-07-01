@@ -151,7 +151,7 @@ All commands live under `$HOME/.claude/commands/` and are organized into five na
 - `flow/` - the default feature workflow: preflight, plan, implement, test, review, plus fix, debug, quick, resume, checks
 - `audit/` - targeted audits invoked when scope warrants: a11y, claude, debt, doc-drift, perf, security
 - `meta/` - authoring and reflection: feature, prompt, retro
-- `write/` - outward-facing communication: commit, pr, release-notes, stakeholder
+- `write/` - outward-facing communication: commit, pr, release-notes, review-comment, stakeholder
 - `question/` - read-only Q&A tiered by reasoning depth: hard (opus/high), medium (sonnet/high), easy (sonnet/low)
 
 ### Hard rules
