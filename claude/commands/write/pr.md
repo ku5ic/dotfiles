@@ -21,7 +21,7 @@ Structure:
 ```
 ## Summary
 
-<What changed and why. One short paragraph. No bullet list.>
+<Why this change, now. Lead with motivation or context the diff itself can't convey; do not restate what changed. One short paragraph, no bullet list.>
 
 ## Changes
 
@@ -42,6 +42,8 @@ Structure:
 
 ## Rules
 
+- Lead with why, not what. The diff already shows what changed; the description earns its place by explaining motivation a reviewer cannot get from the code alone.
+- Respect the reviewer's time: shortest description that gives full context. Every sentence should help them approve faster, not pad the page.
 - Do not restate what is obvious from the diff.
 - Do not pad sections. Omit any section with nothing meaningful to say.
 - Tone: direct, professional. Written by the author, not a summarizer.
