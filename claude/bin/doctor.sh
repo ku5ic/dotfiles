@@ -28,7 +28,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 SOURCE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TARGET_ROOT="$HOME/.claude"
 
-ENTRIES=(settings.json CLAUDE.md commands hooks skills agents bin)
+ENTRIES=(settings.json CLAUDE.md hooks skills agents bin)
 
 exit_code=0
 
@@ -196,17 +196,16 @@ else
 fi
 
 echo
-echo "== command frontmatter lint =="
+echo "== skill frontmatter lint =="
 
 if ! command -v yq >/dev/null 2>&1; then
   echo "skip           yq not found; install via Brewfile to enable frontmatter lint"
 else
-  COMMANDS_DIR="$SOURCE_ROOT/commands"
+  SKILLS_DIR="$SOURCE_ROOT/skills"
   fm_failed=0
   fm_count=0
 
   while IFS= read -r f; do
-    fm_count=$((fm_count + 1))
     # Extract YAML frontmatter between the first pair of --- delimiters.
     fm=$(awk 'NR==1 && /^---$/{in_fm=1;next} in_fm && /^---$/{exit} in_fm{print}' "$f")
     rel="${f#"$SOURCE_ROOT/"}"
@@ -216,6 +215,13 @@ else
       fm_failed=1
       continue
     fi
+
+    # Only procedure skills (migrated from commands) carry model/effort; patterns
+    # and reference skills have neither. Lint the former, skip the latter.
+    if ! printf '%s\n' "$fm" | grep -qE '^model:'; then
+      continue
+    fi
+    fm_count=$((fm_count + 1))
 
     # Filter to just model/effort lines before passing to yq: other frontmatter
     # fields (e.g. argument-hint: <...>) contain angle brackets that yq rejects
@@ -262,12 +268,12 @@ else
       esac
     fi
 
-  done < <(find "$COMMANDS_DIR" -name "*.md" -type f | sort)
+  done < <(find "$SKILLS_DIR" -name "SKILL.md" -type f | sort)
 
   if ((fm_failed)); then
     exit_code=1
   else
-    echo "ok             $fm_count commands passed frontmatter lint"
+    echo "ok             $fm_count procedure skills passed frontmatter lint"
   fi
 fi
 
