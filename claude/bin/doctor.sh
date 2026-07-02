@@ -177,10 +177,12 @@ fi
 # Neither consumer may hold a private copy of the shared yq derivation
 # queries; those must live only in bin/_lib.sh (global_skills_list,
 # stacks_signals_from_cache, suggested_skills_from_signals).
+# These are literal grep -qF patterns: the \$ is escaped so the string holds
+# the verbatim ${stack}/${sig} text to search for, not a value to expand.
 private_copy_patterns=(
-  '.global_skills'
-  '.stacks.${stack}.extras'
-  '.stacks.${sig}.skills'
+  ".global_skills"
+  ".stacks.\${stack}.extras"
+  ".stacks.\${sig}.skills"
 )
 for pat in "${private_copy_patterns[@]}"; do
   for f in "$AGENT_CONTEXT" "$INJECT_CONTEXT"; do
