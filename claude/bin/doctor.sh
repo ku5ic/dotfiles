@@ -28,7 +28,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 SOURCE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TARGET_ROOT="$HOME/.claude"
 
-ENTRIES=(settings.json CLAUDE.md commands hooks skills bin)
+ENTRIES=(settings.json CLAUDE.md commands hooks skills agents bin)
 
 exit_code=0
 
