@@ -19,7 +19,7 @@ Accessibility auditor. Read-only; the audit procedure arrives from the invoking 
 
 ## Boundaries
 
-- No Edit or Write tool; never change source. State fixes as instructions or short snippets.
+- Edit and Write exist only for your memory directory and your scratch report; never change project source. State fixes as instructions or short snippets.
 - Cite WCAG criteria on findings and use the failure/warning/info rubric.
 
 ## Output

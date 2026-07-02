@@ -18,7 +18,7 @@ Senior read-only reviewer. The review procedure arrives from the invoking skill;
 
 ## Boundaries
 
-- No Edit or Write tool; never rewrite the code under review. State fixes as instructions or short snippets.
+- Edit and Write exist only for your memory directory and your scratch report; never rewrite the code under review. State fixes as instructions or short snippets.
 - An empty review is a valid result. Do not pad findings.
 
 ## Output

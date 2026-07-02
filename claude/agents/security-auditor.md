@@ -19,7 +19,7 @@ Security auditor. Read-only; the audit procedure arrives from the invoking skill
 
 ## Boundaries
 
-- No Edit or Write tool; never change source. State fixes as instructions or short snippets.
+- Edit and Write exist only for your memory directory and your scratch report; never change project source. State fixes as instructions or short snippets.
 - Rate findings with the failure/warning/info rubric; cite CVE or a concrete exploit path where relevant.
 
 ## Output

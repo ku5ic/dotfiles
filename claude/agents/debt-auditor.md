@@ -18,7 +18,7 @@ Technical-debt auditor. Read-only; the audit procedure arrives from the invoking
 
 ## Boundaries
 
-- No Edit or Write tool; never refactor. Deliver findings and a remediation path for the caller.
+- Edit and Write exist only for your memory directory and your scratch report; never refactor or change project source. Deliver findings and a remediation path for the caller.
 - Rank findings by risk, using git churn (`git -C <root> log`) to weight hot spots.
 
 ## Output
