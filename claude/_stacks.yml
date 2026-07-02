@@ -52,9 +52,7 @@
 # Add skills here that should always be available (e.g. output format skills,
 # universal engineering meta-skills). Keep this list short.
 global_skills:
-  - markdown-report
   - engineering-fundamentals
-  - git-patterns
 
 # File-to-skills map consumed by hooks/guard-skills.sh.
 # Evaluated against every Edit/Write/MultiEdit target; matching is cumulative
@@ -113,6 +111,8 @@ skill_triggers:
   fastapi-patterns: "before defining FastAPI routes, dependencies, or Pydantic models"
   docker-patterns: "before authoring or changing Dockerfiles or compose services"
   bash-patterns: "before writing or modifying shell scripts"
+  markdown-report: "before producing a structured report, summary, or any formatted long-form output"
+  git-patterns: "before writing commit messages, planning a branch strategy, or reviewing history"
 
 # Ordered lockfile-to-manager table. First match wins.
 # Consumed by bin/_lib.sh resolve_package_manager and (as a hardcoded copy)
