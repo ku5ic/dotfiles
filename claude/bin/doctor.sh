@@ -11,9 +11,12 @@
 #      only thing standing between an injection and a clobbered key).
 #   3. PM table parity: guard-bash.sh lockfile->manager table matches
 #      _stacks.yml package_managers list.
-#   4. Command frontmatter lint: every command .md has a valid model field and
-#      matching effort field.
-#   5. Skill map validation: skill_file_map and skill_triggers reference only
+#   4. Agent-context / inject-context derivation parity: both consumers share
+#      the yq derivation queries via bin/_lib.sh instead of holding private
+#      copies.
+#   5. Skill frontmatter lint: every procedure SKILL.md has a valid model
+#      field and matching effort field.
+#   6. Skill map validation: skill_file_map and skill_triggers reference only
 #      skills that exist, and every stack/extra skill has a trigger entry.
 #
 # Adding a credential pattern: add it to the `patterns` array below AND to
