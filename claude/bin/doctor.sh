@@ -11,9 +11,12 @@
 #      only thing standing between an injection and a clobbered key).
 #   3. PM table parity: guard-bash.sh lockfile->manager table matches
 #      _stacks.yml package_managers list.
-#   4. Command frontmatter lint: every command .md has a valid model field and
-#      matching effort field.
-#   5. Skill map validation: skill_file_map and skill_triggers reference only
+#   4. Agent-context / inject-context derivation parity: both consumers share
+#      the yq derivation queries via bin/_lib.sh instead of holding private
+#      copies.
+#   5. Skill frontmatter lint: every procedure SKILL.md has a valid model
+#      field and matching effort field.
+#   6. Skill map validation: skill_file_map and skill_triggers reference only
 #      skills that exist, and every stack/extra skill has a trigger entry.
 #
 # Adding a credential pattern: add it to the `patterns` array below AND to
@@ -28,7 +31,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 SOURCE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TARGET_ROOT="$HOME/.claude"
 
-ENTRIES=(settings.json CLAUDE.md commands hooks skills bin)
+ENTRIES=(settings.json CLAUDE.md hooks skills agents bin)
 
 exit_code=0
 
@@ -149,17 +152,65 @@ if ((pm_parity_failed)); then
 fi
 
 echo
-echo "== command frontmatter lint =="
+echo "== agent-context / inject-context derivation parity =="
+
+AGENT_CONTEXT="$SOURCE_ROOT/bin/agent-context.sh"
+INJECT_CONTEXT="$SOURCE_ROOT/hooks/inject-context.sh"
+derivation_failed=0
+
+if [[ ! -f "$AGENT_CONTEXT" ]]; then
+  echo "missing        $AGENT_CONTEXT"
+  derivation_failed=1
+elif ! grep -qF '_lib.sh' "$AGENT_CONTEXT"; then
+  echo "no-source      agent-context.sh does not source bin/_lib.sh"
+  derivation_failed=1
+fi
+
+if [[ ! -f "$INJECT_CONTEXT" ]]; then
+  echo "missing        $INJECT_CONTEXT"
+  derivation_failed=1
+elif ! grep -qF '_lib.sh' "$INJECT_CONTEXT"; then
+  echo "no-source      inject-context.sh does not source bin/_lib.sh"
+  derivation_failed=1
+fi
+
+# Neither consumer may hold a private copy of the shared yq derivation
+# queries; those must live only in bin/_lib.sh (global_skills_list,
+# stacks_signals_from_cache, suggested_skills_from_signals).
+# These are literal grep -qF patterns: the \$ is escaped so the string holds
+# the verbatim ${stack}/${sig} text to search for, not a value to expand.
+private_copy_patterns=(
+  ".global_skills"
+  ".stacks.\${stack}.extras"
+  ".stacks.\${sig}.skills"
+)
+for pat in "${private_copy_patterns[@]}"; do
+  for f in "$AGENT_CONTEXT" "$INJECT_CONTEXT"; do
+    [[ -f "$f" ]] || continue
+    if grep -qF "$pat" "$f"; then
+      echo "private-copy   $f queries '$pat' directly instead of using bin/_lib.sh"
+      derivation_failed=1
+    fi
+  done
+done
+
+if ((derivation_failed)); then
+  exit_code=1
+else
+  echo "ok             agent-context.sh and inject-context.sh share derivation via bin/_lib.sh"
+fi
+
+echo
+echo "== skill frontmatter lint =="
 
 if ! command -v yq >/dev/null 2>&1; then
   echo "skip           yq not found; install via Brewfile to enable frontmatter lint"
 else
-  COMMANDS_DIR="$SOURCE_ROOT/commands"
+  SKILLS_DIR="$SOURCE_ROOT/skills"
   fm_failed=0
   fm_count=0
 
   while IFS= read -r f; do
-    fm_count=$((fm_count + 1))
     # Extract YAML frontmatter between the first pair of --- delimiters.
     fm=$(awk 'NR==1 && /^---$/{in_fm=1;next} in_fm && /^---$/{exit} in_fm{print}' "$f")
     rel="${f#"$SOURCE_ROOT/"}"
@@ -169,6 +220,13 @@ else
       fm_failed=1
       continue
     fi
+
+    # Only procedure skills (migrated from commands) carry model/effort; patterns
+    # and reference skills have neither. Lint the former, skip the latter.
+    if ! printf '%s\n' "$fm" | grep -qE '^model:'; then
+      continue
+    fi
+    fm_count=$((fm_count + 1))
 
     # Filter to just model/effort lines before passing to yq: other frontmatter
     # fields (e.g. argument-hint: <...>) contain angle brackets that yq rejects
@@ -215,12 +273,12 @@ else
       esac
     fi
 
-  done < <(find "$COMMANDS_DIR" -name "*.md" -type f | sort)
+  done < <(find "$SKILLS_DIR" -name "SKILL.md" -type f | sort)
 
   if ((fm_failed)); then
     exit_code=1
   else
-    echo "ok             $fm_count commands passed frontmatter lint"
+    echo "ok             $fm_count procedure skills passed frontmatter lint"
   fi
 fi
 

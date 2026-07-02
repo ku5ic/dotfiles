@@ -54,12 +54,23 @@ Default assumption in this dotfiles project: Tailwind v4 with CSS-first config. 
 
 ## Anti-patterns to flag in review
 
-- Hardcoded hex colors (`text-[#ff0000]`) when an existing theme token would work. Use the token; if missing, add it to `@theme`.
-- `@apply` chains longer than three utilities. They obscure the cascade and inhibit tree-shaking. Use a CSS class with raw properties instead, or compose at the markup level.
-- Conditional `@apply` inside `@media` or selector blocks: works, but readability falls off fast. Inline utilities or extract a component.
-- `dark:` everywhere instead of a `[data-theme="dark"]` strategy when the project has a theme toggle. v4 supports both; pick one.
-- `animate-[...]` arbitrary values when a named animation exists. Define `--animate-<name>` in `@theme` and reuse.
-- Missing `text-` size on body copy (relying on browser default 16px). Always set the base size explicitly.
+**warning: hardcoded hex colors when a theme token would work**
+`text-[#ff0000]` bypasses the design system. Use the existing token; if missing, add it to `@theme`.
+
+**warning: `@apply` chains longer than three utilities**
+They obscure the cascade and inhibit tree-shaking. Use a CSS class with raw properties instead, or compose at the markup level.
+
+**info: conditional `@apply` inside `@media` or selector blocks**
+Works, but readability falls off fast. Inline utilities or extract a component.
+
+**warning: `dark:` everywhere instead of a `[data-theme="dark"]` strategy**
+Inconsistent when the project already has a theme toggle. v4 supports both; pick one.
+
+**info: `animate-[...]` arbitrary values when a named animation exists**
+Define `--animate-<name>` in `@theme` and reuse it instead of repeating the arbitrary value.
+
+**warning: missing `text-` size on body copy**
+Relying on the browser default (16px) instead of setting the base size explicitly leaves typography undocumented and inconsistent across components.
 
 ## Verifying which version is in use
 

@@ -14,7 +14,7 @@ On the first substantive action in a repo:
 2. Read project root CLAUDE.md if present.
 3. Read README.md only if directly relevant to the task.
 4. Check current branch and dirty state. If dirty and the task implies a new feature, surface this and ask before proceeding.
-5. Identify the test runner, type checker, linter, and formatter the project actually uses (lockfile, scripts in package.json, Makefile, justfile, pyproject.toml). Record them mentally.
+5. Use the injected `<tooling>` block for the test runner, type checker, linter, and formatter; identify manually only if it is absent.
 6. Do not run quality checks yet. Save that for after a change.
 
 After this protocol runs once per session, do not repeat it.
@@ -23,7 +23,7 @@ After this protocol runs once per session, do not repeat it.
 
 Apply to every response without exception. Apply on the first message. Do not wait to be corrected.
 
-Canonical for both Claude Code and the userPreferences field in claude.ai chat preferences. userPreferences is a manually maintained mirror; sync from here when editing it. Rules that live only in this file: the ASCII-arrow item below and the "Apply on the first message" preamble above. The `/flow:*` Hard rules later in this file are intentionally Claude-Code-only.
+Canonical for both Claude Code and the userPreferences field in claude.ai chat preferences. userPreferences is a manually maintained mirror; sync from here when editing it. Rules that live only in this file: the ASCII-arrow item below and the "Apply on the first message" preamble above. The `/flow-*` Hard rules later in this file are intentionally Claude-Code-only.
 
 - Plain ASCII punctuation only. No em dashes, no double dashes, no smart quotes, no Unicode arrows.
 - Use plain ASCII arrows: -> and <-.
@@ -63,7 +63,7 @@ Markdown is prose, not code. Sentences flow naturally on one line regardless of 
 - Before running a script, check the project actually defines it: `scripts` in `package.json`, Makefile, justfile, task runner.
 - When a question concerns current versions, features, or APIs of a fast moving tool, verify against the authoritative source or the project's lockfile. Training memory is not sufficient.
 - Do not assume file paths, directory structure, or naming conventions. Look first.
-- Never declare a task complete with failing checks. Run the project's checks (`/flow:checks` or `run-checks.sh`); if any fail, fix them or report and stop.
+- Never declare a task complete with failing checks. Run the project's checks (`/flow-checks` or `run-checks.sh`); if any fail, fix them or report and stop.
 
 ## Anti-fabrication
 
@@ -144,20 +144,38 @@ If a file claimed to exist by the user is not found, surface that immediately an
 - Step by step only when complexity justifies it.
 - Keep what to do separated from why.
 
-## Claude Code command namespace (canonical)
+## Claude Code skills namespace (canonical)
 
-All commands live under `$HOME/.claude/commands/` and are organized into five namespaces. Invocation uses the `/<group>:<name>` form. The canonical inventory is the output of `/skills` inside Claude Code.
+Procedures live as skills under `$HOME/.claude/skills/<group>-<name>/SKILL.md`, grouped by name prefix into five groups. Invocation uses the `/<group>-<name>` form (for example `/flow-checks`). Commands and skills are one merged system, so the richer skill frontmatter (`disable-model-invocation`, `context: fork`, `agent`) applies. The canonical inventory is the output of `/skills` inside Claude Code.
 
-- `flow/` - the default feature workflow: preflight, plan, implement, test, review, plus fix, debug, quick, resume, checks
-- `audit/` - targeted audits invoked when scope warrants: a11y, claude, debt, doc-drift, perf, security
-- `meta/` - authoring and reflection: feature, prompt, retro
-- `write/` - outward-facing communication: commit, pr, release-notes, review-comment, stakeholder
-- `question/` - read-only Q&A tiered by reasoning depth: hard (opus/high), medium (sonnet/high), easy (sonnet/low)
+- `flow` - the default feature workflow: preflight, plan, implement, test, review, plus fix, debug, quick, resume, checks, deps
+- `audit` - targeted audits invoked when scope warrants: a11y, claude, debt, doc-drift, perf, security
+- `meta` - authoring and reflection: feature, prompt, retro
+- `write` - outward-facing communication: commit, pr, release-notes, review-comment, stakeholder
+- `question` - read-only Q&A tiered by reasoning depth: hard (opus/high), medium (sonnet/high), easy (sonnet/low)
+
+All groups except `question` are user-only (`disable-model-invocation: true`); they run when typed, not on model initiative. `question-*` stays model-invocable.
 
 ### Hard rules
 
-- pause after each `/flow:*` step and wait for user approval before continuing.
+- pause after each `/flow-*` step and wait for user approval before continuing.
 - after completing each logical segment, stop and wait for the user to review and commit the changes.
-- The older `cmd-*` naming convention is stale. Any reference found in docs, workflow guides, `CLAUDE.md` files, or prompts must be corrected on touch to the new namespaced form.
-- Unprefixed references (`/preflight`, `/plan`, `/implement`) are ambiguous and should be normalized to the full `/<group>:<name>` form.
-- The canonical source of truth for available commands is the output of `/skills` inside Claude Code, not any UI label.
+- The older `cmd-*` naming convention is stale. Any reference found in docs, workflow guides, `CLAUDE.md` files, or prompts must be corrected on touch to the current namespaced form.
+- Unprefixed references (`/preflight`, `/plan`, `/implement`) are ambiguous and should be normalized to the full `/<group>-<name>` form.
+- The canonical source of truth for available skills is the output of `/skills` inside Claude Code, not any UI label.
+
+## Agents
+
+Nine subagent capability shells live under `$HOME/.claude/agents/`. The canonical inventory is the output of `/agents`.
+
+- `scout` - read-only exploration; broad `file:line` sweeps kept out of the main context
+- `reviewer` - senior read-only code review (invoked by `/flow-review`)
+- `tester` - writes and runs tests; never edits implementation (invoked by `/flow-test`)
+- `checker` - runs `run-checks.sh`, returns a pass/fail summary (invoked by `/flow-checks`)
+- `debugger` - localizes a fault with a single probe; never fixes (invoked by `/flow-debug`)
+- `a11y-auditor` - WCAG 2.2 AA audit (invoked by `/audit-a11y`)
+- `security-auditor` - security audit (invoked by `/audit-security`)
+- `perf-auditor` - static performance audit (invoked by `/audit-perf`)
+- `debt-auditor` - technical-debt audit, churn-correlated (invoked by `/audit-debt`)
+
+Two operational facts: agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the `UserPromptSubmit` hook injection, so each shell self-loads stack context via `~/.claude/bin/agent-context.sh` at startup, with `guard-skills` as the enforcement floor for editing agents. Forked skills (`context: fork`) run their whole body inside the named agent; the inline procedures, including `flow-plan` and `flow-implement`, stay in the main conversation and keep their phase-boundary stops there.

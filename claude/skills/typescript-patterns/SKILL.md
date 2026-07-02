@@ -5,7 +5,7 @@ description: TypeScript patterns, strictness flags, type-safety anti-patterns, a
 
 # TypeScript patterns
 
-Default assumption: a TypeScript project with `strict` mode enabled. If `strict` is off, that itself is a finding.
+Default assumption: a TypeScript project with `strict` mode enabled. If `strict` is off, that itself is a finding. Verify version-sensitive claims (which flags exist, which syntax is available) against the `typescript` version pinned in the project's `package.json` and lockfile before applying deltas below.
 
 ## Severity rubric
 

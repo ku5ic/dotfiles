@@ -5,7 +5,7 @@ description: Nuxt 3+ patterns covering rendering modes, data fetching (useFetch,
 
 # Nuxt patterns
 
-Default assumption: Nuxt 4 (current stable, latest 4.4.x as of writing) with Universal Rendering (SSR). Nuxt 3 reached End-of-Life in mid-2024; legacy Nuxt 3 projects are still common and most patterns here apply, but the maintenance note below covers deltas. Verify the installed version via `nuxt --version` or `package.json`; minor-version deltas may affect module resolution and Nitro config.
+Default assumption: Nuxt 4 (current stable, latest 4.4.x as of writing) with Universal Rendering (SSR). Nuxt 3 is in maintenance until 2026-07-31 and still receives bug fixes and security patches; Nuxt 3 projects are still common and most patterns here apply, but the maintenance note below covers deltas. Verify the installed version via `nuxt --version` or `package.json`; minor-version deltas may affect module resolution and Nitro config.
 
 ## Severity rubric
 
@@ -51,4 +51,4 @@ Default assumption: Nuxt 4 (current stable, latest 4.4.x as of writing) with Uni
 
 ## Maintenance note
 
-Nuxt 4 is the current stable major; Nuxt 4.4 introduced custom `useFetch`/`useAsyncData` factories and other refinements (March 2026). Nuxt 3 reached EOL on June 30, 2024 and no longer receives updates; Nuxt 3 projects should plan a 4 migration. The Nitro runtime and h3 framework underneath are versioned independently and can update without a Nuxt major bump; verify version-sensitive claims against the current docs at https://nuxt.com/docs and the release entries at https://nuxt.com/blog. Vue 2-based Nuxt 2 patterns are out of scope here.
+Nuxt 4 is the current stable major; Nuxt 4.4 introduced custom `useFetch`/`useAsyncData` factories and other refinements (March 2026). Nuxt 3 is in maintenance (bug fixes and security patches only) until 2026-07-31; Nuxt 3 projects should plan a Nuxt 4 migration ahead of that date. Nuxt 2 reached EOL on June 30, 2024 and no longer receives updates. The Nitro runtime and h3 framework underneath are versioned independently and can update without a Nuxt major bump; verify version-sensitive claims against the current docs at https://nuxt.com/docs and the release entries at https://nuxt.com/blog. Vue 2-based Nuxt 2 patterns are out of scope here.

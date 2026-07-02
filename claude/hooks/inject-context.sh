@@ -37,34 +37,8 @@ project_root="$("$HOME/.claude/bin/project-root.sh" 2>/dev/null || echo "")"
   exit 0
 }
 
-cache_dir="$HOME/.claude/cache/stack"
-# Hash the project root path into the cache key so projects with the same
-# basename cannot collide.
-cache_file="$cache_dir/${project_name}-$(printf '%s' "$project_root" | shasum -a 256 | cut -c1-8).txt"
-mkdir -p "$cache_dir"
-
-# Invalidate cache when any detection-relevant file is newer than the cache.
-# Checks $project_root/<file> only; search_dirs subdirectories are not walked
-# (same scope as the original sentinel walk, intentional).
-newest_sentinel=0
-for f in "${STACK_DETECT_FILES[@]/#/$project_root/}"; do
-  [[ -f "$f" ]] || continue
-  m="$(stat -f '%m' "$f" 2>/dev/null || echo 0)"
-  ((m > newest_sentinel)) && newest_sentinel="$m"
-done
-
-cache_mtime=0
-[[ -f "$cache_file" ]] && cache_mtime="$(stat -f '%m' "$cache_file" 2>/dev/null || echo 0)"
-
-if ((cache_mtime < newest_sentinel)) || [[ ! -s "$cache_file" ]]; then
-  _cache_tmp="$(mktemp)"
-  trap 'rm -f "$_cache_tmp"' EXIT
-  if bash "$HOME/.claude/bin/detect-stack.sh" >"$_cache_tmp" 2>/dev/null; then
-    mv "$_cache_tmp" "$cache_file"
-  else
-    rm -f "$_cache_tmp"
-  fi
-fi
+cache_file="$(stack_cache_file "$project_name" "$project_root")"
+refresh_stack_cache_if_stale "$project_root" "$cache_file"
 
 if [[ -s "$cache_file" ]]; then
   echo ""
@@ -87,20 +61,8 @@ emit_required_skills() {
   [[ -f "$yml" ]] || return 0
   command -v yq >/dev/null 2>&1 || return 0
 
-  local -A seen=()
   local -a required=()
-
-  add_skill() {
-    local sk="$1"
-    if [[ -z "${seen[$sk]:-}" ]]; then
-      seen[$sk]=1
-      required+=("$sk")
-    fi
-  }
-
-  while IFS= read -r skill; do
-    [[ -n "$skill" ]] && add_skill "$skill"
-  done < <(yq '.global_skills // [] | .[]' "$yml" 2>/dev/null || true)
+  mapfile -t required < <(global_skills_list "$yml")
 
   if [[ ${#required[@]} -gt 0 ]]; then
     local IFS=', '
@@ -138,64 +100,8 @@ emit_suggested_skills() {
   [[ -f "$yml" ]] || return 0
   command -v yq >/dev/null 2>&1 || return 0
 
-  # Build the global skill exclusion set.
-  local -A global_set=()
-  while IFS= read -r sk; do
-    [[ -n "$sk" ]] && global_set[$sk]=1
-  done < <(yq '.global_skills // [] | .[]' "$yml" 2>/dev/null || true)
-
-  # Extract signals from detect-stack.sh cache output.
-  # "js: yes at frontend/ (typescript, react, next) [pnpm]"
-  # -> signals: js, js+typescript, js+react, js+next
-  local -a signals=()
-  while IFS= read -r line; do
-    [[ "$line" =~ ^root: ]] && continue
-    [[ -z "$line" ]] && continue
-    local stack="${line%%:*}"
-    signals+=("$stack")
-    local extras
-    extras=$(echo "$line" | grep -oE '\([^)]+\)' | head -1 | tr -d '()') || true
-    if [[ -n "$extras" ]]; then
-      IFS=', ' read -ra parts <<<"$extras"
-      for part in "${parts[@]}"; do
-        part="${part//[[:space:]]/}"
-        [[ -n "$part" ]] && signals+=("${stack}+${part}")
-      done
-    fi
-  done <"$cache"
-
-  if [[ ${#signals[@]} -eq 0 ]]; then
-    return 0
-  fi
-
-  # Collect per-stack/extra skills, excluding global skills, dedup first-seen.
-  local -A seen_sugg=()
   local -a suggested=()
-
-  add_suggested() {
-    local sk="$1"
-    if [[ -n "${global_set[$sk]:-}" ]]; then
-      return 0
-    fi
-    if [[ -z "${seen_sugg[$sk]:-}" ]]; then
-      seen_sugg[$sk]=1
-      suggested+=("$sk")
-    fi
-  }
-
-  for sig in "${signals[@]}"; do
-    if [[ "$sig" == *"+"* ]]; then
-      local stack="${sig%%+*}"
-      local extra="${sig##*+}"
-      while IFS= read -r skill; do
-        [[ -n "$skill" ]] && add_suggested "$skill"
-      done < <(yq ".stacks.${stack}.extras[] | select(.name == \"${extra}\") | .skills // [] | .[]" "$yml" 2>/dev/null || true)
-    else
-      while IFS= read -r skill; do
-        [[ -n "$skill" ]] && add_suggested "$skill"
-      done < <(yq ".stacks.${sig}.skills // [] | .[]" "$yml" 2>/dev/null || true)
-    fi
-  done
+  mapfile -t suggested < <(stacks_signals_from_cache "$cache" | suggested_skills_from_signals "$yml")
 
   if [[ ${#suggested[@]} -eq 0 ]]; then
     return 0
