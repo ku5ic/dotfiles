@@ -149,6 +149,53 @@ if ((pm_parity_failed)); then
 fi
 
 echo
+echo "== agent-context / inject-context derivation parity =="
+
+AGENT_CONTEXT="$SOURCE_ROOT/bin/agent-context.sh"
+INJECT_CONTEXT="$SOURCE_ROOT/hooks/inject-context.sh"
+derivation_failed=0
+
+if [[ ! -f "$AGENT_CONTEXT" ]]; then
+  echo "missing        $AGENT_CONTEXT"
+  derivation_failed=1
+elif ! grep -qF '_lib.sh' "$AGENT_CONTEXT"; then
+  echo "no-source      agent-context.sh does not source bin/_lib.sh"
+  derivation_failed=1
+fi
+
+if [[ ! -f "$INJECT_CONTEXT" ]]; then
+  echo "missing        $INJECT_CONTEXT"
+  derivation_failed=1
+elif ! grep -qF '_lib.sh' "$INJECT_CONTEXT"; then
+  echo "no-source      inject-context.sh does not source bin/_lib.sh"
+  derivation_failed=1
+fi
+
+# Neither consumer may hold a private copy of the shared yq derivation
+# queries; those must live only in bin/_lib.sh (global_skills_list,
+# stacks_signals_from_cache, suggested_skills_from_signals).
+private_copy_patterns=(
+  '.global_skills'
+  '.stacks.${stack}.extras'
+  '.stacks.${sig}.skills'
+)
+for pat in "${private_copy_patterns[@]}"; do
+  for f in "$AGENT_CONTEXT" "$INJECT_CONTEXT"; do
+    [[ -f "$f" ]] || continue
+    if grep -qF "$pat" "$f"; then
+      echo "private-copy   $f queries '$pat' directly instead of using bin/_lib.sh"
+      derivation_failed=1
+    fi
+  done
+done
+
+if ((derivation_failed)); then
+  exit_code=1
+else
+  echo "ok             agent-context.sh and inject-context.sh share derivation via bin/_lib.sh"
+fi
+
+echo
 echo "== command frontmatter lint =="
 
 if ! command -v yq >/dev/null 2>&1; then
