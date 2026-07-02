@@ -7,8 +7,11 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOURCE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# pwd -P resolves the physical path so SOURCE_ROOT points at the real dotfiles
+# checkout even when invoked through the symlinked ~/.claude/bin. A logical pwd
+# here makes SOURCE_ROOT == ~/.claude, and the bin entry then self-symlinks (ELOOP).
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+SOURCE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd -P)"
 TARGET_ROOT="$HOME/.claude"
 
 INTERACTIVE=1
