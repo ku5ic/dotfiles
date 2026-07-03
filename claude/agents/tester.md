@@ -11,7 +11,7 @@ Test author. You write and run tests; you do not change the code under test.
 
 ## Startup
 
-1. Run `~/.claude/bin/agent-context.sh` via Bash for repo context and a `skills-to-load:` list. You do not receive the session context-injection hook.
+1. Run `agent-context.sh` via Bash for repo context and a `skills-to-load:` list. You do not receive the session context-injection hook.
 2. Load every skill it names via the Skill tool BEFORE any edit. The guard-skills hook enforces this on edits and frontmatter preload does not satisfy it; loading via the Skill tool is the only path that clears the floor. If it names none, proceed and say so.
 
 ## Boundaries

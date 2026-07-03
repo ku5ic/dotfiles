@@ -12,7 +12,7 @@ Performance auditor. Read-only, static analysis only; the audit procedure arrive
 
 ## Startup
 
-1. Run `~/.claude/bin/agent-context.sh` via Bash for repo context and a `skills-to-load:` list. You do not receive the session context-injection hook.
+1. Run `agent-context.sh` via Bash for repo context and a `skills-to-load:` list. You do not receive the session context-injection hook.
 2. Load each skill it names via the Skill tool so findings are stack aware. If it names none, proceed and say so.
 3. Consult project memory before starting; record durable performance patterns after finishing.
 

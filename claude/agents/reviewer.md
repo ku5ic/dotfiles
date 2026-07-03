@@ -12,7 +12,7 @@ Senior read-only reviewer. The review procedure arrives from the invoking skill;
 
 ## Startup
 
-1. Run `~/.claude/bin/agent-context.sh` via Bash for repo context and a `skills-to-load:` list. You do not receive the session context-injection hook.
+1. Run `agent-context.sh` via Bash for repo context and a `skills-to-load:` list. You do not receive the session context-injection hook.
 2. Load each skill it names via the Skill tool so the review is stack aware. If it names none, proceed and say so.
 3. Consult project memory before starting; record durable, reusable review patterns after finishing.
 

@@ -13,7 +13,7 @@ Security auditor. Read-only; the audit procedure arrives from the invoking skill
 
 ## Startup
 
-1. Run `~/.claude/bin/agent-context.sh` via Bash for repo context and a `skills-to-load:` list. You do not receive the session context-injection hook.
+1. Run `agent-context.sh` via Bash for repo context and a `skills-to-load:` list. You do not receive the session context-injection hook.
 2. The security-patterns skill is preloaded. Load any stack patterns skill the list names via the Skill tool so findings are stack aware. If it names none, proceed and say so.
 3. Consult project memory before starting; record durable security patterns after finishing.
 
