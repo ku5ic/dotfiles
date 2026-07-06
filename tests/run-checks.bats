@@ -39,14 +39,14 @@ run_checks() {
   printf '{"scripts": {"lint": "eslint ."}}' >"$PROJECT_DIR/package.json"
   stub_bin npm 0
   run run_checks
-  [[ "$output" == *"PASS js: lint"* ]]
+  [[ "$output" == *"PASS js: lint (lint)"* ]]
 }
 
 @test "js: lint script failure is reflected in exit code" {
   printf '{"scripts": {"lint": "eslint ."}}' >"$PROJECT_DIR/package.json"
   stub_bin npm 1
   run run_checks
-  [[ "$output" == *"FAIL js: lint"* ]]
+  [[ "$output" == *"FAIL js: lint (lint)"* ]]
   [ "$status" -ge 1 ]
 }
 
@@ -216,7 +216,7 @@ run_checks() {
   printf '{"scripts": {"lint": "eslint ."}}' >"$PROJECT_DIR/frontend/package.json"
   stub_bin npm 0
   run run_checks
-  [[ "$output" == *"PASS js: lint [frontend]"* ]]
+  [[ "$output" == *"PASS js: lint (lint) [frontend]"* ]]
 }
 
 @test "monorepo: subdir pyproject task is discovered and labeled" {
@@ -243,7 +243,7 @@ run_checks() {
   printf '{"scripts": {"lint": "eslint ."}}' >"$PROJECT_DIR/frontend/package.json"
   stub_bin npm 1
   run run_checks
-  [[ "$output" == *"FAIL js: lint [frontend]"* ]]
+  [[ "$output" == *"FAIL js: lint (lint) [frontend]"* ]]
   [ "$status" -ge 1 ]
 }
 
@@ -253,8 +253,8 @@ run_checks() {
   printf '{"scripts": {"lint": "eslint ."}}' >"$PROJECT_DIR/frontend/package.json"
   stub_bin npm 0
   run run_checks
-  [[ "$output" == *"PASS js: lint"* ]]
-  [[ "$output" == *"PASS js: lint [frontend]"* ]]
+  [[ "$output" == *"PASS js: lint (lint)"* ]]
+  [[ "$output" == *"PASS js: lint (lint) [frontend]"* ]]
 }
 
 # summary line
