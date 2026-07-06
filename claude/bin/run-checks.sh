@@ -120,8 +120,19 @@ check_dir() {
       skip_msg "ts: typecheck$sfx (no typecheck script)"
     fi
 
-    if jq -e '.scripts.lint' package.json >/dev/null 2>&1; then
-      run "js: lint$sfx" "$pm" run lint
+    # Projects commonly split linting across multiple scripts (eslint,
+    # stylelint) instead of a single `lint` alias. Run every declared
+    # lint-like script, not just the first match; skip `:fix` variants since
+    # those mutate files rather than check them.
+    local -a lint_scripts=()
+    while IFS= read -r script; do
+      lint_scripts+=("$script")
+    done < <(jq -r '.scripts | keys[] | select(test("^(lint|eslint|stylelint)(:|$)") and (test(":fix$") | not))' package.json)
+
+    if [[ ${#lint_scripts[@]} -gt 0 ]]; then
+      for script in "${lint_scripts[@]}"; do
+        run "js: lint ($script)$sfx" "$pm" run "$script"
+      done
     else
       skip_msg "js: lint$sfx (no lint script)"
     fi
