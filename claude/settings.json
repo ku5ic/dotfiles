@@ -269,6 +269,8 @@
       "Edit(**)",
       "MultiEdit(**)",
       "Read(**)",
+      "Write(~/.claude/scratch/**)",
+      "Edit(~/.claude/scratch/**)",
       "WebFetch(domain:developer.mozilla.org)",
       "WebFetch(domain:react.dev)",
       "WebFetch(domain:nextjs.org)",
