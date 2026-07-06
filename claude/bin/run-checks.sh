@@ -28,7 +28,9 @@ run() {
   local label="$1"
   shift
   local out
-  out="$(mktemp -t run-checks)"
+  # Portable template: `mktemp -t <prefix>` differs between BSD (macOS) and GNU
+  # (Linux CI); an explicit path template with X's behaves the same on both.
+  out="$(mktemp "${TMPDIR:-/tmp}/run-checks.XXXXXX")"
   if "$@" >"$out" 2>&1; then
     echo "PASS $label"
     pass=$((pass + 1))
