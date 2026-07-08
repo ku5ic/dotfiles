@@ -18,7 +18,8 @@ disable-model-invocation: true
 1. Run `!`detect-stack.sh`` for context. Get the project name: `!`project-name.sh``. Some features make sense in one stack and not another.
 2. Read $ARGUMENTS. If it points to a ticket file or URL string, read the file. Otherwise treat as the request.
 3. Read project CLAUDE.md and any architecture docs.
-4. Work through the questions below in order. Write the brief as you go. It is fine for a section to end with "unknown, ask requester" rather than a fabricated answer.
+4. Verify before writing. For any file path, module, or existing pattern that will land in Problem, Constraints, or Proposed approach, confirm it exists: read directly for a couple of files, or delegate to the scout agent when the request references code or architecture spanning more than a couple of files. Anything unconfirmed stays "unknown, ask requester" per the existing convention, never asserted.
+5. Work through the questions below in order. Write the brief as you go. It is fine for a section to end with "unknown, ask requester" rather than a fabricated answer.
 
 ## Output
 
@@ -72,3 +73,4 @@ Structure:
 - Do not estimate unless asked. Briefs shape work, they do not size it.
 - If the brief is under-specified and cannot be shaped without more input: ask via the AskUserQuestion tool (multiple-choice, "Other" for free text) before finalizing, then write what is known plus the resolved answers in "Decisions". Better to ask than to fabricate a straw man.
 - If the feature conflicts with an architectural constraint in CLAUDE.md: flag it in "Risks and uncertainties" before proposing an approach.
+- Do not name a file path, module, or pattern in the output unless confirmed this session via Read/Grep/fd or scout; unconfirmed items stay "unknown, ask requester".
