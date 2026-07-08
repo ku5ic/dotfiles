@@ -163,6 +163,7 @@ All groups except `question` are user-only (`disable-model-invocation: true`); t
 - The older `cmd-*` naming convention is stale. Any reference found in docs, workflow guides, `CLAUDE.md` files, or prompts must be corrected on touch to the current namespaced form.
 - Unprefixed references (`/preflight`, `/plan`, `/implement`) are ambiguous and should be normalized to the full `/<group>-<name>` form.
 - The canonical source of truth for available skills is the output of `/skills` inside Claude Code, not any UI label.
+- Any skill step that would write or state an "Open questions" list instead asks those questions via the AskUserQuestion tool, one question per item, multiple-choice with the built-in "Other" free-text option covering anything that has no discrete options. Record the resolved answers in the output (file or terminal) as decisions; do not leave an unresolved list.
 
 ## Agents
 

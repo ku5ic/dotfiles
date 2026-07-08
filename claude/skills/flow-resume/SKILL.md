@@ -24,4 +24,4 @@ Terminal only:
 - Plan being resumed (title, file path)
 - Step status: done | partial | pending
 - Recommended next action
-- Open questions surfaced from the plan that need answers before continuing
+- Any open question surfaced from the plan: ask it via the AskUserQuestion tool (multiple-choice, "Other" for free text) as part of this report, then fold the answer into the recommended next action

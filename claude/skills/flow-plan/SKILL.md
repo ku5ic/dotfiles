@@ -42,7 +42,7 @@ Write a plan to `~/.claude/scratch/plan-<project-name>-<task-slug>-<YYYYMMDD-HHM
 - Phased steps. Each step: files touched, behavior change, test, commit message shape
 - Design integrity notes (one or two sentences per item from step 4a)
 - Risks and mitigations
-- Open questions for the user (omit if none, including for mechanical plans where there usually are none)
+- Decisions: any open question ask via the AskUserQuestion tool (multiple-choice, "Other" for free text) before writing this plan, then record the resolved answer here (omit if none, including for mechanical plans where there usually are none)
 
 Print the path. Do not implement.
 

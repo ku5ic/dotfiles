@@ -66,7 +66,7 @@ Structure:
 
 - Extract the underlying goal, do not repeat the fuzzy phrasing.
 - If the ask is actually two or three tasks bundled, split them and output multiple prompts.
-- If the ask is under-specified in a way that cannot be inferred: add an "Open questions" section with what the asker needs to clarify before work starts.
+- If the ask is under-specified in a way that cannot be inferred: ask via the AskUserQuestion tool (multiple-choice, "Other" for free text) before writing the output file. Record the resolved answers as a "Decisions" section instead of an unresolved "Open questions" list.
 - Plain ASCII, no em dashes, no smart quotes. The output is meant to be copy-pasted.
 - No AI tells. This prompt will be read by another agent or a human, not a chatbot.
 

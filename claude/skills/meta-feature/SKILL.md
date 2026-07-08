@@ -61,14 +61,14 @@ Structure:
 
 <One or two sentences on the shape of the solution. Leave detail to /flow-plan. This is not the plan.>
 
-## Open questions
+## Decisions
 
-<Questions for the requester or stakeholder. Blocking vs non-blocking flagged.>
+<Questions that came up for the requester or stakeholder, and the answer picked. Resolved via the AskUserQuestion tool before this brief was finalized, not left open.>
 ```
 
 ## Rules
 
 - Do not plan. Do not break into steps. That is `/flow-plan`.
 - Do not estimate unless asked. Briefs shape work, they do not size it.
-- If the brief is under-specified and cannot be shaped without more input: write what is known, list open questions, and stop. Better to ask than to fabricate a straw man.
+- If the brief is under-specified and cannot be shaped without more input: ask via the AskUserQuestion tool (multiple-choice, "Other" for free text) before finalizing, then write what is known plus the resolved answers in "Decisions". Better to ask than to fabricate a straw man.
 - If the feature conflicts with an architectural constraint in CLAUDE.md: flag it in "Risks and uncertainties" before proposing an approach.
