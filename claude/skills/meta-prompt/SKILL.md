@@ -22,7 +22,8 @@ disable-model-invocation: true
    - Scope undefined (no files, no surface area)
    - Success unstated (how do we know it worked)
    - Constraints missing (stack, style, deadline, performance)
-5. Rewrite as a structured prompt.
+5. Verify before writing. For any file path, symbol, or API the prompt is about to name, confirm it exists: read it directly when the input names a couple of files, or delegate to the scout agent when the input references code or architecture spanning more than a couple of files. Anything that cannot be verified goes into the output as "unverified, please confirm", not asserted.
+6. Rewrite as a structured prompt.
 
 ## Output file
 
@@ -67,6 +68,7 @@ Structure:
 - Extract the underlying goal, do not repeat the fuzzy phrasing.
 - If the ask is actually two or three tasks bundled, split them and output multiple prompts.
 - If the ask is under-specified in a way that cannot be inferred: ask via the AskUserQuestion tool (multiple-choice, "Other" for free text) before writing the output file. Record the resolved answers as a "Decisions" section instead of an unresolved "Open questions" list.
+- Do not name a file path, function, or API in the output unless it was confirmed this session via Read/Grep/fd or scout; unconfirmed items are marked unverified, never asserted as fact.
 - Plain ASCII, no em dashes, no smart quotes. The output is meant to be copy-pasted.
 - No AI tells. This prompt will be read by another agent or a human, not a chatbot.
 
