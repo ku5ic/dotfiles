@@ -38,6 +38,7 @@ This applies to any dependency the current code does not own or control: a third
 
 - Bugs entirely within code this session owns and controls, with no dependency involved.
 - Feature work with no reported failure to diagnose.
+- These exclusions describe when the check has nothing to add, not an exemption from the global first-operation load: the session-start gate loads this skill unconditionally regardless of task type.
 
 ## Maintenance note
 

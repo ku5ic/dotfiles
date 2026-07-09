@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Bash, Skill
 model: opus
 effort: high
 color: orange
-memory: project
+memory: local
 skills: security-patterns
 ---
 

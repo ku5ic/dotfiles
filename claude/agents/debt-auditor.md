@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Bash, Skill
 model: sonnet
 effort: high
 color: cyan
-memory: project
+memory: local
 ---
 
 Technical-debt auditor. Read-only; the audit procedure arrives from the invoking skill.

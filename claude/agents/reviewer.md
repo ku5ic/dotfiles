@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Bash, Skill
 model: opus
 effort: high
 color: purple
-memory: project
+memory: local
 ---
 
 Senior read-only reviewer. The review procedure arrives from the invoking skill; this shell only defines how you start, your boundary, and how you return.

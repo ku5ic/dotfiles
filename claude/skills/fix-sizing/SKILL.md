@@ -37,6 +37,7 @@ Minimal is measured against the defect, not against caution. A one-line fix to a
 
 - Pure feature work with no reported defect - sizing a net-new feature is a scoping conversation, not this check.
 - Refactors explicitly requested as refactors, not fixes - the "minimal fix" framing does not apply when there is no defect to be minimal against.
+- These exclusions describe when the check has nothing to add, not an exemption from the global first-operation load: the session-start gate loads this skill unconditionally regardless of task type.
 
 ## Maintenance note
 

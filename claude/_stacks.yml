@@ -53,11 +53,15 @@
 # universal engineering meta-skills). Keep this list short.
 global_skills:
   - engineering-fundamentals
+  - fix-sizing
+  - root-cause-diagnosis
+  - context-gathering
 
 # File-to-skills map consumed by hooks/guard-skills.sh.
-# Evaluated against every Edit/Write/MultiEdit target; matching is cumulative
-# (a single file can satisfy multiple entries). Order matters: test entries
-# precede extension entries so a .test.tsx file picks up test-patterns first.
+# Evaluated against every Edit/Write/MultiEdit/Read target; matching is
+# cumulative (a single file can satisfy multiple entries). Order matters:
+# test entries precede extension entries so a .test.tsx file picks up
+# test-patterns first.
 #
 # on: basename  -> match against basename only
 # on: path      -> match against the full file path

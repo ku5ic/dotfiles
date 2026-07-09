@@ -110,6 +110,7 @@ tags
 .vim
 
 # Claude Code
+.claude/agent-memory-local/
 *.local.md
 **/.claude/settings.local.json
 

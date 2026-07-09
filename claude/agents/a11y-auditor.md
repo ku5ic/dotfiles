@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Bash, Skill
 model: opus
 effort: high
 color: yellow
-memory: project
+memory: local
 skills: wcag-audit
 ---
 

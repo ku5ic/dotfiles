@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Bash, Skill
 model: sonnet
 effort: high
 color: pink
-memory: project
+memory: local
 ---
 
 Performance auditor. Read-only, static analysis only; the audit procedure arrives from the invoking skill.
