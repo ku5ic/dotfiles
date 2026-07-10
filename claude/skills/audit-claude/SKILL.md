@@ -17,21 +17,29 @@ disable-model-invocation: true
 
 Glob `~/.dotfiles/claude/skills/*/SKILL.md`. For each file:
 
-**Description checks**
+**Shared checks (all skills)**
 
-- Parse the YAML frontmatter. Extract `name` and `description`.
+- Parse the YAML frontmatter. Extract `name`, `description`, and `disable-model-invocation`.
 - Flag (failure): `description` is absent or empty.
 - Flag (failure): description body contains an explicit instruction to load another skill by name (e.g., "load skill X alongside", "see also skill Y", "load these together"). Autodetection rule -- skills may not name other skills as load instructions.
+
+Skills split into two genres here: autodetected pattern skills (`disable-model-invocation` absent or `false`) and command-type skills (`disable-model-invocation: true`, invoked only by typed slash command, never autodetected). Apply the matching check set below, not both.
+
+**Pattern skills (autodetected) -- description and body checks**
+
 - Flag (warning): description does not follow the required shape: `[What the skill is, one phrase]. Use whenever [project signals], OR the user asks about [keyword aliases], even if [technology] is not mentioned by name.` The shape requires BOTH a project-signal clause (file extensions, sentinel files, dependency markers) AND a keyword-alias clause.
+- Check that the body contains each of these sections. One warning per missing section:
+  - An anti-patterns section with at least one severity call (`failure`, `warning`, or `info`), OR a `reference/anti-patterns.md` file exists alongside `SKILL.md` (accepted Pattern 1 convention)
+  - A "When to load this skill" section
+  - A "When not to load this skill" section
+  - A "References" section
 
-**Body section checks**
+**Command-type skills (`disable-model-invocation: true`) -- lighter rubric**
 
-Check that the body contains each of these sections. One warning per missing section:
+The autodetection shape requirement above does not apply -- these skills are typed by name, not matched against project context. Instead:
 
-- An anti-patterns section with at least one severity call (`failure`, `warning`, or `info`), OR a `reference/anti-patterns.md` file exists alongside `SKILL.md` (accepted Pattern 1 convention)
-- A "When to load this skill" section
-- A "When not to load this skill" section
-- A "References" section
+- Flag (warning): body does not contain a `## Procedure` section (or equivalent numbered step-by-step body).
+- Flag (warning): body does not contain either a "Stop conditions" section or an "Output" section describing what the skill produces or when it halts.
 
 **Pattern 1 structure check (SKILL.md + reference/)**
 
@@ -39,13 +47,12 @@ For skills that have a `reference/` subdirectory alongside `SKILL.md`: glob `ref
 
 ### Pass 2: Commands
 
-Glob `~/.dotfiles/claude/commands/*/*.md`. For each file:
+Glob `~/.dotfiles/claude/skills/*/SKILL.md`, filtered to files whose frontmatter has `disable-model-invocation: true` -- the command-type skills. (`claude/commands/*/*.md` no longer exists: commit `3760001` migrated every command to `claude/skills/<group>-<name>/SKILL.md`.) For each matching file:
 
 - Flag (failure): YAML frontmatter is absent entirely.
-- Flag (warning): `description` field is absent from frontmatter.
-- Flag (info): `argument-hint`, `model`, or `effort` fields are absent. (Info only -- these are optional but expected for high-complexity commands.)
+- Flag (info): `model` or `effort` fields are absent from frontmatter. (Info only -- optional but expected for high-complexity skills. `name`/`description` presence is already covered by Pass 1; `argument-hint` is not a skill frontmatter field and is not checked here.)
 - Use `rg` to scan the body for deprecated `cmd-*` naming convention references (e.g., `/cmd-preflight`, `/cmd-plan`). Flag each hit (warning) with the line number.
-- Use `rg` to scan the body for unprefixed `/<flow-step-name>` references -- the eight short names used by the `/flow:*` group (`preflight`, `plan`, `implement`, `review`, `test`, `fix`, `resume`, `checks`) -- where the name appears after a slash but is NOT immediately followed by `:`. Pattern: `/\b(preflight|plan|implement|review|test|fix|resume|checks)\b` not preceded by a word character. Exclude `~/.dotfiles/claude/commands/audit/claude.md` itself from this scan to avoid self-referential false positives. Flag each remaining hit (warning) with the line number.
+- Use `rg` to scan the body for unprefixed or stale-prefixed flow-step references -- the eight short names used by the `flow-*` group (`preflight`, `plan`, `implement`, `review`, `test`, `fix`, `resume`, `checks`) -- appearing as bare `/preflight` etc. or old colon-namespaced `/flow:preflight` etc., rather than the current hyphenated `/flow-preflight` form. Pattern: `/\b(flow:)?(preflight|plan|implement|review|test|fix|resume|checks)\b` not preceded by a word character and not immediately preceded by `flow-`. Exclude `~/.dotfiles/claude/skills/audit-claude/SKILL.md` itself from this scan to avoid self-referential false positives. Flag each remaining hit (warning) with the line number.
 
 ### Pass 3: Hooks
 
@@ -57,7 +64,7 @@ For each wired hook path:
 - Flag (failure): the script exists but is not executable (`[ -x ]`).
 - For `PreToolUse` and `PostToolUse` entries only: flag (warning) if the `matcher` value is not a recognized Claude Code tool name or `|`-separated combination of them. Split the matcher on `|` and validate each token against the known-good set: `Bash`, `Edit`, `Write`, `MultiEdit`, `Skill`, `Read`, `Agent`, `WebFetch`, `WebSearch`, `Glob`, `Grep`, `LS`. Any unrecognized token gets a warning: "unrecognized matcher token, verify against current Claude Code hook docs".
 - For `UserPromptSubmit` and `UserPromptExpansion` entries: these event types carry no `matcher` field by design. Skip the matcher check entirely; only validate that each entry's `hooks[].command` script exists and is executable.
-- For `PreToolUse` + `Bash` matcher hooks: read the script body and check that it reads from stdin (sources `_lib.sh` and calls `read_payload`, or contains an explicit stdin read: `read`, `cat`, or `</dev/stdin`) and uses `exit 2` to block. Flag (warning) if either pattern is absent, because a PreToolUse Bash guard that does not read stdin or does not exit 2 is structurally broken.
+- For `PreToolUse` + `Bash` matcher hooks: read the script body and check that it reads from stdin (sources `_lib.sh` and calls `read_payload`, or contains an explicit stdin read: `read`, `cat`, or `</dev/stdin`) and blocks via `exit 2`, either directly in the script body or by delegating to a shared helper that does (e.g. `_lib.sh`'s `block()` function, which itself calls `exit 2` -- check `_lib.sh` for the delegation rather than requiring the literal `exit 2` text in the hook script itself). Flag (warning) if the stdin-read pattern is absent, or if neither a direct `exit 2` nor a delegated block-helper call is found, because a PreToolUse Bash guard that does not read stdin or does not block is structurally broken.
 
 Orphan check: glob `~/.dotfiles/claude/hooks/*.sh`. For each hook file NOT referenced in `settings.json` AND NOT named `_lib.sh` (which is a shared library, not a hook): flag (info) as "script exists on disk but is not wired in settings.json -- orphaned or intentionally disabled".
 
