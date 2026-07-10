@@ -8,16 +8,17 @@ disable-model-invocation: true
 ## Procedure
 
 1. Get the project name: `!`project-name.sh``.
-2. Resolve the base: !`git-base.sh`. Falls through upstream / origin HEAD / main / master / develop / trunk. If $ARGUMENTS is a valid single-word git ref (no spaces, not a sentence), use it as the explicit base instead by running `git-base.sh "$ARGUMENTS"` via Bash.
-3. Pull the diff: !`git-diff-from-base.sh`
-4. Pull the log (last 20): !`git-log-from-base.sh`
-5. Read any referenced issue number in recent commit messages, but do not fetch external data.
+2. Check for a project PR template: resolve the project root via `!`project-root.sh``, then check for (in order) `.github/pull_request_template.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/PULL_REQUEST_TEMPLATE/*.md` (if multiple, use the first alphabetically), `docs/pull_request_template.md`, `pull_request_template.md` at the repo root. Path matching is case-insensitive. If one exists, read it: its sections replace the default Structure below. If none exists, fall back to the default Structure.
+3. Resolve the base: !`git-base.sh`. Falls through upstream / origin HEAD / main / master / develop / trunk. If $ARGUMENTS is a valid single-word git ref (no spaces, not a sentence), use it as the explicit base instead by running `git-base.sh "$ARGUMENTS"` via Bash.
+4. Pull the diff: !`git-diff-from-base.sh`
+5. Pull the log (last 20): !`git-log-from-base.sh`
+6. Read any referenced issue number in recent commit messages, but do not fetch external data.
 
 ## Output
 
 Write the PR description to `~/.claude/scratch/pr-<project-name>-<branch-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
-Structure:
+If step 2 found a project PR template, follow its structure, filling each of its sections per the Rules below. Otherwise use this default structure:
 
 ```
 ## Summary
