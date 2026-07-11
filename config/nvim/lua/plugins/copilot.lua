@@ -35,7 +35,7 @@ return {
       prompts = prompts,
       model = "claude-sonnet-4.6", -- global default; fast-tier prompts (Commit, etc.) override this per-call
       auto_follow_cursor = false, -- Don't follow the cursor after getting response
-      clear_chat_on_new_prompt = true, -- Each <leader>a* call is a fresh request; prevents history pile-up inflating token count
+      clear_chat_on_new_prompt = false, -- Keep chat history so in-chat corrections can refine the prior turn; reset a new task explicitly with <C-x> (reset mapping below)
       remember_as_sticky = false, -- Don't carry prior config as sticky prompts into subsequent requests
       mappings = {
         -- Use tab for completion

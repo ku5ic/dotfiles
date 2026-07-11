@@ -180,7 +180,6 @@ Rules:
 
 Output discipline:
 - Return only the final commit message.
-- Do not wrap output in code fences.
 - Do not add explanations, notes, headings, or alternatives.
 ]]
 
