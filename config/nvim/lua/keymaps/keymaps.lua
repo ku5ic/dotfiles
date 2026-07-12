@@ -6,15 +6,7 @@
 -- (which trigger lazy loading via Lua functions), LSP, Trouble, and Neovide
 -- bindings stay here.
 
-local keymap = vim.keymap
-
--- Utility function for setting keymaps with descriptions.
--- Deliberately does not close over a shared opts table to avoid mutation bugs.
-local function map(mode, lhs, rhs, desc, extra_opts)
-  local opts = vim.tbl_extend("force", { noremap = true, silent = true }, extra_opts or {})
-  opts.desc = desc
-  keymap.set(mode, lhs, rhs, opts)
-end
+local map = require("keymaps.util").map
 
 -- Core navigation & editing
 
@@ -36,23 +28,9 @@ map("v", "<A-k>", ":m '<-2<CR>gv=gv", "Move selection up")
 map("v", "<", "<gv", "Unindent and reselect")
 map("v", ">", ">gv", "Indent and reselect")
 
--- LSP navigation reference
---
--- Neovim 0.10+ sets these automatically on LspAttach (no custom mapping needed):
---   K      - Hover documentation
---   grr    - References
---   gri    - Implementation
---   grn    - Rename
---   gra    - Code action
---   grt    - Type definition
---   grx    - Run codelens
---   C-]    - Go to definition (via LSP tagfunc)
---
--- Custom buffer-local (set in lsp.lua):
---   <leader>lk  - Signature help
---   <leader>lc  - Run codelens (only if server supports it)
---
--- Custom global (defined below under <leader>l*):
+-- LSP navigation and actions are buffer-local and live in one place:
+-- plugins/nvim-lspconfig.lua (built-in goto defaults plus custom <leader>l maps).
+-- Only the two client-independent <leader>l maps (ld, li) stay global, below.
 
 -- Window management (<leader>w)
 map("n", "<leader>wv", "<C-w>v", "Split window vertically")
@@ -257,21 +235,15 @@ map("n", "<leader>gS", function()
 end, "Git stash")
 
 -- LSP operations (<leader>l)
-map("n", "<leader>lr", vim.lsp.buf.rename, "LSP Rename")
-map({ "n", "v" }, "<leader>la", vim.lsp.buf.code_action, "LSP Code Action")
--- <leader>lf (LSP Format) lives in plugins/formatting.lua
+-- Client-dependent maps (rename, code action, workspace folders, signature
+-- help, codelens) are buffer-local in plugins/nvim-lspconfig.lua. These two
+-- work without an attached client, so they stay global here.
 map("n", "<leader>ld", function()
   vim.diagnostic.setloclist({ open = true })
 end, "LSP Diagnostics to location list")
--- <leader>ll (Lint current file) lives in plugins/linting.lua
 map("n", "<leader>li", "<cmd>checkhealth vim.lsp<cr>", "LSP Info")
-
--- LSP Workspace management
-map("n", "<leader>lwa", vim.lsp.buf.add_workspace_folder, "LSP Add workspace folder")
-map("n", "<leader>lwr", vim.lsp.buf.remove_workspace_folder, "LSP Remove workspace folder")
-map("n", "<leader>lwl", function()
-  print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-end, "LSP List workspace folders")
+-- <leader>lf (LSP Format) lives in plugins/formatting.lua
+-- <leader>ll (Lint current file) lives in plugins/linting.lua
 
 -- Diagnostics/Trouble (<leader>x)
 map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", "Show all diagnostics")

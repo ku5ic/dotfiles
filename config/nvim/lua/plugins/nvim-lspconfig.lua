@@ -42,20 +42,70 @@ local function setup_lsp_servers()
   end
 end
 
+-- Single source of truth for LSP keymaps. Two categories:
+--
+-- 1. Neovim 0.10+ built-in goto defaults, set by core on LspAttach. We do not
+--    redefine them; the which-key block below only gives them friendly labels.
+--      K    -> hover              grt -> type definition
+--      grr  -> references         grx -> codelens run
+--      gri  -> implementation     C-] -> definition (via LSP tagfunc)
+--      grn  -> rename             gd / gD / gi are Vim built-ins, left alone
+--      gra  -> code action
+--
+-- 2. Custom buffer-local maps below. They call vim.lsp.buf.* directly, so they
+--    only make sense on a buffer with an attached client.
 local function setup_lsp_keymaps(bufnr, client)
-  -- Neovim 0.10+ sets these automatically on LspAttach; do not redefine:
-  --   K      -> hover
-  --   grr    -> references
-  --   gri    -> implementation
-  --   grn    -> rename
-  --   gra    -> code action
-  --   grt    -> type definition
-  --   grx    -> codelens run
-  -- C-]      -> definition (via LSP tagfunc)
-  -- gd / gD / gi are Vim built-ins and are intentionally left alone.
   vim.keymap.set("n", "<leader>lk", vim.lsp.buf.signature_help, { buffer = bufnr, desc = "Signature help" })
+  vim.keymap.set("n", "<leader>lr", vim.lsp.buf.rename, { buffer = bufnr, desc = "LSP Rename" })
+  vim.keymap.set({ "n", "v" }, "<leader>la", vim.lsp.buf.code_action, { buffer = bufnr, desc = "LSP Code Action" })
 
-  require("which-key").add({ { "g", buffer = bufnr, group = "goto" } })
+  -- Code navigation, surfaced in the <leader>l menu instead of the crowded
+  -- native `g` prefix. Snacks pickers give a list UI when there are multiple
+  -- results and fall through to the location when there is one.
+  vim.keymap.set("n", "<leader>lg", function()
+    Snacks.picker.lsp_definitions()
+  end, { buffer = bufnr, desc = "Go to definition" })
+  vim.keymap.set("n", "<leader>lu", function()
+    Snacks.picker.lsp_references()
+  end, { buffer = bufnr, desc = "Find references" })
+  vim.keymap.set("n", "<leader>lm", function()
+    Snacks.picker.lsp_implementations()
+  end, { buffer = bufnr, desc = "Go to implementation" })
+  vim.keymap.set("n", "<leader>ly", function()
+    Snacks.picker.lsp_type_definitions()
+  end, { buffer = bufnr, desc = "Go to type definition" })
+  vim.keymap.set("n", "<leader>ls", function()
+    Snacks.picker.lsp_symbols()
+  end, { buffer = bufnr, desc = "Document symbols" })
+
+  vim.keymap.set(
+    "n",
+    "<leader>lwa",
+    vim.lsp.buf.add_workspace_folder,
+    { buffer = bufnr, desc = "LSP Add workspace folder" }
+  )
+  vim.keymap.set(
+    "n",
+    "<leader>lwr",
+    vim.lsp.buf.remove_workspace_folder,
+    { buffer = bufnr, desc = "LSP Remove workspace folder" }
+  )
+  vim.keymap.set("n", "<leader>lwl", function()
+    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+  end, { buffer = bufnr, desc = "LSP List workspace folders" })
+
+  -- Description-only overlays: label the built-in goto defaults in which-key
+  -- without creating or overriding the actual mappings.
+  require("which-key").add({
+    { "g", buffer = bufnr, group = "goto" },
+    { "K", desc = "Hover documentation", buffer = bufnr },
+    { "grr", desc = "References", buffer = bufnr },
+    { "gri", desc = "Implementation", buffer = bufnr },
+    { "grn", desc = "Rename", buffer = bufnr },
+    { "gra", desc = "Code action", buffer = bufnr },
+    { "grt", desc = "Type definition", buffer = bufnr },
+    { "grx", desc = "Run codelens", buffer = bufnr },
+  })
 
   if client and client.server_capabilities.codeLensProvider then
     vim.lsp.codelens.enable(true, { buffer = bufnr })

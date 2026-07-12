@@ -1,4 +1,4 @@
-local map = vim.keymap.set
+local map = require("keymaps.util").map
 local cc = require("utils.copilotchat")
 
 --- CopilotChat keymaps.
@@ -31,14 +31,14 @@ map("n", "<leader>aa", function()
   if prompt and prompt:gsub("%s+", "") ~= "" then
     cc.ask(prompt, { selection_only = false }) -- full buffer
   end
-end, { desc = "AI: Ask", noremap = true, silent = true })
+end, "AI: Ask")
 
 map("v", "<leader>aa", function()
   local prompt = vim.fn.input({ prompt = "CopilotChat (visual)> " })
   if prompt and prompt:gsub("%s+", "") ~= "" then
     cc.ask(prompt, { selection_only = true }) -- selection or buffer (wrapper fallback)
   end
-end, { desc = "AI: Ask (visual)", noremap = true, silent = true })
+end, "AI: Ask (visual)")
 
 --- Bind a named CopilotChat prompt for both normal and visual mode.
 ---
@@ -59,10 +59,10 @@ end, { desc = "AI: Ask (visual)", noremap = true, silent = true })
 local function bind_prompt(name, lhs, label)
   map("n", lhs, function()
     cc.prompt(name, { selection_only = false })
-  end, { desc = "AI: " .. label, noremap = true, silent = true })
+  end, "AI: " .. label)
   map("v", lhs, function()
     cc.prompt(name, { selection_only = true })
-  end, { desc = "AI: " .. label .. " (visual)", noremap = true, silent = true })
+  end, "AI: " .. label .. " (visual)")
 end
 
 -- ensure these names exist in utils.copilotchat.prompts
@@ -80,6 +80,6 @@ bind_prompt("Concise", "<leader>az", "Make concise")
 bind_prompt("Commit", "<leader>ac", "Create commit message")
 
 -- Additional AI commands (non-prompt based)
-map("n", "<leader>av", "<cmd>CopilotChatToggle<cr>", { desc = "AI: Toggle chat", noremap = true, silent = true })
-map("n", "<leader>al", "<cmd>CopilotChatReset<cr>", { desc = "AI: Clear chat history", noremap = true, silent = true })
-map("n", "<leader>aM", "<cmd>CopilotChatModels<cr>", { desc = "AI: Select Model", noremap = true, silent = true })
+map("n", "<leader>av", "<cmd>CopilotChatToggle<cr>", "AI: Toggle chat")
+map("n", "<leader>al", "<cmd>CopilotChatReset<cr>", "AI: Clear chat history")
+map("n", "<leader>aM", "<cmd>CopilotChatModels<cr>", "AI: Select Model")
