@@ -1,14 +1,16 @@
 ---
 description: Performance audit focused on statically detectable issues
-argument-hint: <file, directory, or area name>
+argument-hint: <file, directory, area name, or a link to an external tracker/doc>
 model: sonnet
 effort: high
 disable-model-invocation: true
-context: fork
-agent: perf-auditor
 ---
 
 ## Procedure
+
+0. Resolve external context. If $ARGUMENTS contains a URL with little or no inline description, resolve it before anything else: identify which connected service the URL belongs to from its domain, use ToolSearch to find a matching fetch/read tool for that service (e.g. a URL under `app.clickup.com` points at the clickup tools, `notion.so` at the Notion tools, `github.com` at `gh` via Bash or the github tools), and call it to pull the content. Extract the relevant scope and requirements from what comes back. Treat the resolved text as the effective $ARGUMENTS for the rest of this procedure - never hand a bare link to the perf-auditor agent.
+
+Delegate the procedure below (steps 1 onward, through Rules) to the perf-auditor agent (Agent tool, subagent_type: perf-auditor, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
 
 1. Stack is in the repo context your startup produced (`agent-context.sh`). Get the project name via `project-name.sh`.
 2. Load the patterns skill for the detected stack (react-patterns, django-patterns, etc.) for the anti-pattern reference.

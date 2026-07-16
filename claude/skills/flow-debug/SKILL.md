@@ -1,11 +1,9 @@
 ---
 description: Investigate unexpected behavior without a clear failing signal
-argument-hint: <what is wrong and where, plus any reproduction steps you already have>
+argument-hint: <what is wrong and where, plus any reproduction steps or a link to an external tracker/doc>
 model: opus
 effort: high
 disable-model-invocation: true
-context: fork
-agent: debugger
 ---
 
 ## When to use this
@@ -17,23 +15,20 @@ Use `/flow-plan` instead when root cause is already understood but the fix is st
 
 ## Procedure
 
-1. Read $ARGUMENTS. Extract: observed behavior, expected behavior, entry point (route, function, event), any reproduction steps already known. If the observed vs expected distinction is absent, stop and ask before proceeding.
+0. Resolve external context. If $ARGUMENTS contains a URL with little or no inline description, resolve it before anything else: identify which connected service the URL belongs to from its domain, use ToolSearch to find a matching fetch/read tool for that service (e.g. a URL under `app.clickup.com` points at the clickup tools, `notion.so` at the Notion tools, `github.com` at `gh` via Bash or the github tools), and call it to pull the content. Extract observed behavior, expected behavior, entry point, and repro steps from what comes back. Treat the resolved text as the effective $ARGUMENTS for the rest of the procedure - never hand a bare link to the debugger agent. If no connected tool matches the URL's domain, say so and ask for the content pasted inline instead.
 
-2. Reproduce. Run the narrowest command or interaction that triggers the behavior. Confirm it reproduces consistently. If it does not reproduce, note flakiness and attempt 3 times before concluding non-deterministic.
+1. From the resolved arguments, confirm: observed behavior, expected behavior, entry point (route, function, event), any reproduction steps already known. If the observed vs expected distinction is still absent after step 0, stop and ask before proceeding.
 
-3. Check recent history in the area. Run `git log -10 --oneline -- <affected paths>`. If a recent commit aligns with when the behavior started, note it as the prime suspect.
+2. Delegate fault localization to the debugger agent (Agent tool, subagent_type: debugger, foreground) with the resolved context as its prompt, plus this procedure for it to follow:
+   - Reproduce: run the narrowest command or interaction that triggers the behavior; confirm it reproduces consistently, attempting 3 times before concluding non-deterministic.
+   - Check recent history: `git log -10 --oneline -- <affected paths>`; if a recent commit aligns with when the behavior started, note it as the prime suspect.
+   - Trace the code path from the entry point to where observed diverges from expected; stop at library/external-API boundaries; cap at 10 files.
+   - State the first hypothesis in one sentence before checking it: "The bug is caused by X in file Y at line Z."
+   - Test the hypothesis with the least invasive probe available, in order: read the code more carefully, run an existing test that exercises the path, `git bisect` if it's a regression with clean history, then a single targeted log line or assertion reverted after use.
+   - If confirmed, stop with the hypothesis. If wrong, revise and repeat, capped at 3 hypothesis cycles; if exhausted, report what was ruled out.
+   It has no MCP tools by design - it must get fully resolved plain text, never a link.
 
-4. Trace the code path. From the entry point, follow the execution path to where the observed behavior diverges from expected. Read files on the path; stop reading when the path exits the repo (library boundary, external API). Cap at 10 files.
-
-5. State the first hypothesis in one sentence before checking it: "The bug is caused by X in file Y at line Z."
-
-6. Test the hypothesis with the least invasive probe available, in order of preference:
-   - Read the code more carefully: check the edge case implied by the hypothesis.
-   - Run an existing test that exercises the path.
-   - Use `git bisect` if the bug is a regression and the history is clean enough to bisect.
-   - Add a single, targeted log line or assertion and re-run the reproducer.
-
-7. If the hypothesis is confirmed, skip to Output. If it is wrong, form a revised hypothesis and repeat from step 6. Cap at 3 hypothesis cycles. If 3 cycles exhaust without convergence, stop and report what was ruled out.
+3. Take the debugger's returned root cause, evidence, and proposed fix location and continue to Output below.
 
 ## Stop conditions
 

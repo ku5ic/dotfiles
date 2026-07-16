@@ -1,14 +1,16 @@
 ---
 description: Add or update tests for recent implementation work, then run them
-argument-hint: <optional: file or area to focus on>
+argument-hint: <optional: file or area to focus on, or a link to an external tracker/doc>
 model: sonnet
 effort: xhigh
 disable-model-invocation: true
-context: fork
-agent: tester
 ---
 
 ## Procedure
+
+0. Resolve external context. If $ARGUMENTS contains a URL with little or no inline description, resolve it before anything else: identify which connected service the URL belongs to from its domain, use ToolSearch to find a matching fetch/read tool for that service (e.g. a URL under `app.clickup.com` points at the clickup tools, `notion.so` at the Notion tools, `github.com` at `gh` via Bash or the github tools), and call it to pull the content. Extract the relevant scope and requirements from what comes back. Treat the resolved text as the effective $ARGUMENTS for the rest of this procedure - never hand a bare link to the tester agent.
+
+Delegate the procedure below (steps 1 onward, through Stop) to the tester agent (Agent tool, subagent_type: tester, foreground), passing the resolved arguments from step 0. It executes every step itself and reports results; relay its returned summary.
 
 1. Get the project name via `project-name.sh`. Identify the test runner from the repo context your startup produced (`agent-context.sh`).
 2. Load the `test-patterns` skill and the patterns skill matching the detected stack (`react-patterns`, `django-patterns`, etc.) when relevant to the change.
