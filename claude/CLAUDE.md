@@ -154,7 +154,7 @@ Procedures live as skills under `$HOME/.claude/skills/<group>-<name>/SKILL.md`, 
 - `flow` - the default feature workflow: preflight, plan, implement, test, review, plus fix, debug, quick, resume, checks, deps
 - `audit` - targeted audits invoked when scope warrants: a11y, claude, debt, doc-drift, perf, security
 - `meta` - authoring and reflection: feature, prompt, retro
-- `write` - outward-facing communication: commit, pr, release-notes, review-comment, stakeholder
+- `write` - outward-facing communication: commit, devnote, explainer, pr, release-notes, review-comment, stakeholder
 - `question` - read-only Q&A tiered by reasoning depth: hard (opus/high), medium (sonnet/high), easy (sonnet/low)
 
 All groups except `question` are user-only (`disable-model-invocation: true`); they run when typed, not on model initiative. `question-*` stays model-invocable.

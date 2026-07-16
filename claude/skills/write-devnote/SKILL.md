@@ -21,3 +21,5 @@ disable-model-invocation: true
 - Say what turned out to be true and why, not what was built.
 - If something was verified empirically instead of assumed, that's the interesting part - lead with it.
 - Cut every sentence that's only there to sound complete.
+- Voice: first person, as the developer who made the change - "I checked X, turned out Y" - never third-person narration of the change ("This commit does X", "The change adds Y").
+- No AI language. Hard stop: no sycophantic openers/closers, no hedging filler ("it's worth noting", "basically"), no em dashes or smart quotes, no AI signatures. Must read like the developer wrote it, not like a summary of the developer's work.
