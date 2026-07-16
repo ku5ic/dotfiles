@@ -91,9 +91,6 @@ skill_file_map:
   - on: basename
     globs: ["*.sh", "*.bash", "*.zsh"]
     skills: [bash-patterns]
-  - on: basename
-    globs: ["*.md"]
-    skills: [markdown-report]
   - on: path
     globs: ["*/skills/*/SKILL.md"]
     skills: [skill-authoring]
