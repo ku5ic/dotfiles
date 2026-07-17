@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Prints the base branch or ref for the current git checkout. Detection order:
 #   1. Explicit argument ($1), if it resolves to a valid ref
-#   2. Upstream tracking branch (@{upstream})
+#   2. Upstream tracking branch (@{upstream}), unless it's just this branch's own
+#      push destination (e.g. `git push -u origin <same-branch-name>`) rather than
+#      a distinct merge target - that case is skipped in favor of step 3/4, since
+#      a feature branch pushed under its own name always diffs empty against itself.
 #   3. Remote HEAD (origin/HEAD)
 #   4. Common defaults: main, master, develop, trunk (first that exists)
 #
@@ -18,9 +21,13 @@ if [ -n "$explicit" ]; then
   fi
 fi
 
-if git rev-parse --abbrev-ref '@{upstream}' >/dev/null 2>&1; then
-  git rev-parse --abbrev-ref '@{upstream}'
-  exit 0
+if upstream="$(git rev-parse --abbrev-ref '@{upstream}' 2>/dev/null)"; then
+  current_branch="$(git rev-parse --abbrev-ref HEAD)"
+  upstream_branch="${upstream#*/}"
+  if [ "$upstream_branch" != "$current_branch" ]; then
+    echo "$upstream"
+    exit 0
+  fi
 fi
 
 if git symbolic-ref refs/remotes/origin/HEAD >/dev/null 2>&1; then

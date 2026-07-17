@@ -8,7 +8,15 @@ disable-model-invocation: true
 ## Procedure
 
 1. Get the project name: `!`project-name.sh``.
-2. Check for a project PR template: resolve the project root via `!`project-root.sh``, then check for (in order) `.github/pull_request_template.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/PULL_REQUEST_TEMPLATE/*.md` (if multiple, use the first alphabetically), `docs/pull_request_template.md`, `pull_request_template.md` at the repo root. Path matching is case-insensitive. If one exists, read it: its sections replace the default Structure below. If none exists, fall back to the default Structure.
+2. Check for a project PR template: resolve the project root via `!`project-root.sh``, then check these exact paths in order, using the first that exists:
+   - `<root>/.github/pull_request_template.md`, and its case variant `<root>/.github/PULL_REQUEST_TEMPLATE.md`
+   - the alphabetically-first `*.md` file directly inside `<root>/.github/PULL_REQUEST_TEMPLATE/`, if that directory exists (`fd -H . <root>/.github/PULL_REQUEST_TEMPLATE -e md | sort | head -1`)
+   - `<root>/docs/pull_request_template.md`
+   - `<root>/pull_request_template.md`
+
+   Test each exact path (e.g. `test -f <path>`) - do not run a keyword/substring search like `fd -i pull_request_template` across the tree. Two failure modes make that unsafe: (1) `.github` is a hidden directory that `fd` silently excludes unless you pass `-H`, so a template living there gets missed entirely; (2) `.github` commonly holds several unrelated `*_pull_request_template.md` variants (per-team or per-change-type templates, e.g. `ds_pull_request_template.md`), and a substring match sorted alphabetically will confidently pick the wrong one instead of the actual default. Exact-path checks sidestep both.
+
+   If one exists, read it: its sections replace the default Structure below. If none exists, fall back to the default Structure.
 3. Resolve the base: !`git-base.sh`. Falls through upstream / origin HEAD / main / master / develop / trunk. If $ARGUMENTS is a valid single-word git ref (no spaces, not a sentence), use it as the explicit base instead by running `git-base.sh "$ARGUMENTS"` via Bash.
 4. Pull the diff: !`git-diff-from-base.sh`
 5. Pull the log (last 20): !`git-log-from-base.sh`
