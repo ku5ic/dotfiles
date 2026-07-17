@@ -2,7 +2,6 @@
 description: Explain a completed change's key reasoning in a few sentences, developer to developer
 argument-hint: <optional: which decision to focus on>
 model: haiku
-effort: low
 disable-model-invocation: true
 ---
 
