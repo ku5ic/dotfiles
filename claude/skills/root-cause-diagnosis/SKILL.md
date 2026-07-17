@@ -40,6 +40,10 @@ This applies to any dependency the current code does not own or control: a third
 - Feature work with no reported failure to diagnose.
 - These exclusions describe when the check has nothing to add, not an exemption from the global first-operation load: the session-start gate loads this skill unconditionally regardless of task type.
 
+## References
+
+Repo-specific discipline, not a citation of external literature. The closest documented parallel is standard defect-triage practice: verify against the dependency's contract before attributing a failure to it.
+
 ## Maintenance note
 
 Revisit if a case emerges where the misuse-vs-defect framing does not cleanly apply (e.g., a dependency with genuinely contradictory documentation, or a defect only reproducible in this codebase's specific configuration) - add a third diagnosis outcome only if repeated cases actually need it, not preemptively.

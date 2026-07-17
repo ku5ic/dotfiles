@@ -4,6 +4,7 @@
 
 - Coverage is a signal, not a goal. 100% on generated code is meaningless. Focus on core logic and branching.
 - Flag uncovered branches in code that contains business rules, auth, or payment flows.
+- Test depth scales with criticality, not with how much can be tested. Business rules, auth, payment, and security boundaries earn full boundary, negative, and equivalence-class coverage. A thin wrapper, a single-caller internal helper, or straightforward display logic earns one happy-path test, not the full checklist. More tests on low-risk code is not more correct - it is maintenance cost without added confidence.
 
 ## What to skip as not worth testing
 

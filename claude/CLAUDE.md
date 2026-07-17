@@ -52,7 +52,7 @@ Markdown is prose, not code. Sentences flow naturally on one line regardless of 
 
 - No decorative comments. No banners, dividers, or section headers made of symbols like `===`, `---`, `***`, `###`, or similar.
 - ASCII box drawing characters (`x`, `+`, `-`, `|`, `->`, `<-`) are allowed only when actually constructing a diagram inside a comment or doc. Not as decoration.
-- Comments must be functional. Explain why, not what. Remove comments that restate the code.
+- Comment only when something is not obvious: a hidden constraint, a subtle invariant, a workaround for a specific bug, behavior that would surprise a reader. If removing the comment would not confuse a future reader, do not write it. One line, not a paragraph - a why that needs more than a line belongs in the commit message or PR description, not the source. Remove comments that restate the code.
 - Match the existing code style of the file and the project. If Prettier, ESLint, Biome, or similar config exists, conform to it.
 - Prefer idiomatic patterns for the framework in use over generic patterns.
 - Meaningful names. No Hungarian notation. No single letter variables except loop indices.
@@ -151,7 +151,7 @@ If a file claimed to exist by the user is not found, surface that immediately an
 
 Procedures live as skills under `$HOME/.claude/skills/<group>-<name>/SKILL.md`, grouped by name prefix into five groups. Invocation uses the `/<group>-<name>` form (for example `/flow-checks`). Commands and skills are one merged system, so the richer skill frontmatter (`disable-model-invocation`, `context: fork`, `agent`) applies. The canonical inventory is the output of `/skills` inside Claude Code.
 
-- `flow` - the default feature workflow: preflight, plan, implement, test, review, plus fix, debug, quick, resume, checks, deps
+- `flow` - the default feature workflow: preflight, plan, implement, test, review, plus fix, debug, explore, quick, resume, checks, deps
 - `audit` - targeted audits invoked when scope warrants: a11y, claude, debt, doc-drift, perf, security
 - `meta` - authoring and reflection: feature, prompt, retro
 - `write` - outward-facing communication: commit, devnote, explainer, pr, release-notes, review-comment, stakeholder
@@ -170,7 +170,7 @@ All groups except `question` are user-only (`disable-model-invocation: true`); t
 
 ## Agents
 
-Nine subagent capability shells live under `$HOME/.claude/agents/`. The canonical inventory is the output of `/agents`.
+Eleven subagent capability shells live under `$HOME/.claude/agents/`. The canonical inventory is the output of `/agents`.
 
 - `scout` - read-only exploration; broad `file:line` sweeps kept out of the main context
 - `reviewer` - senior read-only code review (invoked by `/flow-review`)
@@ -181,5 +181,7 @@ Nine subagent capability shells live under `$HOME/.claude/agents/`. The canonica
 - `security-auditor` - security audit (invoked by `/audit-security`)
 - `perf-auditor` - static performance audit (invoked by `/audit-perf`)
 - `debt-auditor` - technical-debt audit, churn-correlated (invoked by `/audit-debt`)
+- `claude-config-auditor` - audits skills, hooks, and settings for staleness or misconfiguration (invoked by `/audit-claude`)
+- `doc-drift-auditor` - detects drift between code and its documentation (invoked by `/audit-doc-drift`)
 
 Two operational facts: agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the `UserPromptSubmit` hook injection, so each shell self-loads stack context via `~/.claude/bin/agent-context.sh` at startup, with `guard-skills` as the enforcement floor for editing agents. Forked skills (`context: fork`) run their whole body inside the named agent; the inline procedures, including `flow-plan` and `flow-implement`, stay in the main conversation and keep their phase-boundary stops there.

@@ -1,5 +1,12 @@
 # Hardening
 
+## Contents
+
+- [fail2ban](#fail2ban)
+- [Unattended security upgrades](#unattended-security-upgrades)
+- [SSH hardening summary](#ssh-hardening-summary)
+- [References](#references)
+
 - [fail2ban](#fail2ban)
 - [Unattended security upgrades](#unattended-security-upgrades)
 - [SSH hardening summary](#ssh-hardening-summary)

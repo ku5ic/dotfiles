@@ -39,6 +39,10 @@ Minimal is measured against the defect, not against caution. A one-line fix to a
 - Refactors explicitly requested as refactors, not fixes - the "minimal fix" framing does not apply when there is no defect to be minimal against.
 - These exclusions describe when the check has nothing to add, not an exemption from the global first-operation load: the session-start gate loads this skill unconditionally regardless of task type.
 
+## References
+
+Related: `~/.dotfiles/claude/rules/change-discipline.md` - "Name the blast radius before editing shared code" and its dead-code rule share the same right-sizing concern for wide-reaching changes. `~/.dotfiles/claude/rules/failure-modes.md` - "Plan does not match reality" covers the adjacent case of scope drift discovered mid-execution.
+
 ## Maintenance note
 
 Revisit if "minimal fix" needs a more concrete measure than judgment (e.g., a file-count threshold) after observing this in practice.

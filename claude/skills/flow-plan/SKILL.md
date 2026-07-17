@@ -17,7 +17,7 @@ disable-model-invocation: true
 2. Load the patterns skill matching the detected stack (react-patterns, django-patterns, etc.) if the task is in that area.
    - You may delegate noisy sub-work (broad code exploration, running checks) to the scout or checker agent to keep this context clean, but every phase-boundary stop stays in the main conversation.
 3. Determine plan shape. If $ARGUMENTS contains "mechanical:" or "plan-shape: mechanical", the plan is mechanical: skip steps 4 and 6 below (no rejected alternatives, no per-step test strategy beyond a single end verification). If the work is clearly mechanical from the preflight (pure file edits, no architectural choice), the agent may self-mark mechanical, stating the reason. Otherwise the plan is substantive (default). Self-marking mechanical is opt-in by signal: state why the plan is mechanical so the user can override. `--full` in $ARGUMENTS forces a substantive plan even when the work looks mechanical.
-4. Consider two implementation approaches. For each: scope, risk, effort, reversibility. Pick one and justify why. If both score similarly, pick the approach that touches fewer layers.
+4. Consider two implementation approaches. For each: scope, risk, effort, reversibility, and fit with this project's own existing convention (CLAUDE.md, loaded pattern skills, precedent elsewhere in the codebase) - not generic best practice. An approach that only wins by diverging from established convention needs that divergence named and justified before it can be chosen; if the other approach is otherwise comparable, prefer the convention-aligned one. Pick one and justify why. If both score similarly on every other axis, pick the approach that touches fewer layers.
    4a. Design integrity check on the chosen approach. For each item, the answer must be a concrete sentence in the plan, not a yes/no:
    - Modularity: which module owns this change? If the change crosses module boundaries, name them and justify.
    - Abstraction level: is the new code at the right level of abstraction for its callers? Concretely: does any caller need to know an implementation detail to use it?
@@ -26,6 +26,7 @@ disable-model-invocation: true
    - DRY judgment: if this introduces apparent duplication, is the duplication along a stable axis or a divergent one? Duplication with divergent lifecycles is correct.
    - Reversibility: if this approach proves wrong after merge, what is the cost to reverse? If high, justify the choice over a more reversible alternative.
    - Verifiability: how will the implemented code be verified against this plan? Name the test, the type check, or the manual check. If "manual eyeball" is the answer, the plan is incomplete.
+   - Convention fit: does the chosen approach match how this codebase already solves this class of problem? Cite the precedent. If it diverges, name the divergence and justify it - an unnamed divergence is not acceptable in the plan.
 5. Break the chosen approach into phased steps. Each step is independently committable and leaves the codebase in a working state.
 6. Identify the test strategy per step.
 7. Identify rollback: if step N fails in production, what is the revert path.

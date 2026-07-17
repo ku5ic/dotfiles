@@ -22,6 +22,7 @@ Delegate the procedure below (steps 1 onward, through Scope) to the a11y-auditor
 3. Load the wcag-audit skill.
 4. Read the target file(s). For React, include the component's direct children if local. For Django templates, include the parent template it extends.
 5. Apply the checklist from wcag-audit. Stack adaptation section inside the skill tells you which variants apply.
+6. Before finalizing a finding, check whether project CLAUDE.md documents an explicit, deliberate exception for it - that is the only thing that excuses it. A pattern that repeats across multiple components is not excused by repetition; flag it once against the shared source and list every consuming location, since fixing the shared component resolves all of them and repetition raises priority, it does not lower it.
 
 ## Output
 

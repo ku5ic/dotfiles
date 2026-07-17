@@ -12,7 +12,7 @@ disable-model-invocation: true
 2. Reproduce the failure with the narrowest possible command (single test, single file). Confirm the failure mode matches the report.
 3. Read the failing code and its callers (not the whole module). Form a hypothesis.
 4. State the hypothesis in one sentence before changing anything.
-5. Make the smallest change that addresses the root cause, not the symptom.
+5. Make the smallest change that addresses the root cause, not the symptom. Match existing style, naming, and patterns; read a nearby file first if unsure.
 6. Re-run the narrow command. If green, run adjacent tests.
 7. If still red, revise hypothesis. Do not pile on changes.
 

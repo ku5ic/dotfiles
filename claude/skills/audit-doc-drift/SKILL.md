@@ -12,6 +12,8 @@ $ARGUMENTS should point to the code surface to check. Required.
 
 ## Procedure
 
+Delegate the procedure below (steps 1 onward, through Scope rules) to the doc-drift-auditor agent (Agent tool, subagent_type: doc-drift-auditor, foreground). It executes every step itself and writes the report; relay its returned summary.
+
 1. Stack is in the injected `<repo-context>` block. Get the project name: `!`project-name.sh``.
 2. Read the code at $ARGUMENTS.
 3. Find relevant docs. Prefer targeted over exhaustive:

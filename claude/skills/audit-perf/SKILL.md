@@ -14,7 +14,7 @@ Delegate the procedure below (steps 1 onward, through Rules) to the perf-auditor
 
 1. Stack is in the repo context your startup produced (`agent-context.sh`). Get the project name via `project-name.sh`.
 2. Load the patterns skill for the detected stack (react-patterns, django-patterns, etc.) for the anti-pattern reference.
-3. Review the target across these categories. Skip categories with no findings.
+3. Review the target across these categories, grounding each candidate in this project's own precedent before including it: if the same pattern is already an established, consistent choice elsewhere in the codebase and not flagged as a problem by CLAUDE.md or existing tests, it is a deliberate tradeoff, not a finding, unless it is measurably worse at this location than elsewhere. Skip categories with no findings.
 
 ### Frontend (React and Next.js)
 
@@ -63,3 +63,4 @@ Use markdown-report format. Write to `~/.claude/scratch/perf-<project-name>-<tar
 - Do not claim measured improvement. This command does not run anything.
 - Flag what to measure, not what to assume.
 - Ignore micro-optimizations that change code without measurable benefit.
+- A pattern that repeats across the codebase as an established choice is not N separate findings; note it once against the shared source and list the consuming locations.

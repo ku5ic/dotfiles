@@ -37,6 +37,10 @@ This is not a mandate to read the entire codebase before every change. It is a m
 - Pure data or content edits with no structural or stylistic choice involved, e.g. fixing a typo in prose.
 - These exclusions describe when the check has nothing to add, not an exemption from the global first-operation load: the session-start gate loads this skill unconditionally regardless of task type.
 
+## References
+
+Related: `~/.dotfiles/claude/rules/change-discipline.md` - "Follow the existing pattern or justify leaving it" states the same convention-matching expectation specifically for code changes.
+
 ## Maintenance note
 
 Revisit if "relevant precedent" needs a more concrete definition than judgment (e.g., a required minimum number of files checked) after observing this in practice.

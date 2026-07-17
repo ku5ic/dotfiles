@@ -18,7 +18,7 @@ Delegate the procedure below (steps 1 onward, through Stop) to the tester agent 
 4. For each changed function, component, or endpoint:
    - Check if tests already exist. If yes, read them and extend.
    - If no, create a new test file mirroring source path.
-5. Write tests that verify behavior, not implementation. Cover:
+5. Scale test depth to criticality before writing anything. Business rules, auth, payment, and security boundaries get the full coverage below. A thin wrapper, a single-caller internal helper, or straightforward display logic gets a happy-path test only - stop there, do not apply the rest of this checklist for its own sake. For anything above that bar, write tests that verify behavior, not implementation, and cover:
    - Happy path
    - At least one negative or edge case per public surface
    - Boundary conditions specific to the change (null, empty, max, etc.)

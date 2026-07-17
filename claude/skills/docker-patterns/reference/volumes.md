@@ -1,5 +1,14 @@
 # Volumes
 
+## Contents
+
+- [Three storage types](#three-storage-types)
+- [Named volumes](#named-volumes)
+- [Bind mounts](#bind-mounts)
+- [tmpfs](#tmpfs)
+- [Volume lifecycle](#volume-lifecycle)
+- [References](#references)
+
 - [Three storage types](#three-storage-types)
 - [Named volumes](#named-volumes)
 - [Bind mounts](#bind-mounts)

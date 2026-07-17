@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 ## Procedure
 
+Delegate the procedure below (steps 1 onward, through Rules) to the claude-config-auditor agent (Agent tool, subagent_type: claude-config-auditor, foreground). It executes every step itself and writes the report; relay its returned summary.
+
 1. Get the project name: `!`project-name.sh``. Note the date for the report filename.
 2. Determine scope. If $ARGUMENTS contains `--area=<value>`, run only that pass. Otherwise run all five passes in order.
 3. Write findings incrementally to the report file (create it before starting Pass 1 with an empty findings list). Path: `~/.claude/scratch/audit-claude-<project-name>-<YYYYMMDD-HHMM>.md`.

@@ -22,6 +22,7 @@ Delegate the procedure below (steps 1 onward, through Rules) to the security-aud
 6. Pass 2: follow data flow for any user input found. Trace from entry point to every sink (DB, file system, template, response body). Flag unchecked paths.
 7. Pass 3: check auth and session boundaries. Who is authenticated on this path? Who is authorized? Is either skipped anywhere?
 8. Pass 4: dependency surface. If lockfile present, note whether `audit` has been run recently. Do not run audit yourself unless the user has allowed the command.
+9. Before finalizing a finding, check whether project CLAUDE.md documents an explicit, deliberate accepted-risk decision for it - that is the only thing that excuses it. A vulnerable pattern that repeats across call sites is not excused by repetition; flag it once against the shared source (a shared auth helper, a common validator) and list every consuming location, since fixing the shared code resolves all of them and repetition raises priority, it does not lower it.
 
 ## Output
 

@@ -1,5 +1,16 @@
 # Security
 
+## Contents
+
+- [Non-root user](#non-root-user)
+- [Minimal base images](#minimal-base-images)
+- [Pin base images](#pin-base-images)
+- [.dockerignore](#dockerignore)
+- [Secrets management](#secrets-management)
+- [Docker Scout](#docker-scout)
+- [Read-only filesystem](#read-only-filesystem)
+- [References](#references)
+
 - [Non-root user](#non-root-user)
 - [Minimal base images](#minimal-base-images)
 - [Pin base images](#pin-base-images)
