@@ -78,7 +78,7 @@ All custom autocmds belong to a `dotfiles_*` augroup created with `clear = true`
 - `<leader>s` - Search (snacks.picker: grep, LSP symbols, diagnostics, help, marks, undo, registers, jumps, man, icons, etc.; grug-far for replace)
 - `<leader>g` - Git + GitHub (snacks.picker: status, log, diff, stash, branches; GitHub PRs/issues; Snacks.lazygit; gitsigns hunks; fugitive)
 - `<leader>w` - Window splits
-- `<leader>t` - Tabs/explorer toggle
+- `<leader>t` - Tabs
 - `<leader>b` - Buffer management
 - `<leader>l` - LSP actions
 - `<leader>x` - Trouble diagnostics
