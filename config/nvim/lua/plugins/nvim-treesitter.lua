@@ -36,7 +36,6 @@ return {
           "ruby",
           "scss",
           "sql",
-          "tmux",
           "toml",
           "tsx",
           "typescript",
@@ -45,11 +44,17 @@ return {
         })
         :wait(300000)
 
-      -- Highlighting is not automatic on main branch - enable per filetype
+      -- Highlighting is not automatic on main branch - enable per filetype.
+      -- Guard on a highlight query existing: a stale locally-cached parser
+      -- can still attach with zero captures, which also
+      -- blocks Neovim's builtin legacy syntax/*.vim fallback from loading.
       vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup("dotfiles_treesitter_highlight", { clear = true }),
-        callback = function()
-          pcall(vim.treesitter.start)
+        callback = function(args)
+          local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype) or vim.bo[args.buf].filetype
+          if vim.treesitter.query.get(lang, "highlights") then
+            pcall(vim.treesitter.start)
+          end
         end,
       })
     end,
