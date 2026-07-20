@@ -32,7 +32,6 @@ return {
   event = { "BufWritePre" },
   cmd = { "ConformInfo" },
   keys = {
-    { "<leader>fm", format_buffer, desc = "Format file" },
     { "<leader>lf", format_buffer, desc = "LSP Format" },
   },
   opts = {
