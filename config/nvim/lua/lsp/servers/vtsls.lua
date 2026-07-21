@@ -22,10 +22,12 @@ return {
       updateImportsOnFileMove = { enabled = "always" },
       suggest = { completeFunctionCalls = true },
       inlayHints = typescript_inlay_hints,
+      experimental = { useTsgo = true },
     },
     javascript = {
       updateImportsOnFileMove = { enabled = "always" },
       inlayHints = typescript_inlay_hints,
+      experimental = { useTsgo = true },
     },
   },
 }

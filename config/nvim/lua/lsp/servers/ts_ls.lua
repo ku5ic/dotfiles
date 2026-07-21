@@ -4,8 +4,8 @@ return {
     tsserver = { logVerbosity = "off" },
   },
   settings = {
-    typescript = { inlayHints = { enabled = false } },
-    javascript = { inlayHints = { enabled = false } },
+    typescript = { inlayHints = { enabled = false }, experimental = { useTsgo = true } },
+    javascript = { inlayHints = { enabled = false }, experimental = { useTsgo = true } },
   },
   filetypes = {
     "astro",
