@@ -9,6 +9,7 @@ windows:
         - nvim:
             - nvim
         - terminal:
+            - update_submodules
   - claude:
       - claude
   - tilt:
