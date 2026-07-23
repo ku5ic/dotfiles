@@ -9,6 +9,7 @@ source "$(dirname "$0")/../bin/_lib.sh"
 payload=""
 read_payload
 session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty' 2>/dev/null || true)"
+cwd="$(printf '%s' "$payload" | jq -r '.cwd // empty' 2>/dev/null || true)"
 safe_session_id="${session_id//[^a-zA-Z0-9_-]/}"
 # Without a stable session_id we cannot guarantee "first prompt only" injection;
 # falling back to $$ would re-inject every turn. Skip and warn instead.
@@ -50,6 +51,19 @@ if [[ -s "$cache_file" ]]; then
   echo "</repo-context>"
 fi
 
+# emit_memory_files_block <cwd>
+# Reports whether Claude Code's memory files (CLAUDE.md/CLAUDE.local.md) are
+# present at the global (~/.claude/) and current-working-directory levels -
+# both already auto-loaded natively by the harness before this hook runs.
+# Presence only; this cannot verify the model complied with the content.
+emit_memory_files_block() {
+  local dir="$1"
+  echo ""
+  echo "<memory-files>"
+  memory_files_status "$dir"
+  echo "</memory-files>"
+}
+
 # Emit the global required skills (blocking).
 # Only global_skills are emitted here; stack-derived skills move to
 # emit_suggested_skills so session start only blocks on the core set.
@@ -71,16 +85,15 @@ emit_required_skills() {
     echo "BLOCKING REQUIREMENT: invoke the Skill tool for each of these skills NOW, before any other action: ${required[*]}"
     echo "</required-skills>"
     if command -v jq >/dev/null 2>&1; then
-      local log_dir ts cwd_val sk
+      local log_dir ts sk
       log_dir="$HOME/.claude/logs"
       mkdir -p "$log_dir"
       ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-      cwd_val="$(printf '%s' "$payload" | jq -r '.cwd // ""' 2>/dev/null || true)"
       for sk in "${required[@]}"; do
         jq -cn \
           --arg ts "$ts" \
           --arg sess "$session_id" \
-          --arg cwd "$cwd_val" \
+          --arg cwd "$cwd" \
           --arg skill "$sk" \
           '{ts:$ts,hook:"inject-context.sh",event:"required-skill",session_id:$sess,cwd:$cwd,expansion_type:null,command_name:null,command_args:null,command_source:null,skill_file:$skill,tool_name:null}' \
           >>"$log_dir/skills.jsonl"
@@ -239,6 +252,8 @@ emit_tooling_block() {
   echo "guidance: Run scripts only through the package manager named above, prefer these scripts and run-checks.sh over direct tool invocation, and never substitute a different package manager."
   echo "</tooling>"
 }
+
+[[ -n "$cwd" ]] && emit_memory_files_block "$cwd"
 
 emit_required_skills "$cache_file"
 
