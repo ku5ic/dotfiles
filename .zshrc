@@ -87,10 +87,3 @@ export LANG=en_US.UTF-8
 # You don't strictly need this collation, but most technical people
 # probably want C collation for sane results
 export LC_COLLATE=C
-
-# FastFetch, Fast, highly customisable system info script
-# fastfetch
-
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/sinisakusic/.docker/completions $fpath)
-# End of Docker CLI completions
