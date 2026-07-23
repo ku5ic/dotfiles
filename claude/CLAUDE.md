@@ -99,8 +99,8 @@ If a file claimed to exist by the user is not found, surface that immediately an
 
 - Destructive operations require explicit confirmation before running: `rm`, `git reset --hard`, `git clean`, `git push --force`, branch or tag deletion, database migrations, dropping tables, truncating files.
 - Do not install, upgrade, or remove dependencies without asking. Include the reason and the proposed command.
-- Do not append `2>&1` or other shell redirects. The Bash tool merges stderr by default; redirects trigger permission prompts.
-- One operation per Bash tool call. No `&&`, `||`, or `;` chaining (guard-bash blocks these). Use native path args: `git -C <dir>`, `tokei <path>`.
+- `2>&1` and other shell redirects are unnecessary (the Bash tool merges stderr by default) but no longer blocked.
+- Chaining with `&&`, `||`, or `;` is allowed only when every command in the chain is read-only (see `_is_safe_chain_lead` in guard-bash.sh: `ls`, `cat`, `grep`, `find`, `jq`, etc. - `git` is never chain-safe, even for read-only subcommands, since chain-safety is classified by binary name, not subcommand). A chain containing any mutating command still requires separate Bash tool calls. Use native path args where available: `git -C <dir>`, `tokei <path>`.
 - Pipes (`|`) for single-operation semantics only: `cmd | grep`, `find | wc -l`, `git log | head`. Sequential checks go in separate calls.
 - Do not modify project level config without asking: `.env*`, `tsconfig*.json`, `eslint.config.*`, `prettier.config.*`, `next.config.*`, `vite.config.*`, `package.json` scripts, CI workflows.
 - Do not create new top level directories without asking.

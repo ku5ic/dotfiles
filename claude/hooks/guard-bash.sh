@@ -54,9 +54,9 @@ if [[ "$norm" =~ \>+[[:space:]]*(\$HOME|\$\{HOME\}|~|$HOME)/\.(zshrc|zprofile|ba
   block "direct write to a shell rc file. Use the dotfiles repo." "rc-redirect"
 fi
 
-# 2>&1 and &> redirects: redundant in the Bash tool (stderr merged by default)
-# and force permission prompts. Strip quoted content first so grep patterns that
-# contain these literals as search strings (e.g. grep '2>&1') are not blocked.
+# Quote-stripped copy of the command: checks below must ignore chain
+# operators and redirects that appear only inside quoted literals (e.g.
+# grep '&&' or grep '2>&1' should not look like a chain or a redirect).
 _cmd_sq="$(printf '%s' "$cmd" | sed -E "s/'[^']*'//g" | sed -E 's/"[^"]*"//g')"
 
 # xargs rm: full-string check because xargs and rm straddle a | boundary;
@@ -65,47 +65,56 @@ if [[ "$_cmd_sq" =~ xargs[[:space:]]+((-[^[:space:]]+[[:space:]]+)*)rm[[:space:]
   block "xargs rm with recursive or force flag" "xargs-rm"
 fi
 
-if [[ "$_cmd_sq" =~ 2\>\&1 ]]; then
-  log_block "redirect-stderr" "$cmd"
-  echo "Blocked by guard-bash.sh: shell redirect detected (2>&1)" >&2
-  echo "The Bash tool merges stderr by default. Drop the redirect and retry." >&2
-  exit 2
-fi
-if [[ "$_cmd_sq" =~ \&\>\>? ]]; then
-  log_block "redirect-combined" "$cmd"
-  echo "Blocked by guard-bash.sh: shell redirect detected (&> or &>>)" >&2
-  echo "The Bash tool merges stderr by default. Drop the redirect and retry." >&2
-  exit 2
-fi
+# 2>&1 and &> redirects are no longer blocked: the only reason they were is
+# that such commands didn't match the old fine-grained permission allow-list,
+# forcing a prompt. Now that the allow-list is a blanket "Bash" rule, that
+# reason no longer applies.
 
-# Shell command chaining (&&, ||, ;) forces "ask" prompts because the
-# permission allow list cannot match compound commands. CLAUDE.md bans
-# this pattern; the hook enforces it. Strip quoted content first so
-# patterns like grep '&&' are not flagged. Pipes (|) are intentionally
-# allowed: the segment splitter handles them and they match per-segment
-# against the allow list.
-if [[ "$_cmd_sq" =~ \&\& ]]; then
-  log_block "chain-and" "$cmd"
-  echo "Blocked by ${HOOK_NAME}: shell chain operator detected (&&)" >&2
-  echo "Run as separate Bash tool calls, or use the tool's native path/dir argument (git -C, tokei <path>, etc.)." >&2
-  exit 2
-fi
-if [[ "$_cmd_sq" =~ \|\| ]]; then
-  log_block "chain-or" "$cmd"
-  echo "Blocked by ${HOOK_NAME}: shell chain operator detected (||)" >&2
-  echo "Run as separate Bash tool calls." >&2
-  exit 2
-fi
-# For ;, strip structural uses (case terminator ;; and ; before do/done/then/
-# else/elif/fi/case/esac keywords) before checking. What remains is a chain
-# operator. The per-segment scan below still catches dangerous commands inside
-# any chain that slips through.
+# Returns 0 (true) when $1's side effects are read-only regardless of its
+# arguments, safe to appear in a &&/||/; chain. git is deliberately excluded:
+# many subcommands are read-only but others mutate, and chain-safety here is
+# classified by binary name only, not subcommand.
+_is_safe_chain_lead() {
+  case "$1" in
+  ls | cat | bat | head | tail | less | more | grep | rg | fd | find | \
+    pwd | echo | printf | date | wc | sort | uniq | jq | yq | gron | qsv | \
+    stat | file | tree | du | df | which | type | tokei | hyperfine | diff | \
+    basename | dirname) return 0 ;;
+  esac
+  return 1
+}
+
+# Shell command chaining (&&, ||, ;) is allowed only when every command in
+# the chain is on the read-only list above; a chain containing anything else
+# still requires separate Bash tool calls. Strip structural ; uses first
+# (case terminator ;; and ; before do/done/then/else/elif/fi/case/esac
+# keywords) - those never count as chaining. Pipes (|) are intentionally
+# unrestricted here: the segment splitter handles them and each side is
+# still checked per-segment against the dangerous-pattern dispatch below.
 _cmd_struct_stripped="$(printf '%s' "$_cmd_sq" | sed -E -e 's/;;/ /g' -e 's/;[[:space:]]*(do|done|then|else|elif|fi|case|esac)([^a-zA-Z0-9_]|$)/ /g')"
-if [[ "$_cmd_struct_stripped" =~ \; ]]; then
-  log_block "chain-semi" "$cmd"
-  echo "Blocked by ${HOOK_NAME}: shell chain operator detected (;)" >&2
-  echo "Run as separate Bash tool calls. Control-flow ; (do, done, then, fi, ...) is allowed." >&2
-  exit 2
+
+if [[ "$_cmd_struct_stripped" =~ \&\& ]] || [[ "$_cmd_struct_stripped" =~ \|\| ]] || [[ "$_cmd_struct_stripped" =~ \; ]]; then
+  _chain_unsafe_lead=""
+  # Walk segments of $_cmd_struct_stripped, not raw $norm: it is already
+  # quote-stripped (so a literal && or ; inside quotes can't resurface as a
+  # bogus segment) and structural ; is already blanked out (so do/done/then/
+  # ... keywords can't resurface as one either).
+  while IFS= read -r _chain_seg; do
+    _chain_seg="${_chain_seg#"${_chain_seg%%[![:space:]]*}"}"
+    [[ -z "$_chain_seg" ]] && continue
+    _chain_lead="${_chain_seg%% *}"
+    if ! _is_safe_chain_lead "$_chain_lead"; then
+      _chain_unsafe_lead="$_chain_lead"
+      break
+    fi
+  done < <(printf '%s\n' "$_cmd_struct_stripped" | sed -E 's/[[:space:]]*(&&|\|\|)[[:space:]]*/\n/g' | tr ';' '\n')
+
+  if [[ -n "$_chain_unsafe_lead" ]]; then
+    log_block "chain-unsafe" "$cmd"
+    echo "Blocked by ${HOOK_NAME}: chain operator detected; '${_chain_unsafe_lead}' is not on the read-only safe-chain list" >&2
+    echo "Run as separate Bash tool calls, or use the tool's native path/dir argument (git -C, tokei <path>, etc.)." >&2
+    exit 2
+  fi
 fi
 
 # _resolve_pm_for_dir <dir>: prints "manager:lockfile" for the first lockfile
@@ -255,6 +264,56 @@ _check_segment() {
   redis-cli)
     if [[ "$seg" =~ redis-cli[[:space:]].*(FLUSHALL|FLUSHDB|CONFIG[[:space:]]+SET|DEBUG[[:space:]]+SLEEP) ]]; then
       block "destructive redis-cli command" "redis-destructive"
+    fi
+    ;;
+  aws)
+    # ([^[:space:]]+[[:space:]]+)* skips zero or more whitespace-delimited
+    # tokens (global flags like --profile prod) between the binary and the
+    # service/verb, without the ambiguity a bare .* has: a bare .* can match
+    # past the real "s3" token and latch onto an unrelated "s3" substring
+    # inside an argument (e.g. the "s3" prefix of an s3:// URI), silently
+    # defeating the check.
+    if [[ "$seg" =~ aws[[:space:]]+([^[:space:]]+[[:space:]]+)*s3[[:space:]]+rm[[:space:]].*(--recursive)([[:space:]]|$) ]]; then
+      block "aws s3 rm --recursive deletes an entire bucket prefix" "aws-s3-recursive-rm"
+    fi
+    if [[ "$seg" =~ aws[[:space:]]+([^[:space:]]+[[:space:]]+)*s3[[:space:]]+rb[[:space:]].*(--force)([[:space:]]|$) ]]; then
+      block "aws s3 rb --force force-deletes a bucket and its contents" "aws-s3-force-rb"
+    fi
+    if [[ "$seg" =~ aws[[:space:]]+([^[:space:]]+[[:space:]]+)*ec2[[:space:]]+terminate-instances ]]; then
+      block "aws ec2 terminate-instances is irreversible" "aws-ec2-terminate"
+    fi
+    ;;
+  gcloud)
+    if [[ "$seg" =~ gcloud[[:space:]]+([^[:space:]]+[[:space:]]+)*delete([[:space:]]|$) ]]; then
+      block "gcloud delete operation" "gcloud-delete"
+    fi
+    ;;
+  kubectl)
+    # See the aws case above for why this skips tokens explicitly instead of
+    # using a bare .* between the binary and the verb.
+    if [[ "$seg" =~ kubectl[[:space:]]+([^[:space:]]+[[:space:]]+)*delete([[:space:]]|$) ]]; then
+      block "kubectl delete" "kubectl-delete"
+    fi
+    ;;
+  terraform)
+    if [[ "$seg" =~ terraform[[:space:]]+([^[:space:]]+[[:space:]]+)*destroy([[:space:]]|$) ]]; then
+      block "terraform destroy" "terraform-destroy"
+    fi
+    if [[ "$seg" =~ terraform[[:space:]]+([^[:space:]]+[[:space:]]+)*apply[[:space:]].*(-auto-approve|--auto-approve)([[:space:]]|$) ]]; then
+      block "terraform apply -auto-approve skips the plan review step" "terraform-auto-approve"
+    fi
+    ;;
+  docker)
+    if [[ "$seg" =~ (system|volume|image|container|network)[[:space:]]+prune ]]; then
+      # -a and -f are the only short flags these prune subcommands define, so
+      # any short-option cluster containing both letters (-af, -fa) is
+      # equivalent to --all --force: docker's flag parser accepts either form.
+      local _has_a=0 _has_f=0
+      [[ "$seg" =~ (^|[[:space:]])(-a|--all)([[:space:]]|$) || "$seg" =~ (^|[[:space:]])-[a-zA-Z]*a[a-zA-Z]*([[:space:]]|$) ]] && _has_a=1
+      [[ "$seg" =~ (^|[[:space:]])(-f|--force)([[:space:]]|$) || "$seg" =~ (^|[[:space:]])-[a-zA-Z]*f[a-zA-Z]*([[:space:]]|$) ]] && _has_f=1
+      if ((_has_a && _has_f)); then
+        block "docker prune with --all --force wipes all unused resources" "docker-prune-all-force"
+      fi
     fi
     ;;
   find)
