@@ -3,6 +3,8 @@ description: Answers a medium-difficulty question requiring real reasoning, veri
 argument-hint: <the question>
 model: sonnet
 effort: high
+context: fork
+agent: general-purpose
 ---
 
 ## When to load this skill
@@ -17,7 +19,7 @@ Escalate to `/question-hard` when the reasoning chain is long, the tradeoffs are
 
 1. Read the question precisely. If $ARGUMENTS is ambiguous on a point that changes the answer, ask one focused clarifying question before proceeding.
 2. Verify before answering when the question warrants it. If it concerns a specific file, project, or repo, read the relevant files rather than assuming. If it concerns the current version, features, or API of a fast moving tool, check the lockfile or authoritative source.
-3. If the stack matters, the stack is in the injected `<repo-context>` block. Load the matching patterns skill if the question is in that area.
+3. If the stack matters: the `<repo-context>` block carries it when this runs inline; forked (no hook injection reaches the subagent), so absent that block, identify the stack from the project's own config directly. Load the matching patterns skill if the question is in that area.
 4. Answer with the reasoning that supports it. Name a tradeoff or edge case when one is material; do not invent complexity that is not there.
 
 ## Output

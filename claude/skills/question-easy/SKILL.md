@@ -3,6 +3,8 @@ description: Answers an easy question - a lookup, recall, or short factual answe
 argument-hint: <the question>
 model: sonnet
 effort: low
+context: fork
+agent: general-purpose
 ---
 
 ## When to load this skill
@@ -16,7 +18,7 @@ If the question needs real reasoning, verification across files, or a tradeoff c
 ## Procedure
 
 1. Answer directly. If the question concerns a specific file and you need its contents to answer, read it; otherwise do not reach for tools you do not need.
-2. If the stack is relevant to the answer, it is in the injected `<repo-context>` block.
+2. If the stack is relevant to the answer: the `<repo-context>` block carries it when this runs inline; forked (no hook injection reaches the subagent), so absent that block, identify the stack from the project's own config (`package.json`, `pyproject.toml`, etc.) instead.
 3. If the question turns out to be harder than easy (it needs verification, reasoning across layers, or a tradeoff call), say so and suggest re-running under `/question-medium` or `/question-hard` rather than guessing at this tier.
 
 ## Output
