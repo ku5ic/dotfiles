@@ -63,6 +63,7 @@
       "Agent(debt-auditor)",
       "Agent(claude-config-auditor)",
       "Agent(doc-drift-auditor)",
+      "Agent(plan-critic)",
       "Edit(**)",
       "Read(**)",
       "Edit(~/.claude/scratch/**)",

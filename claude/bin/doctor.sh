@@ -18,6 +18,12 @@
 #      field and matching effort field.
 #   6. Skill map validation: skill_file_map and skill_triggers reference only
 #      skills that exist, and every stack/extra skill has a trigger entry.
+#   7. Skills-log field parity: log-skills.sh and skills-report.sh reference
+#      the same skills.jsonl field names, so a rename in the emitter cannot
+#      silently break the report.
+#   8. Audit-verify field parity: audit-verify/SKILL.md's per-finding parser
+#      references the same field names as markdown-report's required
+#      per-finding shape.
 #
 # Adding a credential pattern: add it to the `patterns` array below AND to
 # hooks/guard-edit.sh's "Sensitive credential and key files" case block AND
@@ -342,6 +348,78 @@ else
   else
     echo "ok             skill_file_map (${#sfm_skills[@]} skills), skill_triggers (${#trigger_skills[@]} entries), stack coverage all valid"
   fi
+fi
+
+echo
+echo "== skills-log field parity =="
+
+LOG_SKILLS="$SOURCE_ROOT/hooks/log-skills.sh"
+SKILLS_REPORT="$SOURCE_ROOT/bin/skills-report.sh"
+field_parity_failed=0
+
+# Field subset of skills.jsonl (emitted by log-skills.sh and
+# inject-context.sh's synthetic required-skill/suggested-skill entries) that
+# skills-report.sh actually consumes for classification. Not the full emitted
+# set -- hook/cwd/command_args/command_source are emitted but never read by
+# the report, so a rename there carries no drift risk worth checking.
+# skills-report.sh must reference each field below verbatim in its jq
+# filters, or a future rename in the emitter silently breaks the report
+# instead of erroring.
+skills_log_fields=(
+  ts event session_id expansion_type command_name skill_file tool_name
+)
+
+# Word-boundary match, not plain substring: a bare `grep -qF` on a short name
+# like "ts" also matches inside "tests"/"Reports"/"counts", which would pass
+# this check even after the real field reference was renamed away.
+for field in "${skills_log_fields[@]}"; do
+  if [[ -f "$LOG_SKILLS" ]] && ! grep -qE "\\b${field}\\b" "$LOG_SKILLS"; then
+    echo "missing-field  log-skills.sh no longer emits '$field' -- update the canonical list"
+    field_parity_failed=1
+  fi
+  if [[ -f "$SKILLS_REPORT" ]] && ! grep -qE "\\b${field}\\b" "$SKILLS_REPORT"; then
+    echo "missing-field  skills-report.sh: '$field'"
+    field_parity_failed=1
+  fi
+done
+
+if ((field_parity_failed)); then
+  exit_code=1
+else
+  echo "ok             ${#skills_log_fields[@]} skills.jsonl fields referenced in both log-skills.sh and skills-report.sh"
+fi
+
+echo
+echo "== audit-verify field parity =="
+
+MARKDOWN_REPORT="$SOURCE_ROOT/skills/markdown-report/SKILL.md"
+AUDIT_VERIFY="$SOURCE_ROOT/skills/audit-verify/SKILL.md"
+verify_parity_failed=0
+
+# audit-verify's step 3 parses these per-finding fields out of a
+# markdown-report-shaped input report. Adding a field to markdown-report's
+# required shape without updating audit-verify's parser (or vice versa)
+# silently breaks the re-check.
+finding_fields=(Severity Location What "Why it matters" Fix Refs)
+
+# Word-boundary match, not plain substring: short names like "What" or "Fix"
+# also match inside unrelated words, which would pass this check even after
+# the real field name was renamed away.
+for field in "${finding_fields[@]}"; do
+  if [[ -f "$MARKDOWN_REPORT" ]] && ! grep -qE "\\b${field}\\b" "$MARKDOWN_REPORT"; then
+    echo "missing-field  markdown-report/SKILL.md no longer documents '$field'"
+    verify_parity_failed=1
+  fi
+  if [[ -f "$AUDIT_VERIFY" ]] && ! grep -qE "\\b${field}\\b" "$AUDIT_VERIFY"; then
+    echo "missing-field  audit-verify/SKILL.md: '$field'"
+    verify_parity_failed=1
+  fi
+done
+
+if ((verify_parity_failed)); then
+  exit_code=1
+else
+  echo "ok             ${#finding_fields[@]} per-finding fields referenced in both markdown-report and audit-verify"
 fi
 
 exit "$exit_code"

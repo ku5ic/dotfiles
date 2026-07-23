@@ -46,7 +46,7 @@ if [[ -s "$cache_file" ]]; then
   echo "<repo-context>"
   cat "$cache_file"
   echo "branch (at session start): $(git -C "$project_root" branch --show-current 2>/dev/null || echo unknown)"
-  dirty="$(git -C "$project_root" status --porcelain 2>/dev/null | wc -l | tr -d ' ')"
+  dirty="$(git -C "$project_root" status --porcelain 2>/dev/null | wc -l | tr -d ' ')" || dirty="unknown"
   echo "dirty-files (at session start): $dirty"
   echo "</repo-context>"
 fi
@@ -104,7 +104,10 @@ emit_required_skills() {
 
 # Emit action-conditioned skill suggestions derived from the detected stack.
 # Skills already in global_skills are excluded (they are required, not suggested).
-# Suggested skills are not logged here; log-skills.sh captures them on invocation.
+# Logged as event:"suggested-skill" (mirrors emit_required_skills' shape) so
+# skills-report.sh can measure whether a surfaced suggestion was ever acted
+# on -- this records "surfaced", not "loaded"; log-skills.sh's Skill-tool/Read
+# entries are still the only record of an actual invocation.
 emit_suggested_skills() {
   local cache="$1"
   local yml="$HOME/.claude/_stacks.yml"
@@ -133,6 +136,22 @@ emit_suggested_skills() {
   done
   echo "Patterns skills are also enforced automatically: the first edit to a matching file type will be blocked until the relevant skill is loaded."
   echo "</suggested-skills>"
+
+  if command -v jq >/dev/null 2>&1; then
+    local log_dir ts
+    log_dir="$HOME/.claude/logs"
+    mkdir -p "$log_dir"
+    ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    for sk in "${suggested[@]}"; do
+      jq -cn \
+        --arg ts "$ts" \
+        --arg sess "$session_id" \
+        --arg cwd "$cwd" \
+        --arg skill "$sk" \
+        '{ts:$ts,hook:"inject-context.sh",event:"suggested-skill",session_id:$sess,cwd:$cwd,expansion_type:null,command_name:null,command_args:null,command_source:null,skill_file:$skill,tool_name:null}' \
+        >>"$log_dir/skills.jsonl"
+    done
+  fi
 }
 
 # emit_tooling_block <root>

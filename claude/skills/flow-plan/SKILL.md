@@ -47,6 +47,10 @@ Write a plan to `~/.claude/scratch/plan-<project-name>-<task-slug>-<YYYYMMDD-HHM
 
 Print the path. Do not implement.
 
+## Critique
+
+Skip this step when `plan-shape: mechanical`. Otherwise, dispatch the `plan-critic` agent (Agent tool, subagent_type: plan-critic, foreground) with the plan's absolute path. It reads the codebase, not only the plan, and reports findings against the plan's cited precedent, its design-integrity answers, verifiability, phase independence, non-goals, rollback, and unstated assumptions. Do not act on its findings by revising the plan yourself -- present the plan and the critique together, unmodified, at the Stop below.
+
 ## Stop
 
-Present the plan and wait for approval, changes, or rejection. Do not move to implement.
+Present the plan (and its critique, unless skipped for a mechanical plan) and wait for approval, changes, or rejection. Do not move to implement.

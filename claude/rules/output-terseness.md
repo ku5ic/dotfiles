@@ -33,3 +33,7 @@ On request ("terse mode", "shortest version", "just the answer"): compress furth
 Code, commits, and PR text stay full quality regardless of mode.
 
 Off on "normal mode" or "stop terse mode". Persists until then; no automatic revert after a topic change.
+
+## Relation to Response length
+
+`CLAUDE.md`'s `## Response length` section predates this file's `Terse mode` by name but not by intent: the four-line ceiling described there is the default floor-to-ceiling behavior for every response, not a target to approach. `Terse mode` compresses further below that default: fragments over sentences, no connective prose, examples dropped unless asked. `Terse mode` still requires an explicit request to turn on and stays on until explicitly turned off, exactly as described above.

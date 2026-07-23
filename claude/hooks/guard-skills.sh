@@ -76,11 +76,17 @@ skills_log="$HOME/.claude/logs/skills.jsonl"
 declare -a missing=()
 for sk in "${required_skills[@]}"; do
   found=""
-  # Accept: exact skill_file match (PreToolUse Skill or required-skill events) OR
-  # path-based match (PostToolUse Read of <skill>/SKILL.md, which is the reliable
-  # logged signal when the Skill tool loads a skill and Claude reads its file).
+  # Accept: exact skill_file match (PreToolUse/PostToolUse Skill) OR
+  # path-based match (PostToolUse Read of <skill>/SKILL.md, the reliable
+  # logged signal when the Skill tool loads a skill and Claude reads its
+  # file). Excludes inject-context.sh's synthetic required-skill/
+  # suggested-skill markers, which only mean "surfaced to the model", not
+  # "loaded" -- without this exclusion either marker alone would satisfy the
+  # check for a skill that was never actually invoked.
   found="$(jq -rs --arg sid "$session_id" --arg sk "$sk" \
-    'any(.[]; .session_id == $sid and .skill_file != null and (
+    'any(.[]; .session_id == $sid and .skill_file != null
+      and .event != "required-skill" and .event != "suggested-skill"
+      and (
       .skill_file == $sk or
       (.skill_file | contains("/skills/" + $sk + "/"))
     ))' \
