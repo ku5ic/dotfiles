@@ -110,12 +110,12 @@ refresh_stack_cache_if_stale() {
   local newest_sentinel=0 f m
   for f in "${STACK_DETECT_FILES[@]/#/$project_root/}"; do
     [[ -f "$f" ]] || continue
-    m="$(stat -f '%m' "$f" 2>/dev/null || echo 0)"
+    m="$(stat -c '%Y' "$f" 2>/dev/null || stat -f '%m' "$f" 2>/dev/null || echo 0)"
     ((m > newest_sentinel)) && newest_sentinel="$m"
   done
 
   local cache_mtime=0
-  [[ -f "$cache_file" ]] && cache_mtime="$(stat -f '%m' "$cache_file" 2>/dev/null || echo 0)"
+  [[ -f "$cache_file" ]] && cache_mtime="$(stat -c '%Y' "$cache_file" 2>/dev/null || stat -f '%m' "$cache_file" 2>/dev/null || echo 0)"
 
   if ((cache_mtime < newest_sentinel)) || [[ ! -s "$cache_file" ]]; then
     local tmp
