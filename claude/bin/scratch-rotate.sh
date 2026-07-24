@@ -19,11 +19,14 @@ max_lines="${2:-10000}"
 
 [[ -d "$scratch_dir" ]] || exit 0
 
-# Only prune .md artifacts. Hidden marker files (.injected-*) are session
-# scoped and small; leave them alone.
+# Prune .md artifacts (configurable retention) and stale .injected-* session
+# markers (fixed 1-day retention - they're only needed to dedupe injection
+# within a session's lifetime, far shorter than artifact retention).
 removed="$(find "$scratch_dir" -type f -name '*.md' -mtime +"$days" -print -delete | wc -l | tr -d ' ')"
+markers_removed="$(find "$scratch_dir" -maxdepth 1 -type f -name '.injected-*' -mtime +1 -print -delete | wc -l | tr -d ' ')"
 
 echo "scratch-rotate: pruned $removed artifact(s) older than ${days}d from $scratch_dir"
+echo "scratch-rotate: pruned $markers_removed session marker(s) older than 1d from $scratch_dir"
 
 if [[ -f "$skills_log" ]]; then
   total="$(wc -l <"$skills_log" | tr -d ' ')"

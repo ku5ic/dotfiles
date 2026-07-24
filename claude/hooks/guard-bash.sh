@@ -27,6 +27,22 @@ block() {
   exit 2
 }
 
+# Forces the interactive permission prompt via structured JSON output, for
+# cases settings.json prefix patterns can't express (a subcommand's flagged
+# and unflagged forms sharing one prefix). Unlike block(), this doesn't deny
+# the call - it hands the decision back to the user, same as a settings ask
+# rule, just scoped to the one case this hook can detect.
+force_ask() {
+  jq -cn --arg reason "$1" '{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "ask",
+      permissionDecisionReason: $reason
+    }
+  }'
+  exit 0
+}
+
 _cwd="$(printf '%s' "$payload" | jq -r '.cwd // ""' 2>/dev/null || true)"
 norm="$(printf '%s' "$cmd" | tr '\t' ' ' | tr -s ' ')"
 
@@ -233,6 +249,12 @@ _check_segment() {
         block "force push to a protected branch" "git-force-push-protected"
       fi
     fi
+    # Any push (force or not) to a protected branch. Branch token must be
+    # bounded by whitespace/start/end so it matches the actual ref, not a
+    # substring inside a longer branch name (feat/production-config, fix/mainline).
+    if [[ "$seg" =~ git[[:space:]]+push[[:space:]] ]] && [[ "$seg" =~ (^|[[:space:]])(origin/)?(main|master|develop|production|release)([[:space:]]|$) ]]; then
+      block "push to a protected branch; use a feature branch" "git-push-protected"
+    fi
     if [[ "$seg" =~ git[[:space:]]+reset[[:space:]]+--hard[[:space:]]+(origin/)?(main|master|develop|production) ]]; then
       block "git reset --hard on protected branch" "git-reset-hard"
     fi
@@ -330,6 +352,17 @@ _check_segment() {
     fi
     ;;
   npm | npx | pnpm | yarn | bun | bunx | pip | pip3 | poetry | uv | pipenv)
+    # pnpm install without --frozen-lockfile can change the lockfile; force a
+    # prompt. settings.json can't express "this prefix except with this flag",
+    # so npm ci (no ambiguous prefix overlap) moves to allow directly, while
+    # pnpm install's ask entry is removed and replaced by this hook check.
+    if [[ "$lead" == "pnpm" ]]; then
+      local _pnpm_rest="${seg#pnpm}"
+      _pnpm_rest="${_pnpm_rest#"${_pnpm_rest%%[![:space:]]*}"}"
+      if [[ "$_pnpm_rest" =~ ^(install|i)([[:space:]]|$) ]] && [[ ! "$seg" =~ (^|[[:space:]])--frozen-lockfile([[:space:]]|$) ]]; then
+        force_ask "pnpm install without --frozen-lockfile can change the lockfile; confirm before running"
+      fi
+    fi
     # Global install guards (JS package managers only).
     if [[ "$lead" =~ ^(npm|pnpm|yarn)$ ]] && [[ "$seg" =~ (npm|pnpm|yarn)[[:space:]]+(install|add|i)[[:space:]]+.*(-g|--global) ]]; then
       block "global package install. Use a project-local install or asdf shim." "pkg-global-install"

@@ -414,3 +414,116 @@ run_guard() {
   run run_guard ':(){ :|:& };:'
   [ "$status" -eq 2 ]
 }
+
+# git-push-protected: any push (force or not) to a protected branch
+
+@test "block: git push (non-force) to main" {
+  run run_guard 'git push origin main'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"push to a protected branch"* ]]
+}
+
+@test "block: git push (non-force) to master" {
+  run run_guard 'git push origin master'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git push (non-force) to develop" {
+  run run_guard 'git push origin develop'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git push (non-force) to production" {
+  run run_guard 'git push origin production'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git push (non-force) to release" {
+  run run_guard 'git push origin release'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git push --set-upstream to main (branch token appears mid-command)" {
+  run run_guard 'git push --set-upstream origin main'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git push with origin/ prefixed branch token" {
+  run run_guard 'git push origin origin/main'
+  [ "$status" -eq 2 ]
+}
+
+@test "allow: git push to a branch that embeds a protected name as a prefix (feat/production-config)" {
+  run run_guard 'git push origin feat/production-config'
+  [ "$status" -eq 0 ]
+}
+
+@test "allow: git push to a branch that embeds a protected name as a substring (fix/mainline)" {
+  run run_guard 'git push origin fix/mainline'
+  [ "$status" -eq 0 ]
+}
+
+@test "allow: git push to a branch name with a protected name as a prefix and trailing suffix (release-2024)" {
+  run run_guard 'git push origin release-2024'
+  [ "$status" -eq 0 ]
+}
+
+@test "allow: git push to an ordinary feature branch" {
+  run run_guard 'git push origin feat/thing'
+  [ "$status" -eq 0 ]
+}
+
+@test "allow: bare git push with no branch token in the command" {
+  run run_guard 'git push'
+  [ "$status" -eq 0 ]
+}
+
+# pnpm install --frozen-lockfile: force_ask when the flag is missing
+
+@test "ask: pnpm install without any flags" {
+  run run_guard 'pnpm install'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
+}
+
+@test "allow: pnpm install --frozen-lockfile passes straight through (no ask JSON)" {
+  run run_guard 'pnpm install --frozen-lockfile'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "ask: pnpm install --no-frozen-lockfile is not mistaken for satisfying the flag" {
+  run run_guard 'pnpm install --no-frozen-lockfile'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
+}
+
+@test "ask: pnpm install --frozen-lockfile-extra is not mistaken for satisfying the flag (trailing boundary)" {
+  run run_guard 'pnpm install --frozen-lockfile-extra'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
+}
+
+@test "allow: pnpm installer is not mistaken for the install subcommand (leading boundary)" {
+  run run_guard 'pnpm installer'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "ask: pnpm i (install alias) without any flags" {
+  run run_guard 'pnpm i'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
+}
+
+@test "allow: pnpm i --frozen-lockfile passes straight through (no ask JSON)" {
+  run run_guard 'pnpm i --frozen-lockfile'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "allow: pnpm add does not trigger the frozen-lockfile check" {
+  run run_guard 'pnpm add react'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}

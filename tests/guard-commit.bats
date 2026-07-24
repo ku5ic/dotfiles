@@ -8,10 +8,35 @@
 
 setup() {
   HOOK="$BATS_TEST_DIRNAME/../claude/hooks/guard-commit.sh"
+  STUB_DIR="$BATS_TEST_TMPDIR/stubs"
+  mkdir -p "$STUB_DIR"
 }
 
 run_guard_commit() {
   printf '%s' "$1" | jq -R '{tool_input: {command: .}}' | "$HOOK"
+}
+
+# stub_gitleaks <exit_code>
+# Creates an executable at $STUB_DIR/gitleaks that ignores its arguments and
+# exits with <exit_code>. Callers prepend $STUB_DIR onto PATH so the hook's
+# `command -v gitleaks` / invocation resolves to this stub instead of any
+# real gitleaks binary, decoupling the exit-code branches from real repo state.
+stub_gitleaks() {
+  cat >"$STUB_DIR/gitleaks" <<EOF
+#!/usr/bin/env bash
+exit ${1:-0}
+EOF
+  chmod +x "$STUB_DIR/gitleaks"
+}
+
+run_guard_commit_stubbed() {
+  printf '%s' "$1" | jq -R '{tool_input: {command: .}}' | PATH="$STUB_DIR:$PATH" "$HOOK"
+}
+
+# run_guard_commit_stubbed_cwd <cwd> <command>  same as above but sets
+# payload.cwd, for asserting the hook forwards it to the gitleaks invocation.
+run_guard_commit_stubbed_cwd() {
+  jq -n --arg cwd "$1" --arg cmd "$2" '{cwd: $cwd, tool_input: {command: $cmd}}' | PATH="$STUB_DIR:$PATH" "$HOOK"
 }
 
 # passthrough: hook only inspects git commit commands
@@ -100,4 +125,97 @@ run_guard_commit() {
 @test "block: in this commit phrasing" {
   run run_guard_commit 'git commit -m "in this commit we add the API"'
   [ "$status" -eq 2 ]
+}
+
+# gitleaks staged-secret scan: exit-code branching (0 = clean, 1 = leak,
+# anything else = operational error, fails open)
+
+@test "allow: gitleaks exits 0 (clean scan)" {
+  stub_gitleaks 0
+  run run_guard_commit_stubbed 'git commit -m "feat: add foo"'
+  [ "$status" -eq 0 ]
+}
+
+@test "block: gitleaks exits 1 (leak found)" {
+  stub_gitleaks 1
+  run run_guard_commit_stubbed 'git commit -m "feat: add foo"'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"gitleaks flagged a secret"* ]]
+}
+
+@test "allow (fail open): gitleaks exits a non-0/1 operational error code" {
+  stub_gitleaks 2
+  run run_guard_commit_stubbed 'git commit -m "feat: add foo"'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"gitleaks exited 2"* ]]
+}
+
+@test "allow: gitleaks not installed, scan is skipped silently" {
+  local minimal_path="$BATS_TEST_TMPDIR/no_gitleaks"
+  mkdir -p "$minimal_path"
+  local bin
+  for bin in cat jq grep sed head dirname; do
+    ln -s "$(command -v "$bin")" "$minimal_path/$bin"
+  done
+  local bash_bin
+  bash_bin="$(command -v bash)"
+  run env PATH="$minimal_path" "$bash_bin" "$HOOK" <<<'{"tool_input":{"command":"git commit -m \"feat: add foo\""}}'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+# Placement regression: the scan must run before the subject-parsing early
+# exit, so it fires even for commits whose -m message doesn't match the
+# quoted-message extraction regex (e.g. no surrounding quotes at all).
+
+@test "block: gitleaks leak is still caught with an unquoted -m message" {
+  stub_gitleaks 1
+  run run_guard_commit_stubbed 'git commit -m foo'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"gitleaks flagged a secret"* ]]
+}
+
+@test "allow: unquoted -m message with a clean gitleaks scan still passes through" {
+  stub_gitleaks 0
+  run run_guard_commit_stubbed 'git commit -m foo'
+  [ "$status" -eq 0 ]
+}
+
+@test "block: gitleaks leak is still caught with no -m at all (--allow-empty)" {
+  stub_gitleaks 1
+  run run_guard_commit_stubbed 'git commit --allow-empty'
+  [ "$status" -eq 2 ]
+}
+
+@test "gitleaks is invoked against payload .cwd, not the hook's own cwd" {
+  local args_file="$BATS_TEST_TMPDIR/gitleaks.args"
+  cat >"$STUB_DIR/gitleaks" <<EOF
+#!/usr/bin/env bash
+echo "\$@" > "$args_file"
+exit 0
+EOF
+  chmod +x "$STUB_DIR/gitleaks"
+  local fixture_dir="$BATS_TEST_TMPDIR/fixture-repo"
+  mkdir -p "$fixture_dir"
+  run run_guard_commit_stubbed_cwd "$fixture_dir" 'git commit -m "feat: add foo"'
+  [ "$status" -eq 0 ]
+  [[ "$(cat "$args_file")" == *"$fixture_dir"* ]]
+}
+
+# Entry guard regression: "git -C <dir> commit" must still be recognized as a
+# commit invocation. A prior version of the guard required "git" and "commit"
+# to be whitespace-adjacent, so the -C global flag broke the match and the
+# hook exited before the gitleaks scan ever ran.
+
+@test "block: git -C <dir> commit is still caught by the entry guard (gitleaks leak)" {
+  stub_gitleaks 1
+  run run_guard_commit_stubbed "git -C $BATS_TEST_TMPDIR commit -m test"
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"gitleaks flagged a secret"* ]]
+}
+
+@test "allow: plain git commit (no -C) is unaffected by the -C entry guard fix" {
+  stub_gitleaks 0
+  run run_guard_commit_stubbed 'git commit -m test'
+  [ "$status" -eq 0 ]
 }

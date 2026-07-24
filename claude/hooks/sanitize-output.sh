@@ -15,6 +15,7 @@ file "$path" 2>/dev/null | grep -qiE 'text|json|xml|html|empty' || exit 0
 
 case "$path" in
 *.po | *.pot | *.svg | *.html.j2 | *.j2 | *.jinja | *.jinja2 | *.hbs | *.erb | *.liquid) exit 0 ;;
+*/locales/* | */messages/* | */i18n/* | *.snap | */fixtures/* | */__snapshots__/* | */testdata/*) exit 0 ;;
 esac
 
 LC_ALL=C sed -i '' \
