@@ -54,7 +54,7 @@ content_for() {
 
 @test "renders model when present" {
   run run_subagent_statusline "$(envelope '{"id":"t1","name":"scout","status":"running","model":"claude-opus-4-8"}')"
-  [ "$(content_for "$output" t1)" = "scout [running] claude-opus-4-8" ]
+  [ "$(content_for "$output" t1)" = "scout [running]  claude-opus-4-8" ]
 }
 
 @test "omits model when absent (pre-v2.1.205 payload)" {
@@ -105,7 +105,7 @@ content_for() {
 
 @test "full payload renders every segment in order" {
   run run_subagent_statusline "$(envelope '{"id":"t1","name":"scout","status":"running","model":"claude-opus-4-8","contextWindowSize":200000,"tokenCount":45000,"effort":"high"}')"
-  [ "$(content_for "$output" t1)" = "scout [running] claude-opus-4-8 effort:high 22%" ]
+  [ "$(content_for "$output" t1)" = "scout [running]  claude-opus-4-8  effort:high  22%" ]
 }
 
 @test "falls back to label when name is absent" {
