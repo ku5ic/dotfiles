@@ -387,6 +387,15 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/bin/statusline.sh",
+    "padding": 0
+  },
+  "subagentStatusLine": {
+    "type": "command",
+    "command": "~/.claude/bin/subagent-statusline.sh"
+  },
   "enabledPlugins": {
     "lua-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
@@ -412,17 +421,9 @@
     }
   },
   "spinnerTipsEnabled": false,
+  "awaySummaryEnabled": false,
   "theme": "auto",
   "editorMode": "vim",
   "agentPushNotifEnabled": true,
-  "awaySummaryEnabled": false,
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/bin/statusline.sh",
-    "padding": 0
-  },
-  "subagentStatusLine": {
-    "type": "command",
-    "command": "~/.claude/bin/subagent-statusline.sh"
-  }
+  "model": "sonnet"
 }
