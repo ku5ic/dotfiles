@@ -12,6 +12,7 @@
       "Skill(audit-doc-drift)",
       "Skill(audit-perf)",
       "Skill(audit-security)",
+      "Skill(audit-verify)",
       "Skill(flow-checks)",
       "Skill(flow-fix)",
       "Skill(flow-quick)",

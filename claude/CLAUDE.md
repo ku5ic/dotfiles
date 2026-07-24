@@ -4,7 +4,7 @@ Global instructions for Claude Code. Applies to every repository. Project level 
 
 ## Required skills
 
-Skills surface in three layers. Required (`<required-skills>` block): the global core -- invoke every listed skill immediately via the Skill tool before any other action; blocking, no exceptions. Suggested (`<suggested-skills>` block): action-conditioned stack skills -- each line names the trigger action; load the skill when you are about to take that action. Enforced: `guard-skills` blocks the first edit to any file type mapped in `_stacks.yml` until the relevant patterns skill is loaded for the session. The source of truth for all skill mappings and trigger phrases is `_stacks.yml`.
+Skills surface in three layers. Required (`<required-skills>` block): the global core -- invoke every listed skill immediately via the Skill tool before any other action; blocking, no exceptions. Suggested (`<suggested-skills>` block): action-conditioned stack skills -- each line names the trigger action; load the skill when you are about to take that action. Enforced: `guard-skills` blocks the first read or edit of any file type mapped in `_stacks.yml` until the relevant patterns skill is loaded for the session. The source of truth for all skill mappings and trigger phrases is `_stacks.yml`.
 
 ## Project boot protocol
 
@@ -191,7 +191,7 @@ This does not license extra words. If a tone change adds a line, it is the wrong
 Procedures live as skills under `$HOME/.claude/skills/<group>-<name>/SKILL.md`, grouped by name prefix into five groups. Invocation uses the `/<group>-<name>` form (for example `/flow-checks`). Commands and skills are one merged system, so the richer skill frontmatter (`disable-model-invocation`, `context: fork`, `agent`) applies. The canonical inventory is the output of `/skills` inside Claude Code.
 
 - `flow` - the default feature workflow: preflight, plan, implement, test, review, plus fix, debug, explore, quick, resume, checks, deps
-- `audit` - targeted audits invoked when scope warrants: a11y, claude, debt, doc-drift, perf, security
+- `audit` - targeted audits invoked when scope warrants: a11y, claude, debt, doc-drift, perf, security, verify
 - `meta` - authoring and reflection: feature, prompt, retro
 - `write` - outward-facing communication: commit, devnote, explainer, pr, release-notes, review-comment, stakeholder
 - `question` - read-only Q&A tiered by reasoning depth: hard (opus/high), medium (sonnet/high), easy (sonnet/low)
@@ -224,4 +224,4 @@ Twelve subagent capability shells live under `$HOME/.claude/agents/`. The canoni
 - `doc-drift-auditor` - detects drift between code and its documentation (invoked by `/audit-doc-drift`)
 - `plan-critic` - adversarially reviews a plan artifact against the actual repo, not just its own internal consistency (invoked by `/flow-plan` after the plan is written)
 
-Two operational facts: agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the `UserPromptSubmit` hook injection, so each shell self-loads stack context via `~/.claude/bin/agent-context.sh` at startup, with `guard-skills` as the enforcement floor for editing agents. Forked skills (`context: fork`) run their whole body inside the named agent; the inline procedures, including `flow-plan` and `flow-implement`, stay in the main conversation and keep their phase-boundary stops there.
+Two operational facts: agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the `UserPromptSubmit` hook injection, so each shell self-loads stack context via `~/.claude/bin/agent-context.sh` at startup, with `guard-skills` as the enforcement floor for reading or editing agents. Forked skills (`context: fork`) run their whole body inside the named agent; the inline procedures, including `flow-plan` and `flow-implement`, stay in the main conversation and keep their phase-boundary stops there.
