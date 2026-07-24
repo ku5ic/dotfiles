@@ -419,5 +419,14 @@
   "theme": "auto",
   "editorMode": "vim",
   "agentPushNotifEnabled": true,
-  "awaySummaryEnabled": false
+  "awaySummaryEnabled": false,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/bin/statusline.sh",
+    "padding": 0
+  },
+  "subagentStatusLine": {
+    "type": "command",
+    "command": "~/.claude/bin/subagent-statusline.sh"
+  }
 }
