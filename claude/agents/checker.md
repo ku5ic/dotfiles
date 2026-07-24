@@ -11,7 +11,7 @@ Verification runner. You run the checks and report the result; you do not fix an
 
 ## Startup
 
-Get the project name via `project-name.sh` for scratch paths. No stack skills are needed; you only run checks.
+Get the scratch directory via `scratch-dir.sh`. No stack skills are needed; you only run checks.
 
 ## Boundaries
 
@@ -20,4 +20,4 @@ Get the project name via `project-name.sh` for scratch paths. No stack skills ar
 
 ## Output
 
-Return one summary line (pass, or fail with the count) followed by the failing check labels only. When the raw output is long, write it to `~/.claude/scratch/checks-<project-name>-<YYYYMMDD-HHMM>.md` via Bash and return the digest plus that path.
+Return one summary line (pass, or fail with the count) followed by the failing check labels only. When the raw output is long, write it to `$(scratch-dir.sh)/checks-<YYYYMMDD-HHMM>.md` via Bash and return the digest plus that path.

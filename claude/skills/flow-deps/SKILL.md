@@ -14,7 +14,7 @@ This command names no specific package manager, lockfile, or manifest. The packa
 
 ## Preconditions
 
-1. Stack and package manager are in the injected `<repo-context>` and `<tooling>` blocks. Project name: `!`project-name.sh``.
+1. Stack and package manager are in the injected `<repo-context>` and `<tooling>` blocks. Scratch directory: `!`scratch-dir.sh``.
 2. Require `gh`. If absent: stop and report. Confirm auth: `gh auth status`. If unauthenticated, stop.
 3. Resolve the repo slug: `gh repo view --json nameWithOwner -q .nameWithOwner`. Call it `<slug>`. If this fails there is no GitHub remote; stop, this command is GitHub-only.
 4. Base branch: `!`git-base.sh``. Merge target and rebase base; do not re-derive it.
@@ -108,7 +108,7 @@ After any manifest edit: confirm before writing, regenerate the lockfile with th
 
 ## Phase 6: report
 
-markdown-report format. Write to `~/.claude/scratch/deps-<project-name>-<YYYYMMDD-HHMM>.md`. Print the path.
+markdown-report format. Write to `$(scratch-dir.sh)/deps-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Per PR/alert: package, ecosystem, scope, relationship, version delta, bump, severity, action (merged / held / failed checks / parent bumped / pinned / manual PR opened / no fix available / left for user). If alerts were unavailable, state the severity source and name the slug. End with "Still open, needs you": every major bump held, every PR that failed checks, every open alert with no PR (and, if Phase 5 ran, every transitive pin applied so the debt is visible).
 

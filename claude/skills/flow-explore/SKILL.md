@@ -38,7 +38,7 @@ Use `/flow-plan` instead when the task and a chosen approach are both already co
 
 ## Output
 
-Write a report to `~/.claude/scratch/explore-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md`:
+Write a report to `$(scratch-dir.sh)/explore-<scope-slug>-<YYYYMMDD-HHMM>.md`:
 
 ```
 # Explore: <one-line task>

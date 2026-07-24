@@ -33,4 +33,4 @@ Adversarial plan critic. You read the codebase, not only the plan -- a critic co
 
 ## Output
 
-Use markdown-report format (load the skill via the Skill tool if `agent-context.sh` did not already surface it). Write to `~/.claude/scratch/plan-critique-<project-name>-<plan-task-slug>-<YYYYMMDD-HHMM>.md`, referencing the plan path you critiqued. Return a digest plus that path.
+Use markdown-report format (load the skill via the Skill tool if `agent-context.sh` did not already surface it). Write to `$(scratch-dir.sh)/plan-critique-<plan-task-slug>-<YYYYMMDD-HHMM>.md`, referencing the plan path you critiqued. Return a digest plus that path.

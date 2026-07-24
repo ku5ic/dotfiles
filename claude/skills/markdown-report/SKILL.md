@@ -51,10 +51,7 @@ Stack: <line from $HOME/.claude/bin/detect-stack.sh, if applicable>
 - Code snippets use fenced blocks with language tag.
 - No ASCII decoration, no banner comments, no emoji.
 - Use straight quotes, plain ASCII punctuation.
-- File naming: `~/.claude/scratch/<kind>-<project-name>-<target-slug>-<YYYYMMDD-HHMM>.md`.
-- `<project-name>` comes from `$HOME/.claude/bin/project-name.sh`. Slugified basename of git repo root.
-- Always write to `~/.claude/scratch/` (home, absolute), never `.claude/scratch/` (cwd-relative).
-- For kinds without a target slug, omit it: `<kind>-<project-name>-<YYYYMMDD-HHMM>.md`.
+- File naming and location: per `~/.dotfiles/claude/rules/scratch-conventions.md` - resolve the directory via `scratch-dir.sh`, then name it `<kind>-<target-slug>-<YYYYMMDD-HHMM>.md`.
 - Always print the absolute path at the end of execution so the user can open it.
 
 ## Summary line rubric
@@ -73,7 +70,7 @@ The "overall health in one word" at the end of the Summary helps quick scanning:
 - `failure`: omitting the `## Summary` section or the `## Findings` section when findings exist.
 - `warning`: inventing severity levels outside `failure`, `warning`, `info` -- e.g. `critical`, `high`, `medium`, `low`, `error`. The rubric has three levels; anything else breaks downstream tooling that parses reports.
 - `warning`: leaving placeholder text in empty sections (e.g. `<none>`, `N/A`) rather than omitting the section.
-- `warning`: using a cwd-relative path (`.claude/scratch/`) instead of the home-absolute path (`~/.claude/scratch/`). Cwd-relative paths break when the user opens the link from a different directory.
+- `warning`: hardcoding a literal `~/.claude/scratch/` or `.claude/scratch/` path instead of resolving it via `scratch-dir.sh`. The resolved directory is project-scoped inside a recognized project and home-fallback otherwise - a literal is wrong in whichever case it doesn't match.
 - `warning`: not printing the absolute file path after writing -- the user cannot open the file without it.
 - `info`: not sorting findings by severity (failures first, then warnings, then info).
 

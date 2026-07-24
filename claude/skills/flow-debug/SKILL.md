@@ -26,7 +26,7 @@ Use `/flow-plan` instead when root cause is already understood but the fix is st
    - State the first hypothesis in one sentence before checking it: "The bug is caused by X in file Y at line Z."
    - Test the hypothesis with the least invasive probe available, in order: read the code more carefully, run an existing test that exercises the path, `git bisect` if it's a regression with clean history, then a single targeted log line or assertion reverted after use.
    - If confirmed, stop with the hypothesis. If wrong, revise and repeat, capped at 3 hypothesis cycles; if exhausted, report what was ruled out.
-   It has no MCP tools by design - it must get fully resolved plain text, never a link.
+     It has no MCP tools by design - it must get fully resolved plain text, never a link.
 
 3. Take the debugger's returned root cause, evidence, and proposed fix location and continue to Output below.
 
@@ -39,7 +39,7 @@ Use `/flow-plan` instead when root cause is already understood but the fix is st
 
 ## Output
 
-Write a debug report to `~/.claude/scratch/debug-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md` using this structure:
+Write a debug report to `$(scratch-dir.sh)/debug-<scope-slug>-<YYYYMMDD-HHMM>.md` using this structure:
 
 ```
 # Debug: <one-line description>

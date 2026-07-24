@@ -40,7 +40,7 @@ The runner prints each eval's prompt, fixture paths, and expected output. Workfl
 
 1. Copy the prompt into Claude Code or claude.ai with the relevant skill loaded.
 2. Compare the produced output against the `expected_output` description.
-3. Record pass / fail / partial in `~/.claude/scratch/eval-<skill-name>-<YYYYMMDD-HHMM>.md`. Use the markdown-report skill format.
+3. Record pass / fail / partial in `$(scratch-dir.sh)/eval-<skill-name>-<YYYYMMDD-HHMM>.md`. Use the markdown-report skill format.
 
 ## Iteration ceiling
 
@@ -65,7 +65,7 @@ The schema in our `evals.json` is already compatible with skill-creator's toolin
 
 1. Create `scenarios/<skill-name>/evals.json` with at minimum three evals matching the schema above.
 2. Add fixtures under `fixtures/` as needed.
-3. Run all three evals and record baseline results in `~/.claude/scratch/`.
+3. Run all three evals and record baseline results in `$(scratch-dir.sh)`.
 
 ## Eval design rules
 

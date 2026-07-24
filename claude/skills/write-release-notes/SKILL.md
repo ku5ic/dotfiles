@@ -17,7 +17,7 @@ Commits on this branch but not on the base: !`git-log-from-base.sh "--no-merges"
 
 ## Procedure
 
-1. Get the project name: `!`project-name.sh``.
+1. Get the scratch directory: `!`scratch-dir.sh``.
 2. Interpret $ARGUMENTS:
    - If it looks like an explicit range (`ref..HEAD`, `sha1..sha2`): trust it. Pull commits with `git log --oneline --no-merges $ARGUMENTS`.
    - If it is a single ref (e.g. `develop`): use it as the explicit base. Pull commits with `git log --oneline --no-merges "$ARGUMENTS"..HEAD`.
@@ -29,7 +29,7 @@ Commits on this branch but not on the base: !`git-log-from-base.sh "--no-merges"
 
 ## Output file
 
-Write to `~/.claude/scratch/release-notes-<project-name>-<branch-or-range-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write to `$(scratch-dir.sh)/release-notes-<branch-or-range-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Structure:
 

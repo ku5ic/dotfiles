@@ -9,9 +9,9 @@ agent: general-purpose
 
 ## Procedure
 
-1. Get the project name: `!`project-name.sh``.
+1. Get the scratch directory: `!`scratch-dir.sh``.
 2. Parse $ARGUMENTS. If the first token resolves to an existing file, treat it as the report path and any remaining token as the PR author username. Otherwise treat the whole of $ARGUMENTS as the PR author username and leave the report path unset.
-3. If no report path was resolved, use the latest one for this project: `ls -t ~/.claude/scratch/review-<project-name>-*.md | head -1`. If none exist, stop and ask for a path (forked: follow CLAUDE.md's forked decision protocol instead of guessing).
+3. If no report path was resolved, use the latest one: `ls -t "$(scratch-dir.sh)"/review-\*.md | head -1`. If none exist, stop and ask for a path (forked: follow CLAUDE.md's forked decision protocol instead of guessing).
 4. Read the review report. It follows the markdown-report skill format: a severity rubric (failure/warning/info), each finding with file, line, "What", "Why it matters", and "Fix".
 5. Look for a PR number in the report's `Scope:` line, its filename, or body (patterns like `pr-123`, `PR #123`, `PR: 123`). If found, run `gh pr view <n> --json author,headRefOid`. Use `.author.login` as the auto-detected author and `.headRefOid` as the ref for links.
 6. Resolve the repo slug: `gh repo view --json nameWithOwner -q .nameWithOwner`. If this fails (no remote, no auth), fall back to plain backticked `path:line` text for every finding - no links - and say so at the top of the comment.
@@ -31,7 +31,7 @@ For every finding, build a real link instead of relying on GitHub to auto-linkif
 
 ## Output file
 
-Write to `~/.claude/scratch/review-comment-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md`. Print the path. `<scope-slug>` comes from the input report's `Scope:` line if present, otherwise from the input filename.
+Write to `$(scratch-dir.sh)/review-comment-<scope-slug>-<YYYYMMDD-HHMM>.md`. Print the path. `<scope-slug>` comes from the input report's `Scope:` line if present, otherwise from the input filename.
 
 Structure (GitHub markdown, no frontmatter, no metadata - copy-paste ready as a single PR comment):
 
@@ -55,5 +55,5 @@ Hey @<author>, <genuine one-line compliment about the work>.
 - Describe the problem and point at the fix; do not rewrite the actual code fix.
 - Do not re-run the review or invent findings not present in the source report.
 - No AI tells: no "I recommend", "it's worth noting", "let me know if you have questions".
-- The latest-report fallback in step 3 only ever searches this project's own reports (`review-<project-name>-*`); never fall back to another project's file.
+- The latest-report fallback in step 3 only ever searches the resolved scratch directory for the current project; never fall back to another project's file.
 - If the resolved input file does not exist or does not match the markdown-report format, say so and stop.

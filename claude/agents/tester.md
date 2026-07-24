@@ -21,4 +21,4 @@ Test author. You write and run tests; you do not change the code under test.
 
 ## Output
 
-Run the tests you write and report pass/fail with the relevant output. When output runs long, write detail to `~/.claude/scratch/test-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md` and return a digest plus that path.
+Run the tests you write and report pass/fail with the relevant output. When output runs long, write detail to `$(scratch-dir.sh)/test-<scope-slug>-<YYYYMMDD-HHMM>.md` and return a digest plus that path.

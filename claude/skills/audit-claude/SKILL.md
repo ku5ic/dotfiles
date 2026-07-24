@@ -10,9 +10,9 @@ disable-model-invocation: true
 
 Delegate the procedure below (steps 1 onward, through Rules) to the claude-config-auditor agent (Agent tool, subagent_type: claude-config-auditor, foreground). It executes every step itself and writes the report; relay its returned summary.
 
-1. Get the project name: `!`project-name.sh``. Note the date for the report filename.
+1. Get the scratch directory: `!`scratch-dir.sh``. Note the date for the report filename.
 2. Determine scope. If $ARGUMENTS contains `--area=<value>`, run only that pass. Otherwise run all five passes in order.
-3. Write findings incrementally to the report file (create it before starting Pass 1 with an empty findings list). Path: `~/.claude/scratch/audit-claude-<project-name>-<YYYYMMDD-HHMM>.md`.
+3. Write findings incrementally to the report file (create it before starting Pass 1 with an empty findings list). Path: `$(scratch-dir.sh)/audit-claude-<YYYYMMDD-HHMM>.md`.
 4. Run the passes below. Each pass is independent: if one fails to gather data, mark "Cannot be verified statically" and continue to the next pass.
 
 ### Pass 1: Skills
@@ -103,7 +103,7 @@ If Context7 returns no data for a library, mark "Cannot be verified via Context7
 
 ## Output
 
-Use markdown-report format. Write to `~/.claude/scratch/audit-claude-<project-name>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use markdown-report format. Write to `$(scratch-dir.sh)/audit-claude-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Report structure:
 

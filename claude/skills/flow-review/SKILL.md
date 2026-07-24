@@ -12,8 +12,8 @@ disable-model-invocation: true
 
 Delegate the procedure below (steps 1 onward, through Rules) to the reviewer agent (Agent tool, subagent_type: reviewer, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
 
-1. Get the project name via `project-name.sh`. Stack is in the repo context your startup produced (`agent-context.sh`).
-2. Mechanical-skip check. If the most recent plan for this project was marked `plan-shape: mechanical` and the implement step's verification passed cleanly (no failures recorded in the implement output), emit a one-line review ("verification passed, no findings, mechanical change per plan-<project-name>-<task-slug>-<HHMM>") and stop. Otherwise proceed to step 3. This short-circuit is opt-in by signal: when it fires, state that it fired and why; when it does not hold, fall through to the full review. `--full` in $ARGUMENTS skips this check and forces a full review.
+1. Get the scratch directory via `scratch-dir.sh`. Stack is in the repo context your startup produced (`agent-context.sh`).
+2. Mechanical-skip check. If the most recent plan for this project was marked `plan-shape: mechanical` and the implement step's verification passed cleanly (no failures recorded in the implement output), emit a one-line review ("verification passed, no findings, mechanical change per the plan report") and stop. Otherwise proceed to step 3. This short-circuit is opt-in by signal: when it fires, state that it fired and why; when it does not hold, fall through to the full review. `--full` in $ARGUMENTS skips this check and forces a full review.
 3. If the diff exceeds 500 changed lines, propose splitting the review into logical chunks before starting.
 4. Determine the review scope:
    - If $ARGUMENTS looks like a commit range (`main..HEAD`, SHA range): review that range
@@ -75,7 +75,7 @@ Did the change come with tests? Are the tests meaningful or shape-checking?
 
 ## Output
 
-Use the markdown-report skill format. Write to `~/.claude/scratch/review-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the markdown-report skill format. Write to `$(scratch-dir.sh)/review-<scope-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Severity rubric from markdown-report. Skip sections with no findings. Summary line rates overall health.
 

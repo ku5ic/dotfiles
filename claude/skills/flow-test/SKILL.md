@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 Delegate the procedure below (steps 1 onward, through Stop) to the tester agent (Agent tool, subagent_type: tester, foreground), passing the resolved arguments from step 0. It executes every step itself and reports results; relay its returned summary.
 
-1. Get the project name via `project-name.sh`. Identify the test runner from the repo context your startup produced (`agent-context.sh`).
+1. Get the scratch directory via `scratch-dir.sh`. Identify the test runner from the repo context your startup produced (`agent-context.sh`).
 2. Load the `test-patterns` skill and the patterns skill matching the detected stack (`react-patterns`, `django-patterns`, etc.) when relevant to the change.
 3. Identify what changed via `git diff HEAD` and `git status`. Scope testing to the delta.
 4. For each changed function, component, or endpoint:
@@ -54,7 +54,7 @@ Terminal only:
 - Run result
 - Coverage delta, if measured
 
-No scratch report for routine test passes. If something structurally wrong is found while testing (e.g. a function is untestable without refactor), write a short note to `~/.claude/scratch/test-findings-<project-name>-<YYYYMMDD-HHMM>.md`.
+No scratch report for routine test passes. If something structurally wrong is found while testing (e.g. a function is untestable without refactor), write a short note to `$(scratch-dir.sh)/test-findings-<YYYYMMDD-HHMM>.md`.
 
 ## Stop
 

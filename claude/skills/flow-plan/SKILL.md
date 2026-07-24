@@ -8,12 +8,12 @@ disable-model-invocation: true
 
 ## Prerequisites
 
-- A preflight report exists in `~/.claude/scratch/`. If not, run `/flow-preflight` first.
+- A preflight report exists in the resolved scratch directory (`scratch-dir.sh`). If not, run `/flow-preflight` first.
 - The task is stated clearly. If $ARGUMENTS is vague, ask one focused clarifying question before planning.
 
 ## Procedure
 
-1. Get the project name: `!`project-name.sh``. Read the most recent preflight report for this project: `ls -t ~/.claude/scratch/preflight-<project-name>-\*.md | head -1`. If none exists for this project, run /flow-preflight first.
+1. Get the scratch directory: `!`scratch-dir.sh``. Read the most recent preflight report: `ls -t "$(scratch-dir.sh)"/preflight-\*.md | head -1`. If none exists, run /flow-preflight first.
 2. Load the patterns skill matching the detected stack (react-patterns, django-patterns, etc.) if the task is in that area.
    - You may delegate noisy sub-work (broad code exploration, running checks) to the scout or checker agent to keep this context clean, but every phase-boundary stop stays in the main conversation.
 3. Determine plan shape. If $ARGUMENTS contains "mechanical:" or "plan-shape: mechanical", the plan is mechanical: skip steps 4 and 6 below (no rejected alternatives, no per-step test strategy beyond a single end verification). If the work is clearly mechanical from the preflight (pure file edits, no architectural choice), the agent may self-mark mechanical, stating the reason. Otherwise the plan is substantive (default). Self-marking mechanical is opt-in by signal: state why the plan is mechanical so the user can override. `--full` in $ARGUMENTS forces a substantive plan even when the work looks mechanical.
@@ -33,7 +33,7 @@ disable-model-invocation: true
 
 ## Output
 
-Write a plan to `~/.claude/scratch/plan-<project-name>-<task-slug>-<YYYYMMDD-HHMM>.md`:
+Write a plan to `$(scratch-dir.sh)/plan-<task-slug>-<YYYYMMDD-HHMM>.md`:
 
 - `plan-shape: mechanical | substantive` field at the top of the plan artifact, before "Goal".
 - Goal (one sentence)

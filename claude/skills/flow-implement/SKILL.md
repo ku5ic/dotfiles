@@ -8,12 +8,12 @@ disable-model-invocation: true
 
 ## Prerequisites
 
-- An approved plan exists for this project: `ls -t ~/.claude/scratch/plan-<project-name>-*.md | head -1`. If none, run /flow-plan first.
+- An approved plan exists for this project: `ls -t "$(scratch-dir.sh)"/plan-\*.md | head -1`. If none, run /flow-plan first.
 - If $ARGUMENTS specifies a step or range, implement only those. Otherwise implement the next unchecked step.
 
 ## Procedure
 
-1. Get the project name: `!`project-name.sh``. Read the most recent plan for this project: `ls -t ~/.claude/scratch/plan-<project-name>-\*.md | head -1`. Identify the step to implement.
+1. Get the scratch directory: `!`scratch-dir.sh``. Read the most recent plan: `ls -t "$(scratch-dir.sh)"/plan-\*.md | head -1`. Identify the step to implement.
 2. Confirm the files involved still match the plan. If drift: stop and report.
 3. Load the patterns skill for the stack if the change is stack-specific.
    - You may delegate noisy sub-work (broad code exploration, running checks) to the scout or checker agent to keep this context clean, but every phase-boundary stop stays in the main conversation.

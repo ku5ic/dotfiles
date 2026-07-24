@@ -10,8 +10,8 @@ agent: general-purpose
 
 ## Procedure
 
-1. Get the project name: `!`project-name.sh``. Stack is in the injected `<repo-context>` block.
-2. Session continuity check. If a previous preflight artifact exists for this project from this session (`ls -t ~/.claude/scratch/preflight-<project-name>-*.md | head -1`), compare current `git status` and `git log -5 --oneline` against the artifact's recorded state. If unchanged AND the new task's target area is covered by the previous artifact, emit a delta-only report ("same context as preflight-<project-name>-<HHMM>, no new findings, target area X already covered") and stop. Otherwise proceed to step 3. This short-circuit is opt-in by signal: when it fires, state that it fired and why; when it does not hold, fall through to the full preflight, not a half-done one. `--full` in $ARGUMENTS skips this check and forces a full preflight.
+1. Get the scratch directory: `!`scratch-dir.sh``. Stack is in the injected `<repo-context>` block.
+2. Session continuity check. If a previous preflight artifact exists for this project from this session (`ls -t "$(scratch-dir.sh)"/preflight-\*.md | head -1`), compare current `git status` and `git log -5 --oneline` against the artifact's recorded state. If unchanged AND the new task's target area is covered by the previous artifact, emit a delta-only report ("same context as the existing preflight report, no new findings, target area X already covered") and stop. Otherwise proceed to step 3. This short-circuit is opt-in by signal: when it fires, state that it fired and why; when it does not hold, fall through to the full preflight, not a half-done one. `--full` in $ARGUMENTS skips this check and forces a full preflight.
 3. Read `CLAUDE.md` at the project root in full. Read any `CLAUDE.md` in the path from project root to the target area.
 4. Read project README only if it explicitly covers the task area, judged from headings.
 5. Identify the minimum file set the task touches: the files that will change, plus the files that the changing files import or depend on. No more, no less.
@@ -42,7 +42,7 @@ Write a short preflight report with:
 - Risks, unknowns, or stop conditions
 - Recommended smallest next step
 
-Write to `~/.claude/scratch/preflight-<project-name>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write to `$(scratch-dir.sh)/preflight-<YYYYMMDD-HHMM>.md`. Print the path.
 
 ## Stop
 

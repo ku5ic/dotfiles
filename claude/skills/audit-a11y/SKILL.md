@@ -17,7 +17,7 @@ disable-model-invocation: true
 
 Delegate the procedure below (steps 1 onward, through Scope) to the a11y-auditor agent (Agent tool, subagent_type: a11y-auditor, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
 
-1. Stack is in the repo context your startup produced (`agent-context.sh`). Get the project name via `project-name.sh`.
+1. Stack is in the repo context your startup produced (`agent-context.sh`). Get the scratch directory via `scratch-dir.sh`.
 2. Confirm frontend surface exists. If not, stop.
 3. Load the wcag-audit skill.
 4. Read the target file(s). For React, include the component's direct children if local. For Django templates, include the parent template it extends.
@@ -26,7 +26,7 @@ Delegate the procedure below (steps 1 onward, through Scope) to the a11y-auditor
 
 ## Output
 
-Use the markdown-report format. Write to `~/.claude/scratch/a11y-<project-name>-<target-slug>-<YYYYMMDD-HHMM>.md`.
+Use the markdown-report format. Write to `$(scratch-dir.sh)/a11y-<target-slug>-<YYYYMMDD-HHMM>.md`.
 
 Rules specific to this audit:
 

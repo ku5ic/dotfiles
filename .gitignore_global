@@ -111,6 +111,7 @@ tags
 
 # Claude Code
 .claude/agent-memory-local/
+.claude/scratch/
 *.local.md
 **/.claude/settings.local.json
 

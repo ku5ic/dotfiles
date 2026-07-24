@@ -16,7 +16,7 @@ agent: general-purpose
 
 ## Procedure
 
-1. Get the project name: `!`project-name.sh``.
+1. Get the scratch directory: `!`scratch-dir.sh``.
 2. Read $ARGUMENTS. If it points to a file, read it.
 3. Run `!`detect-stack.sh`` if the ask appears technical.
 4. Identify what is missing:
@@ -29,7 +29,7 @@ agent: general-purpose
 
 ## Output file
 
-Write to `~/.claude/scratch/prompt-<project-name>-<slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write to `$(scratch-dir.sh)/prompt-<slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Structure:
 

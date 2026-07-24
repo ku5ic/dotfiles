@@ -21,7 +21,7 @@ The subject is already understood well enough to explain - root cause from `/flo
 
 ## Output
 
-Structured with section headers - the point is a reader building a mental model, not a peer skimming a decision, so headers earn their keep here unlike in a devnote. Full sentences over fragments; a newcomer needs the reasoning spelled out. Cite every claim as `file:line`. Default to terminal. Only write to a file when asked - honor an exact location if one is given (e.g. "on desktop"); otherwise use `~/.claude/scratch/<kind>-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md` per the scratch convention.
+Structured with section headers - the point is a reader building a mental model, not a peer skimming a decision, so headers earn their keep here unlike in a devnote. Full sentences over fragments; a newcomer needs the reasoning spelled out. Cite every claim as `file:line`. Default to terminal. Only write to a file when asked - honor an exact location if one is given (e.g. "on desktop"); otherwise use `$(scratch-dir.sh)/<kind>-<scope-slug>-<YYYYMMDD-HHMM>.md` per the scratch convention.
 
 ## Rules
 

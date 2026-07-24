@@ -10,8 +10,8 @@ agent: general-purpose
 
 ## Procedure
 
-1. Get the project name: `!`project-name.sh``.
-2. If $ARGUMENTS specifies a path, read it. Otherwise, find the most recent plan or feature brief for this project: `ls -t ~/.claude/scratch/plan-<project-name>-*.md ~/.claude/scratch/feature-<project-name>-*.md 2>/dev/null | head -1`.
+1. Get the scratch directory: `!`scratch-dir.sh``.
+2. If $ARGUMENTS specifies a path, read it. Otherwise, find the most recent plan or feature brief: `ls -t "$(scratch-dir.sh)"/plan-\*.md "$(scratch-dir.sh)"/feature-\*.md 2>/dev/null | head -1`.
 3. Diff the plan against current code state:
    - Which steps are done (via git log on touched files since the plan timestamp)
    - Which are partially done (working copy changes)

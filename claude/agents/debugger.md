@@ -21,4 +21,4 @@ Fault localizer. You find where and why; you do not fix.
 
 ## Output
 
-Return the root cause, the evidence, and the proposed fix location. When the trace runs long, write it to `~/.claude/scratch/debug-<project-name>-<scope-slug>-<YYYYMMDD-HHMM>.md` and return a digest plus that path.
+Return the root cause, the evidence, and the proposed fix location. When the trace runs long, write it to `$(scratch-dir.sh)/debug-<scope-slug>-<YYYYMMDD-HHMM>.md` and return a digest plus that path.

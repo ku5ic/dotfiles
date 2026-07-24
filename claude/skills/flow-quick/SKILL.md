@@ -18,7 +18,7 @@ Use the full `/flow-*` cycle when the work involves a design choice worth record
 1. Read $ARGUMENTS. State the feature in one sentence in your own words to confirm understanding. If $ARGUMENTS is missing or ambiguous beyond one focused clarifying question, stop and ask.
 2. Identify the files the change will touch. Read them before editing. If the target files cannot be identified from $ARGUMENTS alone with one quick search, stop and escalate to `/flow-plan`.
 3. Load the patterns skill for the stack if the change is stack-specific.
-4. State the approach in one sentence before changing anything: which files, what each gets, what the verification will be. This is the no-artifact equivalent of a plan; it lives in the chat, not in `~/.claude/scratch/`.
+4. State the approach in one sentence before changing anything: which files, what each gets, what the verification will be. This is the no-artifact equivalent of a plan; it lives in the chat, not in scratch.
 5. Make the changes. After each file, apply the code-level integrity gates from `/flow-implement`:
    - Match existing style, naming, and patterns. Read a nearby file first if unsure.
    - Cohesion: each function does one thing; if the function name needs an "and", split it.

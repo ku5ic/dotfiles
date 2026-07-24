@@ -17,7 +17,7 @@ agent: general-purpose
 
 ## Procedure
 
-1. Run `!`detect-stack.sh`` for context. Get the project name: `!`project-name.sh``. Some features make sense in one stack and not another.
+1. Run `!`detect-stack.sh`` for context. Get the scratch directory: `!`scratch-dir.sh``. Some features make sense in one stack and not another.
 2. Read $ARGUMENTS. If it points to a ticket file or URL string, read the file. Otherwise treat as the request.
 3. Read project CLAUDE.md and any architecture docs.
 4. Verify before writing. For any file path, module, or existing pattern that will land in Problem, Constraints, or Proposed approach, confirm it exists: read directly for a couple of files, or delegate to the scout agent when the request references code or architecture spanning more than a couple of files. Anything unconfirmed stays "unknown, ask requester" per the existing convention, never asserted.
@@ -25,7 +25,7 @@ agent: general-purpose
 
 ## Output
 
-Write to `~/.claude/scratch/feature-<project-name>-<slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write to `$(scratch-dir.sh)/feature-<slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Structure:
 

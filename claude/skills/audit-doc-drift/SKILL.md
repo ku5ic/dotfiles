@@ -14,7 +14,7 @@ $ARGUMENTS should point to the code surface to check. Required.
 
 Delegate the procedure below (steps 1 onward, through Scope rules) to the doc-drift-auditor agent (Agent tool, subagent_type: doc-drift-auditor, foreground). It executes every step itself and writes the report; relay its returned summary.
 
-1. Stack is in the injected `<repo-context>` block. Get the project name: `!`project-name.sh``.
+1. Stack is in the injected `<repo-context>` block. Get the scratch directory: `!`scratch-dir.sh``.
 2. Read the code at $ARGUMENTS.
 3. Find relevant docs. Prefer targeted over exhaustive:
    - `README.md` at the project root if $ARGUMENTS is in `src/` or equivalent
@@ -51,7 +51,7 @@ Delegate the procedure below (steps 1 onward, through Scope rules) to the doc-dr
 
 ## Output file
 
-Use markdown-report format. Write to `~/.claude/scratch/doc-drift-<project-name>-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use markdown-report format. Write to `$(scratch-dir.sh)/doc-drift-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 ## Scope rules
 

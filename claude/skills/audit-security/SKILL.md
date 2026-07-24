@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 Delegate the procedure below (steps 1 onward, through Rules) to the security-auditor agent (Agent tool, subagent_type: security-auditor, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
 
-1. Stack is in the repo context your startup produced (`agent-context.sh`). Get the project name via `project-name.sh`.
+1. Stack is in the repo context your startup produced (`agent-context.sh`). Get the scratch directory via `scratch-dir.sh`.
 2. Load the security-patterns skill. Apply only the sections matching the detected stack.
 3. Scope the target:
    - If $ARGUMENTS is a path: audit that path plus any adjacent auth, validation, or boundary code it depends on.
@@ -26,7 +26,7 @@ Delegate the procedure below (steps 1 onward, through Rules) to the security-aud
 
 ## Output
 
-Use markdown-report format. Write to `~/.claude/scratch/security-<project-name>-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use markdown-report format. Write to `$(scratch-dir.sh)/security-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Severity rubric for security audits:
 

@@ -9,7 +9,7 @@ agent: general-purpose
 
 ## Procedure
 
-1. Get the project name: `!`project-name.sh``.
+1. Get the scratch directory: `!`scratch-dir.sh``.
 2. Check for a project PR template: resolve the project root via `!`project-root.sh``, then check these exact paths in order, using the first that exists:
    - `<root>/.github/pull_request_template.md`, and its case variant `<root>/.github/PULL_REQUEST_TEMPLATE.md`
    - the alphabetically-first `*.md` file directly inside `<root>/.github/PULL_REQUEST_TEMPLATE/`, if that directory exists (`fd -H . <root>/.github/PULL_REQUEST_TEMPLATE -e md | sort | head -1`)
@@ -27,7 +27,7 @@ agent: general-purpose
 
 ## Output
 
-Write the PR description to `~/.claude/scratch/pr-<project-name>-<branch-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write the PR description to `$(scratch-dir.sh)/pr-<branch-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 If step 2 found a project PR template, follow its structure, filling each of its sections per the Rules below. Otherwise use this default structure:
 

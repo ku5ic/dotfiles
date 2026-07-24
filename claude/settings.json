@@ -71,7 +71,6 @@
       "Edit(**)",
       "Read(**)",
       "Edit(~/.claude/scratch/**)",
-      "Write(~/.claude/scratch/**)",
       "WebSearch",
       "WebFetch(domain:developer.mozilla.org)",
       "WebFetch(domain:react.dev)",
