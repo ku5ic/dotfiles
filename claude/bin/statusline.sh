@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # statusLine command (see claude/settings.json). Reads the payload Claude Code
-# pipes to stdin and prints a two-row status: model/dir/git on row 1,
+# pipes to stdin and prints a two-row status: model/agent/dir/git on row 1,
 # context/cost/effort/rate-limit on row 2. Never blocks a render: a missing
 # jq, a missing field, or any other unexpected error falls through to a
 # best-effort or blank line rather than raising.
@@ -37,13 +37,14 @@ done < <(
     (.cost.total_cost_usd // 0),
     (.cost.total_duration_ms // 0),
     (.effort.level // ""),
-    (.rate_limits.five_hour.used_percentage // "")
+    (.rate_limits.five_hour.used_percentage // ""),
+    (.agent.name // .agent_type // "")
   ' <<<"$payload"
 )
 # Empty or invalid-JSON stdin makes jq exit non-zero with no stdout, leaving
-# fields short; pad to the 8 values above so indexing below can't hit
+# fields short; pad to the 9 values above so indexing below can't hit
 # `set -u`'s unbound-variable error (which bypasses the ERR trap).
-while ((${#fields[@]} < 8)); do fields+=(""); done
+while ((${#fields[@]} < 9)); do fields+=(""); done
 model_name="${fields[0]}"
 cwd="${fields[1]}"
 session_id="${fields[2]}"
@@ -52,6 +53,9 @@ cost_usd="${fields[4]}"
 duration_ms="${fields[5]}"
 effort_level="${fields[6]}"
 five_h="${fields[7]}"
+# Both keys carry the main thread's agent type and are absent for a plain
+# interactive session; reading both keeps this working if they ever diverge.
+agent_name="${fields[8]}"
 
 dir_name="$(basename "${cwd:-.}")"
 
@@ -76,7 +80,9 @@ if [[ -n "$cwd" ]] && git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2
   git_segment="$(cat "$git_cache_file" 2>/dev/null)"
 fi
 
-row1="$model_name  $dir_name"
+row1="$model_name"
+[[ -n "$agent_name" ]] && row1="$row1 ($agent_name)"
+row1="$row1  $dir_name"
 [[ -n "$git_segment" ]] && row1="$row1  $git_segment"
 
 ctx_int="${ctx_pct%%.*}"

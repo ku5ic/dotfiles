@@ -40,6 +40,13 @@ run_statusline() {
   printf '%s' "$1" | HOME="$FAKE_HOME" bash "$SCRIPT"
 }
 
+# with_agent <payload> <jq-object>  merges agent identity keys into a payload.
+# make_payload omits them because a plain interactive session has none; only
+# a main thread running as a named agent gets them.
+with_agent() {
+  jq -c ". + $2" <<<"$1"
+}
+
 # backdate_mtime <file> <seconds_ago>
 # Sets file's mtime to now minus <seconds_ago>, so TTL-boundary tests can hit
 # the exact edge deterministically instead of sleeping past it (which is
@@ -105,6 +112,29 @@ backdate_mtime() {
   run run_statusline "$(make_payload "$REPO" t4f 150)"
   [[ "$output" == *"100%"* ]]
   [[ "$output" == *$'\033[31m'* ]]
+}
+
+@test "agent name renders beside the model when present" {
+  run run_statusline "$(with_agent "$(make_payload "$REPO" t4g 50)" '{agent:{name:"scout"}}')"
+  [ "$status" -eq 0 ]
+  [[ "$output" == "Opus (scout)  $(basename "$REPO")"* ]]
+}
+
+@test "agent name falls back to agent_type when the agent key is absent" {
+  run run_statusline "$(with_agent "$(make_payload "$REPO" t4h 50)" '{agent_type:"reviewer"}')"
+  [[ "$output" == "Opus (reviewer)"* ]]
+}
+
+@test "agent key wins over agent_type when both are present" {
+  run run_statusline "$(with_agent "$(make_payload "$REPO" t4i 50)" '{agent:{name:"scout"},agent_type:"reviewer"}')"
+  [[ "$output" == "Opus (scout)"* ]]
+  [[ "$output" != *"reviewer"* ]]
+}
+
+@test "agent segment is omitted for a plain interactive session" {
+  run run_statusline "$(make_payload "$REPO" t4j 50)"
+  [[ "$output" == "Opus  $(basename "$REPO")"* ]]
+  [[ "$output" != *"("* ]]
 }
 
 @test "effort segment renders when present" {
