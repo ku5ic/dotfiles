@@ -85,6 +85,7 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/.tool-versions" ~
   ln -sfv "$DOTFILES_DIR/.tmuxinator" ~
   ln -sfv "$DOTFILES_DIR/.editorconfig" ~
+  ln -sfv "$DOTFILES_DIR/.hammerspoon" ~
 
   bash "$DOTFILES_DIR/claude/bin/bootstrap.sh" --non-interactive
 
