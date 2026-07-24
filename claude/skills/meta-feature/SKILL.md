@@ -4,6 +4,8 @@ argument-hint: <feature description or ticket text>
 model: sonnet
 effort: high
 disable-model-invocation: true
+context: fork
+agent: general-purpose
 ---
 
 ## When to use
@@ -71,6 +73,6 @@ Structure:
 
 - Do not plan. Do not break into steps. That is `/flow-plan`.
 - Do not estimate unless asked. Briefs shape work, they do not size it.
-- If the brief is under-specified and cannot be shaped without more input: ask via the AskUserQuestion tool (multiple-choice, "Other" for free text) before finalizing, then write what is known plus the resolved answers in "Decisions". Better to ask than to fabricate a straw man.
+- If the brief is under-specified and cannot be shaped without more input: ask via the AskUserQuestion tool (multiple-choice, "Other" for free text) before finalizing, then write what is known plus the resolved answers in "Decisions". Better to ask than to fabricate a straw man. If forked, follow CLAUDE.md's forked decision protocol instead of guessing.
 - If the feature conflicts with an architectural constraint in CLAUDE.md: flag it in "Risks and uncertainties" before proposing an approach.
 - Do not name a file path, module, or pattern in the output unless confirmed this session via Read/Grep/fd or scout; unconfirmed items stay "unknown, ask requester".

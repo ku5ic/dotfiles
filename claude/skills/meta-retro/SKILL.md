@@ -3,6 +3,8 @@ description: Structured retrospective for an incident, sprint, or completed feat
 argument-hint: <context: incident summary, sprint label, or feature name>
 model: haiku
 disable-model-invocation: true
+context: fork
+agent: general-purpose
 ---
 
 ## Procedure

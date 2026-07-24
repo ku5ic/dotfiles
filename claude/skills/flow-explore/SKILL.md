@@ -4,6 +4,8 @@ argument-hint: <task description, however vague, or a link to an external ticket
 model: opus
 effort: high
 disable-model-invocation: true
+context: fork
+agent: general-purpose
 ---
 
 ## When to use this
@@ -25,7 +27,7 @@ Use `/flow-plan` instead when the task and a chosen approach are both already co
 
 4. Synthesize, pruning by convention as you go. For each direction, turn its scout findings into a scope estimate (files/modules touched), a rough risk note, a convention-fit read (matches an existing pattern, or names a divergence with justification - per the project's own conventions, not generic best practice), and how well it addresses the task statement. A direction whose only path forward is an unjustified divergence from established convention does not make the candidate list - move it to Ruled out instead of presenting it as a peer option. This is what keeps the report short on a complex task: convention-fit prunes, it does not just annotate. Among the survivors this stays a survey, not a decision - do not pick a winner. Naming the strongest candidate when one clearly stands out is fine; committing to it with full tradeoffs is `/flow-plan`'s job.
 
-5. Decisions. Any question that came up - which direction looks worth pursuing, a requirement that stayed ambiguous after research, scope that needs the requester's input - ask via the AskUserQuestion tool (multiple-choice, "Other" for free text). Record the resolved answers in the report's Decisions section. Do not leave an open-questions list.
+5. Decisions. Any question that came up - which direction looks worth pursuing, a requirement that stayed ambiguous after research, scope that needs the requester's input - ask via the AskUserQuestion tool (multiple-choice, "Other" for free text). Record the resolved answers in the report's Decisions section. Do not leave an open-questions list. If forked, follow CLAUDE.md's forked decision protocol instead of guessing.
 
 ## Stop conditions
 

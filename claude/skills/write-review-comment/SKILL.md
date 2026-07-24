@@ -3,13 +3,15 @@ description: Convert a structured review report into a peer-to-peer GitHub PR co
 argument-hint: [path to review report] [PR author username]
 model: haiku
 disable-model-invocation: true
+context: fork
+agent: general-purpose
 ---
 
 ## Procedure
 
 1. Get the project name: `!`project-name.sh``.
 2. Parse $ARGUMENTS. If the first token resolves to an existing file, treat it as the report path and any remaining token as the PR author username. Otherwise treat the whole of $ARGUMENTS as the PR author username and leave the report path unset.
-3. If no report path was resolved, use the latest one for this project: `ls -t ~/.claude/scratch/review-<project-name>-*.md | head -1`. If none exist, stop and ask for a path.
+3. If no report path was resolved, use the latest one for this project: `ls -t ~/.claude/scratch/review-<project-name>-*.md | head -1`. If none exist, stop and ask for a path (forked: follow CLAUDE.md's forked decision protocol instead of guessing).
 4. Read the review report. It follows the markdown-report skill format: a severity rubric (failure/warning/info), each finding with file, line, "What", "Why it matters", and "Fix".
 5. Look for a PR number in the report's `Scope:` line, its filename, or body (patterns like `pr-123`, `PR #123`, `PR: 123`). If found, run `gh pr view <n> --json author,headRefOid`. Use `.author.login` as the auto-detected author and `.headRefOid` as the ref for links.
 6. Resolve the repo slug: `gh repo view --json nameWithOwner -q .nameWithOwner`. If this fails (no remote, no auth), fall back to plain backticked `path:line` text for every finding - no links - and say so at the top of the comment.

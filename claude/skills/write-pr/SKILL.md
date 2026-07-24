@@ -3,6 +3,8 @@ description: Generate a pull request description from the current diff
 argument-hint: <optional: commit range like main..HEAD>
 model: haiku
 disable-model-invocation: true
+context: fork
+agent: general-purpose
 ---
 
 ## Procedure
@@ -17,6 +19,7 @@ disable-model-invocation: true
    Test each exact path (e.g. `test -f <path>`) - do not run a keyword/substring search like `fd -i pull_request_template` across the tree. Two failure modes make that unsafe: (1) `.github` is a hidden directory that `fd` silently excludes unless you pass `-H`, so a template living there gets missed entirely; (2) `.github` commonly holds several unrelated `*_pull_request_template.md` variants (per-team or per-change-type templates, e.g. `ds_pull_request_template.md`), and a substring match sorted alphabetically will confidently pick the wrong one instead of the actual default. Exact-path checks sidestep both.
 
    If one exists, read it: its sections replace the default Structure below. If none exists, fall back to the default Structure.
+
 3. Resolve the base: !`git-base.sh`. Falls through upstream / origin HEAD / main / master / develop / trunk. If $ARGUMENTS is a valid single-word git ref (no spaces, not a sentence), use it as the explicit base instead by running `git-base.sh "$ARGUMENTS"` via Bash.
 4. Pull the diff: !`git-diff-from-base.sh`
 5. Pull the log (last 20): !`git-log-from-base.sh`

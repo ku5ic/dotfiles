@@ -4,6 +4,8 @@ argument-hint: <optional task description>
 model: sonnet
 effort: medium
 disable-model-invocation: true
+context: fork
+agent: general-purpose
 ---
 
 ## Procedure
@@ -19,10 +21,10 @@ disable-model-invocation: true
    - Complete: are inputs, outputs, and error cases stated or inferable from the codebase? If only the happy path is described, flag.
    - Consistent: does the statement contradict anything in CLAUDE.md, the existing tests, or the recent commit history? If yes, flag.
 
-   If any of the four flag, stop and ask one focused clarifying question before proceeding to step 6. Do not infer requirements; surface the gap.
+   If any of the four flag, stop and ask one focused clarifying question before proceeding to step 6. Do not infer requirements; surface the gap. If forked, follow CLAUDE.md's forked decision protocol instead of guessing.
 
 7. Read those files.
-8. File budget: read at most 12 files across steps 3-6. If the minimum set exceeds 12, stop and ask the user to scope the task. The tokei call in step 8 does not count toward this budget.
+8. File budget: read at most 12 files across steps 3-6. If the minimum set exceeds 12, stop and ask the user to scope the task (forked: follow CLAUDE.md's forked decision protocol instead of guessing). The tokei call in step 8 does not count toward this budget.
 9. Run `tokei` once at the project root for repo size context: total lines, language breakdown. This replaces the reflex to read many files just to estimate size. Capture the headline numbers in the preflight report under the Stack summary.
 10. Identify the CI checks the project defines (scripts in `package.json`, `Makefile`, `pyproject.toml` `[tool]` sections). List what is available (typecheck, lint, test, format) without running them. Note any that are missing entirely.
 11. Check `git status` and `git log -5 --oneline`. Note uncommitted work and recent direction.
