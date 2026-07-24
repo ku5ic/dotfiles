@@ -251,8 +251,11 @@
       "Edit(**/prettier.config.*)",
       "Edit(**/.prettierrc*)"
     ],
-    "defaultMode": "default",
-    "additionalDirectories": ["~/.claude", "~/.dotfiles"]
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "~/.claude",
+      "~/.dotfiles"
+    ]
   },
   "hooks": {
     "PreToolUse": [
@@ -414,5 +417,7 @@
   "spinnerTipsEnabled": false,
   "effortLevel": "xhigh",
   "theme": "auto",
-  "agentPushNotifEnabled": true
+  "editorMode": "vim",
+  "agentPushNotifEnabled": true,
+  "awaySummaryEnabled": false
 }
