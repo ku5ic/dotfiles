@@ -79,6 +79,7 @@
       "Agent(claude-config-auditor)",
       "Agent(doc-drift-auditor)",
       "Agent(plan-critic)",
+      "Agent(researcher)",
       "Edit(**)",
       "Read(**)",
       "Edit(~/.claude/scratch/**)",

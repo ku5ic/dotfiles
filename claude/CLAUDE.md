@@ -172,7 +172,7 @@ All groups except `question` are user-only (`disable-model-invocation: true`); t
 
 ## Agents
 
-Twelve subagent capability shells live under `$HOME/.claude/agents/`. The canonical inventory is the output of `/agents`.
+Thirteen subagent capability shells live under `$HOME/.claude/agents/`. The canonical inventory is the output of `/agents`.
 
 - `scout` - read-only exploration; broad `file:line` sweeps kept out of the main context
 - `reviewer` - senior read-only code review (invoked by `/flow-review`)
@@ -186,6 +186,7 @@ Twelve subagent capability shells live under `$HOME/.claude/agents/`. The canoni
 - `claude-config-auditor` - audits skills, hooks, and settings for staleness or misconfiguration (invoked by `/audit-claude`)
 - `doc-drift-auditor` - detects drift between code and its documentation (invoked by `/audit-doc-drift`)
 - `plan-critic` - adversarially reviews a plan artifact against the actual repo, not just its own internal consistency (invoked by `/flow-plan` after the plan is written)
+- `researcher` - read-only external research via Context7/WebFetch (invoked by `/flow-explore`)
 
 Two operational facts: agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the `UserPromptSubmit` hook injection, so each shell self-loads stack context via `~/.claude/bin/agent-context.sh` at startup, with `guard-skills` as the enforcement floor for reading or editing agents. Forked skills (`context: fork`) run their whole body inside the named agent; the inline procedures, including `flow-plan` and `flow-implement`, stay in the main conversation and keep their phase-boundary stops there.
 
