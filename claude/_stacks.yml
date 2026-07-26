@@ -98,8 +98,8 @@ skill_file_map:
 # Action-conditioned trigger phrases for every skill any stack/extra maps to.
 # Consumed by hooks/inject-context.sh to build the <suggested-skills> block.
 # Phrases name a concrete action, not a topic, so the reader knows when to load.
-# global_skills (markdown-report, engineering-fundamentals, git-patterns) are
-# excluded; they are always required, not suggested.
+# global_skills (engineering-fundamentals, fix-sizing, root-cause-diagnosis,
+# context-gathering) are excluded; they are always required, not suggested.
 skill_triggers:
   javascript-patterns: "before writing or restructuring JavaScript modules, functions, or async flow"
   typescript-patterns: "before adding or changing types, generics, or type-level APIs"
@@ -115,8 +115,6 @@ skill_triggers:
   fastapi-patterns: "before defining FastAPI routes, dependencies, or Pydantic models"
   docker-patterns: "before authoring or changing Dockerfiles or compose services"
   bash-patterns: "before writing or modifying shell scripts"
-  markdown-report: "before producing a structured report, summary, or any formatted long-form output"
-  git-patterns: "before writing commit messages, planning a branch strategy, or reviewing history"
 
 # Ordered lockfile-to-manager table. First match wins.
 # Consumed by bin/_lib.sh resolve_package_manager and (as a hardcoded copy)

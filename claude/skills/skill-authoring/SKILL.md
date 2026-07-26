@@ -77,7 +77,6 @@ No new severity levels.
 ## When not to load this skill
 
 - Merely using a skill during a flow or audit cycle
-- Editing command files under `claude/commands/` (different format, no skill conventions apply)
 - Editing `_stacks.yml` (stack config, not skill authoring)
 
 ## References
