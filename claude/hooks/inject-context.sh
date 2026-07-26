@@ -51,19 +51,6 @@ if [[ -s "$cache_file" ]]; then
   echo "</repo-context>"
 fi
 
-# emit_memory_files_block <cwd>
-# Reports whether Claude Code's memory files (CLAUDE.md/CLAUDE.local.md) are
-# present at the global (~/.claude/) and current-working-directory levels -
-# both already auto-loaded natively by the harness before this hook runs.
-# Presence only; this cannot verify the model complied with the content.
-emit_memory_files_block() {
-  local dir="$1"
-  echo ""
-  echo "<memory-files>"
-  memory_files_status "$dir"
-  echo "</memory-files>"
-}
-
 # Emit the global required skills (blocking).
 # Only global_skills are emitted here; stack-derived skills move to
 # emit_suggested_skills so session start only blocks on the core set.
@@ -271,8 +258,6 @@ emit_tooling_block() {
   echo "guidance: Run scripts only through the package manager named above, prefer these scripts and run-checks.sh over direct tool invocation, and never substitute a different package manager."
   echo "</tooling>"
 }
-
-[[ -n "$cwd" ]] && emit_memory_files_block "$cwd"
 
 emit_required_skills "$cache_file"
 

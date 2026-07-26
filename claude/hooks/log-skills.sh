@@ -3,7 +3,7 @@
 # Covers three paths:
 #
 #   UserPromptExpansion  - user typed /skillname or /command:name directly
-#   PreToolUse Skill     - Claude invoked the Skill tool; payload field is
+#   PostToolUse Skill    - Claude invoked the Skill tool; payload field is
 #                          tool_input.skill (e.g. {"skill": "react-patterns"})
 #   PostToolUse Read     - fallback: direct SKILL.md reads (rare)
 #
@@ -13,15 +13,11 @@
 #     { "hooks": [{ "type": "command", "command": "$HOME/.claude/hooks/log-skills.sh", "timeout": 5 }] }
 #   ]
 #
-#   "PreToolUse": [
+#   "PostToolUse": [
 #     {
 #       "matcher": "Skill",
 #       "hooks": [{ "type": "command", "command": "$HOME/.claude/hooks/log-skills.sh", "timeout": 5 }]
 #     },
-#     ... existing Bash and Edit|Write|MultiEdit entries ...
-#   ]
-#
-#   "PostToolUse": [
 #     {
 #       "matcher": "Read",
 #       "hooks": [{ "type": "command", "command": "$HOME/.claude/hooks/log-skills.sh", "timeout": 5 }]
@@ -55,9 +51,6 @@ file_path="${_fields[3]:-}"
 case "$event" in
 UserPromptExpansion)
   [[ "$expansion_type" == "slash_command" ]] || exit 0
-  ;;
-PreToolUse)
-  [[ "$tool_name" == "Skill" ]] || exit 0
   ;;
 PostToolUse)
   case "$tool_name" in

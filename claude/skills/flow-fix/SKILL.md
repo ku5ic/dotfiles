@@ -5,7 +5,6 @@ model: sonnet
 effort: xhigh
 disable-model-invocation: true
 context: fork
-agent: general-purpose
 ---
 
 ## Procedure

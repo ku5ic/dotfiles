@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 ## When to use this
 
-Small net-new work where a full `/flow-preflight` -> `/flow-plan` -> `/flow-implement` -> `/flow-review` cycle is overhead, but the per-file integrity gates still apply and the work should hard-stop if it outgrows its premise.
+Small net-new work where a full `/flow-plan` -> `/flow-implement` -> `/flow-review` cycle is overhead, but the per-file integrity gates still apply and the work should hard-stop if it outgrows its premise.
 
 Use `/flow-fix` instead when the trigger is a failing signal (test, type error, runtime, lint).
 Use the full `/flow-*` cycle when the work involves a design choice worth recording, more than 5 files, a new module or component, or any change to a public API.

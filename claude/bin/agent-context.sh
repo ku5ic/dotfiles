@@ -39,11 +39,6 @@ if [[ -s "$cache_file" ]]; then
   echo "</repo-context>"
 fi
 
-echo ""
-echo "<memory-files>"
-memory_files_status "$PWD"
-echo "</memory-files>"
-
 yml="$HOME/.claude/_stacks.yml"
 if [[ -f "$yml" ]] && command -v yq >/dev/null 2>&1; then
   required=()

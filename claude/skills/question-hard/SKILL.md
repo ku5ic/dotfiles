@@ -4,7 +4,6 @@ argument-hint: <the question>
 model: opus
 effort: high
 context: fork
-agent: general-purpose
 ---
 
 ## When to load this skill

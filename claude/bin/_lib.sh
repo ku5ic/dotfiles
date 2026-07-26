@@ -209,24 +209,3 @@ suggested_skills_from_signals() {
     fi
   done
 }
-
-# memory_files_status <cwd>
-# Prints one "<path>: found|absent" line per CLAUDE.md/CLAUDE.local.md
-# location Claude Code auto-loads (global ~/.claude/ and the given working
-# directory - Claude Code's own load starting point, not the resolved
-# project root). No directory walk-up beyond this single point - same
-# intentional scope limit as emit_tooling_block/STACK_DETECT_FILES.
-# Reports presence only; cannot verify the model actually complied with
-# the content, only that the harness had the file available to load.
-memory_files_status() {
-  local dir="$1"
-  local f
-  for f in "$HOME/.claude/CLAUDE.md" "$HOME/.claude/CLAUDE.local.md" \
-    "$dir/CLAUDE.md" "$dir/CLAUDE.local.md"; do
-    if [[ -f "$f" ]]; then
-      echo "$f: found"
-    else
-      echo "$f: absent"
-    fi
-  done
-}

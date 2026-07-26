@@ -4,7 +4,6 @@ argument-hint: <the fuzzy ask, or a file containing it>
 model: haiku
 disable-model-invocation: true
 context: fork
-agent: general-purpose
 ---
 
 ## When to use

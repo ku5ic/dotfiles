@@ -2,7 +2,7 @@
 # ~/.claude/hooks/guard-tone.sh
 # PreToolUse hook. Reads the tool call JSON from stdin, inspects the content
 # being written or edited, and blocks distinctive AI-tell opener/closer
-# phrases named in CLAUDE.md's Output Rules "No AI tells" bullet.
+# phrases named in CLAUDE.md's Voice "banned openers and closers" bullet.
 #
 # Contract:
 #   exit 0 -> allow the tool call
@@ -53,7 +53,7 @@ block() {
 # true", "of course there are tradeoffs") are not flagged -- only the
 # opener/closer position these phrases actually appear in as filler.
 matched="$(printf '%s' "$content" | grep -m1 -ioE \
-  '^(certainly|absolutely|of course|sure)[!,.]|^(great question|i hope this helps|let.s dive in|happy to help|in conclusion)([[:space:]]|[!,.]|$)' ||
+  '^(certainly|absolutely|of course|sure)[!,.]|^(great question|i hope this helps|let.s dive in|happy to help|in conclusion|to summarize|in summary)([[:space:]]|[!,.]|$)' ||
   true)"
 
 if [[ -n "$matched" ]]; then

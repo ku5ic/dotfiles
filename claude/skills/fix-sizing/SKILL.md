@@ -41,7 +41,7 @@ Minimal is measured against the defect, not against caution. A one-line fix to a
 
 ## References
 
-Related: `~/.dotfiles/claude/rules/change-discipline.md` - "Name the blast radius before editing shared code" and its dead-code rule share the same right-sizing concern for wide-reaching changes. `~/.dotfiles/claude/rules/failure-modes.md` - "Plan does not match reality" covers the adjacent case of scope drift discovered mid-execution.
+Related: `~/.dotfiles/claude/rules/change-discipline.md` - "Name the blast radius before editing shared code" and its dead-code rule share the same right-sizing concern for wide-reaching changes. `~/.dotfiles/claude/skills/flow-implement/SKILL.md`'s step 2 drift rule covers the adjacent case of scope drift discovered mid-execution.
 
 ## Maintenance note
 

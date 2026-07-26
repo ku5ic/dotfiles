@@ -422,4 +422,63 @@ else
   echo "ok             ${#finding_fields[@]} per-finding fields referenced in both markdown-report and audit-verify"
 fi
 
+echo
+echo "== skill directory / allow-list parity =="
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "skip           jq not found; skipping skill directory / allow-list parity"
+else
+  SETTINGS_JSON="$SOURCE_ROOT/settings.json"
+  SKILLS_DIR="$SOURCE_ROOT/skills"
+  skill_allow_failed=0
+
+  # Skills intentionally excluded from this parity check. Each entry needs a
+  # reason: "evals" is skill-evaluation tooling (fixtures/, scenarios/, run.sh)
+  # with no SKILL.md of its own, so it can never be invoked as a skill.
+  SKILL_ALLOW_EXCLUSIONS=(evals)
+
+  mapfile -t allow_skills < <(jq -r '.permissions.allow[] | select(startswith("Skill(")) | sub("^Skill\\("; "") | sub("\\)$"; "")' "$SETTINGS_JSON" 2>/dev/null | sort -u)
+
+  while IFS= read -r dir; do
+    name="$(basename "$dir")"
+
+    excluded=0
+    for ex in "${SKILL_ALLOW_EXCLUSIONS[@]:-}"; do
+      [[ "$ex" == "$name" ]] && excluded=1 && break
+    done
+    ((excluded)) && continue
+
+    found=0
+    for sk in "${allow_skills[@]}"; do
+      [[ "$sk" == "$name" ]] && found=1 && break
+    done
+    if ((!found)); then
+      echo "missing-allow  $name has no Skill($name) entry in settings.json allow"
+      skill_allow_failed=1
+    fi
+  done < <(find "$SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
+
+  if ((skill_allow_failed)); then
+    exit_code=1
+  else
+    echo "ok             every claude/skills/ directory has a matching Skill(<name>) allow entry"
+  fi
+fi
+
+echo
+echo "== CLAUDE.md + rules word budget =="
+
+# Regression guard against re-accumulating verbosity, not an aspirational
+# target: instruction-following degrades with volume. The live count is
+# printed below on every run rather than restated here, where it would go
+# stale the moment this budget or the content changes.
+CLAUDE_WORD_BUDGET=4700
+
+word_count="$(cat "$SOURCE_ROOT/CLAUDE.md" "$SOURCE_ROOT"/rules/*.md | wc -w | tr -d ' ')"
+echo "word-count     $word_count (budget: $CLAUDE_WORD_BUDGET)"
+if ((word_count > CLAUDE_WORD_BUDGET)); then
+  echo "FAIL           CLAUDE.md + rules/*.md word count exceeds budget"
+  exit_code=1
+fi
+
 exit "$exit_code"

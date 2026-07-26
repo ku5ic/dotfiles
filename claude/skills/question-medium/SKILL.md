@@ -3,8 +3,6 @@ description: Answers a medium-difficulty question requiring real reasoning, veri
 argument-hint: <the question>
 model: sonnet
 effort: high
-context: fork
-agent: general-purpose
 ---
 
 ## When to load this skill

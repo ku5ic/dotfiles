@@ -3,8 +3,6 @@ description: Answers an easy question - a lookup, recall, or short factual answe
 argument-hint: <the question>
 model: sonnet
 effort: low
-context: fork
-agent: general-purpose
 ---
 
 ## When to load this skill

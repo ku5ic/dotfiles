@@ -4,7 +4,6 @@ argument-hint: <optional: commit range like main..HEAD>
 model: haiku
 disable-model-invocation: true
 context: fork
-agent: general-purpose
 ---
 
 ## Procedure

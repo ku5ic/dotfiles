@@ -53,8 +53,8 @@ Glob `~/.dotfiles/claude/skills/*/SKILL.md`, filtered to files whose frontmatter
 
 - Flag (failure): YAML frontmatter is absent entirely.
 - Flag (info): `model` or `effort` fields are absent from frontmatter. (Info only -- optional but expected for high-complexity skills. `name`/`description` presence is already covered by Pass 1; `argument-hint` is not a skill frontmatter field and is not checked here.)
-- Use `rg` to scan the body for deprecated `cmd-*` naming convention references (e.g., `/cmd-preflight`, `/cmd-plan`). Flag each hit (warning) with the line number.
-- Use `rg` to scan the body for unprefixed or stale-prefixed flow-step references -- the eight short names used by the `flow-*` group (`preflight`, `plan`, `implement`, `review`, `test`, `fix`, `resume`, `checks`) -- appearing as bare `/preflight` etc. or old colon-namespaced `/flow:preflight` etc., rather than the current hyphenated `/flow-preflight` form. Pattern: `/\b(flow:)?(preflight|plan|implement|review|test|fix|resume|checks)\b` not preceded by a word character and not immediately preceded by `flow-`. Exclude `~/.dotfiles/claude/skills/audit-claude/SKILL.md` itself from this scan to avoid self-referential false positives. Flag each remaining hit (warning) with the line number.
+- Use `rg` to scan the body for deprecated `cmd-*` naming convention references (e.g., `/cmd-plan`, `/cmd-implement`). Flag each hit (warning) with the line number.
+- Use `rg` to scan the body for unprefixed or stale-prefixed flow-step references -- the seven short names used by the `flow-*` group (`plan`, `implement`, `review`, `test`, `fix`, `resume`, `checks`) -- appearing as bare `/plan` etc. or old colon-namespaced `/flow:plan` etc., rather than the current hyphenated `/flow-plan` form. Pattern: `/\b(flow:)?(plan|implement|review|test|fix|resume|checks)\b` not preceded by a word character and not immediately preceded by `flow-`. Exclude `~/.dotfiles/claude/skills/audit-claude/SKILL.md` itself from this scan to avoid self-referential false positives. Flag each remaining hit (warning) with the line number.
 
 ### Pass 3: Hooks
 

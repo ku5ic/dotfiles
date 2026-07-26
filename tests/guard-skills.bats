@@ -68,18 +68,28 @@ run_guard_skills() {
   [[ "$output" == *"test-patterns"* ]]
   [[ "$output" == *"typescript-patterns"* ]]
   [[ "$output" == *"react-patterns"* ]]
-  [[ "$output" == *"fix-sizing"* ]]
 }
 
-@test "catch-all globs entry composes with specific entries rather than displacing them" {
-  cp "$REAL_STACKS_YML" "$FAKE_HOME/.claude/_stacks.yml"
+# _stacks.yml's skill_file_map no longer carries a catch-all globs: ["*"] row
+# (removed deliberately; fix-sizing/root-cause-diagnosis/context-gathering are
+# global_skills now, not per-file requirements), so this exercises the
+# composing mechanism itself via a synthetic map rather than asserting on
+# production data that no longer has a catch-all row.
+@test "a catch-all glob entry composes with a specific entry rather than displacing it" {
+  write_stacks_yml <<'YAML'
+skill_file_map:
+  - on: basename
+    globs: ["*"]
+    skills: [fix-sizing]
+  - on: basename
+    globs: ["*.ts"]
+    skills: [typescript-patterns]
+YAML
   : >"$FAKE_HOME/.claude/logs/skills.jsonl"
   run run_guard_skills "/tmp/project/foo.ts"
   [ "$status" -eq 2 ]
   [[ "$output" == *"typescript-patterns"* ]]
   [[ "$output" == *"fix-sizing"* ]]
-  [[ "$output" == *"root-cause-diagnosis"* ]]
-  [[ "$output" == *"context-gathering"* ]]
 }
 
 @test "on: path entries match the full path, not just the basename" {

@@ -3,12 +3,12 @@
   "cleanupPeriodDays": 30,
   "skillListingBudgetFraction": 0.04,
   "includeCoAuthoredBy": false,
+  "env": {
+    "CLAUDE_GUARD_RESPONSE": "1"
+  },
   "permissions": {
     "allow": [
       "Bash",
-      "Bash(git push:*)",
-      "Bash(git -C * push *)",
-      "Bash(npm ci:*)",
       "Skill(audit-a11y)",
       "Skill(audit-claude)",
       "Skill(audit-debt)",
@@ -21,20 +21,31 @@
       "Skill(flow-quick)",
       "Skill(flow-implement)",
       "Skill(flow-plan)",
-      "Skill(flow-preflight)",
       "Skill(flow-resume)",
       "Skill(flow-review)",
       "Skill(flow-test)",
+      "Skill(flow-debug)",
+      "Skill(flow-deps)",
+      "Skill(flow-explore)",
       "Skill(meta-feature)",
       "Skill(meta-prompt)",
       "Skill(meta-retro)",
       "Skill(write-commit)",
+      "Skill(write-devnote)",
+      "Skill(write-explainer)",
       "Skill(write-pr)",
       "Skill(write-release-notes)",
+      "Skill(write-review-comment)",
       "Skill(write-stakeholder)",
+      "Skill(question-easy)",
+      "Skill(question-medium)",
+      "Skill(question-hard)",
       "Skill(bash-patterns)",
       "Skill(django-patterns)",
       "Skill(engineering-fundamentals)",
+      "Skill(fix-sizing)",
+      "Skill(root-cause-diagnosis)",
+      "Skill(context-gathering)",
       "Skill(javascript-patterns)",
       "Skill(markdown-report)",
       "Skill(next-app-router-patterns)",
@@ -396,16 +407,6 @@
         ]
       },
       {
-        "matcher": "Skill",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/log-skills.sh",
-            "timeout": 5
-          }
-        ]
-      },
-      {
         "matcher": "Read",
         "hooks": [
           {
@@ -486,6 +487,17 @@
             "type": "command",
             "command": "$HOME/.claude/hooks/log-skills.sh",
             "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-response.sh",
+            "timeout": 10
           }
         ]
       }

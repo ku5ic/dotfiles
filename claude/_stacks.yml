@@ -94,9 +94,6 @@ skill_file_map:
   - on: path
     globs: ["*/skills/*/SKILL.md"]
     skills: [skill-authoring]
-  - on: basename
-    globs: ["*"]
-    skills: [fix-sizing, root-cause-diagnosis, context-gathering]
 
 # Action-conditioned trigger phrases for every skill any stack/extra maps to.
 # Consumed by hooks/inject-context.sh to build the <suggested-skills> block.

@@ -4,8 +4,6 @@ argument-hint: <feature description or ticket text>
 model: sonnet
 effort: high
 disable-model-invocation: true
-context: fork
-agent: general-purpose
 ---
 
 ## When to use

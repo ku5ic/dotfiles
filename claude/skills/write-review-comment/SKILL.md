@@ -4,7 +4,6 @@ argument-hint: [path to review report] [PR author username]
 model: haiku
 disable-model-invocation: true
 context: fork
-agent: general-purpose
 ---
 
 ## Procedure

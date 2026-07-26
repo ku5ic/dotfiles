@@ -14,7 +14,7 @@ disable-model-invocation: true
 ## Procedure
 
 1. Get the scratch directory: `!`scratch-dir.sh``. Read the most recent plan: `ls -t "$(scratch-dir.sh)"/plan-\*.md | head -1`. Identify the step to implement.
-2. Confirm the files involved still match the plan. If drift: stop and report.
+2. Confirm the files involved still match the plan. If drift: stop, do not modify code, identify the mismatch (file moved, API changed, dependency bump), and report with a proposal - revise the plan, escalate to the user, or pivot to a smaller scope. If a step calls for writing content the plan describes as verbatim but does not actually inline (references a payload by name only), stop and report the gap rather than reconstructing the content from memory or this conversation's earlier history - the plan file is the only source this step may rely on.
 3. Load the patterns skill for the stack if the change is stack-specific.
    - You may delegate noisy sub-work (broad code exploration, running checks) to the scout or checker agent to keep this context clean, but every phase-boundary stop stays in the main conversation.
 4. Make the changes. One step at a time. After each file:

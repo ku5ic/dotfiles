@@ -1,6 +1,6 @@
 # Output terseness
 
-Elaboration on the short rules in `CLAUDE.md`'s `Output Rules` and `Output discipline`. This file is Claude Code only; it is not mirrored to claude.ai's userPreferences.
+Elaboration on the short rules in `CLAUDE.md`'s `Output rules` and `Voice` sections. This file is Claude Code only; it is not mirrored to claude.ai's userPreferences.
 
 ## Auto-clarity carve-out
 
@@ -9,9 +9,11 @@ CLAUDE.md's rule: terseness pauses for security warnings, irreversible-action co
 Example: a destructive migration.
 
 > Warning: this drops the `sessions` table. There is no undo once it runs.
+>
 > ```sql
 > DROP TABLE sessions;
 > ```
+>
 > Confirm a backup exists before running this.
 
 Full sentences, no compression, until the risky step is past. Resume the terser default immediately after.
@@ -26,14 +28,6 @@ Yes: "Auth middleware bug: token expiry check uses `<` instead of `<=`. Off-by-o
 
 The fragment version cuts the hedging ("it seems like", "I think", "might be") along with the length. Expand to full sentences only where the fragment would leave the fix or the reasoning ambiguous.
 
-## Terse mode
+## Tiers
 
-On request ("terse mode", "shortest version", "just the answer"): compress further than the CLAUDE.md defaults. Drop remaining connective prose, answer in the fewest fragments that stay unambiguous, skip examples unless asked.
-
-Code, commits, and PR text stay full quality regardless of mode.
-
-Off on "normal mode" or "stop terse mode". Persists until then; no automatic revert after a topic change.
-
-## Relation to Response length
-
-`CLAUDE.md`'s `## Response length` section predates this file's `Terse mode` by name but not by intent: the four-line ceiling described there is the default floor-to-ceiling behavior for every response, not a target to approach. `Terse mode` compresses further below that default: fragments over sentences, no connective prose, examples dropped unless asked. `Terse mode` still requires an explicit request to turn on and stays on until explicitly turned off, exactly as described above.
+Short/normal/long tier semantics live in `CLAUDE.md`'s `## Length` section, not here - this file only adds the worked examples below. "Terse mode" is an accepted alias for "short mode"; `guard-response.sh` already treats the two as one trigger. Code, commits, and PR text stay full quality regardless of tier.

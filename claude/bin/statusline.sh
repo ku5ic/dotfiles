@@ -38,13 +38,14 @@ done < <(
     (.cost.total_duration_ms // 0),
     (.effort.level // ""),
     (.rate_limits.five_hour.used_percentage // ""),
-    (.agent.name // .agent_type // "")
+    (.agent.name // .agent_type // ""),
+    (.transcript_path // "")
   ' <<<"$payload"
 )
 # Empty or invalid-JSON stdin makes jq exit non-zero with no stdout, leaving
-# fields short; pad to the 9 values above so indexing below can't hit
+# fields short; pad to the 10 values above so indexing below can't hit
 # `set -u`'s unbound-variable error (which bypasses the ERR trap).
-while ((${#fields[@]} < 9)); do fields+=(""); done
+while ((${#fields[@]} < 10)); do fields+=(""); done
 model_name="${fields[0]}"
 cwd="${fields[1]}"
 session_id="${fields[2]}"
@@ -56,6 +57,80 @@ five_h="${fields[7]}"
 # Both keys carry the main thread's agent type and are absent for a plain
 # interactive session; reading both keeps this working if they ever diverge.
 agent_name="${fields[8]}"
+transcript_path="${fields[9]}"
+
+# model_display_from_id <raw-model-id>
+# Converts a raw model id ("claude-opus-5", "claude-haiku-4-5-20251001") into
+# the same display form the payload's own model.display_name uses ("Opus 5",
+# "Haiku 4.5"): drop the claude- prefix and any trailing long numeric release
+# date, dot-join the remaining version segments, and capitalize the family
+# name. No `${var^}` (bash 4+ only): this file avoids bash-4-only syntax since
+# `env bash` can resolve to the stock macOS bash 3.2 (see the field-read note
+# above).
+model_display_from_id() {
+  local id="$1" family version
+  id="${id#claude-}"
+  id="$(printf '%s' "$id" | sed -E 's/-[0-9]{8,}$//')"
+  family="${id%%-*}"
+  if [[ "$id" == *-* ]]; then
+    version="${id#*-}"
+    version="${version//-/.}"
+  else
+    version=""
+  fi
+  family="$(printf '%s%s' "$(printf '%s' "${family:0:1}" | tr '[:lower:]' '[:upper:]')" "${family:1}")"
+  if [[ -n "$version" ]]; then
+    printf '%s %s' "$family" "$version"
+  else
+    printf '%s' "$family"
+  fi
+}
+
+# Actual running model, read from the transcript rather than the payload: the
+# payload's model.* is the session model and never reflects a skill's per-turn
+# model override. The last main-thread assistant entry carries the resolved
+# model id of whatever actually served that message. Sidechain (subagent)
+# entries share the transcript and must be excluded.
+yellow_marker=$'\033[33m'
+red_marker=$'\033[31m'
+reset_marker=$'\033[0m'
+actual_model_short=""
+actual_model_display=""
+session_model_short=""
+declared_model_short=""
+declared_model_display=""
+if [[ -n "$transcript_path" && -r "$transcript_path" ]]; then
+  actual_id="$(tail -n 30 "$transcript_path" 2>/dev/null |
+    jq -rs '[.[] | select(.type == "assistant" and .isSidechain != true) | .message.model // empty] | last // ""' 2>/dev/null)" || actual_id=""
+  if [[ -n "$actual_id" ]]; then
+    actual_model_short="$(printf '%s' "$actual_id" | sed -E 's/^claude-//; s/-[0-9].*$//')"
+    actual_model_display="$(model_display_from_id "$actual_id")"
+    # model_name is the display name (e.g. "Sonnet 5", "Haiku 4.5") - strip the
+    # trailing version number the same way actual_model_short strips it from
+    # the model id, or "sonnet 5" would never equal "sonnet" and every render
+    # would falsely show a divergence, same model or not.
+    session_model_short="$(printf '%s' "$model_name" | tr '[:upper:]' '[:lower:]' | sed -E 's/[[:space:]]+[0-9].*$//')"
+
+    # A skill's frontmatter model override (e.g. `model: opus`) is recorded as
+    # a command_permissions attachment at invocation time, before the model
+    # actually resolves - it can silently not take (unavailable model,
+    # unsupported effort), with the completion running on the session model
+    # anyway. Only trust the attachment as belonging to the CURRENT turn if it
+    # is newer than the current turn's own user prompt; otherwise a stale
+    # declaration from several turns back would get compared against an
+    # unrelated later response.
+    last_user_ts="$(tail -n 60 "$transcript_path" 2>/dev/null |
+      jq -rs '[.[] | select(.type == "user" and .isMeta != true) | select((.message.content | if type == "string" then . else ([.[]? | select(.type == "text") | .text] | join("\n")) end | length) > 0) | .timestamp] | last // ""' 2>/dev/null)" || last_user_ts=""
+    if [[ -n "$last_user_ts" ]]; then
+      declared_id="$(tail -n 60 "$transcript_path" 2>/dev/null |
+        jq -rs --arg since "$last_user_ts" '[.[] | select(.type == "attachment" and .attachment.type == "command_permissions" and .timestamp >= $since) | .attachment.model // empty] | last // ""' 2>/dev/null)" || declared_id=""
+      if [[ -n "$declared_id" && "$declared_id" != "$actual_id" ]]; then
+        declared_model_short="$(printf '%s' "$declared_id" | sed -E 's/^claude-//; s/-[0-9].*$//')"
+        declared_model_display="$(model_display_from_id "$declared_id")"
+      fi
+    fi
+  fi
+fi
 
 dir_name="$(basename "${cwd:-.}")"
 
@@ -81,6 +156,19 @@ if [[ -n "$cwd" ]] && git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2
 fi
 
 row1="$model_name"
+if [[ -n "$declared_model_short" ]]; then
+  # actual_model_short usually equals session_model_short here (that is the
+  # silent-fallback case: the override fell back to the session model, which
+  # is already shown as the leading segment of row1) - only show the actual
+  # side too when it is itself a third, different value worth naming.
+  if [[ "$actual_model_short" == "$session_model_short" ]]; then
+    row1="$row1  ${red_marker}!${declared_model_display}${reset_marker}"
+  else
+    row1="$row1  ${red_marker}!${declared_model_display}->  ${actual_model_display}${reset_marker}"
+  fi
+elif [[ -n "$actual_model_short" && "$actual_model_short" != "$session_model_short" ]]; then
+  row1="$row1  ${yellow_marker}->  ${actual_model_display}${reset_marker}"
+fi
 [[ -n "$agent_name" ]] && row1="$row1 ($agent_name)"
 row1="$row1  $dir_name"
 [[ -n "$git_segment" ]] && row1="$row1  $git_segment"

@@ -4,7 +4,6 @@ argument-hint: <technical content, or path to a file with it>
 model: haiku
 disable-model-invocation: true
 context: fork
-agent: general-purpose
 ---
 
 ## Procedure
