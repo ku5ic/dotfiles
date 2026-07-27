@@ -121,7 +121,8 @@ title=""
 if [[ $# -eq 1 ]]; then
   title="$1"
 else
-  issue_id="$(sanitize_issue_id "$1")"
+  # issue_id="$(sanitize_issue_id "$1")"
+  issue_id="$1"
   shift
   title="$*"
 fi
