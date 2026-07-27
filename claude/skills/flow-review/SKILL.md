@@ -2,7 +2,6 @@
 description: Senior review of recently changed code, stack aware
 argument-hint: <optional: commit range, branch, path, or a link to an external tracker/doc>
 model: opus
-effort: high
 disable-model-invocation: true
 ---
 

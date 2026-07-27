@@ -1,7 +1,6 @@
 ---
 description: Answers an easy question - a lookup, recall, or short factual answer with a direct path to the answer. Use whenever the question needs no cross-file verification, reasoning chain, or tradeoff call, OR the user explicitly asks for a quick, low-effort, or shallow answer, even if "easy" is not mentioned by name.
 argument-hint: <the question>
-model: sonnet
 effort: low
 ---
 

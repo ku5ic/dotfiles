@@ -1,7 +1,6 @@
 ---
 description: Shape a fuzzy feature request into a structured brief before planning
 argument-hint: <feature description or ticket text>
-model: sonnet
 effort: high
 disable-model-invocation: true
 ---

@@ -1,7 +1,6 @@
 ---
 description: Run the project's verification checklist via run-checks.sh
 argument-hint: <none>
-model: sonnet
 effort: low
 disable-model-invocation: true
 context: fork

@@ -1,7 +1,6 @@
 ---
 description: Surgical fix from a failing signal (test, type error, runtime error, lint)
 argument-hint: <error message, file path, or test name>
-model: sonnet
 effort: xhigh
 disable-model-invocation: true
 context: fork

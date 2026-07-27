@@ -1,7 +1,6 @@
 ---
 description: Performance audit focused on statically detectable issues
 argument-hint: <file, directory, area name, or a link to an external tracker/doc>
-model: sonnet
 effort: high
 disable-model-invocation: true
 ---

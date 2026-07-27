@@ -227,9 +227,9 @@ else
       continue
     fi
 
-    # Only procedure skills (migrated from commands) carry model/effort; patterns
-    # and reference skills have neither. Lint the former, skip the latter.
-    if ! printf '%s\n' "$fm" | grep -qE '^model:'; then
+    # Only procedure skills (migrated from commands) carry model and/or effort;
+    # patterns and reference skills have neither. Lint the former, skip the latter.
+    if ! printf '%s\n' "$fm" | grep -qE '^(model|effort):'; then
       continue
     fi
     fm_count=$((fm_count + 1))
@@ -244,10 +244,9 @@ else
     [[ "$model" == "null" ]] && model=""
     [[ "$effort" == "null" ]] && effort=""
 
-    if [[ -z "$model" ]]; then
-      echo "missing-model    $rel"
-      fm_failed=1
-    else
+    # Each skill pins at most one field: the one that diverges from the session
+    # default. An empty model or empty effort here is intentional, not missing.
+    if [[ -n "$model" ]]; then
       case "$model" in
       fable | opus | sonnet | haiku | best | opusplan | "sonnet[1m]" | "opus[1m]" | inherit | default | claude-*)
         ;;
@@ -256,11 +255,6 @@ else
         fm_failed=1
         ;;
       esac
-    fi
-
-    if [[ "$model" == "sonnet" || "$model" == "opus" ]] && [[ -z "$effort" ]]; then
-      echo "missing-effort   $rel: model=$model requires effort"
-      fm_failed=1
     fi
 
     if [[ "$model" == "haiku" && -n "$effort" ]]; then
@@ -277,6 +271,13 @@ else
         fm_failed=1
         ;;
       esac
+    fi
+
+    # Claude Code 2.1.220 silently drops the model override when a skill sets both
+    # model: and effort: (upstream bug, issue filed; remove this check once fixed).
+    if [[ -n "$model" && -n "$effort" ]]; then
+      echo "model-effort-pair  $rel: model+effort pairing is dropped silently by Claude Code (upstream bug, see issue); keep one"
+      fm_failed=1
     fi
 
   done < <(find "$SKILLS_DIR" -name "SKILL.md" -type f | sort)

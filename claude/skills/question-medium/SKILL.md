@@ -1,7 +1,6 @@
 ---
 description: Answers a medium-difficulty question requiring real reasoning, verification, or stack-specific knowledge, but not deep architecture or long correctness chains. Use whenever the question is substantive but routine - not a lookup, not a novel architectural or multi-layer tradeoff - OR the user asks for a considered, verified answer without a full deep-dive, even if "medium" is not mentioned by name.
 argument-hint: <the question>
-model: sonnet
 effort: high
 ---
 

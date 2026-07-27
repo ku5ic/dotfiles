@@ -1,7 +1,6 @@
 ---
 description: Implement a small net-new feature end to end without a plan artifact, with full per-file integrity gates
 argument-hint: <one-line feature description>
-model: sonnet
 effort: xhigh
 disable-model-invocation: true
 ---
