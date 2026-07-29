@@ -2,19 +2,12 @@ local wezterm = require("wezterm")
 local act = wezterm.action
 
 -- Font: primary with italic fallback.
--- Victor Mono provides real cursive italics for Neovim comments and semantic tokens.
--- Remove the fallback entry if you prefer oblique FiraCode italics.
 local font = wezterm.font_with_fallback({
   {
     family = "FiraCode Nerd Font Propo",
     weight = 450,
     stretch = "Normal",
     style = "Normal",
-  },
-  {
-    family = "Victor Mono",
-    weight = "Medium",
-    style = "Italic",
   },
 })
 

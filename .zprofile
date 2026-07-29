@@ -13,16 +13,14 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 export HOMEBREW_NO_ENV_HINTS=1
 export HOMEBREW_NO_REQUIRE_TAP_TRUST=1
 
-# github
-export GITHUB_PERSONAL_ACCESS_TOKEN="$(gh auth token 2>/dev/null)"
-
-# PATH
-export PATH="$(brew --prefix rustup)/bin:$PATH"
+# PATH. HOMEBREW_PREFIX is set by the shellenv eval above; using it instead of
+# `brew --prefix` keeps this block from spawning a brew process per entry.
+export PATH="$HOMEBREW_PREFIX/opt/rustup/bin:$PATH"
 export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
-export PATH="$(brew --prefix)/bin:$PATH"
-export PATH="$(brew --prefix)/opt/openssl@3/bin:$PATH"
-export PATH="$(brew --prefix)/opt/ncurses/bin:$PATH"
-export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
+export PATH="$HOMEBREW_PREFIX/bin:$PATH"
+export PATH="$HOMEBREW_PREFIX/opt/openssl@3/bin:$PATH"
+export PATH="$HOMEBREW_PREFIX/opt/ncurses/bin:$PATH"
+export PATH="$HOMEBREW_PREFIX/opt/openjdk/bin:$PATH"
 export PATH="$HOME/.dotfiles/scripts:$PATH"
 export PATH="$HOME/.claude/bin/:$PATH"
 export PATH

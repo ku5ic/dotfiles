@@ -28,11 +28,15 @@ zstyle ':completion:*:commands' ignored-patterns '.*' '_*' # commands starting w
 
 # Completion functions
 fpath=("$DOTFILES_DIR/completions" $fpath) # custom completions from the dotfiles repo
-FPATH=${ASDF_DATA_DIR:-$HOME/.asdf}/completions:$FPATH # asdf completions
+fpath=("${ASDF_DATA_DIR:-$HOME/.asdf}/completions" $fpath) # asdf completions
 
-if type brew &>/dev/null; then
-  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+if [[ -n "$HOMEBREW_PREFIX" ]]; then
+  fpath=("$HOMEBREW_PREFIX/share/zsh-completions" $fpath)
 fi
+
+# Unexport: an inherited FPATH grows in nested shells, which invalidates .zcompdump
+# and makes compinit rebuild it every time.
+typeset +x FPATH
 
 autoload -Uz compinit
 compinit
@@ -47,9 +51,6 @@ source ~/.aliases.zsh
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
-
-ssh-add -K ~/.ssh/id_rsa &> /dev/null
-ssh-add -A &> /dev/null
 
 # fzf
 export FZF_DEFAULT_OPTS="\
