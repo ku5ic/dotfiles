@@ -227,7 +227,7 @@ backdate_mtime() {
   [[ "$output" == *"~2"* ]]
 }
 
-@test "git status cache is reused just under the TTL boundary (age == CACHE_TTL - 1)" {
+@test "git status cache is reused comfortably under the TTL boundary" {
   printf 'one' >"$REPO/a.txt"
   git -C "$REPO" add a.txt
   git -C "$REPO" commit -qm init
@@ -239,7 +239,12 @@ backdate_mtime() {
   git -C "$REPO" add b.txt
   git -C "$REPO" commit -qm second
   printf 'y' >>"$REPO/b.txt"
-  backdate_mtime "$FAKE_HOME/.claude/cache/statusline/git-tboundary2" 4
+  # Backdating by 2 (not CACHE_TTL - 1 = 4) leaves real margin against the
+  # git/subprocess overhead between this backdate and statusline.sh's own
+  # `date +%s` read - on a loaded CI runner that overhead can eat a full
+  # second, and a 4s backdate had already crossed the 5s TTL by the time
+  # `now` was read, flaking this test intermittently.
+  backdate_mtime "$FAKE_HOME/.claude/cache/statusline/git-tboundary2" 2
   run run_statusline "$(make_payload "$REPO" tboundary2 50)"
   [[ "$output" == *"~1"* ]]
 }
