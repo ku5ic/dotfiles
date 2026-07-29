@@ -532,13 +532,20 @@
     "security-guidance@claude-plugins-official": true,
     "hookify@claude-plugins-official": true,
     "ruby-lsp@claude-plugins-official": true,
-    "frontend-spacelift@spacelift-engineering": true
+    "frontend-spacelift@spacelift-engineering": true,
+    "i-have-adhd@i-have-adhd": true
   },
   "extraKnownMarketplaces": {
     "spacelift-engineering": {
       "source": {
         "source": "github",
         "repo": "spacelift-io/engineering-agent-skills"
+      }
+    },
+    "i-have-adhd": {
+      "source": {
+        "source": "github",
+        "repo": "ayghri/i-have-adhd"
       }
     }
   },
