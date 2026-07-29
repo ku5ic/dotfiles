@@ -3,7 +3,6 @@ name: tester
 description: Adds or updates tests for recent implementation work, then runs them. Never alters implementation code to make a test pass. Use when a change needs test coverage or existing tests need extending.
 tools: Read, Edit, Write, Bash, Grep, Glob, Skill
 model: sonnet
-effort: xhigh
 color: green
 ---
 

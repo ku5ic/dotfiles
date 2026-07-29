@@ -2,8 +2,7 @@
 name: checker
 description: Runs the project verification checklist via run-checks.sh and returns a one-line status plus any failing labels. Use for a fast pass/fail signal after a change, without pulling check output into the main context.
 tools: Read, Bash, Grep, Glob
-model: sonnet
-effort: low
+model: haiku
 color: blue
 ---
 

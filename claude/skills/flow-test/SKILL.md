@@ -1,7 +1,6 @@
 ---
 description: Add or update tests for recent implementation work, then run them
 argument-hint: <optional: file or area to focus on, or a link to an external tracker/doc>
-effort: xhigh
 disable-model-invocation: true
 ---
 
