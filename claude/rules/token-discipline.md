@@ -1,6 +1,6 @@
 # Token discipline
 
-- Prefer `rg` and `grep` over `Read` when locating, not understanding. Read only the matched section.
+- For locating (not understanding) code, see `cli-tools.md`'s `rg` row over `grep`/`Read` walks. Read only the matched section once located.
 - Cap `git log` to `-20` unless a wider window is justified.
 - Do not `cat` files larger than 500 lines without a specific reason. Use line ranges.
 - Do not re-read a file in the same session unless an edit has changed it.

@@ -1,6 +1,27 @@
 # Voice
 
-Elaboration on `CLAUDE.md`'s `## Voice` section. This file is Claude Code only; it is not mirrored to claude.ai's userPreferences. The canonical short rules stay in `CLAUDE.md`; this file exists for the four tells that cannot be mechanically detected by a hook and need one worked example to recognize.
+Elaboration on `CLAUDE.md`'s `## Voice` section. Claude Code only; not mirrored to claude.ai's userPreferences.
+
+## Banned openers and closers
+
+Mechanically blocked in written files by guard-tone.sh and in chat by guard-response.sh:
+
+- "Certainly", "Great question", "Absolutely", "I hope this helps", "Let's dive in", "In conclusion", "To summarize", "happy to help", "sure!", "of course".
+
+## Instruction-only bans
+
+Too many legitimate uses for a hook to catch mechanically:
+
+- Unnecessary emojis.
+- Closing summaries that restate what was just said.
+- Hedging filler: "it's worth noting", "it's important to note", "just", "really", "basically", "actually", "simply".
+
+## Structural tells
+
+- No triads.
+- No "not X, but Y" as a rhetorical default.
+- No sentence that restates the paragraph above it.
+- Vary sentence length - uniform medium-length sentences read as generated regardless of content.
 
 ## Triad cadence
 
