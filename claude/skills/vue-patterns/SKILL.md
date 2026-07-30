@@ -5,7 +5,11 @@ description: Vue 3 Composition API patterns, reactivity, single-file components,
 
 # Vue patterns
 
-Default assumption: Vue 3 with the Composition API and `<script setup>` syntax. Current stable is Vue 3.5; deltas in 3.5+ (Reactive Props Destructure, `onWatcherCleanup`, `defineModel`) are called out where they matter. Options API is acceptable for legacy code; flag as legacy when reviewed. Adapt advice to the version in the project's `package.json` or lockfile.
+Default assumption: Vue 3 with the Composition API and `<script setup>` syntax.
+
+- Current stable is Vue 3.5; deltas in 3.5+ (Reactive Props Destructure, `onWatcherCleanup`, `defineModel`) are called out where they matter.
+- Options API is acceptable for legacy code; flag as legacy when reviewed.
+- Adapt advice to the version in the project's `package.json` or lockfile.
 
 ## Severity rubric
 
@@ -45,4 +49,8 @@ Severity rubric: matches `markdown-report` (failure/warning/info).
 
 ## Maintenance note
 
-Vue 3.5 introduced Reactive Props Destructure (replacing the `withDefaults` ergonomic) and `onWatcherCleanup`. Vue 3.4 introduced `defineModel` and watcher `once: true`. Vue 3.3 introduced `defineSlots` and tuple-style `defineEmits` types. When new syntax appears in a code review, check this skill against the current changelog before relying on legacy guidance. Vue 2 reaches end-of-life status; new projects should be Vue 3, and Vue-2-only patterns are out of scope here.
+- Vue 3.5 introduced Reactive Props Destructure (replacing the `withDefaults` ergonomic) and `onWatcherCleanup`.
+- Vue 3.4 introduced `defineModel` and watcher `once: true`.
+- Vue 3.3 introduced `defineSlots` and tuple-style `defineEmits` types.
+- When new syntax appears in a code review, check this skill against the current changelog before relying on legacy guidance.
+- Vue 2 reaches end-of-life status; new projects should be Vue 3, and Vue-2-only patterns are out of scope here.

@@ -41,4 +41,7 @@ Targeting Debian 12 (Bookworm) and Ubuntu 24.04 LTS. Commands and package names 
 
 ## Maintenance
 
-Check distribution LTS support windows before provisioning. Ubuntu 24.04 LTS support ends April 2029 (standard), April 2034 (ESM). Certbot version and plugin names change; verify `certbot --version` and available plugins.
+Check distribution LTS support windows before provisioning.
+
+- Ubuntu 24.04 LTS support ends April 2029 (standard), April 2034 (ESM).
+- Certbot version and plugin names change; verify `certbot --version` and available plugins.

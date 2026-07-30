@@ -16,8 +16,14 @@ If the question is routine, use `/question-medium` or `/question-easy` instead -
 ## Procedure
 
 1. Restate the question internally as a precise problem, not as the user phrased it. If $ARGUMENTS is ambiguous on a point that changes the answer, ask one focused clarifying question before proceeding. Do not ask about points that do not change the answer.
-2. Establish ground truth before reasoning. If the question concerns a specific file, project, or repo, read the relevant files. If it concerns the current state of a fast moving tool, framework, library, or API, verify against the lockfile or authoritative source. Do not answer architectural or version-sensitive questions from memory.
-3. If the stack matters: the `<repo-context>` block carries it when this runs inline; forked (no hook injection reaches the subagent), so absent that block, identify the stack from the project's own config directly. Load the patterns skill matching it if the question is in that area.
+2. Establish ground truth before reasoning.
+   - Concerns a specific file, project, or repo: read the relevant files.
+   - Concerns the current state of a fast moving tool, framework, library, or API: verify against the lockfile or authoritative source.
+   - Do not answer architectural or version-sensitive questions from memory.
+3. If the stack matters:
+   - Running inline: the `<repo-context>` block carries it.
+   - Forked (no hook injection reaches the subagent), so that block is absent: identify the stack from the project's own config directly.
+   - Load the patterns skill matching it if the question is in that area.
 4. Reason explicitly. Name the assumptions the answer rests on. Where there is a tradeoff, state both sides and the axis that decides between them. Where there is a risk or edge case, surface it rather than smoothing it over.
 5. Separate what is established fact (read from source, verified) from what is inference. Mark inference as inference.
 

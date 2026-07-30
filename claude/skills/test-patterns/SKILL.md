@@ -51,4 +51,7 @@ Severity rubric: matches `markdown-report` (failure/warning/info).
 
 ## Maintenance note
 
-Test runner choices shift on a multi-year cycle. Reconcile against current Vitest, Jest, Playwright, pytest releases when the project uses an older config. Property-based and HTTP-mocking choices (fast-check, hypothesis, MSW) have been stable for several years; verify they remain maintained at major version bumps.
+Test runner choices shift on a multi-year cycle.
+
+- Reconcile against current Vitest, Jest, Playwright, pytest releases when the project uses an older config.
+- Property-based and HTTP-mocking choices (fast-check, hypothesis, MSW) have been stable for several years; verify they remain maintained at major version bumps.

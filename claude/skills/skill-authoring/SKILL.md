@@ -49,7 +49,10 @@ Reference files over 100 lines need a table of contents at the top.
 
 ## Verification rule
 
-Every version-sensitive claim, library version, syntax form, framework feature, and tooling recommendation must be verified against authoritative sources before shipping. When creating or substantially editing a skill, produce a verification log saved to `$(scratch-dir.sh)/verification-<skill>-<YYYYMMDD-HHMM>.md` listing each claim and its source URL. If a claim cannot be verified, omit it. No freestyling.
+Every version-sensitive claim, library version, syntax form, framework feature, and tooling recommendation must be verified against authoritative sources before shipping.
+
+- When creating or substantially editing a skill, produce a verification log saved to `$(scratch-dir.sh)/verification-<skill>-<YYYYMMDD-HHMM>.md` listing each claim and its source URL.
+- If a claim cannot be verified, omit it. No freestyling.
 
 ## Anti-patterns
 

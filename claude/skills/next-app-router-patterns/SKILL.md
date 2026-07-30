@@ -5,7 +5,10 @@ description: Next.js App Router patterns covering server/client boundary, data f
 
 # Next.js App Router patterns
 
-Default assumption: Next.js 16 (current stable as of writing) with the App Router. Pages Router patterns are out of scope. Cache Components is the new caching model in 16 (opt-in via `cacheComponents: true`); the previous caching model is still supported when the flag is off. Verify via `package.json` or lockfile; caching model and `cacheComponents` flag differ between 15.x and 16.x.
+Default assumption: Next.js 16 (current stable as of writing) with the App Router. Pages Router patterns are out of scope.
+
+- Cache Components is the new caching model in 16 (opt-in via `cacheComponents: true`); the previous caching model is still supported when the flag is off.
+- Verify via `package.json` or lockfile - caching model and `cacheComponents` flag differ between 15.x and 16.x.
 
 ## Severity rubric
 
@@ -51,4 +54,10 @@ Severity rubric: matches `markdown-report` (failure/warning/info).
 
 ## Maintenance note
 
-Next.js ships major releases roughly yearly and minor releases monthly. File conventions, cache defaults, and directive names have shifted multiple times: PPR went from preview to stable in 16, `middleware` was renamed to `proxy` in 16, `fetch` default cache behavior changed in 15. Verify any version-sensitive claim against the current docs at https://nextjs.org/docs and the release entries at https://nextjs.org/blog before relying on it. The Pages Router still exists in 16 but is not covered here.
+Next.js ships major releases roughly yearly and minor releases monthly. File conventions, cache defaults, and directive names have shifted multiple times:
+
+- PPR went from preview to stable in 16.
+- `middleware` was renamed to `proxy` in 16.
+- `fetch` default cache behavior changed in 15.
+
+Verify any version-sensitive claim against the current docs at https://nextjs.org/docs and the release entries at https://nextjs.org/blog before relying on it. The Pages Router still exists in 16 but is not covered here.
