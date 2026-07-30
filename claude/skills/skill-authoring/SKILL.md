@@ -35,6 +35,20 @@ Both project signals and keyword aliases are required.
 - "When not to load this skill" section listing exclusions (NEVER name other skills).
 - "References" section with verified URLs.
 - Maintenance note acknowledging the ecosystem will evolve.
+- Procedure structure follows `rules/adhd-output.md` - see ADHD-output compliance below.
+
+## ADHD-output compliance
+
+Skill bodies (the procedure in `SKILL.md`) follow `rules/adhd-output.md` with no exception - the reader executes these turn by turn, so a wall-of-text or multi-action step costs real working memory. Matters most for user-invoked skills (`flow-*`, `audit-*`, `meta-*`, `write-*`); they get read and acted on directly, unlike patterns skills that are mostly reference lookups.
+
+`reference/<topic>.md` files are a different content shape: lookup/catalog material, not sequential procedure. A dense 2-3 sentence technical explanation under its own header is not a violation there - it's normal for a reader consulting one entry, not holding the whole file in working memory. Fix only genuine violations in reference files: an enumerable list of named items crammed into one prose sentence, or a multi-branch conditional written as prose instead of a nested list. Do not flatten reference material into bullet soup on principle.
+
+Recurring defect patterns to avoid on first write, not just catch on review:
+
+- A numbered step packing 2+ distinct actions into one sentence instead of a numbered sub-list.
+- Enumerable criteria (3+ named cases) inlined as a comma-separated parenthetical when a sibling step in the same file already uses a bullet list for the same shape - internal inconsistency, pick one style.
+- "Tool A (...) or tool B (...)" comparisons crammed into a single sentence instead of split bullets.
+- A violating block copy-pasted verbatim across sibling skills (e.g. two stack-pattern skills sharing an anti-pattern paragraph) - fix once, then check siblings for the same text.
 
 ## Single-file vs Pattern 1 (index + reference files)
 
@@ -60,7 +74,9 @@ Every version-sensitive claim, library version, syntax form, framework feature, 
 - `failure`: skill body instructs Claude to load a companion skill by name -- breaks the autodetection contract.
 - `warning`: shipping version-sensitive claims without a verification log -- claims that cannot be verified must be omitted, not asserted.
 - `warning`: body written in descriptive rather than imperative voice ("Claude should..." instead of just the rule).
+- `warning`: a procedure step packs 2+ distinct actions into one prose sentence instead of a numbered sub-list -- rules/adhd-output.md rule 3/8.
 - `info`: choosing Pattern 1 for a single-cohesive-topic skill -- use single-file when the topic is one flow.
+- `info`: reference-file prose reformatted into fragmented bullets when it was already a coherent 2-3 sentence explanation -- reference material is lookup, not procedure; not every dense paragraph is a violation.
 
 ## Severity rubric (matches markdown-report)
 
@@ -84,4 +100,4 @@ No new severity levels.
 
 ## Maintenance note
 
-Skill conventions evolve when new structural patterns emerge (new layout patterns beyond single-file and Pattern 1), when the description contract changes (new required fields), or when the severity rubric changes.
+Skill conventions evolve when new structural patterns emerge (new layout patterns beyond single-file and Pattern 1), when the description contract changes (new required fields), or when the severity rubric changes. The ADHD-output compliance section was added after a full-corpus audit (49 skill bodies, 117 reference files) found real wall-of-text and multi-action-step violations concentrated in procedure bodies, and confirmed reference files are a different content shape - revisit if that boundary stops holding.
