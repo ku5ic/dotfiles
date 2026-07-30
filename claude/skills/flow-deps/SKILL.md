@@ -113,18 +113,12 @@ Per PR/alert: package, ecosystem, scope, relationship, version delta, bump, seve
 
 ## Rules
 
-- Package-manager agnostic. Name no specific manager, lockfile, or manifest. Read the manager from the injected `<tooling>` block (fall back to the manifest in `<repo-context>` for ecosystems without one) and derive every install/audit/tree/regen/pin command from it at runtime. Do not detect the stack.
 - Core (Phases 1-4) is ecosystem-agnostic. Read the `ecosystem` field on each alert; never assume a default ecosystem.
 - Phase 5 is opt-in (`--fix-transitive`) and best-effort. Without the flag, report alerts with no PR and stop.
 - In Phase 5, prefer a parent bump over a transitive pin. A pin is the fallback, not the default, and it is standing debt; record every one. If the ecosystem's pin mechanism is uncertain, stop and hand back rather than guess.
 - Do not re-derive the base branch. Use `git-base.sh` (Precondition 4). All checks go through `run-checks.sh`.
 - Severity is from the GitHub alert list when available, not local audit.
-- Fetch alerts with a bare GET and filter `state` in jq. Never `-f state=open` (POST -> 404), never unquoted `?state=open` (zsh glob).
-- 404 on the bare GET means alerts unavailable (name the slug, fall back to audit-only), not a proven "disabled". 403 means missing scope. Handle differently.
 - Only `state == "open"` alerts are actionable. `fixed`, `dismissed`, `auto_dismissed` are not.
-- Do not merge major-version bumps autonomously. Hold and confirm.
-- Do not merge any PR whose `run-checks.sh` reported a failure.
 - Do not push to or merge into a protected branch directly.
-- `--force-with-lease` only to a bot-owned Dependabot branch, after confirmation.
 - No opportunistic bumps. Touch only deps named in an open alert or open Dependabot PR.
 - One operation per Bash call. No chaining.
