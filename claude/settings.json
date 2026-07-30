@@ -86,7 +86,7 @@
       "Edit(**)",
       "Read(**)",
       "Edit(~/.claude/scratch/**)",
-      "Edit(.claude/scratch/**)",
+      "Edit(scratch/**)",
       "WebSearch",
       "WebFetch(domain:developer.mozilla.org)",
       "WebFetch(domain:react.dev)",
@@ -372,10 +372,7 @@
       "Edit(**/.prettierrc*)"
     ],
     "defaultMode": "acceptEdits",
-    "additionalDirectories": [
-      "~/.claude",
-      "~/.dotfiles"
-    ]
+    "additionalDirectories": ["~/.claude", "~/.dotfiles"]
   },
   "model": "sonnet",
   "hooks": {

@@ -14,7 +14,7 @@ path="$(extract_path)"
 [[ -z "$path" ]] && exit 0
 
 case "$path" in
-*/.claude/scratch/*) exit 0 ;;
+*/.claude/scratch/* | */scratch/*) exit 0 ;;
 esac
 
 session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty')"

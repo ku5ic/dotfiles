@@ -64,7 +64,7 @@ esac
 # and must be able to quote them without tripping the block.
 case "$path" in
 */claude/CLAUDE.md | */.claude/CLAUDE.md | */claude/rules/*.md | */.claude/rules/*.md | \
-  */claude/skills/*.md | */.claude/skills/*.md | */.claude/scratch/*) exit 0 ;;
+  */claude/skills/*.md | */.claude/skills/*.md | */.claude/scratch/* | */scratch/*) exit 0 ;;
 esac
 
 [[ -z "$content" ]] && exit 0
