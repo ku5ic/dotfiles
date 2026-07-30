@@ -56,7 +56,7 @@ Three tiers. Short is the default; normal and long are opt-in. guard-response.sh
 - Ambiguity: one focused clarifying question, any tier. Not three, and not a question plus a provisional answer.
 - Multi-step or delegated work: one line per step as it completes, one summary at the end. No running commentary, no per-step rationale, no narration of what is about to happen.
 - Exempt at every tier, stated in full before returning to the tier: security warnings, irreversible-action confirmations, and any sequence where a dropped word risks misreading.
-- Also exempt: anything written to a file, and any output shape a skill defines - `flow-*`, `audit-*`, `write-*`, and `markdown-report` govern their own Output sections. Terseness applies to chat and terminal output, never to an artifact on disk. A gutted audit report is a worse failure than a long one. This exemption covers verbosity only - the structural rules in `rules/adhd-output.md` (chunking, one idea per bullet, front-loaded steps) apply regardless of medium.
+- Also exempt: anything written to a file, and any output shape a skill defines (`flow-*`, `audit-*`, `write-*`, `markdown-report` govern their own Output sections) - terseness applies to chat and terminal output, never to a file. Covers verbosity only; `rules/adhd-output.md`'s structural rules still apply regardless of medium.
 
 ## Code Style
 
@@ -95,15 +95,6 @@ When uncertain:
 - Never silently substitute plausible content for verified content.
 
 If a file claimed to exist by the user is not found, surface that immediately and ask. Do not create a stub matching the claimed name unless asked.
-
-## Environment and Stack
-
-- Host: macOS, zsh. Shell scripts must work within `.zprofile`.
-- Tooling is generally managed via Brewfile. Assume common CLIs are installed; verify before using an uncommon one.
-- Default stack: React, Next.js, TypeScript, Tailwind CSS (including versions that use the CSS first approach without a `tailwind.config.js`), semantic HTML.
-- Accessibility target: WCAG 2.2 AA.
-- Package manager: detect from lockfile (`pnpm-lock.yaml`, `yarn.lock`, `package-lock.json`, `bun.lockb`). Do not introduce a different one.
-- Node version: detect from `.nvmrc`, `.tool-versions`, or `engines` field. Do not assume.
 
 ## Commands and Side Effects
 
@@ -153,44 +144,28 @@ If a file claimed to exist by the user is not found, surface that immediately an
 
 ## Claude Code skills namespace (canonical)
 
-Procedures live as skills under `$HOME/.claude/skills/<group>-<name>/SKILL.md`, grouped by name prefix into five groups. Invocation uses the `/<group>-<name>` form (for example `/flow-checks`). Commands and skills are one merged system, so the richer skill frontmatter (`disable-model-invocation`, `context: fork`, `agent`) applies. The canonical inventory is the output of `/skills` inside Claude Code.
+Procedures live as skills under `$HOME/.claude/skills/<group>-<name>/SKILL.md`, grouped by name prefix into five groups. Invocation uses the `/<group>-<name>` form (for example `/flow-checks`). Commands and skills are one merged system, so the richer skill frontmatter (`disable-model-invocation`, `context: fork`, `agent`) applies. The canonical inventory is the output of `/skills` inside Claude Code, not any UI label.
 
-- `flow` - the default feature workflow: plan, implement, test, review, plus fix, debug, explore, quick, resume, checks, deps
-- `audit` - targeted audits invoked when scope warrants: a11y, claude, debt, doc-drift, perf, security, verify
-- `meta` - authoring and reflection: feature, prompt, retro
-- `write` - outward-facing communication: commit, devnote, explainer, pr, release-notes, review-comment, stakeholder
-- `question` - read-only Q&A tiered by reasoning depth: hard (model opus, effort from session), medium (effort high), easy (effort low)
+- `flow` - default feature workflow (plan, implement, test, review, fix, debug, etc.)
+- `audit` - targeted audits (a11y, debt, security, perf, etc.)
+- `meta` - authoring and reflection
+- `write` - outward-facing communication
+- `question` - read-only Q&A tiered by reasoning depth
 
 All groups except `question` are user-only (`disable-model-invocation: true`); they run when typed, not on model initiative. `question-*` stays model-invocable.
 
 ### Hard rules
 
-- pause after each `/flow-*` step and wait for user approval before continuing.
-- after completing each logical segment, stop and wait for the user to review and commit the changes.
-- The older `cmd-*` naming convention is stale. Any reference found in docs, workflow guides, `CLAUDE.md` files, or prompts must be corrected on touch to the current namespaced form.
+- Pause after each `/flow-*` step, and after completing any other logical segment, so the user can review (and commit, if applicable) before continuing.
+- The stale `cmd-*` naming convention must be corrected to the namespaced form wherever found (docs, workflow guides, `CLAUDE.md`, prompts) on touch.
 - Unprefixed references (`/plan`, `/implement`, `/review`) are ambiguous and should be normalized to the full `/<group>-<name>` form.
-- The canonical source of truth for available skills is the output of `/skills` inside Claude Code, not any UI label.
 - Any skill step that would write or state an "Open questions" list instead asks those questions via the AskUserQuestion tool, one question per item, multiple-choice with the built-in "Other" free-text option covering anything that has no discrete options. Record the resolved answers in the output (file or terminal) as decisions; do not leave an unresolved list.
 
 ## Agents
 
-Thirteen subagent capability shells live under `$HOME/.claude/agents/`. The canonical inventory is the output of `/agents`.
+Subagent capability shells live under `$HOME/.claude/agents/`. The canonical inventory, with full descriptions, is the output of `/agents` - also auto-injected via the Agent tool's own system-reminder each session, so it is not restated here.
 
-- `scout` - read-only exploration; broad `file:line` sweeps kept out of the main context
-- `reviewer` - senior read-only code review (invoked by `/flow-review`)
-- `tester` - writes and runs tests; never edits implementation (invoked by `/flow-test`)
-- `checker` - runs `run-checks.sh`, returns a pass/fail summary (invoked by `/flow-checks`)
-- `debugger` - localizes a fault with a single probe; never fixes (invoked by `/flow-debug`)
-- `a11y-auditor` - WCAG 2.2 AA audit (invoked by `/audit-a11y`)
-- `security-auditor` - security audit (invoked by `/audit-security`)
-- `perf-auditor` - static performance audit (invoked by `/audit-perf`)
-- `debt-auditor` - technical-debt audit, churn-correlated (invoked by `/audit-debt`)
-- `claude-config-auditor` - audits skills, hooks, and settings for staleness or misconfiguration (invoked by `/audit-claude`)
-- `doc-drift-auditor` - detects drift between code and its documentation (invoked by `/audit-doc-drift`)
-- `plan-critic` - adversarially reviews a plan artifact against the actual repo, not just its own internal consistency (invoked by `/flow-plan` after the plan is written)
-- `researcher` - read-only external research via Context7/WebFetch (invoked by `/flow-explore`)
-
-Spawn discipline: a subagent costs its own request budget against the 5h session window, so default to doing the work directly. Reach for one only when the task matches a shell above, needs isolation from the main context (a broad multi-file sweep, a read-only audit), or genuinely parallelizes across independent items - not as a reflexive first move for something a single Read or Grep call would answer. Override for the built-in Explore-agent guidance: spawn `Explore` only past 5 unresolved queries, not 3.
+Spawn discipline: a subagent costs its own request budget against the 5h session window, so default to doing the work directly. Reach for one only when the task matches an agent's specialty, needs isolation from the main context (a broad multi-file sweep, a read-only audit), or genuinely parallelizes across independent items - not as a reflexive first move for something a single Read or Grep call would answer. Override for the built-in Explore-agent guidance: spawn `Explore` only past 5 unresolved queries, not 3.
 
 Two operational facts: agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the `UserPromptSubmit` hook injection, so each shell self-loads stack context via `~/.claude/bin/agent-context.sh` at startup, with `guard-skills` as the enforcement floor for reading or editing agents. Forked skills (`context: fork`) run their whole body in a subagent; only `flow-checks` names one via `agent: <name>`. Most agent work instead comes from an inline skill body dispatching via the Agent tool, including `flow-plan` and `flow-implement`, which keep their phase-boundary stops in the main conversation.
 
