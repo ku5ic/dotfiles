@@ -8,11 +8,6 @@
 - [Optional authentication](#optional-authentication)
 - [References](#references)
 
-- [OAuth2 with JWT](#oauth2-with-jwt)
-- [API key (header)](#api-key-header)
-- [HTTP Basic](#http-basic)
-- [Optional authentication](#optional-authentication)
-
 All security classes import from `fastapi.security`.
 
 ## OAuth2 with JWT
