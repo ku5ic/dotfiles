@@ -1,7 +1,7 @@
 ---
 description: Explain a bug, feature, module, or section of code to someone new to the codebase - full mechanism, file:line citations, developer to developer
 argument-hint: <what to explain - a bug/ticket, a debug report path, a feature or module name, a file/directory, or blank to use what's already been discussed in this conversation>
-model: opus
+model: claude-opus-4-8
 disable-model-invocation: true
 ---
 
@@ -22,9 +22,12 @@ The subject is already understood well enough to explain - root cause from `/flo
 
 Structured with section headers - the point is a reader building a mental model, not a peer skimming a decision, so headers earn their keep here unlike in a devnote. Full sentences over fragments; a newcomer needs the reasoning spelled out. Cite every claim as `file:line`. Default to terminal. Only write to a file when asked - honor an exact location if one is given (e.g. "on desktop"); otherwise use `$(scratch-dir.sh)/<kind>-<scope-slug>-<YYYYMMDD-HHMM>.md` per the scratch convention.
 
+Invoking this skill is itself the detailed-explanation exception in `rules/adhd-output.md` - full sentences, full depth, no length ceiling. That exception covers how much gets said, not how it's structured: within each header's section, still short paragraphs (roughly 3 lines, per rule 8) and one hop or one point per paragraph, never one long undifferentiated block under a header.
+
 ## Rules
 
 - Every file:line cited must have been read in this session, not carried over unverified from a stale artifact.
 - State plainly when something is inferred vs. verified (e.g., "confirmed via the actual refetch call" vs. "likely, based on the naming").
 - Multiple mechanisms sharing one subject - one ticket, one feature, one module - are not automatically one story. Check before merging them into a single narrative.
 - Don't pad with a closing summary that restates what was just explained.
+- Follows `rules/adhd-output.md` structurally even though it's exempt from the length ceiling: short paragraphs per point, headers per hop or mechanism, front-loaded conclusions before the mechanism detail that supports them.

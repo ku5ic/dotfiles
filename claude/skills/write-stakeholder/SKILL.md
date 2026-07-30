@@ -54,3 +54,4 @@ Structure:
 - Tone: direct, professional, confident. Not apologetic, not hedged.
 - Do not invent context. If something in the input is ambiguous, note it as an open question rather than guessing.
 - No padding. If a section has nothing meaningful, omit it.
+- Follows `rules/adhd-output.md`, no exception: each section short and chunked - a non-technical reader has the least patience for a wall of text.

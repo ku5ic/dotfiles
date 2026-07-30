@@ -1,7 +1,7 @@
 ---
 description: WCAG 2.2 AA audit of a component, page, or template
 argument-hint: <file path, component, or a link to an external tracker/doc>
-model: opus
+model: claude-opus-4-8
 disable-model-invocation: true
 ---
 

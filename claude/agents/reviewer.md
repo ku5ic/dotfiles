@@ -2,7 +2,7 @@
 name: reviewer
 description: Senior read-only code review of recently changed code, stack aware. Invoked by the flow-review skill, which supplies the review procedure. Returns a severity-rated findings report. Not for making changes or for design planning.
 tools: Read, Grep, Glob, Bash, Skill
-model: opus
+model: claude-opus-4-8
 effort: high
 color: purple
 memory: local

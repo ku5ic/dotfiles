@@ -1,7 +1,7 @@
 ---
 description: Answers a hard question requiring deep reasoning, cross-layer analysis, or architectural judgment. Use whenever the question involves novel architectural tradeoffs, multi-layer debugging, subtle correctness or concurrency reasoning, or security or performance analysis with non-obvious interactions, OR the user asks for a rigorous, deep-dive, or high-stakes answer, even if "hard" is not mentioned by name.
 argument-hint: <the question>
-model: opus
+model: claude-opus-4-8
 context: fork
 ---
 

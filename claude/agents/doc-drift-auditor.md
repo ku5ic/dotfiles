@@ -2,7 +2,7 @@
 name: doc-drift-auditor
 description: Detects drift between code and its markdown or inline documentation. Read-only; returns a severity-rated report. Use when auditing a code surface for stale docs; not for applying fixes.
 tools: Read, Grep, Glob, Bash, Skill
-model: opus
+model: claude-opus-4-8
 effort: medium
 color: indigo
 memory: local

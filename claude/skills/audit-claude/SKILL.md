@@ -1,7 +1,7 @@
 ---
 description: Audit Claude Code configuration layer -- skills, commands, hooks, and settings -- for staleness, misconfiguration, and trigger-coverage gaps
 argument-hint: <none | --area=skills|commands|hooks|settings|versions>
-model: opus
+model: claude-opus-4-8
 disable-model-invocation: true
 ---
 
