@@ -10,6 +10,10 @@ path="$(extract_path)"
 [[ -z "$path" || ! -f "$path" ]] && exit 0
 
 case "$path" in
+*/.claude/scratch/*) exit 0 ;;
+esac
+
+case "$path" in
 *.sh | *.bash)
   command -v shfmt >/dev/null 2>&1 && shfmt -i 2 -w "$path"
   command -v shellcheck >/dev/null 2>&1 && { shellcheck "$path" >&2 || true; }
