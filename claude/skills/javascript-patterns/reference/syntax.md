@@ -27,7 +27,10 @@ Backtick-delimited strings support `${expression}` interpolation and unescaped n
 
 ## Arrow vs named functions
 
-Arrow functions inherit `this` from the surrounding scope and have no `arguments` binding. Use them for callbacks, short composables, and any place where lexical `this` matters. Use named function declarations for top-level module exports and recursive functions, where the binding name appears in stack traces and helps debuggability.
+Arrow functions inherit `this` from the surrounding scope and have no `arguments` binding.
+
+- Use arrow functions for callbacks, short composables, and any place where lexical `this` matters.
+- Use named function declarations for top-level module exports and recursive functions, where the binding name appears in stack traces and helps debuggability.
 
 ## Destructuring
 

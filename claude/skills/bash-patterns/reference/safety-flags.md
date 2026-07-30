@@ -10,10 +10,17 @@ set -euo pipefail
 IFS=$'\n\t'
 ```
 
-- `set -e` exits on a simple-command non-zero status. It does not exit when the failure is in the test of an `if`/`elif`, in the head of `while`/`until`, in `&&`/`||` chains except after the final operator, in any pipeline command but the last (subject to `pipefail`), or with a leading `!`. A trap on `ERR` runs under the same conditions.
+- `set -e` exits on a simple-command non-zero status. It does not exit when the failure is:
+  - In the test of an `if`/`elif`, or the head of `while`/`until`.
+  - In `&&`/`||` chains except after the final operator.
+  - In any pipeline command but the last (subject to `pipefail`).
+  - Preceded by a leading `!`.
+  - A trap on `ERR` runs under the same conditions.
 - `set -u` errors on parameter expansion of an unset variable. `$@` and `$*` (and array `[@]`/`[*]` subscripts) are exempt by design, so iterating `"$@"` over zero positional args is safe.
 - `set -o pipefail` makes a pipeline's exit status the rightmost non-zero, instead of just the last command's status. Without it, `cmd_a | cmd_b` succeeds whenever `cmd_b` succeeds, even if `cmd_a` failed.
-- `IFS=$'\n\t'` removes space as a field separator. Default IFS is space-tab-newline; dropping space prevents accidental word splitting on filenames-with-spaces. `$'...'` is ANSI-C quoting, supported in bash since 2.x.
+- `IFS=$'\n\t'` removes space as a field separator.
+  - Default IFS is space-tab-newline; dropping space prevents accidental word splitting on filenames-with-spaces.
+  - `$'...'` is ANSI-C quoting, supported in bash since 2.x.
 
 `#!/usr/bin/env bash` over `#!/bin/bash`. The env form picks up Homebrew bash on macOS so 4.0+ features work; the absolute path is locked to whatever ships in `/bin`. Use the absolute form only when the script must run before PATH is set up (early init scripts, recovery shells).
 

@@ -30,7 +30,11 @@
 - **Session fixation**: regenerate the session ID at the auth boundary (login, privilege change). OWASP Session Management cheat sheet calls this out as mandatory.
 - **JWT versus server-managed sessions**: OWASP explicitly recommends server-managed sessions for first-party applications that do not need to be fully stateless. JWT belongs in genuinely stateless contexts (token federation across services); for single-tenant first-party login flows, sessions are simpler and safer.
 - **Refresh-token rotation**: when JWT is the right call, rotate the refresh token on every use and revoke any reused refresh token (treat reuse as theft). Persist a per-token state for revocation; pure stateless JWT cannot revoke until expiry.
-- **JWT vulnerabilities to flag**: `alg: none` attack, weak HMAC secrets allowing offline cracking, missing `exp`, missing revocation mechanism. The first two are `failure`; missing `exp` is `failure`; missing revocation is at least `warning` for any high-stakes session.
+- **JWT vulnerabilities to flag**:
+  - `alg: none` attack: `failure`.
+  - Weak HMAC secrets allowing offline cracking: `failure`.
+  - Missing `exp`: `failure`.
+  - Missing revocation mechanism: at least `warning` for any high-stakes session.
 
 ## Content Security Policy
 

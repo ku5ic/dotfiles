@@ -4,7 +4,12 @@ The client bundle is everything that ships to the browser: every Client Componen
 
 ## Audit what crosses the boundary
 
-A heavy library imported at the top of a `"use client"` file pulls the whole package into the client bundle, regardless of whether the imported symbol is used in the rendered JSX. Common offenders: `lodash` (use `lodash-es` plus the named import, or per-method imports), `date-fns` (named imports tree-shake; namespace imports do not), icon libraries (import per icon, not the whole pack), `moment` (deprecated for new code; switch to `date-fns` or `dayjs`).
+A heavy library imported at the top of a `"use client"` file pulls the whole package into the client bundle, regardless of whether the imported symbol is used in the rendered JSX. Common offenders:
+
+- `lodash`: use `lodash-es` plus the named import, or per-method imports.
+- `date-fns`: named imports tree-shake; namespace imports do not.
+- Icon libraries: import per icon, not the whole pack.
+- `moment`: deprecated for new code; switch to `date-fns` or `dayjs`.
 
 Run `npx @next/bundle-analyzer` (or the equivalent for the deployment target) before assuming a bundle is small. Lee Robinson's bundle-audit pattern: open the analyzer, click the largest red rectangle, ask whether it should be on the client at all.
 
