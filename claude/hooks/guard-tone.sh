@@ -72,9 +72,7 @@ esac
 # Anchored to line start so legitimate mid-sentence uses ("this is certainly
 # true", "of course there are tradeoffs") are not flagged -- only the
 # opener/closer position these phrases actually appear in as filler.
-matched="$(printf '%s' "$content" | grep -m1 -ioE \
-  '^(certainly|absolutely|of course|sure)[!,.]|^(great question|i hope this helps|let.s dive in|happy to help|in conclusion|to summarize|in summary)([[:space:]]|[!,.]|$)' ||
-  true)"
+matched="$(printf '%s' "$content" | grep -m1 -ioE "$BANNED_TELL_REGEX" || true)"
 
 if [[ -n "$matched" ]]; then
   block "AI-tell opener/closer phrase found: '${matched}'. Remove it and retry." "ai-tell-phrase"
