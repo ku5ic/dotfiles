@@ -15,7 +15,7 @@ Use `/flow-plan` instead when the task and a chosen approach are both already co
 
 ## Procedure
 
-0. Resolve external context. If $ARGUMENTS contains a URL with little or no inline description, resolve it before anything else: identify which connected service the URL belongs to from its domain, use ToolSearch to find a matching fetch/read tool for that service (e.g. a URL under `app.clickup.com` points at the ClickUp tools, `notion.so` at the Notion tools, `github.com` at `gh` via Bash or the GitHub tools), and call it to pull the content. Treat the resolved text as the effective $ARGUMENTS for the rest of the procedure - never hand a bare link to a sub-agent. If no connected tool matches the URL's domain, say so and ask for the content pasted inline instead.
+0. Resolve external context per `rules/external-context.md`. If no connected tool matches the URL's domain, say so and ask for the content pasted inline instead.
 
 1. State the task in one sentence, your own words. Run the requirements-clarity check from `/flow-plan` (testable, unambiguous, complete, consistent) against it. Unlike `/flow-plan`, do not stop on a flag here - explore's job is to investigate the gap, not block on it. Carry every flag into the report.
 

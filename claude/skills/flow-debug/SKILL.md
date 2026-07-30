@@ -14,7 +14,7 @@ Use `/flow-plan` instead when root cause is already understood but the fix is st
 
 ## Procedure
 
-0. Resolve external context. If $ARGUMENTS contains a URL with little or no inline description, resolve it before anything else: identify which connected service the URL belongs to from its domain, use ToolSearch to find a matching fetch/read tool for that service (e.g. a URL under `app.clickup.com` points at the clickup tools, `notion.so` at the Notion tools, `github.com` at `gh` via Bash or the github tools), and call it to pull the content. Extract observed behavior, expected behavior, entry point, and repro steps from what comes back. Treat the resolved text as the effective $ARGUMENTS for the rest of the procedure - never hand a bare link to the debugger agent. If no connected tool matches the URL's domain, say so and ask for the content pasted inline instead.
+0. Resolve external context per `rules/external-context.md`, using the debugger agent for lookups. Extract observed behavior, expected behavior, entry point, and repro steps from what comes back. If no connected tool matches the URL's domain, say so and ask for the content pasted inline instead.
 
 1. From the resolved arguments, confirm: observed behavior, expected behavior, entry point (route, function, event), any reproduction steps already known. If the observed vs expected distinction is still absent after step 0, stop and ask before proceeding.
 

@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 ## Procedure
 
-0. Resolve external context. If $ARGUMENTS contains a URL with little or no inline description, resolve it before anything else: identify which connected service the URL belongs to from its domain, use ToolSearch to find a matching fetch/read tool for that service (e.g. a URL under `app.clickup.com` points at the clickup tools, `notion.so` at the Notion tools, `github.com` at `gh` via Bash or the github tools), and call it to pull the content. Extract the relevant scope and requirements from what comes back. Treat the resolved text as the effective $ARGUMENTS for the rest of this procedure - never hand a bare link to the a11y-auditor agent.
+0. Resolve external context per `rules/external-context.md`, using the a11y-auditor agent for lookups.
 
 Delegate the procedure below (steps 1 onward, through Scope) to the a11y-auditor agent (Agent tool, subagent_type: a11y-auditor, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
 
