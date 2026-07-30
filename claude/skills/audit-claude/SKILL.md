@@ -53,7 +53,10 @@ Glob `~/.dotfiles/claude/skills/*/SKILL.md`, filtered to files whose frontmatter
 - Flag (failure): YAML frontmatter is absent entirely.
 - Flag (info): `model` or `effort` fields are absent from frontmatter. (Info only -- optional but expected for high-complexity skills. `name`/`description` presence is already covered by Pass 1; `argument-hint` is not a skill frontmatter field and is not checked here.)
 - Use `rg` to scan the body for deprecated `cmd-*` naming convention references (e.g., `/cmd-plan`, `/cmd-implement`). Flag each hit (warning) with the line number.
-- Use `rg` to scan the body for unprefixed or stale-prefixed flow-step references -- the seven short names used by the `flow-*` group (`plan`, `implement`, `review`, `test`, `fix`, `resume`, `checks`) -- appearing as bare `/plan` etc. or old colon-namespaced `/flow:plan` etc., rather than the current hyphenated `/flow-plan` form. Pattern: `/\b(flow:)?(plan|implement|review|test|fix|resume|checks)\b` not preceded by a word character and not immediately preceded by `flow-`. Exclude `~/.dotfiles/claude/skills/audit-claude/SKILL.md` itself from this scan to avoid self-referential false positives. Flag each remaining hit (warning) with the line number.
+- Use `rg` to scan the body for unprefixed or stale-prefixed flow-step references -- the seven short names used by the `flow-*` group (`plan`, `implement`, `review`, `test`, `fix`, `resume`, `checks`) -- appearing as bare `/plan` etc. or old colon-namespaced `/flow:plan` etc., rather than the current hyphenated `/flow-plan` form:
+  - Pattern: `/\b(flow:)?(plan|implement|review|test|fix|resume|checks)\b` not preceded by a word character and not immediately preceded by `flow-`.
+  - Exclude `~/.dotfiles/claude/skills/audit-claude/SKILL.md` itself from this scan to avoid self-referential false positives.
+  - Flag each remaining hit (warning) with the line number.
 
 ### Pass 3: Hooks
 
@@ -65,7 +68,10 @@ For each wired hook path:
 - Flag (failure): the script exists but is not executable (`[ -x ]`).
 - For `PreToolUse` and `PostToolUse` entries only: flag (warning) if the `matcher` value is not a recognized Claude Code tool name or `|`-separated combination of them. Split the matcher on `|` and validate each token against the known-good set: `Bash`, `Edit`, `Write`, `MultiEdit`, `Skill`, `Read`, `Agent`, `WebFetch`, `WebSearch`, `Glob`, `Grep`, `LS`. Any unrecognized token gets a warning: "unrecognized matcher token, verify against current Claude Code hook docs".
 - For `UserPromptSubmit` and `UserPromptExpansion` entries: these event types carry no `matcher` field by design. Skip the matcher check entirely; only validate that each entry's `hooks[].command` script exists and is executable.
-- For `PreToolUse` + `Bash` matcher hooks: read the script body and check that it reads from stdin (sources `_lib.sh` and calls `read_payload`, or contains an explicit stdin read: `read`, `cat`, or `</dev/stdin`) and blocks via `exit 2`, either directly in the script body or by delegating to a shared helper that does (e.g. `_lib.sh`'s `block()` function, which itself calls `exit 2` -- check `_lib.sh` for the delegation rather than requiring the literal `exit 2` text in the hook script itself). Flag (warning) if the stdin-read pattern is absent, or if neither a direct `exit 2` nor a delegated block-helper call is found, because a PreToolUse Bash guard that does not read stdin or does not block is structurally broken.
+- For `PreToolUse` + `Bash` matcher hooks: read the script body and check both of the following:
+  - Reads from stdin: sources `_lib.sh` and calls `read_payload`, or contains an explicit stdin read (`read`, `cat`, or `</dev/stdin`).
+  - Blocks via `exit 2`: either directly in the script body, or by delegating to a shared helper that does (e.g. `_lib.sh`'s `block()` function, which itself calls `exit 2` -- check `_lib.sh` for the delegation rather than requiring the literal `exit 2` text in the hook script itself).
+  - Flag (warning) if either condition fails -- a PreToolUse Bash guard that does not read stdin or does not block is structurally broken.
 
 Orphan check: glob `~/.dotfiles/claude/hooks/*.sh`. For each hook file NOT referenced in `settings.json` AND NOT named `_lib.sh` (which is a shared library, not a hook): flag (info) as "script exists on disk but is not wired in settings.json -- orphaned or intentionally disabled".
 
@@ -83,7 +89,34 @@ Read `~/.claude/settings.json` with `jq`.
 
 For each skill that covers a framework or language with version-sensitive behavior, read its `SKILL.md` and identify which version(s) it targets or describes.
 
-Skills to examine (check `name` frontmatter against this list): `react-patterns`, `next-app-router-patterns`, `django-patterns`, `drf-patterns`, `fastapi-patterns`, `vue-patterns`, `nuxt-patterns`, `tailwind-patterns`, `typescript-patterns`, `python-patterns`, `javascript-patterns`, `bash-patterns`, `docker-patterns`. Skills not in this list (`git-patterns`, `wcag-audit`, `test-patterns`, `security-patterns`, `markdown-report`, `engineering-fundamentals`, `monitoring-patterns`, `logging-patterns`, `backup-patterns`, `vps-provisioning`) are intentionally excluded: they cover concepts or standards that do not resolve to a single versioned library in Context7.
+Skills to examine (check `name` frontmatter against this list):
+
+- `react-patterns`
+- `next-app-router-patterns`
+- `django-patterns`
+- `drf-patterns`
+- `fastapi-patterns`
+- `vue-patterns`
+- `nuxt-patterns`
+- `tailwind-patterns`
+- `typescript-patterns`
+- `python-patterns`
+- `javascript-patterns`
+- `bash-patterns`
+- `docker-patterns`
+
+Skills not in this list are intentionally excluded -- they cover concepts or standards that do not resolve to a single versioned library in Context7:
+
+- `git-patterns`
+- `wcag-audit`
+- `test-patterns`
+- `security-patterns`
+- `markdown-report`
+- `engineering-fundamentals`
+- `monitoring-patterns`
+- `logging-patterns`
+- `backup-patterns`
+- `vps-provisioning`
 
 For each examined skill:
 

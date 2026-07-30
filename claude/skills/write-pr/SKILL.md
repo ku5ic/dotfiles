@@ -15,7 +15,12 @@ context: fork
    - `<root>/docs/pull_request_template.md`
    - `<root>/pull_request_template.md`
 
-   Test each exact path (e.g. `test -f <path>`) - do not run a keyword/substring search like `fd -i pull_request_template` across the tree. Two failure modes make that unsafe: (1) `.github` is a hidden directory that `fd` silently excludes unless you pass `-H`, so a template living there gets missed entirely; (2) `.github` commonly holds several unrelated `*_pull_request_template.md` variants (per-team or per-change-type templates, e.g. `ds_pull_request_template.md`), and a substring match sorted alphabetically will confidently pick the wrong one instead of the actual default. Exact-path checks sidestep both.
+   Test each exact path (e.g. `test -f <path>`) - do not run a keyword/substring search like `fd -i pull_request_template` across the tree. Two failure modes make that unsafe:
+
+   - `.github` is a hidden directory that `fd` silently excludes unless you pass `-H`, so a template living there gets missed entirely.
+   - `.github` commonly holds several unrelated `*_pull_request_template.md` variants (per-team or per-change-type templates, e.g. `ds_pull_request_template.md`), and a substring match sorted alphabetically will confidently pick the wrong one instead of the actual default.
+
+   Exact-path checks sidestep both.
 
    If one exists, read it: its sections replace the default Structure below. If none exists, fall back to the default Structure.
 

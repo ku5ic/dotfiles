@@ -20,7 +20,10 @@ agent: checker
 
 ## On failure
 
-State which check failed and the relevant output, then classify it: in the change just made, or pre-existing. Pre-existing and unrelated to the current work: surface it, do not auto-fix as part of the current task. Pre-existing and on the path of the current work: flag it and ask whether to expand scope to fix it. This skill only reports - whether to fix a failure in the change just made is the caller's decision, not this skill's.
+State which check failed and the relevant output, then classify it:
+
+- In the change just made: this skill only reports - whether to fix it is the caller's decision, not this skill's.
+- Pre-existing: surface it, do not auto-fix as part of the current task. If it's on the path of the current work, flag it and ask whether to expand scope to fix it instead.
 
 ## Stop
 

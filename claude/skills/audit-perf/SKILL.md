@@ -13,7 +13,8 @@ Delegate the procedure below (steps 1 onward, through Rules) to the perf-auditor
 
 1. Stack is in the repo context your startup produced (`agent-context.sh`). Get the scratch directory via `scratch-dir.sh`.
 2. Load the patterns skill for the detected stack (react-patterns, django-patterns, etc.) for the anti-pattern reference.
-3. Review the target across these categories, grounding each candidate in this project's own precedent before including it: if the same pattern is already an established, consistent choice elsewhere in the codebase and not flagged as a problem by CLAUDE.md or existing tests, it is a deliberate tradeoff, not a finding, unless it is measurably worse at this location than elsewhere. Skip categories with no findings.
+3. Review the target across these categories, grounding each candidate in this project's own precedent before including it. If the same pattern is already an established, consistent choice elsewhere in the codebase and not flagged as a problem by CLAUDE.md or existing tests, it is a deliberate tradeoff, not a finding, unless it is measurably worse at this location than elsewhere.
+4. Skip categories with no findings.
 
 ### Frontend (React and Next.js)
 

@@ -17,13 +17,38 @@ Use `/flow-plan` instead when the task and a chosen approach are both already co
 
 0. Resolve external context per `rules/external-context.md`. If no connected tool matches the URL's domain, say so and ask for the content pasted inline instead.
 
-1. State the task in one sentence, your own words. Run the requirements-clarity check from `/flow-plan` (testable, unambiguous, complete, consistent) against it. Unlike `/flow-plan`, do not stop on a flag here - explore's job is to investigate the gap, not block on it. Carry every flag into the report.
+1. Do the following:
+   1. State the task in one sentence, your own words.
+   2. Run the requirements-clarity check from `/flow-plan` against it, checking whether the task statement is:
+      - Testable
+      - Unambiguous
+      - Complete
+      - Consistent
+   3. Unlike `/flow-plan`, do not stop on a flag here - explore's job is to investigate the gap, not block on it.
+   4. Carry every flag into the report.
 
 2. Quick codebase skim: read project CLAUDE.md, grep for existing patterns that resemble the task, identify candidate modules or files. Keep this to a handful of tool calls - enough to name 2-4 plausible implementation directions, not the research itself. If nothing plausible turns up, say so and stop rather than manufacturing directions to fill the fan-out.
 
-3. Fan out. For each candidate direction from step 2, dispatch one scout agent (Agent tool, subagent_type: scout) in the same message as the others so they run in parallel. Give each: the resolved task statement, the specific direction it owns, and instructions to report existing code touching that direction, relevant prior art, every finding cited `file:line`, and whether the direction matches or diverges from this project's established convention for this class of problem (per project CLAUDE.md and any loaded stack pattern skill), citing the precedent it matches or noting there is none. If the resolved input references an unfamiliar external library or API, dispatch one researcher agent (Agent tool, subagent_type: researcher) in the same fan-out message, giving it the specific library or URL and the claims to verify. If only one direction is plausible, dispatch one agent and say so plainly in the report - a single-path finding is a valid outcome, not a shortfall.
+3. Fan out. For each candidate direction from step 2, dispatch one scout agent (Agent tool, subagent_type: scout) in the same message as the others so they run in parallel. Give each scout:
+   - The resolved task statement
+   - The specific direction it owns
+   - Instructions to report:
+     - Existing code touching that direction
+     - Relevant prior art
+     - Every finding cited `file:line`
+     - Whether the direction matches or diverges from this project's established convention for this class of problem (per project CLAUDE.md and any loaded stack pattern skill), citing the precedent it matches or noting there is none
 
-4. Synthesize, pruning by convention as you go. For each direction, turn its scout findings into a scope estimate (files/modules touched), a rough risk note, a convention-fit read (matches an existing pattern, or names a divergence with justification - per the project's own conventions, not generic best practice), and how well it addresses the task statement. A direction whose only path forward is an unjustified divergence from established convention does not make the candidate list - move it to Ruled out instead of presenting it as a peer option. This is what keeps the report short on a complex task: convention-fit prunes, it does not just annotate. Among the survivors this stays a survey, not a decision - do not pick a winner. Naming the strongest candidate when one clearly stands out is fine; committing to it with full tradeoffs is `/flow-plan`'s job.
+   If the resolved input references an unfamiliar external library or API, dispatch one researcher agent (Agent tool, subagent_type: researcher) in the same fan-out message, giving it the specific library or URL and the claims to verify.
+
+   If only one direction is plausible, dispatch one agent and say so plainly in the report - a single-path finding is a valid outcome, not a shortfall.
+
+4. Synthesize, pruning by convention as you go. For each direction, turn its scout findings into:
+   - A scope estimate (files/modules touched)
+   - A rough risk note
+   - A convention-fit read (matches an existing pattern, or names a divergence with justification - per the project's own conventions, not generic best practice)
+   - How well it addresses the task statement
+
+   A direction whose only path forward is an unjustified divergence from established convention does not make the candidate list - move it to Ruled out instead of presenting it as a peer option. This is what keeps the report short on a complex task: convention-fit prunes, it does not just annotate. Among the survivors this stays a survey, not a decision - do not pick a winner. Naming the strongest candidate when one clearly stands out is fine; committing to it with full tradeoffs is `/flow-plan`'s job.
 
 5. Decisions. Any question that came up - which direction looks worth pursuing, a requirement that stayed ambiguous after research, scope that needs the requester's input - ask via the AskUserQuestion tool (multiple-choice, "Other" for free text). Record the resolved answers in the report's Decisions section. Do not leave an open-questions list. If forked, follow CLAUDE.md's forked decision protocol instead of guessing.
 
