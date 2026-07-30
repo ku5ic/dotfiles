@@ -24,7 +24,7 @@ Install: `pip install "fastapi[standard]"`
 
 ## Reference files
 
-| File                                                         | Topics                                                                                                        |
+| File                                                         | Covers                                                                                                        |
 | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | [pydantic-schemas.md](reference/pydantic-schemas.md)         | BaseModel, Field(), field_validator, model_validator, model_config, ConfigDict, separate input/output schemas |
 | [dependency-injection.md](reference/dependency-injection.md) | Depends(), Annotated pattern, yield dependencies, testing overrides                                           |

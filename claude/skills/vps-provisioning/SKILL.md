@@ -22,7 +22,7 @@ Targeting Debian 12 (Bookworm) and Ubuntu 24.04 LTS. Commands and package names 
 
 ## Reference files
 
-| File                                           | Topics                                                               |
+| File                                           | Covers                                                               |
 | ---------------------------------------------- | -------------------------------------------------------------------- |
 | [initial-setup.md](reference/initial-setup.md) | Non-root sudo user, SSH key auth, disabling root/password login      |
 | [firewall.md](reference/firewall.md)           | ufw default policy, allow/deny rules, rate limiting                  |
