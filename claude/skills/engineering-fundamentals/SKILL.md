@@ -13,10 +13,6 @@ The `/flow:*` and `/audit:*` commands enforce these checks as deterministic phas
 
 Severity rubric matches `markdown-report`: cite on findings, do not invent new levels.
 
-- `failure`: a concrete defect or violation that should not ship.
-- `warning`: a smell or pattern that compounds with other findings.
-- `info`: a hardening opportunity or note, not a defect.
-
 ## When to load this skill
 
 | Activity                                    | Sections to apply                                         |

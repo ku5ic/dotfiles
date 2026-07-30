@@ -9,9 +9,7 @@ Apply the runner-specific reference matching the detected test runner. Principle
 
 ## Severity rubric
 
-- `failure`: a concrete defect or violation that should not ship.
-- `warning`: a smell or pattern that compounds with other findings.
-- `info`: a hardening opportunity or note, not a defect.
+Severity rubric: matches `markdown-report` (failure/warning/info).
 
 ## Reference files
 

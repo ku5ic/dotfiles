@@ -61,10 +61,6 @@ Every version-sensitive claim, library version, syntax form, framework feature, 
 
 ## Severity rubric (matches markdown-report)
 
-- `failure`: a concrete defect or violation that should not ship.
-- `warning`: a smell or pattern that compounds with other findings.
-- `info`: a hardening opportunity or note, not a defect.
-
 No new severity levels.
 
 ## When to load this skill
