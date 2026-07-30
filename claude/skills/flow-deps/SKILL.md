@@ -9,7 +9,13 @@ General core, best-effort tail. Package-manager agnostic.
 
 The core (Phases 1-4) is ecosystem-agnostic: GitHub normalizes Dependabot PRs and security alerts identically across ecosystems, so merging PRs and reconciling alerts works the same everywhere. The tail (Phase 5) is opt-in.
 
-This command names no specific package manager, lockfile, or manifest. The package manager and stack are already injected at session start (`<tooling>` block: `package-manager: <pm>`; `<repo-context>` block: stack and location). Read them from there. For any install, audit, tree query, lockfile regen, or override, derive the correct command from that manager at runtime. Do not detect the stack, do not re-list lockfiles, do not hardcode any tool's syntax. All check-running goes through `run-checks.sh`.
+This command names no specific package manager, lockfile, or manifest.
+
+- Package manager and stack are already injected at session start (`<tooling>` block: `package-manager: <pm>`; `<repo-context>` block: stack and location). Read them from there. For any install, audit, tree query, lockfile regen, or override, derive the correct command from that manager at runtime.
+- Do not detect the stack.
+- Do not re-list lockfiles.
+- Do not hardcode any tool's syntax.
+- All check-running goes through `run-checks.sh`.
 
 ## Preconditions
 
@@ -41,7 +47,12 @@ Field paths are verified against a live payload. The `ecosystem` field identifie
 Branch on the outcome (read it with `--include` and the `HTTP/2 <code>` line):
 
 - 200: alerts are authoritative for severity. Continue.
-- 404 on this bare GET: alerts are unavailable for the repo (disabled, or not visible to the token). Record "GitHub Dependabot alerts unavailable for <slug>" (name the slug) and fall through to audit-only, flagging every severity "from local audit, may understate". Do not assert "disabled" as fact. A 404 that appears only when a filter is attached but not on the bare GET is a malformed request; re-issue the bare GET.
+- 404 on this bare GET:
+  1. Alerts are unavailable for the repo (disabled, or not visible to the token).
+  2. Record "GitHub Dependabot alerts unavailable for <slug>" (name the slug).
+  3. Fall through to audit-only, flagging every severity "from local audit, may understate".
+  4. Do not assert "disabled" as fact.
+  5. If a 404 appears only when a filter is attached but not on the bare GET, it is a malformed request - re-issue the bare GET.
 - 403: token lacks scope. A classic PAT needs `repo` or `security_events`. Stop and tell the user to run `gh auth refresh -s security_events`.
 - Any other non-2xx: stop and surface status and body.
 
@@ -100,10 +111,24 @@ When invoked, for each open alert with no PR, work in this order and stop at the
 
 1. Fixed version from `security_vulnerability.first_patched_version.identifier`. If null, there is no patched release; record "no fix available" and leave open.
 2. Prefer the real fix: bump the parent. Using the injected manager's dependency-tree query, find the direct dependency that pulls the vulnerable transitive in. If a newer version of that direct dependency depends on a fixed version of the transitive, bump the direct dependency. This resolves the alert through normal resolution and leaves no standing pin.
-3. Only if no parent bump resolves it (parent abandoned, or its latest still pulls the vulnerable range), apply the transitive-pin mechanism for the injected manager. Determine that mechanism from the manager itself; if you are not certain the ecosystem supports a transitive pin, stop and hand back to the user with the alert details rather than guessing. A transitive pin is debt: it persists even after the ecosystem moves on. Record every pin applied.
+3. Only if no parent bump resolves it (parent abandoned, or its latest still pulls the vulnerable range):
+   1. Determine the transitive-pin mechanism from the injected manager itself.
+   2. If you are not certain the ecosystem supports a transitive pin, stop and hand back to the user with the alert details rather than guessing.
+   3. Apply the transitive-pin mechanism for the injected manager.
+   4. Note: a transitive pin is debt - it persists even after the ecosystem moves on.
+   5. Record every pin applied.
 4. If neither applies and the advisory is not reachable in this project's usage, record it for dismissal rather than forcing a change.
 
-After any manifest edit: confirm before writing, regenerate the lockfile with the manager's lockfile-only install, verify with the manager's tree query that the tree resolved to the fixed version, then run `!`run-checks.sh``. Real code change: branch, commit, `gh pr create`. Do not push to a protected branch. Stop before merging your own PR.
+After any manifest edit:
+
+1. Confirm before writing.
+2. Regenerate the lockfile with the manager's lockfile-only install.
+3. Verify with the manager's tree query that the tree resolved to the fixed version.
+4. Run `!`run-checks.sh``.
+5. Branch.
+6. Commit.
+7. `gh pr create`.
+8. Do not push to a protected branch; stop before merging your own PR.
 
 ## Phase 6: report
 
@@ -113,18 +138,12 @@ Per PR/alert: package, ecosystem, scope, relationship, version delta, bump, seve
 
 ## Rules
 
-- Package-manager agnostic. Name no specific manager, lockfile, or manifest. Read the manager from the injected `<tooling>` block (fall back to the manifest in `<repo-context>` for ecosystems without one) and derive every install/audit/tree/regen/pin command from it at runtime. Do not detect the stack.
 - Core (Phases 1-4) is ecosystem-agnostic. Read the `ecosystem` field on each alert; never assume a default ecosystem.
 - Phase 5 is opt-in (`--fix-transitive`) and best-effort. Without the flag, report alerts with no PR and stop.
 - In Phase 5, prefer a parent bump over a transitive pin. A pin is the fallback, not the default, and it is standing debt; record every one. If the ecosystem's pin mechanism is uncertain, stop and hand back rather than guess.
 - Do not re-derive the base branch. Use `git-base.sh` (Precondition 4). All checks go through `run-checks.sh`.
 - Severity is from the GitHub alert list when available, not local audit.
-- Fetch alerts with a bare GET and filter `state` in jq. Never `-f state=open` (POST -> 404), never unquoted `?state=open` (zsh glob).
-- 404 on the bare GET means alerts unavailable (name the slug, fall back to audit-only), not a proven "disabled". 403 means missing scope. Handle differently.
 - Only `state == "open"` alerts are actionable. `fixed`, `dismissed`, `auto_dismissed` are not.
-- Do not merge major-version bumps autonomously. Hold and confirm.
-- Do not merge any PR whose `run-checks.sh` reported a failure.
 - Do not push to or merge into a protected branch directly.
-- `--force-with-lease` only to a bot-owned Dependabot branch, after confirmation.
 - No opportunistic bumps. Touch only deps named in an open alert or open Dependabot PR.
 - One operation per Bash call. No chaining.

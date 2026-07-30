@@ -4,7 +4,12 @@ Next.js 16 ships two coexisting caching models. Verify which one a project uses 
 
 ## Cache Components (Next.js 16+ model)
 
-Opt in by setting `cacheComponents: true` in `next.config.ts`. Caching becomes explicit via the `"use cache"` directive at the top of an async function, file, or component. Partial Prerendering (PPR) becomes the default rendering behavior: cached and deterministic content lands in a static shell at build time; uncached or runtime-data-using subtrees stream at request time wrapped in `<Suspense>`.
+Opt in by setting `cacheComponents: true` in `next.config.ts`.
+
+- Caching becomes explicit via the `"use cache"` directive at the top of an async function, file, or component.
+- Partial Prerendering (PPR) becomes the default rendering behavior:
+  - Cached and deterministic content lands in a static shell at build time.
+  - Uncached or runtime-data-using subtrees stream at request time wrapped in `<Suspense>`.
 
 ```tsx
 import { cacheLife, cacheTag } from "next/cache";
@@ -19,7 +24,9 @@ export default async function BlogPosts() {
 }
 ```
 
-`cacheLife()` sets time-based revalidation; `cacheTag()` attaches tags for `updateTag()` invalidation in Server Functions. Without `"use cache"`, components that touch runtime APIs (`cookies`, `headers`, `searchParams`, `params`) must be wrapped in `<Suspense>` or Next will fail the build with a `blocking-route` error.
+- `cacheLife()` sets time-based revalidation.
+- `cacheTag()` attaches tags for `updateTag()` invalidation in Server Functions.
+- Without `"use cache"`, components that touch runtime APIs (`cookies`, `headers`, `searchParams`, `params`) must be wrapped in `<Suspense>` or Next will fail the build with a `blocking-route` error.
 
 ## Previous caching model (still supported)
 

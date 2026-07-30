@@ -5,13 +5,14 @@ description: JavaScript language patterns, modern syntax, async handling, module
 
 # JavaScript patterns
 
-Default assumption: a project running on the current Node.js Active LTS (Node 24, "Krypton") or a modern browser baseline. If the project also uses TypeScript, the type-aware skill applies on top of these language patterns. Adapt advice to the Node version in the project's `.nvmrc`, `.tool-versions`, or `engines` field in `package.json`.
+Default assumption: a project running on the current Node.js Active LTS (Node 24, "Krypton") or a modern browser baseline.
+
+- If the project also uses TypeScript, the type-aware skill applies on top of these language patterns.
+- Adapt advice to the Node version in the project's `.nvmrc`, `.tool-versions`, or `engines` field in `package.json`.
 
 ## Severity rubric
 
-- `failure`: a concrete defect or violation that should not ship.
-- `warning`: a smell or pattern that compounds with other findings.
-- `info`: a hardening opportunity or note, not a defect.
+Severity rubric: matches `markdown-report` (failure/warning/info).
 
 ## Reference files
 
@@ -51,4 +52,8 @@ Default assumption: a project running on the current Node.js Active LTS (Node 24
 
 ## Maintenance note
 
-ECMAScript ships a new edition each June. New syntax tends to land in V8 and Node within a release cycle of being standardized; TC39 stage 3 proposals can sometimes land in Node behind a flag before reaching stage 4. When new syntax appears in a code review, check this skill against the current MDN page and the current Node Active LTS before relying on legacy guidance here. Dropping support for an older Node major in `engines.node` is a breaking change for downstream consumers; treat it as such.
+ECMAScript ships a new edition each June.
+
+- New syntax tends to land in V8 and Node within a release cycle of being standardized; TC39 stage 3 proposals can sometimes land in Node behind a flag before reaching stage 4.
+- When new syntax appears in a code review, check this skill against the current MDN page and the current Node Active LTS before relying on legacy guidance here.
+- Dropping support for an older Node major in `engines.node` is a breaking change for downstream consumers; treat it as such.

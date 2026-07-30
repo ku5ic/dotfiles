@@ -5,13 +5,15 @@ description: Python language-level patterns covering type hints, strictness, pro
 
 # Python patterns
 
-Default assumption: Python 3.11 or later, type hints required on public function signatures, mypy or pyright in strict mode. 3.11 is the floor because TaskGroup, `Self`, `StrEnum`, and `ExceptionGroup` all landed there. 3.14 (current stable, released 2025-10-07) made deferred annotation evaluation the default; on older supported versions the `from __future__ import annotations` import is still useful for forward references. Adapt advice to the version in the project's `.tool-versions`, `pyproject.toml`, or `.python-version`.
+Default assumption: Python 3.11 or later, type hints required on public function signatures, mypy or pyright in strict mode.
+
+- 3.11 is the floor: `TaskGroup`, `Self`, `StrEnum`, and `ExceptionGroup` all landed there.
+- 3.14 (current stable, released 2025-10-07) made deferred annotation evaluation the default; on older supported versions, `from __future__ import annotations` is still useful for forward references.
+- Adapt advice to the version in the project's `.tool-versions`, `pyproject.toml`, or `.python-version`.
 
 ## Severity rubric
 
-- `failure`: a concrete defect or violation that should not ship.
-- `warning`: a smell or pattern that compounds with other findings.
-- `info`: a hardening opportunity or note, not a defect.
+Severity rubric: matches `markdown-report` (failure/warning/info).
 
 ## Reference files
 
@@ -50,4 +52,7 @@ Default assumption: Python 3.11 or later, type hints required on public function
 
 ## Maintenance note
 
-When Python evolves -- new minor each October -- reconcile this skill against the current `whatsnew` page and the PEP index before trusting the deltas above. The 3.14 deferred-annotation default is the largest near-term shift; once 3.13 reaches EOL, the floor here can move and the `from __future__` paragraph can be removed. Free-threaded Python graduated from experimental in 3.13 to officially supported in 3.14 per PEP 779; module-level mutable state without synchronization is more clearly a hazard now than it was on the GIL-only runtime.
+Python gets a new minor version each October; reconcile this skill against the current `whatsnew` page and the PEP index before trusting the deltas above.
+
+- The 3.14 deferred-annotation default is the largest near-term shift: once 3.13 reaches EOL, the floor here can move and the `from __future__` paragraph can be removed.
+- Free-threaded Python graduated from experimental in 3.13 to officially supported in 3.14 per PEP 779: module-level mutable state without synchronization is more clearly a hazard now than it was on the GIL-only runtime.

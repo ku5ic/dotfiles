@@ -12,7 +12,9 @@
 - `from typing import Self` for fluent APIs and factory methods (3.11+, PEP 673). Cleaner than `TypeVar` bounded on the class.
 - `from __future__ import annotations` on 3.11-3.13 to turn annotations into strings -- helps with forward references and self-referential types. On 3.14 this is unnecessary and on a deprecation path (PEP 749); deferred evaluation is the default (PEP 649).
 - New generic syntax in 3.12+ (PEP 695): `type Pair[T] = tuple[T, T]` and `class Container[T]:` instead of `TypeVar("T")` + `Generic[T]`. Use it when the floor is 3.12; keep `TypeVar` when supporting 3.11.
-- `TypedDict` for dict shapes at trust boundaries (config files, JSON payloads). `dataclass(frozen=True, slots=True)` for internal value objects (`slots=True` is 3.10+). `pydantic.BaseModel` (v2) when validation is part of the contract.
+- `TypedDict` for dict shapes at trust boundaries (config files, JSON payloads).
+- `dataclass(frozen=True, slots=True)` for internal value objects (`slots=True` is 3.10+).
+- `pydantic.BaseModel` (v2) when validation is part of the contract.
 - `Protocol` over `abc.ABC` for structural typing. Lets callers satisfy the type without inheriting.
 - `Annotated[T, metadata]` for runtime-introspectable hints. Pydantic v2 and FastAPI use this heavily (e.g. `PositiveInt = Annotated[int, Gt(0)]`).
 - Generic constraints: `T = TypeVar("T", bound=BaseClass)` for the legacy syntax; `class Repo[T: BaseClass]:` for the PEP 695 form.

@@ -104,3 +104,28 @@ block() {
 warn() {
   echo "${HOOK_NAME:-hook}: $1" >&2
 }
+
+# Banned AI-tell opener/closer phrases (CLAUDE.md's Voice section). Anchored
+# to line start so mid-sentence uses ("this is certainly true") are not
+# flagged -- only the opener/closer position these phrases appear in as
+# filler. Shared by guard-tone.sh (written files) and guard-response.sh
+# (chat) so the two enforcement paths cannot silently drift apart.
+# shellcheck disable=SC2034
+readonly BANNED_TELL_REGEX='^(certainly|absolutely|of course|sure)[!,.]|^(great question|i hope this helps|let.s dive in|happy to help|in conclusion|to summarize|in summary)([[:space:]]|[!,.]|$)'
+
+# Longest run of consecutive "wall of text" lines in $1: non-blank lines that
+# are not a list item, heading, blockquote, or table row, outside fenced code
+# blocks. Deterministic stand-in for rules/adhd-output.md rule 8 (no walls of
+# text) -- the only rule in that file mechanical enough to check safely; the
+# rest (front-loading, one idea per bullet, plain language) need judgment a
+# hook cannot make.
+longest_prose_run() {
+  printf '%s\n' "$1" | awk '
+    /^```/ { infence = !infence; next }
+    infence { next }
+    NF == 0 { run = 0; next }
+    /^[[:space:]]*([0-9]+[.)]|[-*+][[:space:]]|#{1,6}[[:space:]]|>|\|)/ { run = 0; next }
+    { run++; if (run > best) best = run }
+    END { print best + 0 }
+  '
+}

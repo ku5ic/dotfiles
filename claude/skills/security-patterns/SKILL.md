@@ -46,4 +46,7 @@ Apply the references that match the detected stack. Severity rubric below applie
 
 ## Maintenance note
 
-Web security best practices evolve as browsers ship new headers, new threat classes emerge, and OWASP updates the Cheat Sheet Series. Reconcile this skill against the OWASP Cheat Sheet Series and MDN Web Security at least once a year, and on any significant browser release that changes default cookie or fetch semantics.
+Web security best practices evolve as browsers ship new headers, new threat classes emerge, and OWASP updates the Cheat Sheet Series.
+
+- Reconcile this skill against the OWASP Cheat Sheet Series and MDN Web Security at least once a year.
+- Also reconcile on any significant browser release that changes default cookie or fetch semantics.

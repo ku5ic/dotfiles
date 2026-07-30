@@ -1,0 +1,24 @@
+# Agents
+
+Elaboration on `CLAUDE.md`'s `## Agents` section.
+
+## Spawn discipline
+
+A subagent costs its own request budget against the 5h session window, so default to doing the work directly. Reach for one only when:
+
+- The task matches an agent's specialty.
+- It needs isolation from the main context (a broad multi-file sweep, a read-only audit).
+- It genuinely parallelizes across independent items.
+
+Not as a reflexive first move for something a single Read or Grep call would answer. Override for the built-in Explore-agent guidance: spawn `Explore` only past 5 unresolved queries, not 3.
+
+## Two operational facts
+
+1. Agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the `UserPromptSubmit` hook injection - each shell self-loads stack context via `~/.claude/bin/agent-context.sh` at startup, with `guard-skills` as the enforcement floor for reading or editing agents.
+2. Forked skills (`context: fork`) run their whole body in a subagent; only `flow-checks` names one via `agent: <name>`. Most agent work instead comes from an inline skill body dispatching via the Agent tool, including `flow-plan` and `flow-implement`, which keep their phase-boundary stops in the main conversation.
+
+## Forked decision protocol
+
+1. A forked skill has no access to the AskUserQuestion tool.
+2. A step that would otherwise ask via AskUserQuestion instead stops and returns the question(s) and options under a `## Needs decision` heading, rather than guessing or silently deferring the answer in prose.
+3. On a task-notification whose result carries that heading, ask the question(s) via AskUserQuestion in the main conversation, then resume the same agent via SendMessage with the resolved answer(s) so it can finish the rest of its procedure.

@@ -13,6 +13,10 @@ require_jq
 path="$(extract_path)"
 [[ -z "$path" ]] && exit 0
 
+case "$path" in
+*/.claude/scratch/* | */scratch/*) exit 0 ;;
+esac
+
 session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty')"
 [[ -z "$session_id" ]] && exit 0
 

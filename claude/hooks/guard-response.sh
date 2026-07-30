@@ -99,8 +99,7 @@ last_assistant="$(jq -rs '
 
 # Banned openers/closers, line-anchored, every tier. Same set and anchoring
 # as guard-tone.sh; this extends the block from written files to chat.
-if printf '%s' "$last_assistant" | grep -qiE \
-  '^(certainly|absolutely|of course|sure)[!,.]|^(great question|i hope this helps|let.s dive in|happy to help|in conclusion|to summarize|in summary)([[:space:]]|[!,.]|$)'; then
+if printf '%s' "$last_assistant" | grep -qiE "$BANNED_TELL_REGEX"; then
   log_block "chat-ai-tell" "stop-hook"
   echo "The response opens or closes with a banned AI-tell phrase. Rewrite without it; do not add anything else." >&2
   exit 2

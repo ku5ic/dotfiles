@@ -75,3 +75,4 @@ Range: <base>..HEAD (N commits)
 - If the range has nothing worth noting, say so and propose skipping the release.
 - If a commit is ambiguous ("fix stuff", "wip"): flag it in an "Unclear" section rather than inventing intent.
 - If `git-base.sh` failed (exit 1, empty output): note that in the report and fall back to last 30 commits by running `git log --oneline --no-merges -30` explicitly.
+- Follows `rules/adhd-output.md`, no exception: each entry a single short line, never a paragraph per change.

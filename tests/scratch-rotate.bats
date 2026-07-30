@@ -1,9 +1,10 @@
 #!/usr/bin/env bats
 # Tests for ~/.dotfiles/claude/bin/scratch-rotate.sh.
 #
-# The script hardcodes its target dir as $HOME/.claude/scratch, so every test
-# fakes $HOME to keep it off the real scratch directory. Ages are set with
-# backdate_mtime rather than sleeping past a retention window.
+# The script hardcodes its home-fallback target dir as $HOME/.claude/scratch
+# and its registry as $HOME/.claude/logs/scratch-registry.txt, so every test
+# fakes $HOME to keep it off the real ones. Ages are set with backdate_mtime
+# rather than sleeping past a retention window.
 #
 # Run with: bats tests/
 
@@ -11,6 +12,7 @@ setup() {
   SCRIPT="$BATS_TEST_DIRNAME/../claude/bin/scratch-rotate.sh"
   FAKE_HOME="$BATS_TEST_TMPDIR/home"
   SCRATCH="$FAKE_HOME/.claude/scratch"
+  REGISTRY="$FAKE_HOME/.claude/logs/scratch-registry.txt"
   mkdir -p "$SCRATCH"
 }
 
@@ -101,6 +103,66 @@ run_rotate() {
 
 @test "no scratch dir: exits 0 without error" {
   rm -rf "$SCRATCH"
+  run run_rotate
+  [ "$status" -eq 0 ]
+}
+
+@test "prunes an old file in a registered project scratch dir" {
+  PROJ="$BATS_TEST_TMPDIR/proj/scratch"
+  mkdir -p "$PROJ"
+  : >"$PROJ/poc.py"
+  backdate_mtime "$PROJ/poc.py" $((40 * 86400))
+  mkdir -p "$(dirname "$REGISTRY")"
+  echo "$PROJ" >"$REGISTRY"
+  run run_rotate 30
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"pruned 1 artifact(s) older than 30d from $PROJ"* ]]
+  [ ! -e "$PROJ/poc.py" ]
+  [[ "$(cat "$REGISTRY")" == "$PROJ" ]]
+}
+
+@test "keeps a fresh file in a registered project scratch dir" {
+  PROJ="$BATS_TEST_TMPDIR/proj/scratch"
+  mkdir -p "$PROJ"
+  : >"$PROJ/poc.py"
+  backdate_mtime "$PROJ/poc.py" 3600
+  mkdir -p "$(dirname "$REGISTRY")"
+  echo "$PROJ" >"$REGISTRY"
+  run run_rotate 30
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"pruned 0 artifact(s) older than 30d from $PROJ"* ]]
+  [ -e "$PROJ/poc.py" ]
+}
+
+@test "drops a registry entry whose project scratch dir no longer exists" {
+  PROJ="$BATS_TEST_TMPDIR/proj/scratch"
+  mkdir -p "$(dirname "$REGISTRY")"
+  echo "$PROJ" >"$REGISTRY"
+  run run_rotate
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"dropping stale registry entry $PROJ"* ]]
+  [ ! -s "$REGISTRY" ]
+}
+
+@test "prunes multiple registered project dirs and keeps existing entries" {
+  PROJ_A="$BATS_TEST_TMPDIR/proj-a/scratch"
+  PROJ_B="$BATS_TEST_TMPDIR/proj-b/scratch"
+  mkdir -p "$PROJ_A" "$PROJ_B"
+  : >"$PROJ_A/old.py"
+  backdate_mtime "$PROJ_A/old.py" $((40 * 86400))
+  : >"$PROJ_B/fresh.py"
+  backdate_mtime "$PROJ_B/fresh.py" 3600
+  mkdir -p "$(dirname "$REGISTRY")"
+  printf '%s\n%s\n' "$PROJ_A" "$PROJ_B" >"$REGISTRY"
+  run run_rotate 30
+  [ "$status" -eq 0 ]
+  [ ! -e "$PROJ_A/old.py" ]
+  [ -e "$PROJ_B/fresh.py" ]
+  [[ "$(cat "$REGISTRY")" == "$(printf '%s\n%s' "$PROJ_A" "$PROJ_B")" ]]
+}
+
+@test "no registry file: exits 0 without error" {
+  rm -f "$REGISTRY"
   run run_rotate
   [ "$status" -eq 0 ]
 }

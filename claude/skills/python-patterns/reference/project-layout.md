@@ -12,7 +12,11 @@
 - `src/` layout for libraries and any project that will be packaged. PyPA documents three benefits, the load-bearing one being that it prevents accidentally importing the in-development source instead of the installed package. Flat layout is fine for scripts and small applications.
 - `pyproject.toml` is the single source of truth. PEP 518 standardizes `[build-system]`; PEP 621 standardizes `[project]` metadata. No `setup.py` for new projects.
 - Tool config consolidated in `pyproject.toml`: `[tool.ruff]`, `[tool.mypy]`, `[tool.pyright]`, `[tool.pytest.ini_options]`. Avoid scattering across `setup.cfg`, `mypy.ini`, `pytest.ini` unless a tool requires it.
-- Dependency manager: uv (faster, single-tool replacement for pip/pip-tools/pipx/poetry/pyenv/twine/virtualenv) or Poetry (established, 2.x reads dependencies from `[project]` per PEP 621). Both ship lockfiles (`uv.lock`, `poetry.lock`) -- commit them. `requirements.txt` is acceptable as a deployment artifact, not as a development workflow.
+- Dependency manager:
+  - uv: faster, single-tool replacement for pip/pip-tools/pipx/poetry/pyenv/twine/virtualenv.
+  - Poetry: established, 2.x reads dependencies from `[project]` per PEP 621.
+  - Both ship lockfiles (`uv.lock`, `poetry.lock`) -- commit them.
+  - `requirements.txt` is acceptable as a deployment artifact, not as a development workflow.
 
 ## Packaging and imports
 

@@ -42,9 +42,9 @@ alias wget='wget -c'           # Enables download resume for `wget` (if `wget` i
 alias curl='curl -O'           # Saves files with the same name as the URL
 
 # File Management Aliases
-alias rm='rm -i'               # Prompt before deletion
-alias cp='cp -i'               # Prompt before overwriting files
-alias mv='mv -i'               # Prompt before overwriting files
+# alias rm='rm -i'               # Prompt before deletion
+# alias cp='cp -i'               # Prompt before overwriting files
+# alias mv='mv -i'               # Prompt before overwriting files
 alias tree='tree -C'           # Quick tree listing
 alias copy_path='pwd | pbcopy' # Copy current path to clipboard (macOS specific)
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# PreToolUse hook for Bash. Inspects git commit commands for AI signatures.
+# PreToolUse hook for Bash. Inspects git commit commands for AI signatures
+# and, per rules/adhd-output.md rule 8, an unchunked wall of text in the body.
 HOOK_NAME="guard-commit.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
@@ -30,6 +31,20 @@ if command -v gitleaks >/dev/null 2>&1; then
     block "gitleaks flagged a secret in the staged diff" "staged-secret"
   elif [[ "$_gl_status" -ne 0 ]]; then
     warn "gitleaks exited $_gl_status (not a leak signal); skipping scan"
+  fi
+fi
+
+# Wall-of-text check on the message body (rules/adhd-output.md rule 8). This
+# repo's commit convention passes multi-line messages via a heredoc
+# (`-m "$(cat <<'EOF' ... EOF)"`, per CLAUDE.md's git-commit example) -- pull
+# the body between the heredoc opener and its closing EOF line. A plain
+# single-line `-m "..."` has no heredoc and is skipped here; it's short
+# enough that a miss is harmless.
+heredoc_body="$(printf '%s\n' "$cmd" | sed -n "/<<-\\{0,1\\}['\"]\\{0,1\\}EOF['\"]\\{0,1\\}/,/^EOF\$/p" | sed '1d;$d' || true)"
+if [[ -n "$heredoc_body" ]]; then
+  run="$(longest_prose_run "$heredoc_body")"
+  if ((run > 4)); then
+    block "commit message has an unchunked wall of text (${run} consecutive prose lines). rules/adhd-output.md rule 8: short paragraphs, no dense blocks." "commit-wall-of-text"
   fi
 fi
 

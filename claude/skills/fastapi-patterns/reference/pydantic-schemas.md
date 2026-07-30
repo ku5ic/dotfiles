@@ -10,13 +10,6 @@
 - [Separate input and output schemas](#separate-input-and-output-schemas)
 - [References](#references)
 
-- [BaseModel](#basemodel)
-- [Field()](#field)
-- [field_validator](#field_validator)
-- [model_validator](#model_validator)
-- [model_config and ConfigDict](#model_config-and-configdict)
-- [Separate input and output schemas](#separate-input-and-output-schemas)
-
 Pydantic v2.13.3. Core module is Rust-based; performance is not a reason to avoid validation.
 
 ## BaseModel

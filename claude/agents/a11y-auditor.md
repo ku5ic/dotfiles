@@ -2,7 +2,7 @@
 name: a11y-auditor
 description: WCAG 2.2 AA accessibility audit of UI code (components, pages, templates). Read-only; returns a severity-rated report. Use when auditing an interface for accessibility; not for applying fixes.
 tools: Read, Grep, Glob, Bash, Skill
-model: opus
+model: claude-opus-4-8
 effort: high
 color: yellow
 memory: local

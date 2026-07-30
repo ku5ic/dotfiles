@@ -70,7 +70,7 @@ The "overall health in one word" at the end of the Summary helps quick scanning:
 - `failure`: omitting the `## Summary` section or the `## Findings` section when findings exist.
 - `warning`: inventing severity levels outside `failure`, `warning`, `info` -- e.g. `critical`, `high`, `medium`, `low`, `error`. The rubric has three levels; anything else breaks downstream tooling that parses reports.
 - `warning`: leaving placeholder text in empty sections (e.g. `<none>`, `N/A`) rather than omitting the section.
-- `warning`: hardcoding a literal `~/.claude/scratch/` or `.claude/scratch/` path instead of resolving it via `scratch-dir.sh`. The resolved directory is project-scoped inside a recognized project and home-fallback otherwise - a literal is wrong in whichever case it doesn't match.
+- `warning`: hardcoding a literal `~/.claude/scratch/` or `scratch/` path instead of resolving it via `scratch-dir.sh`. The resolved directory is project-scoped inside a recognized project and home-fallback otherwise - a literal is wrong in whichever case it doesn't match.
 - `warning`: not printing the absolute file path after writing -- the user cannot open the file without it.
 - `info`: not sorting findings by severity (failures first, then warnings, then info).
 

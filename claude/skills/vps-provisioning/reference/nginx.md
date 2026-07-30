@@ -9,13 +9,6 @@
 - [Upstream for multiple backends](#upstream-for-multiple-backends)
 - [References](#references)
 
-- [Reverse proxy server block](#reverse-proxy-server-block)
-- [Security headers](#security-headers)
-- [Serving static files with proxy fallback](#serving-static-files-with-proxy-fallback)
-- [Rate limiting](#rate-limiting)
-- [Upstream for multiple backends](#upstream-for-multiple-backends)
-- [References](#references)
-
 ## Reverse proxy server block
 
 ```nginx

@@ -10,7 +10,14 @@ export const runtime = "nodejs"; // default
 export const runtime = "edge";
 ```
 
-Edge runtime is a constrained Web-API subset: smaller bundles, lower cold start, no native Node modules (`fs`, `crypto` is partial, `process` is partial), no long-lived background work. Use Edge for thin compute-bound handlers (auth check, geo header, redirect logic). Default to Node for anything that touches a database driver, file system, or large npm package.
+Edge runtime is a constrained Web-API subset:
+
+- Smaller bundles.
+- Lower cold start.
+- No native Node modules (`fs`, `crypto` is partial, `process` is partial).
+- No long-lived background work.
+
+Use Edge for thin compute-bound handlers (auth check, geo header, redirect logic). Default to Node for anything that touches a database driver, file system, or large npm package.
 
 The `revalidate` route segment config is not available when `runtime = "edge"`.
 

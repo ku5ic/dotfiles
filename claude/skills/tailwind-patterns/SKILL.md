@@ -49,7 +49,10 @@ Default assumption in this dotfiles project: Tailwind v4 with CSS-first config. 
 ## Variants and modifiers
 
 - v4 variant order: `hover:focus:bg-blue-500` applies hover AND focus, just like v3. No change.
-- New in v4: `not-` variant prefix (`not-hover:opacity-50`), `nth-child(n)` shorthand (`*:rounded-md`), starting-style variants (`starting:opacity-0` for entry animations).
+- New in v4:
+  - `not-` variant prefix (`not-hover:opacity-50`)
+  - `nth-child(n)` shorthand (`*:rounded-md`)
+  - starting-style variants (`starting:opacity-0` for entry animations)
 - Container queries are built in: `@container` on the parent, `@sm:flex` etc. on children. No plugin install.
 
 ## Anti-patterns to flag in review
@@ -104,5 +107,6 @@ If both `tailwind.config.js` and `@import "tailwindcss"` are present, the projec
 - v3-to-v4 upgrade guide: https://tailwindcss.com/docs/upgrade-guide
 - v4 docs: https://tailwindcss.com/docs
 
-When v4 evolves (4.1, 5.x), reconcile this skill against the current upgrade
-guide before trusting the deltas above.
+## Maintenance note
+
+When v4 evolves (4.1, 5.x), reconcile this skill against the current upgrade guide before trusting the deltas above.

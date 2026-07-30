@@ -1,13 +1,13 @@
 ---
 description: Security audit covering frontend and backend surface areas
 argument-hint: <file, directory, area name, or a link to an external tracker/doc>
-model: opus
+model: claude-opus-4-8
 disable-model-invocation: true
 ---
 
 ## Procedure
 
-0. Resolve external context. If $ARGUMENTS contains a URL with little or no inline description, resolve it before anything else: identify which connected service the URL belongs to from its domain, use ToolSearch to find a matching fetch/read tool for that service (e.g. a URL under `app.clickup.com` points at the clickup tools, `notion.so` at the Notion tools, `github.com` at `gh` via Bash or the github tools), and call it to pull the content. Extract the relevant scope and requirements from what comes back. Treat the resolved text as the effective $ARGUMENTS for the rest of this procedure - never hand a bare link to the security-auditor agent.
+0. Resolve external context per `rules/external-context.md`, using the security-auditor agent for lookups.
 
 Delegate the procedure below (steps 1 onward, through Rules) to the security-auditor agent (Agent tool, subagent_type: security-auditor, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
 
@@ -21,7 +21,11 @@ Delegate the procedure below (steps 1 onward, through Rules) to the security-aud
 6. Pass 2: follow data flow for any user input found. Trace from entry point to every sink (DB, file system, template, response body). Flag unchecked paths.
 7. Pass 3: check auth and session boundaries. Who is authenticated on this path? Who is authorized? Is either skipped anywhere?
 8. Pass 4: dependency surface. If lockfile present, note whether `audit` has been run recently. Do not run audit yourself unless the user has allowed the command.
-9. Before finalizing a finding, check whether project CLAUDE.md documents an explicit, deliberate accepted-risk decision for it - that is the only thing that excuses it. A vulnerable pattern that repeats across call sites is not excused by repetition; flag it once against the shared source (a shared auth helper, a common validator) and list every consuming location, since fixing the shared code resolves all of them and repetition raises priority, it does not lower it.
+9. Before finalizing a finding:
+   - Check whether project CLAUDE.md documents an explicit, deliberate accepted-risk decision for it. That is the only thing that excuses it.
+   - A vulnerable pattern that repeats across call sites is not excused by repetition.
+   - Flag it once against the shared source (a shared auth helper, a common validator) and list every consuming location - fixing the shared code resolves all of them.
+   - Repetition raises priority; it does not lower it.
 
 ## Output
 

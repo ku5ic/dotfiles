@@ -1,7 +1,7 @@
 ---
 description: Explain a bug, feature, module, or section of code to someone new to the codebase - full mechanism, file:line citations, developer to developer
 argument-hint: <what to explain - a bug/ticket, a debug report path, a feature or module name, a file/directory, or blank to use what's already been discussed in this conversation>
-model: opus
+model: claude-opus-4-8
 disable-model-invocation: true
 ---
 
@@ -16,11 +16,22 @@ The subject is already understood well enough to explain - root cause from `/flo
 3. Identify the natural entry point for understanding the subject: for a bug, the user action or event that starts the chain; for a feature or module, where it's mounted, its main export, or the first file a reader would open. Name where the relevant state or logic actually lives, not just where it's consumed or re-exported.
 4. Trace hop by hop from the entry point through the rest of the subject. At each hop, cite file:line and state what the code does and why it's written that way - not just a restatement of what it does. Read the actual current file before citing it; never cite from memory of a source artifact alone.
 5. If the subject has more than one distinct mechanism, responsibility, or (for a bug) manifestation, address each separately and state explicitly why one doesn't substitute for or explain the other - this is usually the part a newcomer would otherwise collapse into a single story.
-6. Close with the underlying design rationale or invariant tying the pieces together, if one exists, and name any known rough edge or open follow-up rather than implying the picture is fully closed.
+6. Close with the underlying design rationale or invariant tying the pieces together, if one exists. Name any known rough edge or open follow-up rather than implying the picture is fully closed.
 
 ## Output
 
-Structured with section headers - the point is a reader building a mental model, not a peer skimming a decision, so headers earn their keep here unlike in a devnote. Full sentences over fragments; a newcomer needs the reasoning spelled out. Cite every claim as `file:line`. Default to terminal. Only write to a file when asked - honor an exact location if one is given (e.g. "on desktop"); otherwise use `$(scratch-dir.sh)/<kind>-<scope-slug>-<YYYYMMDD-HHMM>.md` per the scratch convention.
+Format:
+
+- Structured with section headers - the point is a reader building a mental model, not a peer skimming a decision, so headers earn their keep here unlike in a devnote.
+- Full sentences over fragments; a newcomer needs the reasoning spelled out.
+- Cite every claim as `file:line`.
+
+Where it goes:
+
+- Default to terminal. Only write to a file when asked - honor an exact location if one is given (e.g. "on desktop").
+- Otherwise use `$(scratch-dir.sh)/<kind>-<scope-slug>-<YYYYMMDD-HHMM>.md` per the scratch convention.
+
+Invoking this skill is itself the detailed-explanation exception in `rules/adhd-output.md` - full sentences, full depth, no length ceiling. That exception covers how much gets said, not how it's structured: within each header's section, still short paragraphs (roughly 3 lines, per rule 8) and one hop or one point per paragraph, never one long undifferentiated block under a header.
 
 ## Rules
 
@@ -28,3 +39,4 @@ Structured with section headers - the point is a reader building a mental model,
 - State plainly when something is inferred vs. verified (e.g., "confirmed via the actual refetch call" vs. "likely, based on the naming").
 - Multiple mechanisms sharing one subject - one ticket, one feature, one module - are not automatically one story. Check before merging them into a single narrative.
 - Don't pad with a closing summary that restates what was just explained.
+- Follows `rules/adhd-output.md` structurally even though it's exempt from the length ceiling: short paragraphs per point, headers per hop or mechanism, front-loaded conclusions before the mechanism detail that supports them.

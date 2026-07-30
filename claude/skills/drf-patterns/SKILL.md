@@ -22,7 +22,7 @@ DRF approximately v3.16. Supports Django 4.2, 5.0, 5.1, 5.2, 6.0 and Python 3.10
 
 ## Reference files
 
-| File                                                                   | Topics                                                                                     |
+| File                                                                   | Covers                                                                                     |
 | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | [serializers.md](reference/serializers.md)                             | Explicit fields, validate(), nested serializers, SerializerMethodField, ModelSerializer    |
 | [viewsets-and-routers.md](reference/viewsets-and-routers.md)           | ModelViewSet vs GenericViewSet + mixins, @action, DefaultRouter                            |

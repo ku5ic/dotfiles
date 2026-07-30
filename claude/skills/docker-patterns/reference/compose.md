@@ -10,13 +10,6 @@
 - [Profiles](#profiles)
 - [References](#references)
 
-- [Service definition](#service-definition)
-- [depends_on with conditions](#depends_on-with-conditions)
-- [healthcheck](#healthcheck)
-- [restart policies](#restart-policies)
-- [Environment variables](#environment-variables)
-- [Profiles](#profiles)
-
 Current format: Compose Specification. The `version:` top-level key is ignored and should be omitted.
 
 ## Service definition

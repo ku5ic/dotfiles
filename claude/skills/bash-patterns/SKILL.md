@@ -5,13 +5,13 @@ description: Bash and shell script patterns covering safety flags, quoting, cond
 
 # Bash patterns
 
-Default assumption: bash 5.x targeting macOS (via Homebrew bash) and Linux. Scripts use `#!/usr/bin/env bash` so the resolved binary is whatever is first on PATH, which on the user's machine is the Homebrew 5.x build, not the stock macOS `/bin/bash` 3.2. Anything that requires bash 4.0+ (case modification, `mapfile`, `${parameter@op}`) is unsafe under stock macOS bash and is flagged here when the version cut matters.
+- Default assumption: bash 5.x targeting macOS (via Homebrew bash) and Linux.
+- Scripts use `#!/usr/bin/env bash`, so the resolved binary is whatever is first on PATH -- on the user's machine that's the Homebrew 5.x build, not the stock macOS `/bin/bash` 3.2.
+- Anything that requires bash 4.0+ (case modification, `mapfile`, `${parameter@op}`) is unsafe under stock macOS bash; flagged here when the version cut matters.
 
 ## Severity rubric
 
-- `failure`: a concrete defect or violation that should not ship.
-- `warning`: a smell or pattern that compounds with other findings.
-- `info`: a hardening opportunity or note, not a defect.
+Severity rubric: matches `markdown-report` (failure/warning/info).
 
 ## Reference files
 
@@ -31,13 +31,15 @@ Default assumption: bash 5.x targeting macOS (via Homebrew bash) and Linux. Scri
 - `.sh`, `.bash`, `.zsh` files; or any file with a bash/sh shebang.
 - Editing dotfiles like `.zshrc`, `.bashrc`, `.zprofile`, `.aliases.zsh`.
 - CI workflow shell steps (GitHub Actions `run:` blocks, GitLab `script:`, etc.).
-- Makefile recipes. GNU Make defaults to `/bin/sh`; set `SHELL := /bin/bash` at the top of the Makefile if recipes use bash features.
+- Makefile recipes.
+  - GNU Make defaults to `/bin/sh`; set `SHELL := /bin/bash` at the top of the Makefile if recipes use bash features.
 - Reviewing scripts in `~/.dotfiles/scripts/` and `~/.dotfiles/claude/bin/`.
 
 ## When not to load this skill
 
 - One-off command-line invocations in conversation (single pipelines, ad-hoc `find` commands).
-- Pure POSIX `sh` (`#!/bin/sh`) where bashisms would be wrong; note the constraint and switch to POSIX-only forms.
+- Pure POSIX `sh` (`#!/bin/sh`) where bashisms would be wrong.
+  - Note the constraint and switch to POSIX-only forms.
 - Fish or other non-POSIX shells.
 - zsh-specific features beyond what bash shares.
 

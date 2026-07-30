@@ -12,15 +12,6 @@
 - [.dockerignore](#dockerignore)
 - [References](#references)
 
-- [Base image selection](#base-image-selection)
-- [Layer caching](#layer-caching)
-- [RUN instructions](#run-instructions)
-- [COPY vs ADD](#copy-vs-add)
-- [CMD and ENTRYPOINT](#cmd-and-entrypoint)
-- [USER and non-root execution](#user-and-non-root-execution)
-- [WORKDIR](#workdir)
-- [.dockerignore](#dockerignore)
-
 ## Base image selection
 
 Choose base images from trusted sources: Docker Official Images, Verified Publisher images. Smaller base images reduce download time, image size, and attack surface.

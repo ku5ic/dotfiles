@@ -22,7 +22,7 @@ DRF-specific patterns load when the project includes `djangorestframework` in de
 
 ## Reference files
 
-| File                                               | Topics                                                                                      |
+| File                                               | Covers                                                                                      |
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | [models.md](reference/models.md)                   | Model definition, Meta.constraints, Meta.indexes, null vs blank, on_delete, custom managers |
 | [orm.md](reference/orm.md)                         | select_related, prefetch_related, F(), Q(), .only()/.defer(), .iterator(), bulk operations  |

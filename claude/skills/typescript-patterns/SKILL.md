@@ -5,13 +5,14 @@ description: TypeScript patterns, strictness flags, type-safety anti-patterns, a
 
 # TypeScript patterns
 
-Default assumption: a TypeScript project with `strict` mode enabled. If `strict` is off, that itself is a finding. Verify version-sensitive claims (which flags exist, which syntax is available) against the `typescript` version pinned in the project's `package.json` and lockfile before applying deltas below.
+Default assumption: a TypeScript project with `strict` mode enabled.
+
+- If `strict` is off, that itself is a finding.
+- Verify version-sensitive claims (which flags exist, which syntax is available) against the `typescript` version pinned in the project's `package.json` and lockfile before applying deltas below.
 
 ## Severity rubric
 
-- `failure`: a concrete defect or violation that should not ship.
-- `warning`: a smell or pattern that compounds with other findings.
-- `info`: a hardening opportunity or note, not a defect.
+Severity rubric: matches `markdown-report` (failure/warning/info).
 
 ## Reference files
 
@@ -48,4 +49,7 @@ Default assumption: a TypeScript project with `strict` mode enabled. If `strict`
 
 ## Maintenance note
 
-When TypeScript evolves (5.x minor releases, 6.x, 7.x), reconcile this skill against the current handbook before trusting deltas above. As of writing, 6.0 is the last release of the JavaScript-based compiler; 7.0 is the native (Go) port and may shift defaults around module resolution and strictness.
+When TypeScript evolves (5.x minor releases, 6.x, 7.x), reconcile this skill against the current handbook before trusting deltas above.
+
+- As of writing, 6.0 is the last release of the JavaScript-based compiler.
+- 7.0 is the native (Go) port and may shift defaults around module resolution and strictness.

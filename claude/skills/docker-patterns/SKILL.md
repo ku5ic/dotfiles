@@ -22,7 +22,7 @@ Docker Engine 29.4.2. Compose Specification (current format, supersedes 2.x and 
 
 ## Reference files
 
-| File                                           | Topics                                                                                       |
+| File                                           | Covers                                                                                       |
 | ---------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | [dockerfile.md](reference/dockerfile.md)       | Base image selection, layer caching, RUN/COPY/ADD/CMD/ENTRYPOINT/USER/WORKDIR, .dockerignore |
 | [multi-stage.md](reference/multi-stage.md)     | Multi-stage builds, named stages, COPY --from, --target, BuildKit                            |

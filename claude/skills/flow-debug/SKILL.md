@@ -1,7 +1,7 @@
 ---
 description: Investigate unexpected behavior without a clear failing signal
 argument-hint: <what is wrong and where, plus any reproduction steps or a link to an external tracker/doc>
-model: opus
+model: claude-opus-4-8
 disable-model-invocation: true
 ---
 
@@ -14,18 +14,17 @@ Use `/flow-plan` instead when root cause is already understood but the fix is st
 
 ## Procedure
 
-0. Resolve external context. If $ARGUMENTS contains a URL with little or no inline description, resolve it before anything else: identify which connected service the URL belongs to from its domain, use ToolSearch to find a matching fetch/read tool for that service (e.g. a URL under `app.clickup.com` points at the clickup tools, `notion.so` at the Notion tools, `github.com` at `gh` via Bash or the github tools), and call it to pull the content. Extract observed behavior, expected behavior, entry point, and repro steps from what comes back. Treat the resolved text as the effective $ARGUMENTS for the rest of the procedure - never hand a bare link to the debugger agent. If no connected tool matches the URL's domain, say so and ask for the content pasted inline instead.
+0. Resolve external context per `rules/external-context.md`, using the debugger agent for lookups. Extract observed behavior, expected behavior, entry point, and repro steps from what comes back. If no connected tool matches the URL's domain, say so and ask for the content pasted inline instead.
 
 1. From the resolved arguments, confirm: observed behavior, expected behavior, entry point (route, function, event), any reproduction steps already known. If the observed vs expected distinction is still absent after step 0, stop and ask before proceeding.
 
-2. Delegate fault localization to the debugger agent (Agent tool, subagent_type: debugger, foreground) with the resolved context as its prompt, plus this procedure for it to follow:
+2. Delegate fault localization to the debugger agent (Agent tool, subagent_type: debugger, foreground). Constraint on the caller: the debugger has no MCP tools by design, so its prompt must carry fully resolved plain text - never a link. Prompt: the resolved context plus this procedure for it to follow:
    - Reproduce: run the narrowest command or interaction that triggers the behavior; confirm it reproduces consistently, attempting 3 times before concluding non-deterministic.
    - Check recent history: `git log -10 --oneline -- <affected paths>`; if a recent commit aligns with when the behavior started, note it as the prime suspect.
    - Trace the code path from the entry point to where observed diverges from expected; stop at library/external-API boundaries; cap at 10 files.
    - State the first hypothesis in one sentence before checking it: "The bug is caused by X in file Y at line Z."
    - Test the hypothesis with the least invasive probe available, in order: read the code more carefully, run an existing test that exercises the path, `git bisect` if it's a regression with clean history, then a single targeted log line or assertion reverted after use.
    - If confirmed, stop with the hypothesis. If wrong, revise and repeat, capped at 3 hypothesis cycles; if exhausted, report what was ruled out.
-     It has no MCP tools by design - it must get fully resolved plain text, never a link.
 
 3. Take the debugger's returned root cause, evidence, and proposed fix location and continue to Output below.
 

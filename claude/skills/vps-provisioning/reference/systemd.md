@@ -11,15 +11,6 @@
 - [After and Wants vs Requires](#after-and-wants-vs-requires)
 - [References](#references)
 
-- [Unit file structure](#unit-file-structure)
-- [Type values](#type-values)
-- [Restart policies](#restart-policies)
-- [EnvironmentFile](#environmentfile)
-- [Managing the service](#managing-the-service)
-- [Viewing logs (journald)](#viewing-logs-journald)
-- [After and Wants vs Requires](#after-and-wants-vs-requires)
-- [References](#references)
-
 ## Unit file structure
 
 Place unit files in `/etc/systemd/system/`. Name the file `<service-name>.service`.
