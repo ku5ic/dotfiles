@@ -5,7 +5,8 @@
 #   UserPromptExpansion  - user typed /skillname or /command:name directly
 #   PostToolUse Skill    - Claude invoked the Skill tool; payload field is
 #                          tool_input.skill (e.g. {"skill": "react-patterns"})
-#   PostToolUse Read     - fallback: direct SKILL.md reads (rare)
+#   PostToolUse Read     - primary signal: direct SKILL.md reads, the event
+#                          guard-skills.sh actually checks the log for
 #
 # Wire-up in settings.json:
 #
@@ -30,6 +31,12 @@ HOOK_NAME="log-skills.sh"
 source "$(dirname "$0")/_lib.sh"
 
 read_payload
+
+case "$payload" in
+*SKILL.md* | *Skill* | *slash_command*) ;;
+*) exit 0 ;;
+esac
+
 require_jq
 
 # Parse all routing fields via newline-delimited jq output so that empty fields
