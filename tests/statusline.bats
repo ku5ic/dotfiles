@@ -78,6 +78,16 @@ declared_line() {
     '{type: "attachment", attachment: {type: "command_permissions", model: $model}, timestamp: $ts}'
 }
 
+# user_line_array <text> <ts>  same as user_line but with .message.content as
+# an array of content blocks - the shape real transcripts overwhelmingly use
+# (vs the plain-string shape user_line builds), exercising the $since
+# filter's other branch: `[.[]? | select(.type == "text") | .text] | join("\n")`.
+user_line_array() {
+  local text="$1" ts="$2"
+  jq -nc --arg text "$text" --arg ts "$ts" \
+    '{type: "user", isMeta: false, message: {content: [{type: "text", text: $text}]}, timestamp: $ts}'
+}
+
 # write_transcript <file> <line> [line ...]
 write_transcript() {
   local file="$1"
@@ -313,6 +323,15 @@ backdate_mtime() {
     "$(user_line "hi" "2026-01-01T00:00:01Z")" \
     "$(assistant_line "claude-sonnet-5" "2026-01-01T00:00:02Z")"
   run run_statusline "$(with_transcript "$(make_payload "$REPO" tact 50)" "$transcript")"
+  [[ "$output" == *$'\033[33m'*"->"*"Sonnet"* ]]
+}
+
+@test "actual model differs from the session model renders the yellow divergence arrow (array-shaped message content)" {
+  local transcript="$BATS_TEST_TMPDIR/t-actual-array.jsonl"
+  write_transcript "$transcript" \
+    "$(user_line_array "hi" "2026-01-01T00:00:01Z")" \
+    "$(assistant_line "claude-sonnet-5" "2026-01-01T00:00:02Z")"
+  run run_statusline "$(with_transcript "$(make_payload "$REPO" tactarr 50)" "$transcript")"
   [[ "$output" == *$'\033[33m'*"->"*"Sonnet"* ]]
 }
 

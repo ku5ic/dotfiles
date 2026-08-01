@@ -11,8 +11,8 @@ read_payload
 session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty' 2>/dev/null || true)"
 cwd="$(printf '%s' "$payload" | jq -r '.cwd // empty' 2>/dev/null || true)"
 safe_session_id="${session_id//[^a-zA-Z0-9_-]/}"
-# Without a stable session_id we cannot guarantee "first prompt only" injection;
-# falling back to $$ would re-inject every turn. Skip and warn instead.
+# Without a stable session_id we can't guarantee "first prompt only"
+# injection; falling back to $$ would re-inject every turn.
 if [[ -z "$safe_session_id" ]]; then
   warn "no session_id in payload, skipping injection"
   exit 0
@@ -51,8 +51,7 @@ if [[ -s "$cache_file" ]]; then
   echo "</repo-context>"
 fi
 
-# Emit the global required skills (blocking).
-# Only global_skills are emitted here; stack-derived skills move to
+# Only global_skills are emitted here; stack-derived skills go through
 # emit_suggested_skills so session start only blocks on the core set.
 emit_required_skills() {
   local cache="$1"
@@ -89,12 +88,11 @@ emit_required_skills() {
   fi
 }
 
-# Emit action-conditioned skill suggestions derived from the detected stack.
-# Skills already in global_skills are excluded (they are required, not suggested).
-# Logged as event:"suggested-skill" (mirrors emit_required_skills' shape) so
-# skills-report.sh can measure whether a surfaced suggestion was ever acted
-# on -- this records "surfaced", not "loaded"; log-skills.sh's Skill-tool/Read
-# entries are still the only record of an actual invocation.
+# Skills already in global_skills are excluded (required, not suggested).
+# Logged as event:"suggested-skill" so skills-report.sh can measure whether a
+# suggestion was ever acted on - this records "surfaced", not "loaded";
+# log-skills.sh's Skill-tool/Read entries are the only record of an
+# actual invocation.
 emit_suggested_skills() {
   local cache="$1"
   local yml="$HOME/.claude/_stacks.yml"
@@ -141,10 +139,9 @@ emit_suggested_skills() {
   fi
 }
 
-# emit_tooling_block <root>
 # Emits a <tooling> block computed live (not from the stack cache) for JS/TS
-# and Python projects. Root-and-workspace-level detection only; search_dirs
-# subdirectories are not walked (same scope as the sentinel walk, intentional).
+# and Python projects. Root-and-workspace-level only; search_dirs
+# subdirectories aren't walked (same scope as the sentinel walk).
 emit_tooling_block() {
   local root="$1"
 

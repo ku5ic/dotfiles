@@ -14,8 +14,9 @@
 #   4. Agent-context / inject-context derivation parity: both consumers share
 #      the yq derivation queries via bin/_lib.sh instead of holding private
 #      copies.
-#   5. Skill frontmatter lint: every procedure SKILL.md has a valid model
-#      field and matching effort field.
+#   5. Skill and agent frontmatter lint: every procedure SKILL.md and
+#      agents/*.md has a valid model field, no dated model pin, and a
+#      matching effort field.
 #   6. Skill map validation: skill_file_map and skill_triggers reference only
 #      skills that exist, and every stack/extra skill has a trigger entry.
 #   7. Skills-log field parity: log-skills.sh and skills-report.sh reference
@@ -265,8 +266,14 @@ else
     # either silently drifts behind the alias or, if the id retires, falls
     # back with no signal (see the 2.1.220 divergence report this doctor
     # already tracks below). Aliases always resolve to the current default;
-    # require one instead of a snapshot id, in both skills and agents.
-    if [[ "$model" =~ ^claude-[a-z]+-[0-9] ]]; then
+    # require one instead of a snapshot id, in both skills and agents. No
+    # opt-out: the case-list's bare `claude-*` above only keeps a non-dated
+    # custom value (no digits, e.g. a hypothetical "claude-preview") from
+    # tripping invalid-model - any digit-bearing form still lands here
+    # unconditionally. Nothing in this repo needs to pin a dated snapshot on
+    # purpose today; add a documented opt-out (e.g. a `model-pin-reason:`
+    # field) only when a real use case shows up, not preemptively.
+    if [[ "$model" =~ ^claude-([a-z]+-)?[0-9] ]]; then
       echo "dated-model-pin  $rel: '$model' is a concrete pin, not an alias - use opus/sonnet/haiku/fable instead"
       fm_failed=1
     fi
@@ -289,10 +296,10 @@ else
 
     # Claude Code 2.1.220 silently drops the model override when a skill sets both
     # model: and effort: (upstream bug, issue filed; remove this check once fixed).
-    # Confirmed only on the skills/slash-command path so far - do not extend to
-    # agents/ until a re-test confirms the agent path is affected too; scoping
-    # this check to skills/ keeps doctor.sh green for agents that already pair
-    # model:+effort: on purpose.
+    # Confirmed skills/slash-command-path only: an agent dispatched with an
+    # explicit model override resolved correctly despite pairing model:+effort:
+    # (re-tested 2026-08-01). Keep this check skills-scoped until the upstream
+    # bug is fixed.
     if [[ "$rel" == skills/* && -n "$model" && -n "$effort" ]]; then
       echo "model-effort-pair  $rel: model+effort pairing is dropped silently by Claude Code (upstream bug, see issue); keep one"
       fm_failed=1

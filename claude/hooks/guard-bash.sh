@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
-# ~/.claude/hooks/guard-bash.sh
-# PreToolUse hook. Reads the tool call JSON from stdin, inspects the
-# proposed bash command, and blocks genuinely destructive patterns that
-# permission rules cannot express reliably.
-#
-# Contract:
-#   exit 0 -> allow the tool call
-#   exit 2 -> block the tool call. stderr is shown to Claude as the reason.
-# Any other non-zero exit is treated as a soft failure and does not block.
+# PreToolUse hook: blocks genuinely destructive bash patterns that
+# permission rules can't express reliably. exit 2 blocks (stderr is the
+# reason shown to Claude); any other nonzero exit is a soft failure.
 
 HOOK_NAME="guard-bash.sh"
 # shellcheck source=_lib.sh
@@ -19,7 +13,6 @@ require_jq
 cmd="$(extract_command)"
 [[ -z "$cmd" ]] && exit 0
 
-# Override _lib.sh block() to also show the offending command for context.
 block() {
   log_block "${2:-unknown}" "$cmd"
   echo "Blocked by ${HOOK_NAME}: $1" >&2
@@ -27,11 +20,9 @@ block() {
   exit 2
 }
 
-# Forces the interactive permission prompt via structured JSON output, for
-# cases settings.json prefix patterns can't express (a subcommand's flagged
-# and unflagged forms sharing one prefix). Unlike block(), this doesn't deny
-# the call - it hands the decision back to the user, same as a settings ask
-# rule, just scoped to the one case this hook can detect.
+# Forces the interactive permission prompt for cases settings.json prefix
+# patterns can't express (flagged/unflagged forms sharing one prefix) -
+# unlike block(), hands the decision back to the user instead of denying.
 force_ask() {
   jq -cn --arg reason "$1" '{
     hookSpecificOutput: {
@@ -46,50 +37,40 @@ force_ask() {
 _cwd="$(printf '%s' "$payload" | jq -r '.cwd // ""' 2>/dev/null || true)"
 norm="$(printf '%s' "$cmd" | tr '\t' ' ' | tr -s ' ')"
 
-# Full-string checks: patterns that need the complete command chain, or are
-# distinctive enough that false positives from quoted arguments are not realistic.
+# Full-string checks: need the complete command chain, or are distinctive
+# enough that quoted-argument false positives aren't realistic.
 
-# Fork bomb.
 if [[ "$norm" =~ :\(\)[[:space:]]*\{ ]]; then
   block "fork bomb pattern" "fork-bomb"
 fi
 
-# Piping network downloads into a shell. Not per-segment because curl/wget
-# and the interpreter are on opposite sides of a pipe boundary.
+# Not per-segment: curl/wget and the interpreter sit on opposite sides of |.
 if [[ "$norm" =~ (curl|wget)[[:space:]].*\|[[:space:]]*(sh|bash|zsh|fish|python|node|ruby|perl) ]]; then
   block "piping network content into an interpreter" "pipe-to-shell"
 fi
 
-# Writing to device nodes.
 if [[ "$norm" =~ \>[[:space:]]*/dev/(sd|nvme|disk|rdisk) ]]; then
   block "write to raw disk device" "device-write"
 fi
 
-# Writes to shell rc files.
 if [[ "$norm" =~ \>+[[:space:]]*(\$HOME|\$\{HOME\}|~|$HOME)/\.(zshrc|zprofile|bashrc|bash_profile|profile)([[:space:]]|$) ]]; then
   block "direct write to a shell rc file. Use the dotfiles repo." "rc-redirect"
 fi
 
-# Quote-stripped copy of the command: checks below must ignore chain
-# operators and redirects that appear only inside quoted literals (e.g.
-# grep '&&' or grep '2>&1' should not look like a chain or a redirect).
+# Quote-stripped copy: checks below must ignore chain operators/redirects
+# that appear only inside quoted literals (grep '&&' or grep '2>&1' shouldn't
+# look like a real chain or redirect).
 _cmd_sq="$(printf '%s' "$cmd" | sed -E "s/'[^']*'//g" | sed -E 's/"[^"]*"//g')"
 
-# xargs rm: full-string check because xargs and rm straddle a | boundary;
-# the per-segment splitter does not split on |.
+# Full-string because xargs and rm straddle a | boundary; the per-segment
+# splitter does not split on |.
 if [[ "$_cmd_sq" =~ xargs[[:space:]]+((-[^[:space:]]+[[:space:]]+)*)rm[[:space:]]+-[a-zA-Z]*[rRfF] ]]; then
   block "xargs rm with recursive or force flag" "xargs-rm"
 fi
 
-# 2>&1 and &> redirects are no longer blocked: the only reason they were is
-# that such commands didn't match the old fine-grained permission allow-list,
-# forcing a prompt. Now that the allow-list is a blanket "Bash" rule, that
-# reason no longer applies.
-
-# Returns 0 (true) when $1's side effects are read-only regardless of its
-# arguments, safe to appear in a &&/||/; chain. git is deliberately excluded:
-# many subcommands are read-only but others mutate, and chain-safety here is
-# classified by binary name only, not subcommand.
+# Returns 0 (true) when $1's side effects are read-only regardless of args,
+# safe in a &&/||/; chain. git is deliberately excluded: some subcommands
+# mutate, and chain-safety here is classified by binary name only.
 _is_safe_chain_lead() {
   case "$1" in
   ls | cat | bat | head | tail | less | more | grep | rg | fd | find | \
@@ -100,21 +81,17 @@ _is_safe_chain_lead() {
   return 1
 }
 
-# Shell command chaining (&&, ||, ;) is allowed only when every command in
-# the chain is on the read-only list above; a chain containing anything else
-# still requires separate Bash tool calls. Strip structural ; uses first
-# (case terminator ;; and ; before do/done/then/else/elif/fi/case/esac
-# keywords) - those never count as chaining. Pipes (|) are intentionally
-# unrestricted here: the segment splitter handles them and each side is
-# still checked per-segment against the dangerous-pattern dispatch below.
+# Chaining (&&, ||, ;) is allowed only when every command is on the
+# read-only list above. Strip structural ; first (case terminator ;; and ;
+# before do/done/then/else/elif/fi/case/esac) - those never count as
+# chaining. Pipes are unrestricted here; the segment splitter handles them
+# and each side is still checked per-segment below.
 _cmd_struct_stripped="$(printf '%s' "$_cmd_sq" | sed -E -e 's/;;/ /g' -e 's/;[[:space:]]*(do|done|then|else|elif|fi|case|esac)([^a-zA-Z0-9_]|$)/ /g')"
 
 if [[ "$_cmd_struct_stripped" =~ \&\& ]] || [[ "$_cmd_struct_stripped" =~ \|\| ]] || [[ "$_cmd_struct_stripped" =~ \; ]]; then
   _chain_unsafe_lead=""
-  # Walk segments of $_cmd_struct_stripped, not raw $norm: it is already
-  # quote-stripped (so a literal && or ; inside quotes can't resurface as a
-  # bogus segment) and structural ; is already blanked out (so do/done/then/
-  # ... keywords can't resurface as one either).
+  # Walk $_cmd_struct_stripped, not raw $norm: already quote-stripped and
+  # structural ; already blanked, so neither can resurface a bogus segment.
   while IFS= read -r _chain_seg; do
     _chain_seg="${_chain_seg#"${_chain_seg%%[![:space:]]*}"}"
     [[ -z "$_chain_seg" ]] && continue
@@ -133,10 +110,9 @@ if [[ "$_cmd_struct_stripped" =~ \&\& ]] || [[ "$_cmd_struct_stripped" =~ \|\| ]
   fi
 fi
 
-# _resolve_pm_for_dir <dir>: prints "manager:lockfile" for the first lockfile
-# match in <dir> or its git toplevel; prints nothing when no lockfile is found.
-# Hardcoded table mirrors _stacks.yml package_managers (verified by bin/doctor.sh).
-# Editing here: also update _stacks.yml and run bin/doctor.sh to verify parity.
+# Prints "manager:lockfile" for the first lockfile match in <dir> or its git
+# toplevel, nothing if none found. Table mirrors _stacks.yml package_managers
+# (bin/doctor.sh verifies parity) - update both together.
 _resolve_pm_for_dir() {
   local dir="${1:-.}"
   local toplevel
@@ -160,10 +136,9 @@ requirements.txt:pip
 PM_LOCKFILES
 }
 
-# Returns 0 (true) when $1 names a sensitive credential or key file.
-# Normalizes ~ and $HOME before matching so both forms are caught.
-# The literal pattern substrings below must match what bin/doctor.sh greps
-# for parity across guard-edit.sh, guard-bash.sh, and settings.json.
+# Returns 0 (true) when $1 names a sensitive credential/key file. Normalizes
+# ~ and $HOME first. Patterns must match bin/doctor.sh's parity grep across
+# guard-edit.sh, guard-bash.sh, and settings.json.
 _is_sensitive_arg() {
   local arg="$1"
   arg="${arg/#\~/$HOME}"
@@ -190,8 +165,7 @@ _is_sensitive_arg() {
   return 1
 }
 
-# Returns 0 (true) when $1 names a shell rc file that should not be edited
-# in-place. Mirrors the path set in the full-string rc-file redirect guard.
+# Mirrors the path set in the full-string rc-file redirect guard above.
 _is_rc_file() {
   local arg="$1"
   arg="${arg/#\~/$HOME}"
@@ -203,13 +177,11 @@ _is_rc_file() {
   return 1
 }
 
-# Per-segment checks: split $norm on &&, ||, ;, and newlines (NOT on | so that
-# pipe chains like curl|bash remain intact for the full-string check above).
-# Each segment is checked only when its leading token matches a known dangerous
-# command, so commit message bodies and grep patterns that mention command names
-# as text are not scanned as commands.
-# Limitation: sudo-prefixed commands are not unwrapped; sudo requires user
-# confirmation via the permission system anyway.
+# Per-segment checks: split on &&, ||, ;, newlines - not | so pipe chains
+# like curl|bash stay intact for the full-string check above. Each segment
+# is only checked when its leading token is a known dangerous command, so
+# text mentioning command names (commit bodies, grep patterns) isn't scanned.
+# sudo-prefixed commands aren't unwrapped; sudo forces its own confirmation.
 _check_segment() {
   local seg="$1"
   seg="${seg#"${seg%%[![:space:]]*}"}"
@@ -249,9 +221,8 @@ _check_segment() {
         block "force push to a protected branch" "git-force-push-protected"
       fi
     fi
-    # Any push (force or not) to a protected branch. Branch token must be
-    # bounded by whitespace/start/end so it matches the actual ref, not a
-    # substring inside a longer branch name (feat/production-config, fix/mainline).
+    # Branch token bounded by whitespace/start/end: matches the actual ref,
+    # not a substring in a longer name (feat/production-config, fix/mainline).
     if [[ "$seg" =~ git[[:space:]]+push[[:space:]] ]] && [[ "$seg" =~ (^|[[:space:]])(origin/)?(main|master|develop|production|release)([[:space:]]|$) ]]; then
       block "push to a protected branch; use a feature branch" "git-push-protected"
     fi
@@ -264,10 +235,8 @@ _check_segment() {
     if [[ "$seg" =~ git[[:space:]]+config[[:space:]]+--global ]]; then
       block "git config --global from a project session" "git-config-global"
     fi
-    # Block tree-wide discard of working-tree changes. Tree-wide pathspecs:
-    # bare dot, double-dash-dot, :/, or bare star. Allow --staged without
-    # --worktree (unstaging is non-destructive). git -C <dir> variants work
-    # because the segment splitter sees 'git' as the lead token regardless.
+    # Tree-wide pathspecs only: bare dot, double-dash-dot, :/, or bare star.
+    # --staged without --worktree is allowed (unstaging isn't destructive).
     if [[ "$seg" =~ [[:space:]](restore|checkout)[[:space:]] ]]; then
       if [[ "$seg" =~ [[:space:]](\.|\*|--[[:space:]]?\.|:/)([[:space:]]|$) ]]; then
         if ! [[ "$seg" =~ --staged ]] || [[ "$seg" =~ --worktree ]]; then
@@ -289,12 +258,10 @@ _check_segment() {
     fi
     ;;
   aws)
-    # ([^[:space:]]+[[:space:]]+)* skips zero or more whitespace-delimited
-    # tokens (global flags like --profile prod) between the binary and the
-    # service/verb, without the ambiguity a bare .* has: a bare .* can match
-    # past the real "s3" token and latch onto an unrelated "s3" substring
-    # inside an argument (e.g. the "s3" prefix of an s3:// URI), silently
-    # defeating the check.
+    # ([^[:space:]]+[[:space:]]+)* skips global flags (--profile prod)
+    # between binary and verb without a bare .*'s ambiguity, which could
+    # latch onto an unrelated "s3" substring inside an argument (an s3://
+    # URI) and silently defeat the check.
     if [[ "$seg" =~ aws[[:space:]]+([^[:space:]]+[[:space:]]+)*s3[[:space:]]+rm[[:space:]].*(--recursive)([[:space:]]|$) ]]; then
       block "aws s3 rm --recursive deletes an entire bucket prefix" "aws-s3-recursive-rm"
     fi
@@ -311,8 +278,7 @@ _check_segment() {
     fi
     ;;
   kubectl)
-    # See the aws case above for why this skips tokens explicitly instead of
-    # using a bare .* between the binary and the verb.
+    # See the aws case above for why tokens are skipped explicitly.
     if [[ "$seg" =~ kubectl[[:space:]]+([^[:space:]]+[[:space:]]+)*delete([[:space:]]|$) ]]; then
       block "kubectl delete" "kubectl-delete"
     fi
@@ -327,9 +293,8 @@ _check_segment() {
     ;;
   docker)
     if [[ "$seg" =~ (system|volume|image|container|network)[[:space:]]+prune ]]; then
-      # -a and -f are the only short flags these prune subcommands define, so
-      # any short-option cluster containing both letters (-af, -fa) is
-      # equivalent to --all --force: docker's flag parser accepts either form.
+      # -a/-f are the only short flags these prune subcommands define, so any
+      # cluster with both letters (-af, -fa) is equivalent to --all --force.
       local _has_a=0 _has_f=0
       [[ "$seg" =~ (^|[[:space:]])(-a|--all)([[:space:]]|$) || "$seg" =~ (^|[[:space:]])-[a-zA-Z]*a[a-zA-Z]*([[:space:]]|$) ]] && _has_a=1
       [[ "$seg" =~ (^|[[:space:]])(-f|--force)([[:space:]]|$) || "$seg" =~ (^|[[:space:]])-[a-zA-Z]*f[a-zA-Z]*([[:space:]]|$) ]] && _has_f=1
@@ -352,10 +317,9 @@ _check_segment() {
     fi
     ;;
   npm | npx | pnpm | yarn | bun | bunx | pip | pip3 | poetry | uv | pipenv)
-    # pnpm install without --frozen-lockfile can change the lockfile; force a
-    # prompt. settings.json can't express "this prefix except with this flag",
-    # so npm ci (no ambiguous prefix overlap) moves to allow directly, while
-    # pnpm install's ask entry is removed and replaced by this hook check.
+    # settings.json can't express "this prefix except with this flag", so
+    # pnpm install without --frozen-lockfile (which can change the lockfile)
+    # forces a prompt here instead.
     if [[ "$lead" == "pnpm" ]]; then
       local _pnpm_rest="${seg#pnpm}"
       _pnpm_rest="${_pnpm_rest#"${_pnpm_rest%%[![:space:]]*}"}"
@@ -363,7 +327,6 @@ _check_segment() {
         force_ask "pnpm install without --frozen-lockfile can change the lockfile; confirm before running"
       fi
     fi
-    # Global install guards (JS package managers only).
     if [[ "$lead" =~ ^(npm|pnpm|yarn)$ ]] && [[ "$seg" =~ (npm|pnpm|yarn)[[:space:]]+(install|add|i)[[:space:]]+.*(-g|--global) ]]; then
       block "global package install. Use a project-local install or asdf shim." "pkg-global-install"
     fi
@@ -373,14 +336,14 @@ _check_segment() {
     if [[ "$lead" == "bun" ]] && [[ "$seg" =~ bun[[:space:]]+(add|install)[[:space:]]+.*(-g|--global) ]]; then
       block "global package install. Use a project-local install or asdf shim." "pkg-global-install"
     fi
-    # PM mismatch guard: block when the invoked PM differs from the lockfile-detected PM.
-    # Allow --version / -v (version queries never affect project files).
+    # Block when the invoked PM differs from the lockfile-detected one.
+    # --version/-v is exempt (never touches project files).
     local _pm_rest
     _pm_rest="${seg#"$lead"}"
     _pm_rest="${_pm_rest#"${_pm_rest%%[![:space:]]*}"}"
     [[ "$_pm_rest" == "--version" || "$_pm_rest" == "-v" ]] && return 0
     # Canonical invoked PM (aliases: npx->npm, bunx->bun, pip3->pip).
-    # Known gap: python -m pip bypasses this check (lead token is python, not pip).
+    # Known gap: python -m pip bypasses this (lead token is python, not pip).
     local _invoked
     case "$lead" in
     npx) _invoked="npm" ;;
@@ -388,14 +351,14 @@ _check_segment() {
     pip3) _invoked="pip" ;;
     *) _invoked="$lead" ;;
     esac
-    # Resolve expected PM from repo lockfiles; greenfield (no lockfile) always allowed.
+    # Greenfield (no lockfile) is always allowed.
     local _pm_info
     _pm_info="$(_resolve_pm_for_dir "${_cwd:-$PWD}")"
     [[ -z "$_pm_info" ]] && return 0
     local _expected="${_pm_info%%:*}"
     local _lf_found="${_pm_info#*:}"
     [[ "$_invoked" == "$_expected" ]] && return 0
-    # Build suggested replacement command; npx/bunx get their dlx equivalents.
+    # npx/bunx get their dlx equivalents in the suggested replacement.
     local _tail="${seg#"$lead"}"
     local _suggest
     if [[ "$lead" == "npx" ]]; then
@@ -418,7 +381,6 @@ _check_segment() {
     block "this repo uses ${_expected} (${_lf_found}); rerun as: ${_suggest}" "pm-mismatch"
     ;;
   cat | bat | head | tail | less | more | strings)
-    # Block reads of sensitive credential and key files.
     local _sarg
     for _sarg in ${seg#"$lead"}; do
       case "$_sarg" in
@@ -433,8 +395,7 @@ _check_segment() {
     done
     ;;
   grep | rg)
-    # Block when a path argument references a sensitive file. The first
-    # non-option argument is the search pattern, not a path; skip it.
+    # The first non-option argument is the search pattern, not a path; skip it.
     local _sarg _seen_pat=0
     for _sarg in ${seg#"$lead"}; do
       case "$_sarg" in
@@ -452,9 +413,8 @@ _check_segment() {
     ;;
   sh | bash | zsh | dash)
     # -c wrapping runs an arbitrary command string that never surfaces as its
-    # own Bash tool call, bypassing the permission allow list entirely.
-    # Scan short-option clusters only (single dash); long options like --login
-    # are not flag clusters and cannot carry -c.
+    # own Bash tool call, bypassing the permission allow list. Scan
+    # short-option clusters only; long options like --login can't carry -c.
     local _iarg _interp_c=0
     for _iarg in ${seg#"$lead"}; do
       case "$_iarg" in
@@ -469,8 +429,8 @@ _check_segment() {
     fi
     ;;
   sed)
-    # Block in-place edits (-i) targeting shell rc files. Complements the
-    # full-string redirect guard which catches > ~/.zshrc but not sed -i.
+    # Catches sed -i on rc files; the full-string guard above only catches
+    # > ~/.zshrc, not sed -i.
     local _has_i=0 _sarg
     for _sarg in ${seg#"$lead"}; do
       case "$_sarg" in
@@ -493,7 +453,7 @@ _check_segment() {
     fi
     ;;
   sd)
-    # sd is always in-place when given a file argument; no flag check needed.
+    # Always in-place when given a file argument; no flag check needed.
     local _sarg
     for _sarg in ${seg#"$lead"}; do
       case "$_sarg" in

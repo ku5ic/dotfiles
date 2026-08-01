@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 # PreToolUse hook for Edit, Write, MultiEdit. Runs guard-edit's, guard-skills'
 # and guard-tone's checks in one process against one payload read, instead of
-# three separate hook processes each re-parsing the same payload. Mirrors
-# format-dispatch.sh's role on the PostToolUse side.
+# three processes each re-parsing it. Mirrors format-dispatch.sh's role on
+# the PostToolUse side.
 #
-# Order matches the previous settings.json registration order: edit-safety,
-# then skills-gate, then tone. A tool call that violates more than one check
-# now surfaces only the first violation's message (deterministic, by this
-# order) instead of one message per hook - an accepted, minor behavior change:
-# the call is still correctly blocked either way.
+# Order matches the old settings.json registration: edit-safety, skills-gate,
+# tone. A call violating more than one check now surfaces only the first
+# violation's message instead of one per hook - the call is still correctly
+# blocked either way.
 HOOK_NAME="guard-dispatch.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
@@ -23,35 +22,52 @@ source "$(dirname "$0")/guard-skills.sh"
 # shellcheck source=guard-tone.sh
 source "$(dirname "$0")/guard-tone.sh"
 
-# _lib.sh's own ERR trap (set above, at file scope) is process-wide: left in
-# place, an unexpected error inside ANY one check's function would fail open
-# the entire dispatcher (skipping the remaining checks), not just that one -
-# a real isolation loss versus today's three-separate-processes behavior,
-# where each hook's own fail-open is independent of the others. Clear it here
-# and give each check its own fresh, self-contained errexit+errtrace+trap
-# inside its own subshell instead - restoring the original per-hook isolation
-# instead of merely approximating it. Verified empirically (three cases: a
-# clean check, a check hitting an unexpected internal error, and a check that
-# actually blocks) before writing this - see the plan's own test notes.
+# _lib.sh's ERR trap is process-wide: left in place, an unexpected error in
+# ANY one check would fail open the whole dispatcher, skipping the remaining
+# checks - a real isolation loss vs. three separate processes. Clear it and
+# give each check its own errexit+errtrace+trap inside its own subshell
+# instead, restoring per-hook isolation. Verified empirically (clean check,
+# internal-error check, blocking check) before writing this.
 trap - ERR
 
 run_dispatch_check() {
   local fn="$1" name="$2" rc=0
+  # `set +e` around the bare subshell call, not `rc=$?` after it: under the
+  # `set -e` still active here, any nonzero subshell exit (a block's `exit 2`
+  # included) would trip the *caller's* errexit before rc=$? ever runs.
+  # Wrapping in `if`/`||` looks like a fix but bash suppresses -e for
+  # everything inside a compound command in that context, including the
+  # subshell's own errtrace/ERR trap - confirmed empirically: it broke the
+  # malformed-JSON fail-open case, which depends on that inner trap. Plain
+  # `set +e` only stops the caller's errexit, leaving the subshell's own
+  # set -e/trap intact.
+  set +e
   (
     set -e
     set -o errtrace
+    # Expanded at trap-set time on purpose: $name is this call's check name.
+    # shellcheck disable=SC2064
     trap "echo '${name}: unexpected error, failing open' >&2; exit 0" ERR
     "$fn"
   )
   rc=$?
-  # Deliberately an `if`, not a bare `((rc != 0)) && exit`: under `set -e`, a
-  # standalone `((...))` that evaluates false returns its own nonzero exit
-  # status and IS itself subject to errexit, which would silently terminate
-  # the dispatcher on every "no violation" pass - confirmed by hitting this
-  # exact bug while drafting this design. The condition of an `if` is
-  # exempt from errexit regardless of its truth value.
+  set -e
+  # `if`, not `((rc != 0)) && exit`: under set -e a standalone `((...))` that
+  # evaluates false is itself subject to errexit and would silently kill the
+  # dispatcher on every "no violation" pass (hit this exact bug drafting it).
+  # An `if` condition is exempt from errexit regardless of its truth value.
+  #
+  # Only rc==2 (an actual block) aborts the chain. Any other nonzero rc
+  # bypassed the subshell's own ERR trap (e.g. a set -u unbound-variable
+  # fault, which terminates without invoking ERR) and must not silently skip
+  # the remaining checks. soft_rc is deliberately not `local` so the final
+  # `exit` below can still report it.
+  if ((rc == 2)); then
+    exit 2
+  fi
   if ((rc != 0)); then
-    exit "$rc"
+    echo "${name}: exited ${rc}, continuing with remaining checks" >&2
+    soft_rc="$rc"
   fi
 }
 
@@ -59,4 +75,4 @@ run_dispatch_check run_guard_edit guard-edit.sh
 run_dispatch_check run_guard_skills guard-skills.sh
 run_dispatch_check run_guard_tone guard-tone.sh
 
-exit 0
+exit "${soft_rc:-0}"

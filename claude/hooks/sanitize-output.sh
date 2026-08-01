@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# PostToolUse hook for Write, Edit, MultiEdit.
-# Strips typographic punctuation (em dashes, smart quotes, etc.) from written files.
+# PostToolUse hook for Write, Edit, MultiEdit: strips typographic punctuation
+# (em dashes, smart quotes, etc.) from written files.
 HOOK_NAME="sanitize-output.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"

@@ -1,26 +1,16 @@
 #!/usr/bin/env bash
-# ~/.claude/hooks/guard-tone.sh
-# PreToolUse hook. Reads the tool call JSON from stdin, inspects the content
-# being written or edited, and blocks two things:
-#   1. Distinctive AI-tell opener/closer phrases named in CLAUDE.md's Voice
-#      "banned openers and closers" bullet.
-#   2. Unchunked walls of text in write-* external-communication deliverables,
-#      per rules/adhd-output.md rule 8.
-#
-# Contract:
-#   exit 0 -> allow the tool call
-#   exit 2 -> block the tool call. stderr is shown to Claude as the reason.
-# Any other non-zero exit is treated as a soft failure and does not block.
-# Callable standalone (does its own read_payload/require_jq) or sourced by
-# hooks/guard-dispatch.sh for the Edit|Write|MultiEdit path.
+# PreToolUse hook: inspects content being written/edited and blocks (1)
+# banned AI-tell opener/closer phrases (CLAUDE.md Voice section) and (2)
+# unchunked walls of text in write-* deliverables (adhd-output.md rule 8).
+# exit 2 blocks; any other nonzero exit is a soft failure. Callable
+# standalone or sourced by guard-dispatch.sh for the Edit|Write|MultiEdit path.
 
 HOOK_NAME="guard-tone.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
 
-# Extracts the text being written, regardless of which of the three tool
-# shapes sent it: Write's flat content, Edit's new_string, or MultiEdit's
-# edits array (each entry's new_string joined).
+# Handles all three tool shapes: Write's flat content, Edit's new_string,
+# or MultiEdit's edits array (each entry's new_string joined).
 extract_content() {
   printf '%s' "$payload" | jq -r '
     if (.tool_input.content != null) then .tool_input.content
@@ -33,23 +23,21 @@ extract_content() {
 }
 
 run_guard_tone() {
-  # See run_guard_edit's comment on this line - same HOOK_NAME shadowing need.
+  # See run_guard_edit.sh - same HOOK_NAME shadowing need.
   local HOOK_NAME="guard-tone.sh"
   path="$(extract_path)"
   content="$(extract_content)"
 
-  # Override _lib.sh block() to show the matched phrase/path for context.
   block() {
     log_block "${2:-unknown}" "$path"
     echo "Blocked by ${HOOK_NAME}: $1" >&2
     exit 2
   }
 
-  # Wall-of-text check for write-* deliverables (scratch-conventions.md kind
-  # prefixes). Runs before the scratch exemption below on purpose: that
-  # exemption is for the banned-phrase check only -- audit/planning notes in
-  # scratch legitimately quote those phrases, but a PR/devnote/explainer/etc
-  # deliverable never needs to, and never gets a structure pass either way.
+  # Runs before the scratch exemption below on purpose: that exemption is for
+  # the banned-phrase check only - audit/planning notes in scratch legitimately
+  # quote those phrases, but a deliverable never needs to and never skips
+  # the structure pass.
   case "$(basename -- "$path")" in
   pr-* | explainer-* | release-notes-* | review-comment-* | stakeholder-*)
     if [[ -n "$content" ]]; then
@@ -61,8 +49,8 @@ run_guard_tone() {
     ;;
   esac
 
-  # Files that document or plan around the banned phrases as literal examples
-  # and must be able to quote them without tripping the block.
+  # These document or plan around the banned phrases as literal examples and
+  # must be able to quote them without tripping the block.
   case "$path" in
   */claude/CLAUDE.md | */.claude/CLAUDE.md | */claude/rules/*.md | */.claude/rules/*.md | \
     */claude/skills/*.md | */.claude/skills/*.md | */.claude/scratch/* | */scratch/*) return 0 ;;
@@ -70,9 +58,8 @@ run_guard_tone() {
 
   [[ -z "$content" ]] && return 0
 
-  # Anchored to line start so legitimate mid-sentence uses ("this is certainly
-  # true", "of course there are tradeoffs") are not flagged -- only the
-  # opener/closer position these phrases actually appear in as filler.
+  # Anchored to line start so mid-sentence uses ("this is certainly true")
+  # aren't flagged - only the opener/closer position these phrases fill.
   matched="$(printf '%s' "$content" | grep -m1 -ioE "$BANNED_TELL_REGEX" || true)"
 
   if [[ -n "$matched" ]]; then

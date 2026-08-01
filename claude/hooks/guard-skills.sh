@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
-# PreToolUse hook for Edit, Write, MultiEdit, Read.
-# Blocks edits and reads of mapped file types until the required patterns
-# skill is loaded for this session. One extra round trip per skill-set per
-# session by design; that is the enforcement cost and it is accepted.
-# Callable standalone (does its own read_payload/require_jq - this is also
-# the sole PreToolUse Read hook) or sourced by hooks/guard-dispatch.sh for
-# the Edit|Write|MultiEdit path.
+# PreToolUse hook for Edit, Write, MultiEdit, Read. Blocks edits/reads of
+# mapped file types until the required patterns skill is loaded for this
+# session - one extra round trip per skill-set per session, by design.
+# Callable standalone (also the sole PreToolUse Read hook) or sourced by
+# guard-dispatch.sh for the Edit|Write|MultiEdit path.
 HOOK_NAME="guard-skills.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
 
 run_guard_skills() {
-  # See run_guard_edit's comment on this line - same HOOK_NAME shadowing need.
+  # See run_guard_edit.sh - same HOOK_NAME shadowing need.
   local HOOK_NAME="guard-skills.sh"
   path="$(extract_path)"
   [[ -z "$path" ]] && return 0
@@ -33,10 +31,8 @@ run_guard_skills() {
   command -v yq >/dev/null 2>&1 || return 0
   [[ -f "$stacks_yml" ]] || return 0
 
-  # Load the full skill_file_map in one yq call, cached to disk while
-  # _stacks.yml is unchanged (see map_cache below).
-  # Each output line: on<TAB>globs-space-separated<TAB>skills-space-separated
-  # If the map is absent or yq fails, map_entries is empty and we exit below.
+  # Full skill_file_map in one yq call, cached to disk while _stacks.yml is
+  # unchanged. Each line: on<TAB>globs-space-separated<TAB>skills-space-separated
   map_cache="$HOME/.claude/cache/skill-map"
   if [[ -s "$map_cache" && "$map_cache" -nt "$stacks_yml" ]]; then
     mapfile -t map_entries <"$map_cache"
@@ -67,7 +63,7 @@ run_guard_skills() {
     read -ra globs <<<"$globs_str"
     matched=0
     for glob in "${globs[@]}"; do
-      # Unquoted glob so bash treats it as a pattern, not a literal string.
+      # Unquoted so bash treats $glob as a pattern, not a literal string.
       # shellcheck disable=SC2053
       [[ "$target" == $glob ]] && matched=1 && break
     done
@@ -92,13 +88,10 @@ run_guard_skills() {
     [[ -f "$cache_dir/${session_id}-${sk}" ]] || to_check+=("$sk")
   done
 
-  # Every required skill already confirmed loaded this session (marker present)
-  # - nothing left to verify against the log.
   [[ ${#to_check[@]} -eq 0 ]] && return 0
 
   skills_log="$HOME/.claude/logs/skills.jsonl"
-  # Missing or unreadable log: fail open. Without the log we cannot determine
-  # what has been loaded, and blocking on uncertainty causes false positives.
+  # Missing or unreadable log: fail open rather than block on uncertainty.
   [[ -r "$skills_log" ]] || return 0
 
   mkdir -p "$cache_dir" 2>/dev/null || true
@@ -106,13 +99,11 @@ run_guard_skills() {
   declare -a missing=()
   for sk in "${to_check[@]}"; do
     found=""
-    # Accept: exact skill_file match (PreToolUse/PostToolUse Skill) OR
-    # path-based match (PostToolUse Read of <skill>/SKILL.md, the reliable
-    # logged signal when the Skill tool loads a skill and Claude reads its
-    # file). Excludes inject-context.sh's synthetic required-skill/
-    # suggested-skill markers, which only mean "surfaced to the model", not
-    # "loaded" -- without this exclusion either marker alone would satisfy the
-    # check for a skill that was never actually invoked.
+    # Accept exact skill_file match (Skill tool) or path match (Read of
+    # <skill>/SKILL.md). Excludes inject-context.sh's synthetic
+    # required-skill/suggested-skill markers, which mean "surfaced", not
+    # "loaded" - without the exclusion either would satisfy the check for a
+    # skill never actually invoked.
     found="$(jq -rs --arg sid "$session_id" --arg sk "$sk" \
       'any(.[]; .session_id == $sid and .skill_file != null
         and .event != "required-skill" and .event != "suggested-skill"

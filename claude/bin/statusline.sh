@@ -122,7 +122,6 @@ if [[ -n "$transcript_path" && -r "$transcript_path" ]]; then
   )
   while ((${#t_fields[@]} < 3)); do t_fields+=(""); done
   actual_id="${t_fields[0]}"
-  last_user_ts="${t_fields[1]}"
   declared_id="${t_fields[2]}"
 
   if [[ -n "$actual_id" ]]; then

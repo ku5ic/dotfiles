@@ -1,24 +1,20 @@
 #!/usr/bin/env bash
-# PreToolUse hook for Edit, Write, MultiEdit.
-# Blocks writes to risky paths regardless of permission rules.
-# Callable standalone (does its own read_payload/require_jq) or sourced by
-# hooks/guard-dispatch.sh, which reads the payload once for all three
-# PreToolUse Edit|Write|MultiEdit checks.
+# PreToolUse hook for Edit, Write, MultiEdit: blocks writes to risky paths
+# regardless of permission rules. Callable standalone or sourced by
+# guard-dispatch.sh, which reads the payload once for all three checks.
 HOOK_NAME="guard-edit.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
 
 run_guard_edit() {
-  # Shadows the file-scope HOOK_NAME for the duration of this call (and
-  # anything it calls, e.g. block() below, via bash's dynamic scoping) -
-  # without this, sourcing all three guard files into one dispatcher process
-  # leaves HOOK_NAME permanently set to whichever file was sourced last, so
-  # every block() message and log_block entry would misattribute its hook.
+  # Shadows the file-scope HOOK_NAME via bash's dynamic scoping - without
+  # this, sourcing all three guard files into one dispatcher process leaves
+  # HOOK_NAME set to whichever file was sourced last, misattributing every
+  # block()/log_block entry.
   local HOOK_NAME="guard-edit.sh"
   path="$(extract_path)"
   [[ -z "$path" ]] && return 0
 
-  # Override _lib.sh block() to also show the offending path for context.
   block() {
     log_block "${2:-unknown}" "$path"
     echo "Blocked by ${HOOK_NAME}: $1" >&2
@@ -40,10 +36,10 @@ run_guard_edit() {
     ;;
   esac
 
-  # Sensitive credential and key files. Defense in depth: settings.json deny
-  # rules cover the same ground, but a misconfigured permission file should
-  # not be the only thing standing between an injection and a clobbered key.
-  # Patterns must mirror settings.json deny rules. bin/doctor.sh enforces parity.
+  # Defense in depth: settings.json deny rules cover the same ground, but a
+  # misconfigured permission file shouldn't be the only thing standing
+  # between an injection and a clobbered key. Patterns must mirror
+  # settings.json; bin/doctor.sh enforces parity.
   case "$(basename "$path")" in
   *.pem | *.key | *.pfx | *.p12)
     block "credential or key file" "cred-file"

@@ -128,3 +128,56 @@ YAML
   run bash -c "printf '' | HOME='$FAKE_HOME' '$HOOK'"
   [ "$status" -eq 0 ]
 }
+
+# Fault-injection isolation tests. Copy claude/hooks/*.sh into a scratch dir
+# and patch the copy's guard-edit.sh to fail before it does anything real, so
+# the implementation under test is never touched. Two fault classes: one the
+# subshell's own ERR trap catches (`false`), and one that bypasses it
+# entirely (a `set -u` unbound variable - see statusline.sh's own comment on
+# the same bypass). Both must leave guard-skills.sh/guard-tone.sh running
+# against the untouched implementation.
+
+setup_isolated_hooks() {
+  cp -r "$BATS_TEST_DIRNAME/../claude/hooks" "$BATS_TEST_TMPDIR/hooks"
+  chmod +x "$BATS_TEST_TMPDIR"/hooks/*.sh
+}
+
+# inject_fault <fault-command>
+# Inserts <fault-command> as the first statement inside the isolated copy's
+# guard-edit.sh run_guard_edit(), before it ever reads the payload. awk, not
+# sed -i, to stay identical on BSD and GNU without a second code path.
+inject_fault() {
+  local fault="$1" file="$BATS_TEST_TMPDIR/hooks/guard-edit.sh" tmp
+  tmp="$BATS_TEST_TMPDIR/guard-edit-patched.sh"
+  awk -v fault="$fault" '
+    { print }
+    /^  local HOOK_NAME="guard-edit.sh"$/ { print "  " fault }
+  ' "$file" >"$tmp"
+  mv "$tmp" "$file"
+}
+
+run_dispatch_isolated() {
+  local path="$1" content="$2" session="${3:-s1}" tool_name="${4:-Write}"
+  jq -n --arg path "$path" --arg content "$content" --arg sess "$session" --arg tn "$tool_name" \
+    '{tool_input: {file_path: $path, content: $content}, session_id: $sess, tool_name: $tn}' |
+    HOME="$FAKE_HOME" "$BATS_TEST_TMPDIR/hooks/guard-dispatch.sh"
+}
+
+@test "isolation survives an ERR-trappable fault in an earlier check" {
+  setup_isolated_hooks
+  inject_fault 'false'
+  run run_dispatch_isolated '/tmp/project/notes.md' 'Certainly, this should still be blocked by tone.'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"guard-edit.sh: unexpected error, failing open"* ]]
+  [[ "$output" == *"Blocked by guard-tone.sh"* ]]
+  [ "$(last_block_hook)" = "guard-tone.sh" ]
+}
+
+@test "isolation survives a fault that bypasses the ERR trap (set -u unbound variable)" {
+  setup_isolated_hooks
+  inject_fault 'echo "$definitely_not_set"'
+  run run_dispatch_isolated '/tmp/project/notes.md' 'Certainly, this should still be blocked by tone.'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"Blocked by guard-tone.sh"* ]]
+  [ "$(last_block_hook)" = "guard-tone.sh" ]
+}
