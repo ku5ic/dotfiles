@@ -207,12 +207,13 @@ else
 fi
 
 echo
-echo "== skill frontmatter lint =="
+echo "== skill + agent frontmatter lint =="
 
 if ! command -v yq >/dev/null 2>&1; then
   echo "skip           yq not found; install via Brewfile to enable frontmatter lint"
 else
   SKILLS_DIR="$SOURCE_ROOT/skills"
+  AGENTS_DIR="$SOURCE_ROOT/agents"
   fm_failed=0
   fm_count=0
 
@@ -227,8 +228,9 @@ else
       continue
     fi
 
-    # Only procedure skills (migrated from commands) carry model and/or effort;
-    # patterns and reference skills have neither. Lint the former, skip the latter.
+    # Only procedure skills (migrated from commands) and agents carry model
+    # and/or effort; patterns and reference skills have neither. Lint the
+    # former, skip the latter.
     if ! printf '%s\n' "$fm" | grep -qE '^(model|effort):'; then
       continue
     fi
@@ -244,8 +246,9 @@ else
     [[ "$model" == "null" ]] && model=""
     [[ "$effort" == "null" ]] && effort=""
 
-    # Each skill pins at most one field: the one that diverges from the session
-    # default. An empty model or empty effort here is intentional, not missing.
+    # Each skill/agent pins at most one field: the one that diverges from the
+    # session default. An empty model or empty effort here is intentional,
+    # not missing.
     if [[ -n "$model" ]]; then
       case "$model" in
       fable | opus | sonnet | haiku | best | opusplan | "sonnet[1m]" | "opus[1m]" | inherit | default | claude-*)
@@ -255,6 +258,17 @@ else
         fm_failed=1
         ;;
       esac
+    fi
+
+    # A concrete dated model id (claude-<family>-<digits...>) always goes
+    # stale: the family's default id changes on every release, so a pin here
+    # either silently drifts behind the alias or, if the id retires, falls
+    # back with no signal (see the 2.1.220 divergence report this doctor
+    # already tracks below). Aliases always resolve to the current default;
+    # require one instead of a snapshot id, in both skills and agents.
+    if [[ "$model" =~ ^claude-[a-z]+-[0-9] ]]; then
+      echo "dated-model-pin  $rel: '$model' is a concrete pin, not an alias - use opus/sonnet/haiku/fable instead"
+      fm_failed=1
     fi
 
     if [[ "$model" == "haiku" && -n "$effort" ]]; then
@@ -275,17 +289,26 @@ else
 
     # Claude Code 2.1.220 silently drops the model override when a skill sets both
     # model: and effort: (upstream bug, issue filed; remove this check once fixed).
-    if [[ -n "$model" && -n "$effort" ]]; then
+    # Confirmed only on the skills/slash-command path so far - do not extend to
+    # agents/ until a re-test confirms the agent path is affected too; scoping
+    # this check to skills/ keeps doctor.sh green for agents that already pair
+    # model:+effort: on purpose.
+    if [[ "$rel" == skills/* && -n "$model" && -n "$effort" ]]; then
       echo "model-effort-pair  $rel: model+effort pairing is dropped silently by Claude Code (upstream bug, see issue); keep one"
       fm_failed=1
     fi
 
-  done < <(find "$SKILLS_DIR" -name "SKILL.md" -type f | sort)
+  done < <(
+    (
+      find "$SKILLS_DIR" -name "SKILL.md" -type f
+      find "$AGENTS_DIR" -maxdepth 1 -name "*.md" -type f
+    ) | sort
+  )
 
   if ((fm_failed)); then
     exit_code=1
   else
-    echo "ok             $fm_count procedure skills passed frontmatter lint"
+    echo "ok             $fm_count skills/agents passed frontmatter lint"
   fi
 fi
 
