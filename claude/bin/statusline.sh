@@ -100,8 +100,31 @@ session_model_short=""
 declared_model_short=""
 declared_model_display=""
 if [[ -n "$transcript_path" && -r "$transcript_path" ]]; then
-  actual_id="$(tail -n 30 "$transcript_path" 2>/dev/null |
-    jq -rs '[.[] | select(.type == "assistant" and .isSidechain != true) | .message.model // empty] | last // ""' 2>/dev/null)" || actual_id=""
+  # One tail + one jq across all three transcript-derived values instead of
+  # three separate tail|jq pipelines (six processes) reading the same file
+  # three times. last_user_ts is computed inside the same jq program and fed
+  # straight into the declared_id filter's $since bound, rather than being
+  # substituted back in as a second invocation's argument.
+  t_fields=()
+  while IFS= read -r line; do
+    t_fields+=("$line")
+  done < <(
+    tail -n 60 "$transcript_path" 2>/dev/null | jq -rs '
+      ([.[] | select(.type == "user" and .isMeta != true)
+            | select((.message.content | if type == "string" then . else ([.[]? | select(.type == "text") | .text] | join("\n")) end | length) > 0)
+            | .timestamp] | last // "") as $since |
+      ([.[] | select(.type == "assistant" and .isSidechain != true) | .message.model // empty] | last // ""),
+      $since,
+      (if $since == "" then "" else
+        ([.[] | select(.type == "attachment" and .attachment.type == "command_permissions" and .timestamp >= $since) | .attachment.model // empty] | last // "")
+      end)
+    ' 2>/dev/null
+  )
+  while ((${#t_fields[@]} < 3)); do t_fields+=(""); done
+  actual_id="${t_fields[0]}"
+  last_user_ts="${t_fields[1]}"
+  declared_id="${t_fields[2]}"
+
   if [[ -n "$actual_id" ]]; then
     actual_model_short="$(printf '%s' "$actual_id" | sed -E 's/^claude-//; s/-[0-9].*$//')"
     actual_model_display="$(model_display_from_id "$actual_id")"
@@ -119,15 +142,9 @@ if [[ -n "$transcript_path" && -r "$transcript_path" ]]; then
     # is newer than the current turn's own user prompt; otherwise a stale
     # declaration from several turns back would get compared against an
     # unrelated later response.
-    last_user_ts="$(tail -n 60 "$transcript_path" 2>/dev/null |
-      jq -rs '[.[] | select(.type == "user" and .isMeta != true) | select((.message.content | if type == "string" then . else ([.[]? | select(.type == "text") | .text] | join("\n")) end | length) > 0) | .timestamp] | last // ""' 2>/dev/null)" || last_user_ts=""
-    if [[ -n "$last_user_ts" ]]; then
-      declared_id="$(tail -n 60 "$transcript_path" 2>/dev/null |
-        jq -rs --arg since "$last_user_ts" '[.[] | select(.type == "attachment" and .attachment.type == "command_permissions" and .timestamp >= $since) | .attachment.model // empty] | last // ""' 2>/dev/null)" || declared_id=""
-      if [[ -n "$declared_id" && "$declared_id" != "$actual_id" ]]; then
-        declared_model_short="$(printf '%s' "$declared_id" | sed -E 's/^claude-//; s/-[0-9].*$//')"
-        declared_model_display="$(model_display_from_id "$declared_id")"
-      fi
+    if [[ -n "$declared_id" && "$declared_id" != "$actual_id" ]]; then
+      declared_model_short="$(printf '%s' "$declared_id" | sed -E 's/^claude-//; s/-[0-9].*$//')"
+      declared_model_display="$(model_display_from_id "$declared_id")"
     fi
   fi
 fi
