@@ -34,4 +34,4 @@ Elaboration on `CLAUDE.md`'s `## Length` section.
 
 - Stated in full before returning to the tier: security warnings, irreversible-action confirmations, and any sequence where a dropped word risks misreading.
 - Anything written to a file, and any output shape a skill defines (`flow-*`, `audit-*`, `write-*`, `markdown-report` govern their own Output sections) - terseness applies to chat and terminal output, never to a file.
-- The file/skill exemption covers verbosity only; `rules/adhd-output.md`'s structural rules still apply regardless of medium.
+- The file/skill exemption's scope (verbosity, not structure) is `rules/adhd-output.md`'s Priority section to own; see there.
