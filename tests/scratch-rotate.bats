@@ -166,3 +166,48 @@ run_rotate() {
   run run_rotate
   [ "$status" -eq 0 ]
 }
+
+# guard-skills.sh's per-skill marker cache
+# ($HOME/.claude/cache/skills-loaded/<session>-<skill>)
+
+@test "prunes a skills-loaded marker older than 1 day" {
+  CACHE="$FAKE_HOME/.claude/cache/skills-loaded"
+  mkdir -p "$CACHE"
+  : >"$CACHE/s1-bash-patterns"
+  backdate_mtime "$CACHE/s1-bash-patterns" $((2 * 86400))
+  run run_rotate
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"pruned 1 skill-loaded marker(s) older than 1d"* ]]
+  [ ! -e "$CACHE/s1-bash-patterns" ]
+}
+
+@test "keeps a skills-loaded marker younger than 1 day" {
+  CACHE="$FAKE_HOME/.claude/cache/skills-loaded"
+  mkdir -p "$CACHE"
+  : >"$CACHE/s1-bash-patterns"
+  backdate_mtime "$CACHE/s1-bash-patterns" 3600
+  run run_rotate
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"pruned 0 skill-loaded marker(s) older than 1d"* ]]
+  [ -e "$CACHE/s1-bash-patterns" ]
+}
+
+@test "prunes only the stale markers, keeping fresh ones in the same cache dir" {
+  CACHE="$FAKE_HOME/.claude/cache/skills-loaded"
+  mkdir -p "$CACHE"
+  : >"$CACHE/s1-bash-patterns"
+  backdate_mtime "$CACHE/s1-bash-patterns" $((2 * 86400))
+  : >"$CACHE/s1-typescript-patterns"
+  backdate_mtime "$CACHE/s1-typescript-patterns" 3600
+  run run_rotate
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"pruned 1 skill-loaded marker(s) older than 1d"* ]]
+  [ ! -e "$CACHE/s1-bash-patterns" ]
+  [ -e "$CACHE/s1-typescript-patterns" ]
+}
+
+@test "no skills-loaded cache dir: exits 0 without error and skips that line" {
+  run run_rotate
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"skill-loaded marker"* ]]
+}

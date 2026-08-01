@@ -211,3 +211,134 @@ YAML
   [ "$status" -eq 2 ]
   [[ "$output" == *"fix-sizing"* ]]
 }
+
+# per-skill marker cache ($HOME/.claude/cache/skills-loaded/<session>-<skill>)
+
+@test "an allowed session/skill pair writes a marker file to the cache" {
+  write_stacks_yml <<'YAML'
+skill_file_map:
+  - on: basename
+    globs: ["*.sh"]
+    skills: [bash-patterns]
+YAML
+  write_skills_log '{"ts":"2026-01-01T00:00:00Z","hook":"log-skills.sh","event":"PreToolUse","session_id":"s1","cwd":"/x","expansion_type":null,"command_name":null,"command_args":null,"command_source":null,"skill_file":"bash-patterns","tool_name":"Skill"}'
+  run run_guard_skills "/tmp/project/foo.sh" "s1"
+  [ "$status" -eq 0 ]
+  [ -f "$FAKE_HOME/.claude/cache/skills-loaded/s1-bash-patterns" ]
+}
+
+@test "a cached marker allows a second call even when the skills log becomes unreadable" {
+  write_stacks_yml <<'YAML'
+skill_file_map:
+  - on: basename
+    globs: ["*.sh"]
+    skills: [bash-patterns]
+YAML
+  write_skills_log '{"ts":"2026-01-01T00:00:00Z","hook":"log-skills.sh","event":"PreToolUse","session_id":"s1","cwd":"/x","expansion_type":null,"command_name":null,"command_args":null,"command_source":null,"skill_file":"bash-patterns","tool_name":"Skill"}'
+  run run_guard_skills "/tmp/project/foo.sh" "s1"
+  [ "$status" -eq 0 ]
+
+  # Simulate the log becoming unreadable after the marker was cached; a fresh
+  # (uncached) skill for a session with no readable log would fail open
+  # per the next test, but this session/skill pair should never need to
+  # consult the log again at all.
+  chmod 000 "$FAKE_HOME/.claude/logs/skills.jsonl"
+  run run_guard_skills "/tmp/project/bar.sh" "s1"
+  chmod 644 "$FAKE_HOME/.claude/logs/skills.jsonl"
+  [ "$status" -eq 0 ]
+}
+
+@test "an uncached skill still fails open when the skills log is unreadable" {
+  write_stacks_yml <<'YAML'
+skill_file_map:
+  - on: basename
+    globs: ["*.sh"]
+    skills: [bash-patterns]
+YAML
+  : >"$FAKE_HOME/.claude/logs/skills.jsonl"
+  chmod 000 "$FAKE_HOME/.claude/logs/skills.jsonl"
+  run run_guard_skills "/tmp/project/foo.sh" "s1"
+  chmod 644 "$FAKE_HOME/.claude/logs/skills.jsonl"
+  [ "$status" -eq 0 ]
+}
+
+@test "a marker for one session does not satisfy a different session's check" {
+  write_stacks_yml <<'YAML'
+skill_file_map:
+  - on: basename
+    globs: ["*.sh"]
+    skills: [bash-patterns]
+YAML
+  write_skills_log '{"ts":"2026-01-01T00:00:00Z","hook":"log-skills.sh","event":"PreToolUse","session_id":"s1","cwd":"/x","expansion_type":null,"command_name":null,"command_args":null,"command_source":null,"skill_file":"bash-patterns","tool_name":"Skill"}'
+  run run_guard_skills "/tmp/project/foo.sh" "s1"
+  [ "$status" -eq 0 ]
+  run run_guard_skills "/tmp/project/foo.sh" "s2"
+  [ "$status" -eq 2 ]
+}
+
+# _stacks.yml -> skill_file_map cache ($HOME/.claude/cache/skill-map)
+
+@test "the skill-map cache is created after the first invocation" {
+  write_stacks_yml <<'YAML'
+skill_file_map:
+  - on: basename
+    globs: ["*.sh"]
+    skills: [bash-patterns]
+YAML
+  : >"$FAKE_HOME/.claude/logs/skills.jsonl"
+  run run_guard_skills "/tmp/project/foo.sh" "s1"
+  [ "$status" -eq 2 ]
+  [ -s "$FAKE_HOME/.claude/cache/skill-map" ]
+  [[ "$(cat "$FAKE_HOME/.claude/cache/skill-map")" == *"bash-patterns"* ]]
+}
+
+@test "a stale skill-map cache (older than _stacks.yml) is not reused" {
+  write_stacks_yml <<'YAML'
+skill_file_map:
+  - on: basename
+    globs: ["*.sh"]
+    skills: [bash-patterns]
+YAML
+  : >"$FAKE_HOME/.claude/logs/skills.jsonl"
+  run run_guard_skills "/tmp/project/foo.sh" "s1"
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"bash-patterns"* ]]
+
+  # Rewrite _stacks.yml with a different required skill and make it newer
+  # than the cache file just written above.
+  write_stacks_yml <<'YAML'
+skill_file_map:
+  - on: basename
+    globs: ["*.sh"]
+    skills: [python-patterns]
+YAML
+  run run_guard_skills "/tmp/project/bar.sh" "s1"
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"python-patterns"* ]]
+  [[ "$output" != *"bash-patterns"* ]]
+}
+
+@test "a fresh skill-map cache (newer than _stacks.yml) is reused instead of re-parsing" {
+  write_stacks_yml <<'YAML'
+skill_file_map:
+  - on: basename
+    globs: ["*.sh"]
+    skills: [bash-patterns]
+YAML
+  : >"$FAKE_HOME/.claude/logs/skills.jsonl"
+  run run_guard_skills "/tmp/project/foo.sh" "s1"
+  [ "$status" -eq 2 ]
+  cache_file="$FAKE_HOME/.claude/cache/skill-map"
+  [ -s "$cache_file" ]
+
+  # Corrupt the on-disk _stacks.yml so a fresh parse would produce a
+  # different (or no) result, but leave its mtime older than the cache -
+  # the cached map should still be what guard-skills.sh reads from.
+  printf 'not: [valid, yaml, skill_file_map' >"$FAKE_HOME/.claude/_stacks.yml"
+  touch -t 202001010000 "$FAKE_HOME/.claude/_stacks.yml"
+  touch "$cache_file"
+
+  run run_guard_skills "/tmp/project/bar.sh" "s1"
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"bash-patterns"* ]]
+}
