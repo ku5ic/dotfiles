@@ -397,17 +397,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/hooks/guard-edit.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/guard-skills.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/guard-tone.sh",
+            "command": "$HOME/.claude/hooks/guard-dispatch.sh",
             "timeout": 5
           }
         ]

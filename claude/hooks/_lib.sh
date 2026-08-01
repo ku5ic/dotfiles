@@ -21,6 +21,13 @@
 # block() and warn() prefix output with HOOK_NAME. Hooks that want richer
 # block messages (showing the offending command/path) override block() after
 # sourcing.
+#
+# Idempotency guard: guard-dispatch.sh sources this file once directly, then
+# sources guard-edit.sh/guard-skills.sh/guard-tone.sh, each of which also
+# sources this file for standalone use. Without this guard the second
+# sourcing re-runs `readonly BANNED_TELL_REGEX` below and errors.
+[[ -n "${_CLAUDE_HOOKS_LIB_SOURCED:-}" ]] && return
+_CLAUDE_HOOKS_LIB_SOURCED=1
 
 set -euo pipefail
 trap 'echo "${HOOK_NAME:-hook}: unexpected error, failing open" >&2; exit 0' ERR
