@@ -30,13 +30,23 @@ stacks_yml="$HOME/.claude/_stacks.yml"
 command -v yq >/dev/null 2>&1 || exit 0
 [[ -f "$stacks_yml" ]] || exit 0
 
-# Load the full skill_file_map in one yq call.
+# Load the full skill_file_map in one yq call, cached to disk while
+# _stacks.yml is unchanged (see map_cache below).
 # Each output line: on<TAB>globs-space-separated<TAB>skills-space-separated
 # If the map is absent or yq fails, map_entries is empty and we exit below.
-mapfile -t map_entries < <(
-  yq -r '.skill_file_map // [] | .[] | [.on, (.globs // [] | join(" ")), (.skills // [] | join(" "))] | join("\t")' \
-    "$stacks_yml" 2>/dev/null
-)
+map_cache="$HOME/.claude/cache/skill-map"
+if [[ -s "$map_cache" && "$map_cache" -nt "$stacks_yml" ]]; then
+  mapfile -t map_entries <"$map_cache"
+else
+  mapfile -t map_entries < <(
+    yq -r '.skill_file_map // [] | .[] | [.on, (.globs // [] | join(" ")), (.skills // [] | join(" "))] | join("\t")' \
+      "$stacks_yml" 2>/dev/null
+  )
+  if ((${#map_entries[@]} > 0)); then
+    mkdir -p "$(dirname "$map_cache")" 2>/dev/null || true
+    printf '%s\n' "${map_entries[@]}" >"$map_cache" 2>/dev/null || true
+  fi
+fi
 [[ ${#map_entries[@]} -eq 0 ]] && exit 0
 
 basename_target="$(basename "$path")"
@@ -72,13 +82,26 @@ done
 
 [[ ${#required_skills[@]} -eq 0 ]] && exit 0
 
+cache_dir="$HOME/.claude/cache/skills-loaded"
+
+declare -a to_check=()
+for sk in "${required_skills[@]}"; do
+  [[ -f "$cache_dir/${session_id}-${sk}" ]] || to_check+=("$sk")
+done
+
+# Every required skill already confirmed loaded this session (marker present)
+# - nothing left to verify against the log.
+[[ ${#to_check[@]} -eq 0 ]] && exit 0
+
 skills_log="$HOME/.claude/logs/skills.jsonl"
 # Missing or unreadable log: fail open. Without the log we cannot determine
 # what has been loaded, and blocking on uncertainty causes false positives.
 [[ -r "$skills_log" ]] || exit 0
 
+mkdir -p "$cache_dir" 2>/dev/null || true
+
 declare -a missing=()
-for sk in "${required_skills[@]}"; do
+for sk in "${to_check[@]}"; do
   found=""
   # Accept: exact skill_file match (PreToolUse/PostToolUse Skill) OR
   # path-based match (PostToolUse Read of <skill>/SKILL.md, the reliable
@@ -95,7 +118,11 @@ for sk in "${required_skills[@]}"; do
       (.skill_file | contains("/skills/" + $sk + "/"))
     ))' \
     "$skills_log" 2>/dev/null)" || true
-  [[ "$found" == "true" ]] || missing+=("$sk")
+  if [[ "$found" == "true" ]]; then
+    touch "$cache_dir/${session_id}-${sk}" 2>/dev/null || true
+  else
+    missing+=("$sk")
+  fi
 done
 
 [[ ${#missing[@]} -eq 0 ]] && exit 0
