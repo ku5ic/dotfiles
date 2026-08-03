@@ -1,41 +1,28 @@
 #!/usr/bin/env bash
-# Appends one JSONL line per skill activation to $HOME/.claude/logs/skills.jsonl.
-# Covers three paths:
-#
-#   UserPromptExpansion  - user typed /skillname or /command:name directly
-#   PostToolUse Skill    - Claude invoked the Skill tool; payload field is
-#                          tool_input.skill (e.g. {"skill": "react-patterns"})
-#   PostToolUse Read     - fallback: direct SKILL.md reads (rare)
-#
-# Wire-up in settings.json:
-#
-#   "UserPromptExpansion": [
-#     { "hooks": [{ "type": "command", "command": "$HOME/.claude/hooks/log-skills.sh", "timeout": 5 }] }
-#   ]
-#
-#   "PostToolUse": [
-#     {
-#       "matcher": "Skill",
-#       "hooks": [{ "type": "command", "command": "$HOME/.claude/hooks/log-skills.sh", "timeout": 5 }]
-#     },
-#     {
-#       "matcher": "Read",
-#       "hooks": [{ "type": "command", "command": "$HOME/.claude/hooks/log-skills.sh", "timeout": 5 }]
-#     }
-#     ... other PostToolUse entries (Edit|Write|MultiEdit) are unrelated ...
-#   ]
+# Appends one JSONL line per skill activation to skills.jsonl. Covers three
+# paths: UserPromptExpansion (user typed /skillname directly), PostToolUse
+# Skill (Claude invoked the Skill tool), and PostToolUse Read - the primary
+# signal, direct SKILL.md reads, which is what guard-skills.sh actually
+# checks the log for.
 
 HOOK_NAME="log-skills.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
 
 read_payload
+
+# Superset of the routing below - widen this first if a new shape is added,
+# or nothing logs and guard-skills.sh blocks everything mapped.
+case "$payload" in
+*SKILL.md* | *Skill* | *slash_command*) ;;
+*) exit 0 ;;
+esac
+
 require_jq
 
-# Parse all routing fields via newline-delimited jq output so that empty fields
-# (e.g. expansion_type on PreToolUse/PostToolUse events) are preserved as empty
-# array elements. IFS=$'\t' read merges consecutive tabs and would shift later
-# fields left whenever expansion_type is empty, corrupting tool_name/file_path.
+# Newline-delimited jq output, not IFS=$'\t' read: that merges consecutive
+# tabs and would shift later fields left whenever expansion_type is empty,
+# corrupting tool_name/file_path.
 mapfile -t _fields < <(
   printf '%s' "$payload" | jq -r '
     (.hook_event_name // ""),

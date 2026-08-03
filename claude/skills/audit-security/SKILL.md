@@ -1,7 +1,7 @@
 ---
 description: Security audit covering frontend and backend surface areas
 argument-hint: <file, directory, area name, or a link to an external tracker/doc>
-model: claude-opus-4-8
+model: opus
 disable-model-invocation: true
 ---
 

@@ -1,38 +1,25 @@
 #!/usr/bin/env bash
-# Shared helpers for ~/.claude/hooks/*.sh.
-#
-# Each hook sets HOOK_NAME (typically the script's basename) and sources this
-# file. The shared prologue applies strict mode and a fail-open ERR trap so a
-# hook bug never blocks legitimate tool calls; it logs to stderr instead.
-#
-# Usage:
-#
-#   #!/usr/bin/env bash
-#   HOOK_NAME="guard-foo.sh"
-#   # shellcheck source=_lib.sh
-#   source "$(dirname "$0")/_lib.sh"
-#
-#   read_payload
-#   require_jq
-#   cmd="$(extract_command)"
-#   [[ -z "$cmd" ]] && exit 0
-#   ... policy ...
-#
-# block() and warn() prefix output with HOOK_NAME. Hooks that want richer
-# block messages (showing the offending command/path) override block() after
-# sourcing.
+# Shared helpers for ~/.claude/hooks/*.sh. Each hook sets HOOK_NAME and
+# sources this file for strict mode plus a fail-open ERR trap (logs to
+# stderr, exits 0, instead of blocking a legitimate tool call on a hook bug).
+
+# Idempotency guard: guard-dispatch.sh sources this directly, then sources
+# guard-edit.sh/guard-skills.sh/guard-tone.sh which each source it again for
+# standalone use - without this, the second sourcing reruns the `readonly
+# BANNED_TELL_REGEX` below and errors.
+[[ -n "${_CLAUDE_HOOKS_LIB_SOURCED:-}" ]] && return
+_CLAUDE_HOOKS_LIB_SOURCED=1
 
 set -euo pipefail
 trap 'echo "${HOOK_NAME:-hook}: unexpected error, failing open" >&2; exit 0' ERR
 
-# Reads the JSON tool-call payload from stdin into the global $payload.
-# Each hook reads stdin exactly once; subsequent reads return empty.
+# Reads stdin into the global $payload; each hook reads stdin exactly once.
 read_payload() {
   payload="$(cat)"
 }
 
-# Exits 0 (allow) if jq is not installed. Hooks rely on jq for payload
-# parsing; without it, the hook cannot safely evaluate policy.
+# Fails open (allow) if jq is missing - without it a hook cannot safely
+# evaluate policy.
 require_jq() {
   if ! command -v jq >/dev/null 2>&1; then
     echo "${HOOK_NAME:-hook}: jq not found, skipping checks" >&2
@@ -40,7 +27,6 @@ require_jq() {
   fi
 }
 
-# Extracts the file path from common Edit/Write/MultiEdit payload shapes.
 extract_path() {
   printf '%s' "$payload" | jq -r '
     .tool_input.file_path
@@ -50,15 +36,13 @@ extract_path() {
   '
 }
 
-# Extracts the command string from a Bash tool-call payload.
 extract_command() {
   printf '%s' "$payload" | jq -r '.tool_input.command // empty'
 }
 
-# Appends one JSONL line to $HOME/.claude/logs/guard-blocks.jsonl.
-# Args: $1 = rule slug, $2 = offending detail (command or path).
-# Runs in a subshell with stderr suppressed so a logging failure never
-# prevents the block() caller from reaching exit 2.
+# Appends one JSONL line to guard-blocks.jsonl. $1 = rule slug, $2 = detail.
+# Runs in a subshell with stderr suppressed so a logging failure can't
+# prevent the block() caller from reaching exit 2.
 log_block() {
   local rule="${1:-unknown}" detail="${2:-}"
   (
@@ -91,34 +75,29 @@ log_block() {
   ) 2>/dev/null || true
 }
 
-# Blocks the tool call with a stderr reason and exit code 2.
-# $1 = human-readable reason, $2 = optional rule slug for log_block.
-# Hooks override this to add context (e.g. the offending command or path).
+# $1 = human-readable reason, $2 = optional rule slug. Hooks override this
+# to add context (e.g. the offending command or path).
 block() {
   log_block "${2:-unknown}" "${cmd:-}"
   echo "Blocked by ${HOOK_NAME:-hook}: $1" >&2
   exit 2
 }
 
-# Emits a warning to stderr and continues. Use for soft signals.
 warn() {
   echo "${HOOK_NAME:-hook}: $1" >&2
 }
 
-# Banned AI-tell opener/closer phrases (CLAUDE.md's Voice section). Anchored
-# to line start so mid-sentence uses ("this is certainly true") are not
-# flagged -- only the opener/closer position these phrases appear in as
-# filler. Shared by guard-tone.sh (written files) and guard-response.sh
-# (chat) so the two enforcement paths cannot silently drift apart.
+# Banned AI-tell opener/closer phrases (CLAUDE.md Voice section), anchored to
+# line start so mid-sentence uses ("this is certainly true") aren't flagged.
+# Shared by guard-tone.sh (files) and guard-response.sh (chat) so the two
+# enforcement paths can't drift apart.
 # shellcheck disable=SC2034
 readonly BANNED_TELL_REGEX='^(certainly|absolutely|of course|sure)[!,.]|^(great question|i hope this helps|let.s dive in|happy to help|in conclusion|to summarize|in summary)([[:space:]]|[!,.]|$)'
 
-# Longest run of consecutive "wall of text" lines in $1: non-blank lines that
-# are not a list item, heading, blockquote, or table row, outside fenced code
-# blocks. Deterministic stand-in for rules/adhd-output.md rule 8 (no walls of
-# text) -- the only rule in that file mechanical enough to check safely; the
-# rest (front-loading, one idea per bullet, plain language) need judgment a
-# hook cannot make.
+# Longest run of consecutive non-blank, non-list/heading/blockquote/table
+# lines in $1, outside fenced code blocks - a deterministic stand-in for
+# adhd-output.md rule 8 (no walls of text); the rest of that rule needs
+# judgment a hook can't make.
 longest_prose_run() {
   printf '%s\n' "$1" | awk '
     /^```/ { infence = !infence; next }

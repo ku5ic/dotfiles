@@ -20,3 +20,13 @@ When a deterministic CLI can answer the question, call it before reading files a
 | Git outside cwd                 | `git -C <dir>`                      | cd <dir> && git (triggers a permission prompt) |
 
 Factual question (how big, what secrets, how fast, what is in this JSON): reach for the tool. Interpretive question (is this correct, does this design hold): reading and reasoning is correct.
+
+## Budget
+
+- Cap `git log` to `-20` unless a wider window is justified.
+- Do not `cat` files larger than 500 lines without a specific reason. Use line ranges.
+- Once located, read only the matched section, not the whole file.
+- Do not re-read a file in the same session unless an edit has changed it.
+- Skip these directories for any glob, grep, or read: `node_modules/**`, `.next/**`, `dist/**`, `build/**`, `coverage/**`, `.turbo/**`, `.cache/**`, `vendor/**`, `target/**`, `out/**`, `storybook-static/**`, `.pnpm-store/**`, `__pycache__/**`, `.venv/**`, `venv/**`.
+- For diffs, prefer `git diff <base>..HEAD -- <path>` over unfiltered diff.
+- Reports should reference scratch artifacts by path, not inline their full contents.

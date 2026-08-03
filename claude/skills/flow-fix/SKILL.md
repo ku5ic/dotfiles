@@ -3,7 +3,6 @@ description: Surgical fix from a failing signal (test, type error, runtime error
 argument-hint: <error message, file path, or test name>
 effort: xhigh
 disable-model-invocation: true
-context: fork
 ---
 
 ## Procedure

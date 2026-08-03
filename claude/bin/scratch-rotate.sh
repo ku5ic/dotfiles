@@ -33,6 +33,12 @@ if [[ -d "$scratch_dir" ]]; then
   echo "scratch-rotate: pruned $markers_removed session marker(s) older than 1d from $scratch_dir"
 fi
 
+skills_loaded_cache="$HOME/.claude/cache/skills-loaded"
+if [[ -d "$skills_loaded_cache" ]]; then
+  loaded_removed="$(find "$skills_loaded_cache" -type f -mtime +1 -print -delete | wc -l | tr -d ' ')"
+  echo "scratch-rotate: pruned $loaded_removed skill-loaded marker(s) older than 1d from $skills_loaded_cache"
+fi
+
 if [[ -f "$registry" ]]; then
   # Project scratch/ dirs hold test artifacts and POC files of any
   # extension, not just reports, so prune by age alone - no name filter.

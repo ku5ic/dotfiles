@@ -2,7 +2,7 @@
 name: claude-config-auditor
 description: Audits the Claude Code configuration layer - skills, commands, hooks, and settings - for staleness, misconfiguration, and trigger-coverage gaps. Read-only; returns a severity-rated report. Use when auditing this dotfiles repo's own Claude Code setup; not for applying fixes.
 tools: Read, Grep, Glob, Bash, Skill, mcp__context7__resolve-library-id, mcp__context7__query-docs
-model: claude-opus-4-8
+model: opus
 effort: high
 color: teal
 memory: local
