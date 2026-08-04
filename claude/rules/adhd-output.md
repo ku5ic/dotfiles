@@ -18,6 +18,7 @@ The Length tiers in `CLAUDE.md` still govern how much to say. This file governs 
 6. Plain language. Cut clutter, tangents, and decorative asides.
 7. Use structure - headers, numbered steps, checklists - instead of prose the reader has to mentally reorganize.
 8. No walls of text. A paragraph over roughly three lines gets chunked, even where verbosity is otherwise allowed.
+9. Always format output ADHD-friendly: TL;DR first, decisions and actions up front, short blocks, tables over prose, bold on key phrases, long reasoning in collapsible sections
 
 ## Applying it
 
