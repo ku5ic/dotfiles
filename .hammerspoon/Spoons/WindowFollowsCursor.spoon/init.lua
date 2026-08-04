@@ -16,12 +16,23 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 -- Internal state
 obj._filter = nil
 obj._pending = {}
+obj._handled = {}
 
 -- The AX windowCreated notification fires the instant the window element
 -- exists, before most apps have applied their own saved frame. Moving at that
 -- point either sees a not-yet-standard window or gets immediately overwritten,
 -- so the move is deferred until the app has settled.
 local MOVE_DELAY = 0.15
+
+-- AX ids are not stable across a "Move to Display" cross-Space transition:
+-- macOS can tear down and recreate a window's AX element when it crosses
+-- into a different display's Space, which resurfaces as a genuine
+-- windowCreated for what is really the same window. App+title survives that
+-- transition, so it is the dedupe key, not id.
+local function windowKey(win)
+  local app = win:application()
+  return (app and app:name() or "?") .. "\0" .. (win:title() or "")
+end
 
 -- Only act on real, movable application windows. Dialogs, sheets, popovers,
 -- and fullscreen windows are skipped so the move does not feel janky.
@@ -65,9 +76,18 @@ local function moveToCursorScreen(win)
     win:moveToScreen(mouseScreen, false, true, 0)
     hs.window.setFrameCorrectness = correctness
 
-    -- Moving a window across screens drops its key status; the app stays
-    -- active but the window itself is no longer focused until it is clicked.
-    win:focus()
+    -- Moving a window across screens drops its key status. Focusing
+    -- synchronously right after moveToScreen races the target screen/Space
+    -- settling and is regularly dropped, so it is deferred by the same
+    -- interval as the move itself. win:focus() alone only raises the window;
+    -- app:activate(true) is also needed when another app was frontmost.
+    hs.timer.doAfter(MOVE_DELAY, function()
+      win:focus()
+      local app = win:application()
+      if app then
+        app:activate(true)
+      end
+    end)
   end
 end
 
@@ -82,14 +102,22 @@ function obj:start()
     return self
   end
   self._pending = {}
+  self._handled = {}
   self._filter = hs.window.filter.new(nil)
   self._filter:subscribe(hs.window.filter.windowCreated, function(win)
     local id = win and win:id()
     if not id or self._pending[id] then
       return
     end
+    local key = win and windowKey(win)
+    if key and self._handled[key] then
+      return
+    end
     self._pending[id] = hs.timer.doAfter(MOVE_DELAY, function()
       self._pending[id] = nil
+      if key then
+        self._handled[key] = true
+      end
       moveToCursorScreen(win)
     end)
   end)
@@ -107,6 +135,7 @@ function obj:stop()
     timer:stop()
     self._pending[id] = nil
   end
+  self._handled = {}
   if not self._filter then
     return self
   end
