@@ -4,8 +4,34 @@ return {
     tsserver = { logVerbosity = "off" },
   },
   settings = {
-    typescript = { inlayHints = { enabled = false }, experimental = { useTsgo = true } },
-    javascript = { inlayHints = { enabled = false }, experimental = { useTsgo = true } },
+    typescript = {
+      inlayHints = {
+        parameterNames = {
+          enabled = "literals",
+          suppressWhenArgumentMatchesName = true,
+        },
+        parameterTypes = { enabled = true },
+        variableTypes = { enabled = true },
+        propertyDeclarationTypes = { enabled = true },
+        functionLikeReturnTypes = { enabled = true },
+        enumMemberValues = { enabled = true },
+      },
+      experimental = { useTsgo = true },
+    },
+    javascript = {
+      inlayHints = {
+        parameterNames = {
+          enabled = "literals",
+          suppressWhenArgumentMatchesName = true,
+        },
+        parameterTypes = { enabled = true },
+        variableTypes = { enabled = true },
+        propertyDeclarationTypes = { enabled = true },
+        functionLikeReturnTypes = { enabled = true },
+        enumMemberValues = { enabled = true },
+      },
+      experimental = { useTsgo = true },
+    },
   },
   filetypes = {
     "astro",
