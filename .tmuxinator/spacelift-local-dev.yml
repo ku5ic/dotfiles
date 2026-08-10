@@ -10,6 +10,8 @@ windows:
             - nvim
         - terminal:
             - update_submodules
+            - mux start spacelift-frontend
+            - clear
   - claude:
       - claude
   - tilt:
