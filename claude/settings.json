@@ -4,9 +4,9 @@
   "skillListingBudgetFraction": 0.04,
   "env": {
     "CLAUDE_GUARD_RESPONSE": "1",
-    "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION": 20,
-    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": 2,
-    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": 2
+    "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION": "20",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "2",
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "2"
   },
   "includeCoAuthoredBy": false,
   "permissions": {
@@ -507,7 +507,8 @@
     "hookify@claude-plugins-official": true,
     "ruby-lsp@claude-plugins-official": true,
     "frontend-spacelift@spacelift-engineering": true,
-    "i-have-adhd@i-have-adhd": true
+    "i-have-adhd@i-have-adhd": true,
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "spacelift-engineering": {
@@ -521,11 +522,18 @@
         "source": "github",
         "repo": "ayghri/i-have-adhd"
       }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
     }
   },
   "spinnerTipsEnabled": false,
   "awaySummaryEnabled": false,
   "theme": "auto",
   "editorMode": "vim",
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "outputStyle": "Proactive"
 }
