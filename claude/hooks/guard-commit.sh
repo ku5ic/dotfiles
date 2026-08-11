@@ -27,7 +27,7 @@ if command -v gitleaks >/dev/null 2>&1; then
   if [[ "$_gl_status" -eq 1 ]]; then
     block "gitleaks flagged a secret in the staged diff" "staged-secret"
   elif [[ "$_gl_status" -ne 0 ]]; then
-    warn "gitleaks exited $_gl_status (not a leak signal); skipping scan"
+    echo "${HOOK_NAME:-hook}: gitleaks exited $_gl_status (not a leak signal); skipping scan" >&2
   fi
 fi
 

@@ -6,6 +6,8 @@
 HOOK_NAME="guard-bash.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
+# shellcheck source=../bin/_lib.sh
+source "$(dirname "$0")/../bin/_lib.sh"
 
 read_payload
 require_jq
@@ -14,7 +16,6 @@ cmd="$(extract_command)"
 [[ -z "$cmd" ]] && exit 0
 
 block() {
-  log_block "${2:-unknown}" "$cmd"
   echo "Blocked by ${HOOK_NAME}: $1" >&2
   echo "Command: $cmd" >&2
   exit 2
@@ -103,7 +104,6 @@ if [[ "$_cmd_struct_stripped" =~ \&\& ]] || [[ "$_cmd_struct_stripped" =~ \|\| ]
   done < <(printf '%s\n' "$_cmd_struct_stripped" | sed -E 's/[[:space:]]*(&&|\|\|)[[:space:]]*/\n/g' | tr ';' '\n')
 
   if [[ -n "$_chain_unsafe_lead" ]]; then
-    log_block "chain-unsafe" "$cmd"
     echo "Blocked by ${HOOK_NAME}: chain operator detected; '${_chain_unsafe_lead}' is not on the read-only safe-chain list" >&2
     echo "Run as separate Bash tool calls, or use the tool's native path/dir argument (git -C, tokei <path>, etc.)." >&2
     exit 2
@@ -111,29 +111,29 @@ if [[ "$_cmd_struct_stripped" =~ \&\& ]] || [[ "$_cmd_struct_stripped" =~ \|\| ]
 fi
 
 # Prints "manager:lockfile" for the first lockfile match in <dir> or its git
-# toplevel, nothing if none found. Table mirrors _stacks.yml package_managers
-# (bin/doctor.sh verifies parity) - update both together.
+# toplevel, nothing if none found. Reads _stacks.yml's package_managers table
+# (via bin/_lib.sh's $_STACKS_YML) so there's one source of truth for the
+# mapping instead of a second hardcoded copy.
 _resolve_pm_for_dir() {
   local dir="${1:-.}"
   local toplevel
   toplevel="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
-  local lf mgr
-  while IFS=: read -r lf mgr; do
+
+  local -a lockfiles managers
+  mapfile -t lockfiles < <(yq '.package_managers[].lockfile' "$_STACKS_YML" 2>/dev/null)
+  mapfile -t managers < <(yq '.package_managers[].manager' "$_STACKS_YML" 2>/dev/null)
+
+  local i lf mgr
+  for ((i = 0; i < ${#lockfiles[@]}; i++)); do
+    lf="${lockfiles[$i]}"
+    mgr="${managers[$i]}"
+    [[ -z "$lf" || "$lf" == "null" ]] && continue
+    [[ -z "$mgr" || "$mgr" == "null" ]] && continue
     if [[ -f "$dir/$lf" || (-n "$toplevel" && -f "$toplevel/$lf") ]]; then
       printf '%s:%s\n' "$mgr" "$lf"
       return 0
     fi
-  done <<'PM_LOCKFILES'
-bun.lockb:bun
-bun.lock:bun
-pnpm-lock.yaml:pnpm
-yarn.lock:yarn
-package-lock.json:npm
-uv.lock:uv
-poetry.lock:poetry
-Pipfile.lock:pipenv
-requirements.txt:pip
-PM_LOCKFILES
+  done
 }
 
 # Returns 0 (true) when $1 names a sensitive credential/key file. Normalizes

@@ -9,9 +9,6 @@
 # Override the retention window with the first argument (number of days):
 #   scratch-rotate.sh        # 30 days (default)
 #   scratch-rotate.sh 14     # 14 days
-#
-# Override the skills.jsonl line cap with the second argument:
-#   scratch-rotate.sh 30 5000
 
 set -euo pipefail
 
@@ -19,7 +16,7 @@ scratch_dir="$HOME/.claude/scratch"
 skills_log="$HOME/.claude/logs/skills.jsonl"
 registry="$HOME/.claude/logs/scratch-registry.txt"
 days="${1:-30}"
-max_lines="${2:-10000}"
+max_lines=10000
 
 if [[ -d "$scratch_dir" ]]; then
   # Prune .md artifacts (configurable retention) and stale .injected-*

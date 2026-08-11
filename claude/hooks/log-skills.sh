@@ -59,17 +59,12 @@ ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 printf '%s' "$payload" | jq -c \
   --arg ts "$ts" \
-  --arg hook "$HOOK_NAME" \
   '{
      ts: $ts,
-     hook: $hook,
      event: (.hook_event_name // null),
      session_id: (.session_id // null),
-     cwd: (.cwd // null),
      expansion_type: (.expansion_type // null),
      command_name: (.command_name // null),
-     command_args: (.command_args // null),
-     command_source: (.command_source // null),
      skill_file: (.tool_input.skill // .tool_input.file_path // null),
      tool_name: (.tool_name // null)
    }' >>"$log_file"

@@ -9,12 +9,9 @@
 # run - no state file.
 #
 # exit 0 allows the response; exit 2 blocks (stderr fed back for a retry).
-# Inert unless CLAUDE_GUARD_RESPONSE=1. Loop safety: stop_hook_active is true
-# on the retry after a block, so the second pass always allows (one retry max).
-#
-# Tunables (env): CLAUDE_GUARD_RESPONSE, CLAUDE_GUARD_RESPONSE_MAX_LINES
-# (short ceiling, default 12), CLAUDE_GUARD_RESPONSE_MAX_LINES_NORMAL
-# (normal ceiling, default 40).
+# Inert unless CLAUDE_GUARD_RESPONSE=1 (set in settings.json). Loop safety:
+# stop_hook_active is true on the retry after a block, so the second pass
+# always allows (one retry max).
 
 HOOK_NAME="guard-response.sh"
 # shellcheck source=_lib.sh
@@ -81,7 +78,6 @@ last_assistant="$(jq -rs '
 
 # Same set and anchoring as guard-tone.sh; extends the block from files to chat.
 if printf '%s' "$last_assistant" | grep -qiE "$BANNED_TELL_REGEX"; then
-  log_block "chat-ai-tell" "stop-hook"
   echo "The response opens or closes with a banned AI-tell phrase. Rewrite without it; do not add anything else." >&2
   exit 2
 fi
@@ -93,12 +89,11 @@ fi
 # catches walls of text, the instruction shapes everything below them.
 prose_lines="$(printf '%s\n' "$last_assistant" | awk '/^```/{f=!f; next} !f && NF {n++} END{print n+0}')"
 if [[ "$tier" == "normal" ]]; then
-  max="${CLAUDE_GUARD_RESPONSE_MAX_LINES_NORMAL:-40}"
+  max=40
 else
-  max="${CLAUDE_GUARD_RESPONSE_MAX_LINES:-12}"
+  max=12
 fi
 if ((prose_lines > max)); then
-  log_block "chat-over-length" "tier=${tier} lines=${prose_lines}"
   echo "The response is ${prose_lines} prose lines; the ${tier}-tier ceiling is ${max}. Answer again shorter: lead with the answer, cut narration and recap, keep code blocks intact. The user lifts the ceiling with 'normal mode' / 'long mode' or an explicit ask to explain." >&2
   exit 2
 fi

@@ -12,9 +12,10 @@ Adversarial plan critic. You read the codebase, not only the plan -- a critic co
 
 ## Startup
 
-1. Run `agent-context.sh` via Bash for repo context and a `skills-to-load:` list. You do not receive the session context-injection hook.
-2. Load each skill it names via the Skill tool before reading the plan. If it names none, proceed and say so.
-3. Consult project memory before starting; record durable plan-failure patterns after finishing.
+See `rules/agent-shell.md`'s startup step 1, plus:
+
+1. Load each skill it names via the Skill tool before reading the plan. If it names none, proceed and say so.
+2. Consult project memory before starting; record durable plan-failure patterns after finishing.
 
 ## What you attack
 

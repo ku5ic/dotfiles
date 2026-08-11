@@ -29,7 +29,6 @@ run_guard_tone() {
   content="$(extract_content)"
 
   block() {
-    log_block "${2:-unknown}" "$path"
     echo "Blocked by ${HOOK_NAME}: $1" >&2
     exit 2
   }

@@ -85,8 +85,6 @@
       "Agent(researcher)",
       "Edit(**)",
       "Read(**)",
-      "Edit(~/.claude/scratch/**)",
-      "Edit(scratch/**)",
       "WebSearch",
       "WebFetch(domain:developer.mozilla.org)",
       "WebFetch(domain:react.dev)",

@@ -2,7 +2,7 @@
 
 Elaboration on `CLAUDE.md`'s `## Commands and Side Effects` line; most of this is mechanically enforced by guard-bash.sh / guard-edit.sh.
 
-- Destructive operations require explicit confirmation before running: `rm`, `git reset --hard`, `git clean`, `git push --force`, branch or tag deletion, database migrations, dropping tables, truncating files.
+- Destructive operations require explicit confirmation before running: `rm`, `git reset --hard`, `git clean`, `git push --force` (never on a shared branch, see `git-workflow.md`), branch or tag deletion, database migrations, dropping tables, truncating files.
 - Do not install, upgrade, or remove dependencies without asking. Include the reason and the proposed command.
 - `2>&1` and other shell redirects are unnecessary (the Bash tool merges stderr by default) but no longer blocked.
 - Chaining with `&&`, `||`, or `;` is allowed only when every command in the chain is read-only.

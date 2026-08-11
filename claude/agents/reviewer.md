@@ -12,15 +12,17 @@ Senior read-only reviewer. The review procedure arrives from the invoking skill;
 
 ## Startup
 
-1. Run `agent-context.sh` via Bash for repo context and a `skills-to-load:` list. You do not receive the session context-injection hook.
-2. Load each skill it names via the Skill tool so the review is stack aware. If it names none, proceed and say so.
-3. Consult project memory before starting; record durable, reusable review patterns after finishing.
+See `rules/agent-shell.md`, plus:
+
+1. Load each skill it names via the Skill tool so the review is stack aware. If it names none, proceed and say so.
+2. Consult project memory before starting; record durable, reusable review patterns after finishing.
 
 ## Boundaries
 
-- Edit and Write exist only for your memory directory and your scratch report; never rewrite the code under review. State fixes as instructions or short snippets.
+See `rules/agent-shell.md`'s read-only boundary (also: never rewrite the code under review), plus:
+
 - An empty review is a valid result. Do not pad findings.
 
 ## Output
 
-Follow the invoking skill's report format and path. When output runs long, the full report goes to the scratch path the skill names and the returned message is a short digest plus that path.
+See `rules/agent-shell.md`.

@@ -9,20 +9,18 @@
 #      settings.json all list every credential pattern. Both hook layers exist
 #      as defense in depth (a misconfigured permission file should not be the
 #      only thing standing between an injection and a clobbered key).
-#   3. PM table parity: guard-bash.sh lockfile->manager table matches
-#      _stacks.yml package_managers list.
-#   4. Agent-context / inject-context derivation parity: both consumers share
+#   3. Agent-context / inject-context derivation parity: both consumers share
 #      the yq derivation queries via bin/_lib.sh instead of holding private
 #      copies.
-#   5. Skill and agent frontmatter lint: every procedure SKILL.md and
+#   4. Skill and agent frontmatter lint: every procedure SKILL.md and
 #      agents/*.md has a valid model field, no dated model pin, and a
 #      matching effort field.
-#   6. Skill map validation: skill_file_map and skill_triggers reference only
+#   5. Skill map validation: skill_file_map and skill_triggers reference only
 #      skills that exist, and every stack/extra skill has a trigger entry.
-#   7. Skills-log field parity: log-skills.sh and skills-report.sh reference
+#   6. Skills-log field parity: log-skills.sh and skills-report.sh reference
 #      the same skills.jsonl field names, so a rename in the emitter cannot
 #      silently break the report.
-#   8. Audit-verify field parity: audit-verify/SKILL.md's per-finding parser
+#   7. Audit-verify field parity: audit-verify/SKILL.md's per-finding parser
 #      references the same field names as markdown-report's required
 #      per-finding shape.
 #
@@ -131,31 +129,6 @@ if ((parity_failed)); then
   exit_code=1
 else
   echo "ok             ${#patterns[@]} patterns mirrored across guard-edit.sh, guard-bash.sh, and settings.json"
-fi
-
-echo
-echo "== PM table parity =="
-
-GUARD_BASH_PM="$SOURCE_ROOT/hooks/guard-bash.sh"
-STACKS_YML="$SOURCE_ROOT/_stacks.yml"
-pm_parity_failed=0
-
-if ! command -v yq >/dev/null 2>&1; then
-  echo "skip           yq not found; skipping PM table parity check"
-else
-  yml_pm="$(yq '.package_managers[] | .lockfile + ":" + .manager' "$STACKS_YML" 2>/dev/null | sort)"
-  bash_pm="$(awk '/<<.*PM_LOCKFILES/{f=1; next} /^PM_LOCKFILES$/{f=0} f{print}' "$GUARD_BASH_PM" 2>/dev/null | sort)"
-  if [[ "$yml_pm" == "$bash_pm" ]]; then
-    echo "ok             guard-bash.sh PM table matches _stacks.yml"
-  else
-    echo "FAIL           guard-bash.sh PM table drifted from _stacks.yml"
-    diff <(printf '%s\n' "$yml_pm") <(printf '%s\n' "$bash_pm") | head -20 || true
-    pm_parity_failed=1
-  fi
-fi
-
-if ((pm_parity_failed)); then
-  exit_code=1
 fi
 
 echo

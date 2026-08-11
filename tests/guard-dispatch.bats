@@ -29,14 +29,6 @@ run_dispatch() {
     HOME="$FAKE_HOME" "$HOOK"
 }
 
-last_block_hook() {
-  jq -rs '.[-1].hook' "$FAKE_HOME/.claude/logs/guard-blocks.jsonl"
-}
-
-block_count() {
-  wc -l <"$FAKE_HOME/.claude/logs/guard-blocks.jsonl" | tr -d ' '
-}
-
 @test "clean write with no _stacks.yml, no risky path, no banned phrase passes all three checks" {
   run run_dispatch '/tmp/project/notes.md' 'A normal sentence with nothing wrong.'
   [ "$status" -eq 0 ]
@@ -46,7 +38,6 @@ block_count() {
   run run_dispatch '/tmp/project/package-lock.json' 'harmless content'
   [ "$status" -eq 2 ]
   [[ "$output" == *"Blocked by guard-edit.sh"* ]]
-  [ "$(last_block_hook)" = "guard-edit.sh" ]
 }
 
 @test "guard-skills' check blocks when a required skill has not been loaded" {
@@ -60,25 +51,21 @@ YAML
   run run_dispatch '/tmp/project/deploy.sh' 'harmless content'
   [ "$status" -eq 2 ]
   [[ "$output" == *"bash-patterns"* ]]
-  [ "$(last_block_hook)" = "guard-skills.sh" ]
 }
 
 @test "guard-tone's check blocks a banned AI-tell phrase when the other two checks pass" {
   run run_dispatch '/tmp/project/notes.md' 'Certainly, this should be blocked by tone.'
   [ "$status" -eq 2 ]
   [[ "$output" == *"Blocked by guard-tone.sh"* ]]
-  [ "$(last_block_hook)" = "guard-tone.sh" ]
 }
 
 @test "ordering: a lockfile edit that also contains a banned phrase surfaces only guard-edit's message" {
   run run_dispatch '/tmp/project/yarn.lock' 'Certainly, this content has both violations.'
   [ "$status" -eq 2 ]
   [[ "$output" == *"Blocked by guard-edit.sh"* ]]
+  # The dispatcher exits at the first blocking check instead of running the
+  # remaining two, so guard-tone's message never appears alongside it.
   [[ "$output" != *"Blocked by guard-tone.sh"* ]]
-  # Only one violation is logged: the dispatcher exits at the first blocking
-  # check instead of running (and logging) the remaining two.
-  [ "$(block_count)" -eq 1 ]
-  [ "$(last_block_hook)" = "guard-edit.sh" ]
 }
 
 @test "a required skill already loaded this session passes the skills-gate and reaches the tone check" {
@@ -170,7 +157,6 @@ run_dispatch_isolated() {
   [ "$status" -eq 2 ]
   [[ "$output" == *"guard-edit.sh: unexpected error, failing open"* ]]
   [[ "$output" == *"Blocked by guard-tone.sh"* ]]
-  [ "$(last_block_hook)" = "guard-tone.sh" ]
 }
 
 @test "isolation survives a fault that bypasses the ERR trap (set -u unbound variable)" {
@@ -179,5 +165,4 @@ run_dispatch_isolated() {
   run run_dispatch_isolated '/tmp/project/notes.md' 'Certainly, this should still be blocked by tone.'
   [ "$status" -eq 2 ]
   [[ "$output" == *"Blocked by guard-tone.sh"* ]]
-  [ "$(last_block_hook)" = "guard-tone.sh" ]
 }

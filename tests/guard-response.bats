@@ -241,10 +241,3 @@ another prose line"
   [ "$status" -eq 2 ]
   [[ "$output" == *"short-tier ceiling is 12"* ]]
 }
-
-@test "a custom short-tier ceiling env var is respected" {
-  append_turns "$(user_turn "hello")" "$(assistant_turn "$(n_lines 4 prose)")"
-  run bash -c "jq -n --arg t '$TRANSCRIPT' '{transcript_path: \$t}' | CLAUDE_GUARD_RESPONSE=1 CLAUDE_GUARD_RESPONSE_MAX_LINES=3 '$HOOK'"
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"short-tier ceiling is 3"* ]]
-}

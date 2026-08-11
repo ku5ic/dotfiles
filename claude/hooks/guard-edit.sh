@@ -10,13 +10,12 @@ run_guard_edit() {
   # Shadows the file-scope HOOK_NAME via bash's dynamic scoping - without
   # this, sourcing all three guard files into one dispatcher process leaves
   # HOOK_NAME set to whichever file was sourced last, misattributing every
-  # block()/log_block entry.
+  # block() entry.
   local HOOK_NAME="guard-edit.sh"
   path="$(extract_path)"
   [[ -z "$path" ]] && return 0
 
   block() {
-    log_block "${2:-unknown}" "$path"
     echo "Blocked by ${HOOK_NAME}: $1" >&2
     echo "Path: $path" >&2
     exit 2

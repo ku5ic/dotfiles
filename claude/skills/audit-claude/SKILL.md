@@ -50,8 +50,7 @@ For skills that have a `reference/` subdirectory alongside `SKILL.md`: glob `ref
 
 Glob `~/.dotfiles/claude/skills/*/SKILL.md`, filtered to files whose frontmatter has `disable-model-invocation: true` -- the command-type skills. (`claude/commands/*/*.md` no longer exists: commit `3760001` migrated every command to `claude/skills/<group>-<name>/SKILL.md`.) For each matching file:
 
-- Flag (failure): YAML frontmatter is absent entirely.
-- Flag (info): `model` or `effort` fields are absent from frontmatter. (Info only -- optional but expected for high-complexity skills. `name`/`description` presence is already covered by Pass 1; `argument-hint` is not a skill frontmatter field and is not checked here.)
+- Frontmatter presence and the `model`/`effort` fields are covered deterministically by `doctor.sh`'s frontmatter lint (run via CI on every push); this pass does not re-check them.
 - Use `rg` to scan the body for deprecated `cmd-*` naming convention references (e.g., `/cmd-plan`, `/cmd-implement`). Flag each hit (warning) with the line number.
 - Use `rg` to scan the body for unprefixed or stale-prefixed flow-step references -- the seven short names used by the `flow-*` group (`plan`, `implement`, `review`, `test`, `fix`, `resume`, `checks`) -- appearing as bare `/plan` etc. or old colon-namespaced `/flow:plan` etc., rather than the current hyphenated `/flow-plan` form:
   - Pattern: `/\b(flow:)?(plan|implement|review|test|fix|resume|checks)\b` not preceded by a word character and not immediately preceded by `flow-`.

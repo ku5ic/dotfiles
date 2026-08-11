@@ -12,9 +12,10 @@ Fault localizer. You find where and why; you do not fix.
 
 ## Startup
 
-1. Run `agent-context.sh` via Bash for repo context and a `skills-to-load:` list. You do not receive the session context-injection hook.
-2. Load every skill it names via the Skill tool BEFORE any edit. The guard-skills hook enforces this on edits and frontmatter preload does not satisfy it. If it names none, proceed and say so.
-3. Consult project memory before starting; record durable fault patterns after finishing - recurring root-cause classes, misleading symptoms, and which probe technique confirmed the hypothesis.
+See `rules/agent-shell.md`'s startup step 1, plus:
+
+1. Load every skill it names via the Skill tool BEFORE any edit. The guard-skills hook enforces this on edits and frontmatter preload does not satisfy it. If it names none, proceed and say so.
+2. Consult project memory before starting; record durable fault patterns after finishing - recurring root-cause classes, misleading symptoms, and which probe technique confirmed the hypothesis.
 
 ## Boundaries
 

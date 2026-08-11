@@ -40,51 +40,11 @@ extract_command() {
   printf '%s' "$payload" | jq -r '.tool_input.command // empty'
 }
 
-# Appends one JSONL line to guard-blocks.jsonl. $1 = rule slug, $2 = detail.
-# Runs in a subshell with stderr suppressed so a logging failure can't
-# prevent the block() caller from reaching exit 2.
-log_block() {
-  local rule="${1:-unknown}" detail="${2:-}"
-  (
-    local log_dir="$HOME/.claude/logs"
-    mkdir -p "$log_dir"
-    local log_file="$log_dir/guard-blocks.jsonl"
-    local ts
-    ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-    printf '%s' "${payload:-{}}" | jq -c \
-      --arg ts "$ts" \
-      --arg hook "${HOOK_NAME:-hook}" \
-      --arg rule "$rule" \
-      --arg detail "$detail" \
-      '{
-         ts: $ts,
-         hook: $hook,
-         rule: $rule,
-         detail: $detail,
-         session_id: (.session_id // null),
-         cwd: (.cwd // null)
-       }' >>"$log_file"
-    local max_lines=10000
-    if (($(wc -l <"$log_file") > max_lines)); then
-      local tmp
-      tmp="$(mktemp)"
-      trap 'rm -f "$tmp"' EXIT
-      tail -n "$max_lines" "$log_file" >"$tmp"
-      mv "$tmp" "$log_file"
-    fi
-  ) 2>/dev/null || true
-}
-
 # $1 = human-readable reason, $2 = optional rule slug. Hooks override this
 # to add context (e.g. the offending command or path).
 block() {
-  log_block "${2:-unknown}" "${cmd:-}"
   echo "Blocked by ${HOOK_NAME:-hook}: $1" >&2
   exit 2
-}
-
-warn() {
-  echo "${HOOK_NAME:-hook}: $1" >&2
 }
 
 # Banned AI-tell opener/closer phrases (CLAUDE.md Voice section), anchored to

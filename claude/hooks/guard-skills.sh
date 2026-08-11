@@ -124,7 +124,6 @@ run_guard_skills() {
   missing_list="$(printf '%s, ' "${missing[@]}")"
   missing_list="${missing_list%, }"
 
-  log_block "skills-not-loaded" "$path"
   echo "This $verb touches $path. Load the following skills via the Skill tool first, then retry the $verb: $missing_list" >&2
   exit 2
 }
