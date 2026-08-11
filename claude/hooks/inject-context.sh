@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# UserPromptSubmit hook. Prepends repo context to the first prompt of a session.
+# SessionStart hook. Prepends repo context at session start/resume/compact.
+# The harness itself guarantees this fires once per boundary (matcher:
+# startup|resume|compact in settings.json) -- no self-dedup needed here.
 HOOK_NAME="inject-context.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
@@ -10,33 +12,18 @@ payload=""
 read_payload
 session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty' 2>/dev/null || true)"
 cwd="$(printf '%s' "$payload" | jq -r '.cwd // empty' 2>/dev/null || true)"
-safe_session_id="${session_id//[^a-zA-Z0-9_-]/}"
-# Without a stable session_id we can't guarantee "first prompt only"
-# injection; falling back to $$ would re-inject every turn.
-if [[ -z "$safe_session_id" ]]; then
-  warn "no session_id in payload, skipping injection"
-  exit 0
-fi
-session_marker="$HOME/.claude/scratch/.injected-${safe_session_id}"
-[[ -f "$session_marker" ]] && exit 0
-
-mkdir -p "$(dirname "$session_marker")"
 
 project_name="$("$HOME/.claude/bin/project-name.sh" 2>/dev/null || echo "unknown")"
 
 # Skip injection for non-project contexts.
 case "$project_name" in
 home | root | unknown)
-  touch "$session_marker"
   exit 0
   ;;
 esac
 
 project_root="$("$HOME/.claude/bin/project-root.sh" 2>/dev/null || echo "")"
-[[ -z "$project_root" ]] && {
-  touch "$session_marker"
-  exit 0
-}
+[[ -z "$project_root" ]] && exit 0
 
 cache_file="$(stack_cache_file "$project_name" "$project_root")"
 refresh_stack_cache_if_stale "$project_root" "$cache_file"
@@ -262,5 +249,4 @@ emit_suggested_skills "$cache_file"
 
 emit_tooling_block "$project_root"
 
-touch "$session_marker"
 exit 0

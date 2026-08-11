@@ -114,22 +114,6 @@ YAML
   [ -z "$output" ]
 }
 
-@test "the once-per-session marker suppresses a second injection" {
-  write_stacks_yml <<'YAML'
-global_skills:
-  - fix-sizing
-YAML
-  write_cache "root: $FAKE_ROOT" "js: yes"
-
-  run run_inject_context "same-session"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"<required-skills>"* ]]
-
-  run run_inject_context "same-session"
-  [ "$status" -eq 0 ]
-  [ -z "$output" ]
-}
-
 @test "a suggested skill logs a suggested-skill marker to skills.jsonl" {
   write_stacks_yml <<'YAML'
 global_skills: []

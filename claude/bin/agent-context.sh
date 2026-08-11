@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Agent startup context. Agents never receive the UserPromptSubmit hook
+# Agent startup context. Agents never receive the SessionStart hook
 # injection that the main session gets (hooks/inject-context.sh), so agent
 # shells run this directly at the start of their body instead.
 #
