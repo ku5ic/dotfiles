@@ -18,13 +18,7 @@ local function discover_server_names()
   return names
 end
 
--- Cached so mason and lspconfig receive the identical list from one filesystem read.
-local _cache = nil
-
 function M.active_server_names()
-  if _cache then
-    return _cache
-  end
   local skip = M.typescript_lsp == "vtsls" and "ts_ls" or "vtsls"
   local result = {}
   for _, name in ipairs(discover_server_names()) do
@@ -32,7 +26,6 @@ function M.active_server_names()
       table.insert(result, name)
     end
   end
-  _cache = result
   return result
 end
 

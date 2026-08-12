@@ -1,31 +1,7 @@
 local map = require("keymaps.util").map
 local cc = require("utils.copilotchat")
 
---- CopilotChat keymaps.
----
---- Purpose:
---- - Define a consistent `<leader>a*` keymap namespace for CopilotChat actions.
---- - Support both free-form prompts (`cc.ask`) and named reusable prompts (`cc.prompt`).
---- - Keep normal-mode behavior focused on full-buffer context, and visual-mode behavior
----   focused on selected text when available.
----
---- Important side effects:
---- - Registers global Neovim keymaps at load time.
---- - Invokes CopilotChat commands/functions that may open/toggle chat UI, mutate chat
----   session state, and trigger network-backed AI requests.
----
---- Constraints / non-obvious details:
---- - Visual-mode mappings depend on `utils.copilotchat` fallback behavior: when visual
----   selection is unavailable, wrappers may use buffer context instead.
---- - Prompt input is whitespace-trim checked; empty or whitespace-only prompts are ignored.
---- - `bind_prompt` names must match keys defined in `utils.copilotchat.prompts`.
----
---- Example:
---- - Select code in visual mode, press `<leader>ar` to run the predefined "Review" prompt
----   against the current selection.
---- - In normal mode, press `<leader>aa` and type a custom question for full-buffer context.
-
--- Generic "ask" with input
+-- <leader>a* namespace for CopilotChat. Generic "ask" with input
 map("n", "<leader>aa", function()
   local prompt = vim.fn.input({ prompt = "CopilotChat> " })
   if prompt and prompt:gsub("%s+", "") ~= "" then
@@ -40,22 +16,8 @@ map("v", "<leader>aa", function()
   end
 end, "AI: Ask (visual)")
 
---- Bind a named CopilotChat prompt for both normal and visual mode.
----
---- Intent:
---- - Centralize dual-mode mappings so behavior and descriptions stay aligned.
----
---- Parameters:
---- @param name string Prompt identifier expected by `cc.prompt` (must exist in prompt table).
---- @param lhs string Keymap lhs to register in both modes.
---- @param label string Human-readable label used in `desc`.
----
---- Returns:
---- - nil (registers mappings for side effects only).
----
---- Behavior:
---- - Normal mode sends full-buffer context (`selection_only = false`).
---- - Visual mode prefers selected-text context (`selection_only = true`).
+-- Binds a named prompt (must exist in utils.copilotchat.prompts) to both normal
+-- (full buffer) and visual (selection) mode under the same lhs.
 local function bind_prompt(name, lhs, label)
   map("n", lhs, function()
     cc.prompt(name, { selection_only = false })

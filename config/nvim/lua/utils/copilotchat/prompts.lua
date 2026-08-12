@@ -1,10 +1,6 @@
 local M = {}
 
-local CODING_DYNAMIC_CONTEXT = {
-  repo_root_docs = { "README.md", "CLAUDE.md" },
-  upward_docs = { "README.md", "CLAUDE.md" },
-  repo_anywhere_docs = {},
-}
+local CODING_DYNAMIC_CONTEXT = { "README.md", "CLAUDE.md" }
 
 local BASE_CODE_RULES = [[
 You are a senior software engineer working in an existing codebase.
@@ -183,10 +179,6 @@ Output discipline:
 - Do not add explanations, notes, headings, or alternatives.
 ]]
 
---- Returns a coding prompt entry with the shared coding system prompt and dynamic context.
----@param description string Short UI label for the prompt.
----@param prompt string Task-specific instruction body.
----@return table
 local function coding(description, prompt)
   return {
     description = description,
@@ -196,10 +188,6 @@ local function coding(description, prompt)
   }
 end
 
---- Returns a writing prompt entry with the shared writing system prompt and haiku model.
----@param description string Short UI label for the prompt.
----@param prompt string Task-specific instruction body.
----@return table
 local function writing(description, prompt)
   return {
     description = description,
@@ -209,32 +197,8 @@ local function writing(description, prompt)
   }
 end
 
---- Prompt definitions consumed by CopilotChat prompt-picker/config.
----
---- Purpose and intent:
---- - Centralize reusable prompt text so behavior is consistent across picker entries.
---- - Keep coding and writing system guardrails separate to reduce instruction drift
----   between code-focused and prose-focused tasks.
----
---- Table contract (`prompts`):
---- - Key (`string`): user-facing prompt name shown in integrations (e.g. "Explain").
---- - Value (`table`):
----   - `description?` (`string`): short UI/help label.
----   - `system_prompt?` (`string`): optional role/behavior constraints prepended by caller.
----   - `dynamic_context?` (`table`): optional context resolution config (coding prompts only).
----   - `model?` (`string`): optional model override.
----   - `context?` (`table`): optional static context sources (e.g. "#gitdiff:staged").
----   - `prompt` (`string`): task-specific instruction body sent with user/context input.
----   - `mapping?` (`string`): optional keybinding hint for picker/integration layers.
----
---- Constraints and non-obvious decisions:
---- - `system_prompt` is optional so lightweight entries can rely only on `prompt`.
---- - Prompt strings are behavior-defining configuration; wording changes are intentional
----   functional changes, not cosmetic edits.
---- - "Commit" intentionally uses dedicated guardrails instead of `CODING_SYSTEM_PROMPT`
----   because commit generation requires stricter output discipline than code assistance.
---- - `coding()` and `writing()` are module-private helpers that attach shared defaults;
----   use the raw table form for entries that need unique field combinations (e.g. Commit).
+-- Commit uses its own system prompt (COMMIT_SYSTEM_PROMPT) instead of coding()'s
+-- CODING_SYSTEM_PROMPT: commit messages need stricter output discipline.
 ---@type table<string, { description?: string, system_prompt?: string, dynamic_context?: table, model?: string, context?: table, prompt: string, mapping?: string }>
 local prompts = {
   Explain = coding(
