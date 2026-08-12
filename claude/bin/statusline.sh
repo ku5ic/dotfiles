@@ -171,6 +171,27 @@ if [[ -n "$cwd" ]] && git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2
   git_segment="$(cat "$git_cache_file" 2>/dev/null)"
 fi
 
+# Session-mode badges. Both plugins persist their state to a flag file in
+# ~/.claude rather than exposing it any other way, so this reads those files
+# directly instead of shelling out to the plugins' own (versioned-path, so
+# fragile to depend on) hook scripts.
+mode_segment=""
+ponytail_flag="$HOME/.claude/.ponytail-active"
+if [[ -f "$ponytail_flag" ]]; then
+  ponytail_mode="$(head -n1 "$ponytail_flag" | tr -d '[:space:]')"
+  # Matches the ponytail plugin's own statusline snippet: amber for the
+  # YAGNI-extremist "ultra" level, cyan for everything else.
+  ponytail_color=$'\033[38;5;108m'
+  [[ "$ponytail_mode" == "ultra" ]] && ponytail_color=$'\033[38;5;173m'
+  [[ -z "$ponytail_mode" ]] && ponytail_mode="full"
+  mode_segment="$mode_segment ${ponytail_color}[PONYTAIL:$(printf '%s' "$ponytail_mode" | tr '[:lower:]' '[:upper:]')]${reset_marker}"
+fi
+# i-have-adhd has no mode levels and no live per-session flag - only the
+# persistent "always-on" opt-in file - so this can't reflect a same-session
+# "stop adhd mode" the way the ponytail segment above reflects /ponytail.
+adhd_color=$'\033[38;5;81m'
+[[ -f "$HOME/.claude/.i-have-adhd-always" ]] && mode_segment="$mode_segment ${adhd_color}[ADHD:ALWAYS-ON]${reset_marker}"
+
 row1="$model_name"
 if [[ -n "$declared_model_short" ]]; then
   # actual_model_short usually equals session_model_short here (that is the
@@ -188,6 +209,7 @@ fi
 [[ -n "$agent_name" ]] && row1="$row1 ($agent_name)"
 row1="$row1  $dir_name"
 [[ -n "$git_segment" ]] && row1="$row1  $git_segment"
+row1="$row1$mode_segment"
 
 ctx_int="${ctx_pct%%.*}"
 [[ -z "$ctx_int" ]] && ctx_int=0
