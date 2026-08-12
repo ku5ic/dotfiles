@@ -94,6 +94,11 @@ model_display_from_id() {
 yellow_marker=$'\033[33m'
 red_marker=$'\033[31m'
 reset_marker=$'\033[0m'
+model_color=$'\033[38;5;111m'
+dir_color=$'\033[38;5;216m'
+branch_color=$'\033[38;5;141m'
+staged_color=$'\033[38;5;150m'
+modified_color=$'\033[38;5;209m'
 actual_model_short=""
 actual_model_display=""
 session_model_short=""
@@ -165,7 +170,9 @@ if [[ -n "$cwd" ]] && git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2
     staged="$(git -C "$cwd" diff --cached --numstat 2>/dev/null | wc -l | tr -d ' ')"
     modified="$(git -C "$cwd" diff --numstat 2>/dev/null | wc -l | tr -d ' ')"
     tmp="$(mktemp)"
-    printf '%s +%s ~%s\n' "${branch:-detached}" "$staged" "$modified" >"$tmp"
+    # Tab-separated, not the display-ready "branch +N ~M" string: cache holds
+    # data, coloring happens at render time so each part can carry its own color.
+    printf '%s\t%s\t%s\n' "${branch:-detached}" "$staged" "$modified" >"$tmp"
     mv "$tmp" "$git_cache_file"
   fi
   git_segment="$(cat "$git_cache_file" 2>/dev/null)"
@@ -192,7 +199,7 @@ fi
 adhd_color=$'\033[38;5;81m'
 [[ -f "$HOME/.claude/.i-have-adhd-always" ]] && mode_segment="$mode_segment ${adhd_color}[ADHD:ALWAYS-ON]${reset_marker}"
 
-row1="$model_name"
+row1="${model_color}${model_name}${reset_marker}"
 if [[ -n "$declared_model_short" ]]; then
   # actual_model_short usually equals session_model_short here (that is the
   # silent-fallback case: the override fell back to the session model, which
@@ -207,8 +214,11 @@ elif [[ -n "$actual_model_short" && "$actual_model_short" != "$session_model_sho
   row1="$row1  ${yellow_marker}->  ${actual_model_display}${reset_marker}"
 fi
 [[ -n "$agent_name" ]] && row1="$row1 ($agent_name)"
-row1="$row1  $dir_name"
-[[ -n "$git_segment" ]] && row1="$row1  $git_segment"
+row1="$row1  ${dir_color}${dir_name}${reset_marker}"
+if [[ -n "$git_segment" ]]; then
+  IFS=$'\t' read -r git_branch git_staged git_modified <<<"$git_segment"
+  row1="$row1  ${branch_color}${git_branch}${reset_marker} ${staged_color}+${git_staged}${reset_marker} ${modified_color}~${git_modified}${reset_marker}"
+fi
 row1="$row1$mode_segment"
 
 ctx_int="${ctx_pct%%.*}"
