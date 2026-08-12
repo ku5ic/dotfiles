@@ -97,8 +97,8 @@ reset_marker=$'\033[0m'
 model_color=$'\033[38;5;111m'
 dir_color=$'\033[38;5;216m'
 branch_color=$'\033[38;5;141m'
-staged_color=$'\033[38;5;150m'
-modified_color=$'\033[38;5;209m'
+additions_color=$'\033[38;5;150m'
+deletions_color=$'\033[38;5;209m'
 actual_model_short=""
 actual_model_display=""
 session_model_short=""
@@ -167,12 +167,17 @@ if [[ -n "$cwd" ]] && git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2
   [[ -f "$git_cache_file" ]] && cache_mtime="$(stat -c '%Y' "$git_cache_file" 2>/dev/null || stat -f '%m' "$git_cache_file" 2>/dev/null || echo 0)"
   if ((now - cache_mtime >= CACHE_TTL)) || [[ ! -s "$git_cache_file" ]]; then
     branch="$(git -C "$cwd" branch --show-current 2>/dev/null)"
-    staged="$(git -C "$cwd" diff --cached --numstat 2>/dev/null | wc -l | tr -d ' ')"
-    modified="$(git -C "$cwd" diff --numstat 2>/dev/null | wc -l | tr -d ' ')"
+    # Combines staged + unstaged numstat, matching what `git diff --shortstat`
+    # reports as "N insertions, M deletions". Not `git diff HEAD` - that errors
+    # on an unborn branch (no commits yet) and would hide staged content.
+    read -r additions deletions <<<"$({
+      git -C "$cwd" diff --numstat 2>/dev/null
+      git -C "$cwd" diff --cached --numstat 2>/dev/null
+    } | awk '{a+=$1; d+=$2} END {print a+0, d+0}')"
     tmp="$(mktemp)"
     # Tab-separated, not the display-ready "branch +N ~M" string: cache holds
     # data, coloring happens at render time so each part can carry its own color.
-    printf '%s\t%s\t%s\n' "${branch:-detached}" "$staged" "$modified" >"$tmp"
+    printf '%s\t%s\t%s\n' "${branch:-detached}" "$additions" "$deletions" >"$tmp"
     mv "$tmp" "$git_cache_file"
   fi
   git_segment="$(cat "$git_cache_file" 2>/dev/null)"
@@ -216,8 +221,8 @@ fi
 [[ -n "$agent_name" ]] && row1="$row1 ($agent_name)"
 row1="$row1  ${dir_color}${dir_name}${reset_marker}"
 if [[ -n "$git_segment" ]]; then
-  IFS=$'\t' read -r git_branch git_staged git_modified <<<"$git_segment"
-  row1="$row1  ${branch_color}${git_branch}${reset_marker} ${staged_color}+${git_staged}${reset_marker} ${modified_color}~${git_modified}${reset_marker}"
+  IFS=$'\t' read -r git_branch git_additions git_deletions <<<"$git_segment"
+  row1="$row1  ${branch_color}${git_branch}${reset_marker} ${additions_color}+${git_additions}${reset_marker} ${deletions_color}~${git_deletions}${reset_marker}"
 fi
 row1="$row1$mode_segment"
 

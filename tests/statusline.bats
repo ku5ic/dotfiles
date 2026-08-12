@@ -40,6 +40,12 @@ run_statusline() {
   printf '%s' "$1" | HOME="$FAKE_HOME" bash "$SCRIPT"
 }
 
+# strip_ansi <text>  removes color escape codes so tests can assert on plain
+# segment text/ordering without hardcoding which parts statusline.sh colors.
+strip_ansi() {
+  printf '%s' "$1" | sed -E $'s/\x1b\\[[0-9;]*m//g'
+}
+
 # with_agent <payload> <jq-object>  merges agent identity keys into a payload.
 # make_payload omits them because a plain interactive session has none; only
 # a main thread running as a named agent gets them.
@@ -165,23 +171,23 @@ backdate_mtime() {
 @test "agent name renders beside the model when present" {
   run run_statusline "$(with_agent "$(make_payload "$REPO" t4g 50)" '{agent:{name:"scout"}}')"
   [ "$status" -eq 0 ]
-  [[ "$output" == "Opus (scout)  $(basename "$REPO")"* ]]
+  [[ "$(strip_ansi "$output")" == "Opus (scout)  $(basename "$REPO")"* ]]
 }
 
 @test "agent name falls back to agent_type when the agent key is absent" {
   run run_statusline "$(with_agent "$(make_payload "$REPO" t4h 50)" '{agent_type:"reviewer"}')"
-  [[ "$output" == "Opus (reviewer)"* ]]
+  [[ "$(strip_ansi "$output")" == "Opus (reviewer)"* ]]
 }
 
 @test "agent key wins over agent_type when both are present" {
   run run_statusline "$(with_agent "$(make_payload "$REPO" t4i 50)" '{agent:{name:"scout"},agent_type:"reviewer"}')"
-  [[ "$output" == "Opus (scout)"* ]]
+  [[ "$(strip_ansi "$output")" == "Opus (scout)"* ]]
   [[ "$output" != *"reviewer"* ]]
 }
 
 @test "agent segment is omitted for a plain interactive session" {
   run run_statusline "$(make_payload "$REPO" t4j 50)"
-  [[ "$output" == "Opus  $(basename "$REPO")"* ]]
+  [[ "$(strip_ansi "$output")" == "Opus  $(basename "$REPO")"* ]]
   [[ "$output" != *"("* ]]
 }
 
@@ -205,7 +211,7 @@ backdate_mtime() {
   [[ "$output" != *"5h:"* ]]
 }
 
-@test "git segment shows branch and staged/modified counts" {
+@test "git segment shows branch and additions/deletions across staged and unstaged changes" {
   printf 'one' >"$REPO/a.txt"
   git -C "$REPO" add a.txt
   git -C "$REPO" commit -qm init
@@ -213,14 +219,14 @@ backdate_mtime() {
   git -C "$REPO" add b.txt
   printf 'changed' >>"$REPO/a.txt"
   run run_statusline "$(make_payload "$REPO" t9 50)"
-  [[ "$output" == *"main +1 ~1"* ]]
+  [[ "$(strip_ansi "$output")" == *"main +2 ~1"* ]]
 }
 
 @test "git segment is omitted outside a git repo" {
   local non_git="$BATS_TEST_TMPDIR/plain"
   mkdir -p "$non_git"
   run run_statusline "$(make_payload "$non_git" t10 50)"
-  [ "$(printf '%s' "$output" | head -1)" = "Opus  plain" ]
+  [ "$(strip_ansi "$output" | head -1)" = "Opus  plain" ]
 }
 
 @test "git status cache is reused within the TTL" {
@@ -229,14 +235,14 @@ backdate_mtime() {
   git -C "$REPO" commit -qm init
   printf 'x' >>"$REPO/a.txt"
   run run_statusline "$(make_payload "$REPO" tcache1 50)"
-  [[ "$output" == *"~1"* ]]
+  [[ "$(strip_ansi "$output")" == *"+1 ~1"* ]]
 
   printf 'two' >"$REPO/b.txt"
   git -C "$REPO" add b.txt
   git -C "$REPO" commit -qm second
   printf 'y' >>"$REPO/b.txt"
   run run_statusline "$(make_payload "$REPO" tcache1 50)"
-  [[ "$output" == *"~1"* ]]
+  [[ "$(strip_ansi "$output")" == *"+1 ~1"* ]]
 }
 
 @test "git status cache regenerates after the TTL expires" {
@@ -245,7 +251,7 @@ backdate_mtime() {
   git -C "$REPO" commit -qm init
   printf 'x' >>"$REPO/a.txt"
   run run_statusline "$(make_payload "$REPO" tcache2 50)"
-  [[ "$output" == *"~1"* ]]
+  [[ "$(strip_ansi "$output")" == *"+1 ~1"* ]]
 
   printf 'two' >"$REPO/b.txt"
   git -C "$REPO" add b.txt
@@ -253,7 +259,7 @@ backdate_mtime() {
   printf 'y' >>"$REPO/b.txt"
   sleep 6
   run run_statusline "$(make_payload "$REPO" tcache2 50)"
-  [[ "$output" == *"~2"* ]]
+  [[ "$(strip_ansi "$output")" == *"+2 ~2"* ]]
 }
 
 @test "git status cache regenerates exactly at the TTL boundary (age == CACHE_TTL)" {
@@ -262,7 +268,7 @@ backdate_mtime() {
   git -C "$REPO" commit -qm init
   printf 'x' >>"$REPO/a.txt"
   run run_statusline "$(make_payload "$REPO" tboundary1 50)"
-  [[ "$output" == *"~1"* ]]
+  [[ "$(strip_ansi "$output")" == *"+1 ~1"* ]]
 
   printf 'two' >"$REPO/b.txt"
   git -C "$REPO" add b.txt
@@ -272,7 +278,7 @@ backdate_mtime() {
   # exactly 5 seconds hits the `>=` boundary deterministically, no sleep.
   backdate_mtime "$FAKE_HOME/.claude/cache/statusline/git-tboundary1" 5
   run run_statusline "$(make_payload "$REPO" tboundary1 50)"
-  [[ "$output" == *"~2"* ]]
+  [[ "$(strip_ansi "$output")" == *"+2 ~2"* ]]
 }
 
 @test "git status cache is reused comfortably under the TTL boundary" {
@@ -281,7 +287,7 @@ backdate_mtime() {
   git -C "$REPO" commit -qm init
   printf 'x' >>"$REPO/a.txt"
   run run_statusline "$(make_payload "$REPO" tboundary2 50)"
-  [[ "$output" == *"~1"* ]]
+  [[ "$(strip_ansi "$output")" == *"+1 ~1"* ]]
 
   printf 'two' >"$REPO/b.txt"
   git -C "$REPO" add b.txt
@@ -294,7 +300,7 @@ backdate_mtime() {
   # `now` was read, flaking this test intermittently.
   backdate_mtime "$FAKE_HOME/.claude/cache/statusline/git-tboundary2" 2
   run run_statusline "$(make_payload "$REPO" tboundary2 50)"
-  [[ "$output" == *"~1"* ]]
+  [[ "$(strip_ansi "$output")" == *"+1 ~1"* ]]
 }
 
 @test "missing jq prints a notice instead of erroring or blanking" {
@@ -381,7 +387,7 @@ backdate_mtime() {
 @test "a missing transcript file renders the plain row with no divergence segment" {
   run run_statusline "$(with_transcript "$(make_payload "$REPO" tmiss 50)" "$BATS_TEST_TMPDIR/does-not-exist.jsonl")"
   [ "$status" -eq 0 ]
-  [[ "$(printf '%s' "$output" | head -1)" == "Opus  "* ]]
+  [[ "$(strip_ansi "$output" | head -1)" == "Opus  "* ]]
   [[ "$output" != *"!"* ]]
   [[ "$output" != *"->"* ]]
 }
