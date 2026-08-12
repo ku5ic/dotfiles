@@ -253,14 +253,21 @@ done
 cost_fmt="$(printf '%.2f' "$cost_usd" 2>/dev/null || echo "$cost_usd")"
 
 duration_s=$((duration_ms / 1000))
-if ((duration_s >= 60)); then
-  duration_fmt="$((duration_s / 60))m$((duration_s % 60))s"
+if ((duration_s >= 3600)); then
+  duration_fmt="$((duration_s / 3600))h $((duration_s % 3600 / 60))m"
+elif ((duration_s >= 60)); then
+  duration_fmt="$((duration_s / 60))m"
 else
   duration_fmt="${duration_s}s"
 fi
+# Subtle, muted gray rather than a saturated hue: duration is a secondary
+# stat next to cost, not something that should compete for attention.
+duration_color=$'\033[38;5;245m'
 
-row2="${color}${bar}${reset} ${ctx_int}%  \$${cost_fmt}  ${duration_fmt}"
-[[ -n "$effort_level" ]] && row2="$row2  effort:${effort_level}"
-[[ -n "$five_h" ]] && row2="$row2  5h:${five_h%%.*}%"
+row2="${color}${bar}${reset} ${ctx_int}%  \$${cost_fmt}   ${duration_color}${duration_fmt}${reset}"
+tail=""
+[[ -n "$effort_level" ]] && tail="$tail  effort:${effort_level}"
+[[ -n "$five_h" ]] && tail="$tail  5h:${five_h%%.*}%"
+[[ -n "$tail" ]] && row2="$row2 $tail"
 
 printf '%s\n%s\n' "$row1" "$row2"

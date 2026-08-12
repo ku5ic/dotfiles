@@ -20,16 +20,16 @@ setup() {
 
 # make_payload <dir> <session_id> <ctx_pct> [effort_level] [five_h_pct]
 make_payload() {
-  local dir="$1" session="$2" ctx="$3" effort="${4:-}" five_h="${5:-}"
+  local dir="$1" session="$2" ctx="$3" effort="${4:-}" five_h="${5:-}" duration_ms="${6:-1000}"
   jq -n \
     --arg dir "$dir" --arg session "$session" --argjson ctx "$ctx" \
-    --arg effort "$effort" --arg five_h "$five_h" '
+    --arg effort "$effort" --arg five_h "$five_h" --argjson duration_ms "$duration_ms" '
     {
       model: {display_name: "Opus"},
       workspace: {current_dir: $dir},
       session_id: $session,
       context_window: {used_percentage: $ctx},
-      cost: {total_cost_usd: 1, total_duration_ms: 1000}
+      cost: {total_cost_usd: 1, total_duration_ms: $duration_ms}
     }
     + (if $effort != "" then {effort: {level: $effort}} else {} end)
     + (if $five_h != "" then {rate_limits: {five_hour: {used_percentage: ($five_h | tonumber)}}} else {} end)
@@ -209,6 +209,21 @@ backdate_mtime() {
 @test "5h segment is omitted when absent" {
   run run_statusline "$(make_payload "$REPO" t8 50)"
   [[ "$output" != *"5h:"* ]]
+}
+
+@test "duration under a minute renders as seconds only" {
+  run run_statusline "$(make_payload "$REPO" tdur1 50 "" "" 46000)"
+  [[ "$(strip_ansi "$output")" == *" 46s"* ]]
+}
+
+@test "duration under an hour renders as minutes only, seconds dropped" {
+  run run_statusline "$(make_payload "$REPO" tdur2 50 "" "" 125000)"
+  [[ "$(strip_ansi "$output")" == *" 2m" ]]
+}
+
+@test "duration of an hour or more rolls into space-separated hours and minutes" {
+  run run_statusline "$(make_payload "$REPO" tdur3 50 "" "" 16546000)"
+  [[ "$(strip_ansi "$output")" == *" 4h 35m" ]]
 }
 
 @test "git segment shows branch and additions/deletions across staged and unstaged changes" {
