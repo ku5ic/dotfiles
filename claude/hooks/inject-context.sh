@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# SessionStart hook. Prepends repo context at session start/resume/compact.
-# The harness itself guarantees this fires once per boundary (matcher:
-# startup|resume|compact in settings.json) -- no self-dedup needed here.
+# SessionStart hook. Prepends repo context at session start/resume/compact/
+# clear. The harness itself guarantees this fires once per boundary (matcher:
+# startup|resume|compact|clear in settings.json) -- no self-dedup needed here.
 HOOK_NAME="inject-context.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
@@ -39,39 +39,37 @@ if [[ -s "$cache_file" ]]; then
 fi
 
 # Only global_skills are emitted here; stack-derived skills go through
-# emit_suggested_skills so session start only blocks on the core set.
+# emit_suggested_skills so session start only blocks on the core set. Not
+# gated on the stack cache being non-empty: global_skills apply to every
+# project regardless of detected stack (a docs-only or config-only repo
+# still deserves them - the earlier `project_name` exit above already
+# filters out non-project contexts).
 emit_required_skills() {
-  local cache="$1"
   local yml="$HOME/.claude/_stacks.yml"
 
-  [[ -s "$cache" ]] || return 0
   [[ -f "$yml" ]] || return 0
   command -v yq >/dev/null 2>&1 || return 0
 
   local -a required=()
   mapfile -t required < <(global_skills_list "$yml")
+  [[ ${#required[@]} -eq 0 ]] && return 0
 
-  if [[ ${#required[@]} -gt 0 ]]; then
-    local IFS=', '
-    echo ""
-    echo "<required-skills>"
-    echo "BLOCKING REQUIREMENT: invoke the Skill tool for each of these skills NOW, before any other action: ${required[*]}"
-    echo "</required-skills>"
-    if command -v jq >/dev/null 2>&1; then
-      local log_dir ts sk
-      log_dir="$HOME/.claude/logs"
-      mkdir -p "$log_dir"
-      ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-      for sk in "${required[@]}"; do
-        jq -cn \
-          --arg ts "$ts" \
-          --arg sess "$session_id" \
-          --arg cwd "$cwd" \
-          --arg skill "$sk" \
-          '{ts:$ts,hook:"inject-context.sh",event:"required-skill",session_id:$sess,cwd:$cwd,expansion_type:null,command_name:null,command_args:null,command_source:null,skill_file:$skill,tool_name:null}' \
-          >>"$log_dir/skills.jsonl"
-      done
-    fi
+  render_required_skills_block "$yml"
+
+  if command -v jq >/dev/null 2>&1; then
+    local log_dir ts sk
+    log_dir="$HOME/.claude/logs"
+    mkdir -p "$log_dir"
+    ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    for sk in "${required[@]}"; do
+      jq -cn \
+        --arg ts "$ts" \
+        --arg sess "$session_id" \
+        --arg cwd "$cwd" \
+        --arg skill "$sk" \
+        '{ts:$ts,hook:"inject-context.sh",event:"required-skill",session_id:$sess,cwd:$cwd,expansion_type:null,command_name:null,command_args:null,command_source:null,skill_file:$skill,tool_name:null}' \
+        >>"$log_dir/skills.jsonl"
+    done
   fi
 }
 
@@ -90,25 +88,11 @@ emit_suggested_skills() {
 
   local -a suggested=()
   mapfile -t suggested < <(stacks_signals_from_cache "$cache" | suggested_skills_from_signals "$yml")
+  [[ ${#suggested[@]} -eq 0 ]] && return 0
 
-  if [[ ${#suggested[@]} -eq 0 ]]; then
-    return 0
-  fi
+  render_suggested_skills_block "$yml" "$cache"
 
-  echo ""
-  echo "<suggested-skills>"
-  local sk trigger
-  for sk in "${suggested[@]}"; do
-    trigger="$(yq ".skill_triggers.\"${sk}\" // \"\"" "$yml" 2>/dev/null || true)"
-    if [[ -n "$trigger" && "$trigger" != "null" ]]; then
-      echo "${trigger}: load ${sk} via the Skill tool"
-    else
-      echo "load ${sk} via the Skill tool"
-    fi
-  done
-  echo "Patterns skills are also enforced automatically: the first edit to a matching file type will be blocked until the relevant skill is loaded."
-  echo "</suggested-skills>"
-
+  local sk
   if command -v jq >/dev/null 2>&1; then
     local log_dir ts
     log_dir="$HOME/.claude/logs"
@@ -243,7 +227,7 @@ emit_tooling_block() {
   echo "</tooling>"
 }
 
-emit_required_skills "$cache_file"
+emit_required_skills
 
 emit_suggested_skills "$cache_file"
 

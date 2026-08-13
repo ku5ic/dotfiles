@@ -209,3 +209,50 @@ suggested_skills_from_signals() {
     fi
   done
 }
+
+# render_required_skills_block <yml>
+# Prints the <required-skills> block for global_skills. Shared by
+# inject-context.sh and agent-context.sh so a subagent sees the identical
+# BLOCKING framing CLAUDE.md's "Required skills" section keys off of -
+# agent-context.sh previously emitted a plain "skills-to-load:" list with no
+# such marker, so agents had no signal to treat it as mandatory rather than
+# informational.
+render_required_skills_block() {
+  local yml="$1"
+  local -a required=()
+  mapfile -t required < <(global_skills_list "$yml")
+  [[ ${#required[@]} -eq 0 ]] && return 0
+
+  local IFS=', '
+  echo ""
+  echo "<required-skills>"
+  echo "BLOCKING REQUIREMENT: invoke the Skill tool for each of these skills NOW, before any other action: ${required[*]}"
+  echo "</required-skills>"
+}
+
+# render_suggested_skills_block <yml> <cache>
+# Prints the <suggested-skills> block derived from stack signals in <cache>.
+# Shared by inject-context.sh and agent-context.sh; see
+# render_required_skills_block for why sharing this format matters.
+render_suggested_skills_block() {
+  local yml="$1" cache="$2"
+  [[ -s "$cache" ]] || return 0
+
+  local -a suggested=()
+  mapfile -t suggested < <(stacks_signals_from_cache "$cache" | suggested_skills_from_signals "$yml")
+  [[ ${#suggested[@]} -eq 0 ]] && return 0
+
+  echo ""
+  echo "<suggested-skills>"
+  local sk trigger
+  for sk in "${suggested[@]}"; do
+    trigger="$(yq ".skill_triggers.\"${sk}\" // \"\"" "$yml" 2>/dev/null || true)"
+    if [[ -n "$trigger" && "$trigger" != "null" ]]; then
+      echo "${trigger}: load ${sk} via the Skill tool"
+    else
+      echo "load ${sk} via the Skill tool"
+    fi
+  done
+  echo "Patterns skills are also enforced automatically: the first edit to a matching file type will be blocked until the relevant skill is loaded."
+  echo "</suggested-skills>"
+}

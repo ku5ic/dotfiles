@@ -41,23 +41,6 @@ fi
 
 yml="$HOME/.claude/_stacks.yml"
 if [[ -f "$yml" ]] && command -v yq >/dev/null 2>&1; then
-  required=()
-  mapfile -t required < <(global_skills_list "$yml")
-
-  suggested=()
-  if [[ -s "$cache_file" ]]; then
-    mapfile -t suggested < <(stacks_signals_from_cache "$cache_file" | suggested_skills_from_signals "$yml")
-  fi
-
-  if [[ ${#required[@]} -gt 0 || ${#suggested[@]} -gt 0 ]]; then
-    echo ""
-    echo "skills-to-load:"
-    sk=""
-    for sk in "${required[@]}"; do
-      echo "  $sk"
-    done
-    for sk in "${suggested[@]}"; do
-      echo "  $sk"
-    done
-  fi
+  render_required_skills_block "$yml"
+  render_suggested_skills_block "$yml" "$cache_file"
 fi
