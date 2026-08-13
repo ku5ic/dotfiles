@@ -1,4 +1,4 @@
-name: spacelift-local-dev
+name: spacelift
 root: ~/Projects/Spacelift/local.dev
 enable_pane_titles: true
 
@@ -10,6 +10,7 @@ windows:
             - nvim
         - terminal:
             - update_submodules
+            - mux start spacelift-backend --no-attach
             - mux start spacelift-frontend
             - clear
   - claude:
@@ -20,3 +21,4 @@ windows:
         - tilt:
             - tilt up
         - terminal:
+            - clear
