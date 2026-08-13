@@ -117,6 +117,7 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
 vim.filetype.add({
   filename = {
     ["Brewfile"] = "ruby",
+    ["Tiltfile"] = "python",
   },
 })
 
