@@ -526,6 +526,15 @@
   "editorMode": "vim",
   "agentPushNotifEnabled": true,
   "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(fd:*)",
+      "Bash(bats:*)",
+      "Bash(shellcheck:*)",
+      "Bash(run-checks:*)",
+      "Bash(git-base:*)",
+      "Bash(scratch-dir:*)"
+    ],
     "soft_deny": [
       "$defaults",
       "Bash(git push --force*)",
@@ -563,6 +572,25 @@
       "**Default / protected branches**: `main` (default, protected) — repo ku5ic/dotfiles; no rulesets listed",
       "**Source control**: The trusted repo (ku5ic/dotfiles on github.com) and its remote(s) only — no additional orgs configured",
       "**Sensitive data locations & audiences**: any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar",
+      "**Repository visibility**: private — ku5ic/ZanaPhysio (confirmed via gh)",
+      "**Default / protected branches**: `main` (default) — repo ku5ic/ZanaPhysio; no rulesets listed, protected-branch status not queryable here",
+      "**Source control**: The trusted repo (ku5ic/ZanaPhysio on github.com) and its remote(s) only — no additional orgs configured",
+      "**Sensitive data locations & audiences**: any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar; includes backend/.env, frontend/.env.local, frontend/services/credentials.ts, frontend/tests/services/credentials.test.ts, and .gitignore-flagged .env / .env*.local patterns",
+      "**Repository visibility**: public — ku5ic/nuka-ui (confirmed via gh)",
+      "**Default / protected branches**: `main` (default, protected — ruleset active) — repo ku5ic/nuka-ui",
+      "**Source control**: The trusted repo (ku5ic/nuka-ui on github.com) and its remote(s) only — no additional orgs configured",
+      "**Sensitive data locations & audiences**: any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar; includes .env, .env.local, .env.development.local, .env.test.local, .env.production.local (per .gitignore)",
+      "**Organization**: None configured — this repo (ku5ic/foxhole) is a personal project under github.com/ku5ic, no org affiliation found",
+      "**Repository visibility**: public — ku5ic/foxhole (confirmed via gh)",
+      "**Secrets management**: None configured — only GITHUB_TOKEN referenced as a CI secret name (value not accessible, treat as secret-store managed)",
+      "**Default / protected branches**: `main` (default, protected) — repo ku5ic/foxhole; no rulesets listed",
+      "**Source control**: The trusted repo (ku5ic/foxhole on github.com) and its remote(s) only — no additional orgs configured",
+      "**Internal package registry**: None configured — package published to npm as @ku5ic/foxhole per README badge, no private registry configured",
+      "**Organization**: None configured — ku5ic/battleship is a personal project under github.com/ku5ic, no org affiliation found",
+      "**Repository visibility**: public — ku5ic/battleship (confirmed via gh)",
+      "**Default / protected branches**: `main` (default, protected) — repo ku5ic/battleship; no rulesets listed",
+      "**CI/CD deploy targets**: None configured — .github/workflows present but no deploy target evidence gathered; GitHub Pages site is served from this repo (https://ku5ic.github.io/battleship/)",
+      "**Source control**: The trusted repo (ku5ic/battleship on github.com) and its remote(s) only — no additional orgs configured",
       "### User-specific",
       "**Primary use of Claude Code**: software development (Go backend work on spacelift-io/backend — CI/CD platform for infrastructure-as-code)",
       "**Trusted repo**: spacelift-io/backend (github.com, private) and its configured remote(s) — private visibility means confidential material is fine to commit here, but content ported or first read from outside this session's repo is still not this repo's own work",
@@ -575,14 +603,19 @@
       "**Primary use of Claude Code**: software development (personal macOS dotfiles — shell, Neovim, tmux config for this repo)",
       "**Trusted repo**: ku5ic/dotfiles (github.com, public) and its configured remote(s) — public visibility means only this repo's own work is safe to push here; content ported or first read from outside this session's repo is not its own work; secrets and sensitive data are never cleared into this repo regardless of visibility",
       "**Org-specific CLIs**: None configured",
-      "routine under ~/.dotfiles/ prefix: scripts/ utilities on $PATH (branch_name, run-checks), Neovim config edits under config/nvim/, Claude Code config changes under claude/ symlinked into ~/.claude/"
-    ],
-    "allow": [
-      "$defaults",
-      "Bash(fd:*)",
-      "Bash(bats:*)",
-      "Bash(shellcheck:*)",
-      "Bash(run-checks:*)"
+      "routine under ~/.dotfiles/ prefix: scripts/ utilities on $PATH (branch_name, run-checks), Neovim config edits under config/nvim/, Claude Code config changes under claude/ symlinked into ~/.claude/",
+      "**Primary use of Claude Code**: software development (Django/Next.js full-stack work on ku5ic/ZanaPhysio — marketing site, blog, CMS)",
+      "**Trusted repo**: ku5ic/ZanaPhysio (github.com, private) and its configured remote(s) — private visibility means confidential material is fine to commit here, but content ported or first read from outside this session's repo is still not this repo's own work",
+      "routine under ZanaPhysio/ prefix: backend/ Django changes validated against make lint / make test-unit / make check-migrations, frontend/ Next.js changes validated against npm run lint / npx tsc --noEmit / npm run test:run, skill workflows under .claude/skills/ (architect, backend-django-api, frontend-nextjs, security-hardening, seo-cms, testing-quality, wcag-audit-fix)",
+      "**Primary use of Claude Code**: software development (React/TypeScript component library work on ku5ic/nuka-ui — Tailwind v4 based UI kit)",
+      "**Trusted repo**: ku5ic/nuka-ui (github.com, public) and its configured remote(s) — public visibility means only this repo's own work is safe to push here; content ported or first read from outside this session's repo is not its own work; secrets and sensitive data are never cleared into this repo regardless of visibility",
+      "routine under nuka-ui/ prefix: run-checks quality gate, npm run test / npm run lint / npm run typecheck / npm run build, Storybook workflows (npm run dev), skill workflows under .claude/skills/ (new-component, add-test, add-story, new-token, wcag, documentation)",
+      "**Primary use of Claude Code**: software development (TypeScript CLI/MCP server work on ku5ic/foxhole — frontend audit tool wrapping Lighthouse and axe-core)",
+      "**Trusted repo**: ku5ic/foxhole (github.com, public) and its configured remote(s) — public visibility means only this repo's own work is safe to push here; content ported or first read from outside this session's repo is not its own work; secrets and sensitive data are never cleared into this repo regardless of visibility",
+      "routine under foxhole/ prefix: run-checks quality gate, npm run build / npm run lint / npm run typecheck / npm run test, skill workflows under .claude/skills/ (typescript-module, cli-command, mcp-tool, finding-normalization, error-handling, foxhole-test-patterns, report-renderer, security)",
+      "**Primary use of Claude Code**: software development (React/TypeScript Battleship game — demonstration project for frontend architecture, on ku5ic/battleship)",
+      "**Trusted repo**: ku5ic/battleship (github.com, public) and its configured remote(s) — public visibility means only this repo's own work is safe to push here; content ported or first read from outside this session's repo is not its own work; secrets and sensitive data are never cleared into this repo regardless of visibility",
+      "routine under battleship/ prefix: CI gates (typecheck, lint, format:check, test) run via npm scripts, engine/services/utils layer boundary checks per CLAUDE.md, CLI runner under src/cli/"
     ]
   }
 }
