@@ -36,10 +36,15 @@ return {
   },
   opts = {
     formatters_by_ft = formatters_by_ft,
-    format_on_save = {
-      lsp_fallback = true,
-      async = false,
-      timeout_ms = 2000,
-    },
+    format_on_save = function(bufnr)
+      if vim.api.nvim_buf_get_name(bufnr):match("Tiltfile$") then
+        return
+      end
+      return {
+        lsp_fallback = true,
+        async = false,
+        timeout_ms = 2000,
+      }
+    end,
   },
 }
