@@ -1,15 +1,15 @@
 local map = require("keymaps.util").map
 local cc = require("utils.copilotchat")
 
--- <leader>a* namespace for CopilotChat. Generic "ask" with input
-map("n", "<leader>aa", function()
+-- <leader>A* namespace for CopilotChat (<leader>a is claudecode.nvim). Generic "ask" with input
+map("n", "<leader>Aa", function()
   local prompt = vim.fn.input({ prompt = "CopilotChat> " })
   if prompt and prompt:gsub("%s+", "") ~= "" then
     cc.ask(prompt, { selection_only = false }) -- full buffer
   end
 end, "AI: Ask")
 
-map("v", "<leader>aa", function()
+map("v", "<leader>Aa", function()
   local prompt = vim.fn.input({ prompt = "CopilotChat (visual)> " })
   if prompt and prompt:gsub("%s+", "") ~= "" then
     cc.ask(prompt, { selection_only = true }) -- selection or buffer (wrapper fallback)
@@ -28,20 +28,20 @@ local function bind_prompt(name, lhs, label)
 end
 
 -- ensure these names exist in utils.copilotchat.prompts
-bind_prompt("Explain", "<leader>ae", "Explain code")
-bind_prompt("Review", "<leader>ar", "Review code")
-bind_prompt("Tests", "<leader>at", "Write tests")
-bind_prompt("Refactor", "<leader>af", "Refactor code")
-bind_prompt("Fix", "<leader>ax", "Fix code issues")
-bind_prompt("RenameForClarity", "<leader>an", "Improve naming")
-bind_prompt("Docs", "<leader>aD", "Write documentation")
-bind_prompt("WCAG", "<leader>aW", "Improve accessibility")
-bind_prompt("Summarize", "<leader>as", "Summarize text")
-bind_prompt("Wording", "<leader>aw", "Improve wording")
-bind_prompt("Concise", "<leader>az", "Make concise")
-bind_prompt("Commit", "<leader>ac", "Create commit message")
+bind_prompt("Explain", "<leader>Ae", "Explain code")
+bind_prompt("Review", "<leader>Ar", "Review code")
+bind_prompt("Tests", "<leader>At", "Write tests")
+bind_prompt("Refactor", "<leader>Af", "Refactor code")
+bind_prompt("Fix", "<leader>Ax", "Fix code issues")
+bind_prompt("RenameForClarity", "<leader>An", "Improve naming")
+bind_prompt("Docs", "<leader>AD", "Write documentation")
+bind_prompt("WCAG", "<leader>AW", "Improve accessibility")
+bind_prompt("Summarize", "<leader>As", "Summarize text")
+bind_prompt("Wording", "<leader>Aw", "Improve wording")
+bind_prompt("Concise", "<leader>Az", "Make concise")
+bind_prompt("Commit", "<leader>Ac", "Create commit message")
 
 -- Additional AI commands (non-prompt based)
-map("n", "<leader>av", "<cmd>CopilotChatToggle<cr>", "AI: Toggle chat")
-map("n", "<leader>al", "<cmd>CopilotChatReset<cr>", "AI: Clear chat history")
-map("n", "<leader>aM", "<cmd>CopilotChatModels<cr>", "AI: Select Model")
+map("n", "<leader>Av", "<cmd>CopilotChatToggle<cr>", "AI: Toggle chat")
+map("n", "<leader>Al", "<cmd>CopilotChatReset<cr>", "AI: Clear chat history")
+map("n", "<leader>AM", "<cmd>CopilotChatModels<cr>", "AI: Select Model")

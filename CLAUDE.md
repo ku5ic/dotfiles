@@ -83,7 +83,8 @@ All custom autocmds belong to a `dotfiles_*` augroup created with `clear = true`
 - `<leader>l` - LSP actions
 - `<leader>x` - Trouble diagnostics
 - `<leader>d` - DAP debugger (also F5/F10/F11/F12)
-- `<leader>a` - AI/Copilot (see `keymaps/copilotchat.lua`)
+- `<leader>a` - AI/Claude Code (coder/claudecode.nvim, default upstream keymaps; see `plugins/claude-code.lua`)
+- `<leader>A` - AI/Copilot (CopilotChat; see `keymaps/copilotchat.lua`)
 - `<leader>n` - Notifications (notification history picker; snacks notifier, noice, precognition)
 - `<leader>u` - UI toggles (spell, wrap, relativenumber, diagnostics, conceallevel, treesitter, background, inlay hints, indent, dim; colorscheme picker)
 - `<leader>c` - Copy file path
