@@ -139,6 +139,12 @@ return {
         callback = function(args)
           local client = vim.lsp.get_client_by_id(args.data.client_id)
           setup_lsp_keymaps(args.buf, client)
+
+          -- Tiltfiles are Python-ish but define their own DSL globals (config,
+          -- docker_build, local_resource, ...) that basedpyright/ruff don't know about.
+          if vim.api.nvim_buf_get_name(args.buf):match("Tiltfile$") then
+            vim.diagnostic.enable(false, { bufnr = args.buf })
+          end
         end,
       })
     end,
