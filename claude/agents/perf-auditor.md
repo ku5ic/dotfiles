@@ -2,8 +2,6 @@
 name: perf-auditor
 description: Performance audit via static analysis only (re-renders, N+1 queries, unbounded loops, bundle cost, missing pagination). Read-only; returns a severity-rated report. Use for statically detectable performance issues; not for runtime profiling or fixes.
 tools: Read, Grep, Glob, Bash, Skill
-model: sonnet
-effort: high
 color: pink
 memory: local
 ---

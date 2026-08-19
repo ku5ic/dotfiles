@@ -2,8 +2,6 @@
 name: scout
 description: Read-only codebase exploration. Delegate broad "where is X, how is Y done" sweeps that would span many files here to keep the main context clean. Returns findings citing file:line, never edits. Not for review judgment or fixes.
 tools: Read, Grep, Glob, Bash, Skill
-model: sonnet
-effort: medium
 color: cyan
 ---
 

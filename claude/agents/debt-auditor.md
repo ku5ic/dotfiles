@@ -2,8 +2,6 @@
 name: debt-auditor
 description: Technical-debt and architectural-risk audit that correlates findings with git churn to rank what matters. Read-only; returns a severity-rated report with a remediation path. Use to surface debt; not for applying refactors.
 tools: Read, Grep, Glob, Bash, Skill
-model: sonnet
-effort: high
 color: cyan
 memory: local
 ---
