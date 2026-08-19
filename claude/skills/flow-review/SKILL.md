@@ -34,11 +34,11 @@ Escape hatches (`any`, `unknown` with unsafe cast, `# type: ignore`), missing ge
 
 ### 3. Accessibility
 
-If UI changed: defer to the wcag-audit skill for depth. Only flag the obvious here (missing alt, missing label, broken keyboard path).
+If UI changed: accessibility depth review is a separate pass. Only flag the obvious here (missing alt, missing label, broken keyboard path).
 
 ### 4. Security
 
-If user input, auth, or external data involved: defer to security-patterns for depth. Flag obvious issues here.
+If user input, auth, or external data involved: security depth review is a separate pass. Flag obvious issues here.
 
 ### 5. Design principles
 
@@ -46,7 +46,7 @@ SOLID, DRY, KISS applied with judgment. Flag actual problems, not preferences. D
 
 ### 6. Performance
 
-React re-renders, bundle cost, N+1 queries, unbounded loops, missing pagination. Defer depth to perf audit if needed.
+React re-renders, bundle cost, N+1 queries, unbounded loops, missing pagination. Deeper performance analysis is a separate pass if needed.
 
 ### 7. Maintainability
 

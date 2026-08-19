@@ -3,9 +3,9 @@ name: git-patterns
 description: >
   Git workflow patterns covering Conventional Commits, interactive rebase,
   branch strategy, recovery with reflog, bisect, worktrees, and stash. Use
-  whenever a project uses git, or the user asks about commit messages, rebase,
-  branch strategy, merge conflicts, git history, or recovering lost commits,
-  even if "git" is not mentioned by name.
+  whenever the task involves a git operation - commit, branch, rebase, bisect,
+  merge conflict, or recovering lost history - even if "git" is not mentioned
+  by name.
 ---
 
 # Git Patterns

@@ -91,6 +91,21 @@ skill_file_map:
   - on: basename
     globs: ["*.sh", "*.bash", "*.zsh"]
     skills: [bash-patterns]
+  - on: basename
+    globs: ["Dockerfile", "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml"]
+    skills: [docker-patterns]
+  - on: basename
+    globs: ["tailwind.config.js", "tailwind.config.ts"]
+    skills: [tailwind-patterns]
+  - on: basename
+    globs: ["next.config.js", "next.config.mjs", "next.config.ts"]
+    skills: [next-app-router-patterns]
+  - on: basename
+    globs: ["nuxt.config.js", "nuxt.config.ts"]
+    skills: [nuxt-patterns]
+  - on: basename
+    globs: ["manage.py"]
+    skills: [django-patterns]
   - on: path
     globs: ["*/skills/*/SKILL.md"]
     skills: [skill-authoring]
