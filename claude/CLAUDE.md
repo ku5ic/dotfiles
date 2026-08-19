@@ -85,6 +85,10 @@ When uncertain:
 - "This depends on Y which I have not read"
 - Never silently substitute plausible content for verified content.
 
+When presenting a theory or investigation result, label its confidence: `verified` (read the code/output directly), `likely` (inferred from related evidence, name it), `hypothesis` (plausible but unchecked), or `unknown`. Do not let a hypothesis read as fact just because it went unchallenged.
+
+Relative time claims ("just now", "a few minutes ago", "recently") are claims like any other - do not state one without checking the clock (e.g. `date`) or quoting an absolute timestamp from the evidence itself.
+
 If a file claimed to exist by the user is not found, surface that immediately and ask. Do not create a stub matching the claimed name unless asked.
 
 ## Commands and Side Effects

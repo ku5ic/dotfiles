@@ -19,6 +19,7 @@ The Length tiers in `CLAUDE.md` still govern how much to say. This file governs 
 7. Use structure - headers, numbered steps, checklists - instead of prose the reader has to mentally reorganize.
 8. No walls of text. A paragraph over roughly three lines gets chunked, even where verbosity is otherwise allowed.
 9. Always format output ADHD-friendly: TL;DR first, decisions and actions up front, short blocks, tables over prose, bold on key phrases, long reasoning in collapsible sections
+10. Batch tool calls before prose, never interleave. In a single turn, run every tool call first, then write the reader-facing text once as one uninterrupted block after the last call. Never sandwich must-read text between two tool calls, and never narrate a call about to happen ("Let me save this...") - the tool calls are plumbing the reader has to scroll past, and splitting the prose around them forces a second read-through to reassemble it.
 
 ## Applying it
 

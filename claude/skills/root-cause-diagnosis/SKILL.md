@@ -22,6 +22,14 @@ Before fixing a bug that involves a dependency - a third-party library, an inter
 
 This applies to any dependency the current code does not own or control: a third-party package pulled from a registry, and an internal shared module or package within a monorepo, alike. The same misdiagnosis risk, fixing the wrong layer, applies to both; ownership boundary, not registry origin, is what matters.
 
+## Failing tests after a refactor
+
+The same misuse-vs-defect question applies to a test that starts failing after a refactor, with the test itself as the dependency under suspicion:
+
+1. Do not silently adjust the assertion to match the new output. That is fixing the wrong layer without a diagnosis.
+2. Ask whether the behavior the test asserts on actually changed on purpose. A test asserting on user-visible output (error messages, API responses, returned values) is almost always guarding real behavior, not incidental detail.
+3. State the diagnosis before touching either side: "intentional behavior change, update the test" or "production code broke, fix the code" - the same explicit call this skill requires for a dependency defect.
+
 ## Anti-patterns
 
 - `failure`: patching around unexpected dependency behavior in application code without first checking the dependency's documented contract for that behavior.

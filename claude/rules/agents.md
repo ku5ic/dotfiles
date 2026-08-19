@@ -22,3 +22,12 @@ Not as a reflexive first move for something a single Read or Grep call would ans
 1. A forked skill has no access to the AskUserQuestion tool.
 2. A step that would otherwise ask via AskUserQuestion instead stops and returns the question(s) and options under a `## Needs decision` heading, rather than guessing or silently deferring the answer in prose.
 3. On a task-notification whose result carries that heading, ask the question(s) via AskUserQuestion in the main conversation, then resume the same agent via SendMessage with the resolved answer(s) so it can finish the rest of its procedure.
+
+## Verify agent-claimed work before building on it
+
+An agent's report describes what it intended to do, not necessarily what it did - a subagent can report a fully fabricated result (a convincing diff, passing tests, a clean lint run) for work that never happened. Before trusting "I changed/found X" enough to act on it:
+
+- Claimed edits: `git status` or `git diff --stat` for the touched paths.
+- Claimed findings: spot-check at least one cited `file:line` directly.
+
+This is a cheap check against a real failure mode, not general distrust of every agent result - reserve it for claims you are about to build on (commit, report to the user, or hand to another agent), not every intermediate status update.
