@@ -1,7 +1,6 @@
 ---
 description: Investigate unexpected behavior without a clear failing signal
 argument-hint: <what is wrong and where, plus any reproduction steps or a link to an external tracker/doc>
-model: opus
 disable-model-invocation: true
 ---
 

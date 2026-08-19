@@ -1,7 +1,6 @@
 ---
 description: Explain a bug, feature, module, or section of code to someone new to the codebase - full mechanism, file:line citations, developer to developer
 argument-hint: <what to explain - a bug/ticket, a debug report path, a feature or module name, a file/directory, or blank to use what's already been discussed in this conversation>
-model: opus
 disable-model-invocation: true
 ---
 

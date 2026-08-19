@@ -2,8 +2,6 @@
 name: plan-critic
 description: Adversarially reviews a flow-plan artifact against the actual repo, not just the plan's own internal consistency. Verifies cited precedent exists, catches design-integrity non-answers, and checks whether named tests would actually catch the failures they claim to. Invoked by flow-plan after the plan is written; never revises the plan itself.
 tools: Read, Grep, Glob, Bash, Skill
-model: opus
-effort: high
 color: indigo
 memory: local
 ---

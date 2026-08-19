@@ -1,7 +1,6 @@
 ---
 description: Detect drift between code and markdown or inline documentation
 argument-hint: <code path to check>
-model: opus
 disable-model-invocation: true
 ---
 
