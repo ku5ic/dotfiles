@@ -617,5 +617,6 @@
       "**Trusted repo**: ku5ic/battleship (github.com, public) and its configured remote(s) — public visibility means only this repo's own work is safe to push here; content ported or first read from outside this session's repo is not its own work; secrets and sensitive data are never cleared into this repo regardless of visibility",
       "routine under battleship/ prefix: CI gates (typecheck, lint, format:check, test) run via npm scripts, engine/services/utils layer boundary checks per CLAUDE.md, CLI runner under src/cli/"
     ]
-  }
+  },
+  "effortLevel": "xhigh"
 }
