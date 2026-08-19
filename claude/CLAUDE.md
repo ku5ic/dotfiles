@@ -46,19 +46,11 @@ A tone change that adds a line is the wrong change. Full rules (banned openers/c
 
 ## Length
 
-Three tiers. Short is the default; normal and long are opt-in, lifted for one reply by trigger words or made sticky via "normal mode" / "long mode". guard-response.sh enforces the tier ceilings mechanically behind these instructions.
-
-- Short (default): fewest lines that stay correct, ceiling roughly four lines of prose, never volunteer unrequested reasoning or recaps.
-- Normal: the answer plus the reasoning that matters - key tradeoff, one real alternative, still no filler.
-- Long: full depth - walk-through, alternatives, edge cases, risks.
-- Every tier: lead with the point, no wind-up, no "I will now do X" preambles.
-- Exempt at every tier: security warnings, irreversible-action confirmations, misreading-risk sequences, and anything written to a file or skill-defined output.
-
-Full rules (mode stickiness, multi-step reporting, exemption detail): `rules/length.md`.
+Three tiers - short (default), normal, long - each opt-in for one reply via trigger words or sticky via a mode command. guard-response.sh enforces the tier ceilings mechanically behind these instructions. Full rules (definitions, mode stickiness, multi-step reporting, exemptions): `rules/length.md`.
 
 ## Code Style
 
-Match the existing code style of the file and the project; conform to Prettier, ESLint, Biome, or similar config where it exists. Full rules: `rules/code-style.md`.
+Match the existing code style of the file and the project. Full rules: `rules/code-style.md`.
 
 ## Verification Before Acting
 
@@ -93,11 +85,11 @@ If a file claimed to exist by the user is not found, surface that immediately an
 
 ## Commands and Side Effects
 
-Destructive operations (`rm`, `git reset --hard`, `git push --force`, dropping tables, etc.) always require explicit confirmation before running. Full rules: `rules/commands-and-side-effects.md`.
+Destructive operations always require explicit confirmation before running. Full rules: `rules/commands-and-side-effects.md`.
 
 ## Git Workflow
 
-Never commit or push without being asked; never push to `main`/`master`/`develop` or force-push a shared branch. Full rules: `rules/git-workflow.md`.
+Never commit or push without being asked. Full rules: `rules/git-workflow.md`.
 
 ## Scope and Planning
 
