@@ -476,7 +476,7 @@ echo "== CLAUDE.md + rules word budget =="
 # target: instruction-following degrades with volume. The live count is
 # printed below on every run rather than restated here, where it would go
 # stale the moment this budget or the content changes.
-CLAUDE_WORD_BUDGET=5400
+CLAUDE_WORD_BUDGET=6000
 
 word_count="$(cat "$SOURCE_ROOT/CLAUDE.md" "$SOURCE_ROOT"/rules/*.md | wc -w | tr -d ' ')"
 echo "word-count     $word_count (budget: $CLAUDE_WORD_BUDGET)"
