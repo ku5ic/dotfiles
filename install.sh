@@ -140,13 +140,9 @@ setup_asdf() {
   asdf plugin update --all
 
   # Install each version declared in .tool-versions
-  while IFS= read -r line || [ -n "$line" ]; do
+  while IFS=' ' read -r plugin version || [ -n "$plugin" ]; do
     # Skip blank lines and comments
-    [[ -z "$line" || "$line" == \#* ]] && continue
-
-    local plugin version
-    plugin=$(echo "$line" | awk '{print $1}')
-    version=$(echo "$line" | awk '{print $2}')
+    [[ -z "$plugin" || "$plugin" == \#* ]] && continue
 
     echo "Installing $plugin $version"
     asdf install "$plugin" "$version"

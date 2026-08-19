@@ -188,27 +188,39 @@ for line in "${repos[@]}"; do
   merge_diff="$(show_diff "$full_name")"
   protection_diff="$(show_protection_diff "$full_name" "$default_branch")"
 
-  case "$mode" in
-  dry-run)
-    if [[ -z "$merge_diff" && -z "$protection_diff" ]]; then
-      echo "  already up to date"
-      skipped=$((skipped + 1))
-    else
-      if [[ -n "$merge_diff" ]]; then
-        echo "  merge policy - would change:"
-        echo "    ${merge_diff//$'\n'/$'\n    '}"
-      fi
-      if [[ -n "$protection_diff" ]]; then
-        echo "  branch protection - would change:"
-        echo "    ${protection_diff//$'\n'/$'\n    '}"
-      fi
+  if [[ -z "$merge_diff" && -z "$protection_diff" ]]; then
+    echo "  already up to date"
+    skipped=$((skipped + 1))
+  else
+    if [[ -n "$merge_diff" ]]; then
+      echo "  merge policy - would change:"
+      echo "    ${merge_diff//$'\n'/$'\n    '}"
     fi
-    ;;
-  yes)
-    if [[ -z "$merge_diff" && -z "$protection_diff" ]]; then
-      echo "  already up to date"
-      skipped=$((skipped + 1))
-    else
+    if [[ -n "$protection_diff" ]]; then
+      echo "  branch protection - would change:"
+      echo "    ${protection_diff//$'\n'/$'\n    '}"
+    fi
+
+    confirmed=false
+    case "$mode" in
+    yes) confirmed=true ;;
+    interactive)
+      read -r -p "  apply changes to this repo? [y/N/q] " ans </dev/tty
+      case "$ans" in
+      y | Y) confirmed=true ;;
+      q | Q)
+        echo "  quitting"
+        break
+        ;;
+      *)
+        echo "  skipped"
+        skipped=$((skipped + 1))
+        ;;
+      esac
+      ;;
+    esac
+
+    if [[ "$confirmed" == true ]]; then
       apply_ok=true
       if [[ -n "$merge_diff" ]]; then
         if apply_settings "$full_name"; then
@@ -232,58 +244,7 @@ for line in "${repos[@]}"; do
         failed=$((failed + 1))
       fi
     fi
-    ;;
-  interactive)
-    if [[ -z "$merge_diff" && -z "$protection_diff" ]]; then
-      echo "  already up to date"
-      skipped=$((skipped + 1))
-    else
-      if [[ -n "$merge_diff" ]]; then
-        echo "  merge policy - would change:"
-        echo "    ${merge_diff//$'\n'/$'\n    '}"
-      fi
-      if [[ -n "$protection_diff" ]]; then
-        echo "  branch protection - would change:"
-        echo "    ${protection_diff//$'\n'/$'\n    '}"
-      fi
-      read -r -p "  apply changes to this repo? [y/N/q] " ans </dev/tty
-      case "$ans" in
-      y | Y)
-        apply_ok=true
-        if [[ -n "$merge_diff" ]]; then
-          if apply_settings "$full_name"; then
-            echo "  merge policy: applied"
-          else
-            echo "  merge policy: failed"
-            apply_ok=false
-          fi
-        fi
-        if [[ -n "$protection_diff" ]]; then
-          if apply_branch_protection "$full_name" "$default_branch"; then
-            echo "  branch protection: applied"
-          else
-            echo "  branch protection: failed"
-            apply_ok=false
-          fi
-        fi
-        if [[ "$apply_ok" == true ]]; then
-          changed=$((changed + 1))
-        else
-          failed=$((failed + 1))
-        fi
-        ;;
-      q | Q)
-        echo "  quitting"
-        break
-        ;;
-      *)
-        echo "  skipped"
-        skipped=$((skipped + 1))
-        ;;
-      esac
-    fi
-    ;;
-  esac
+  fi
   echo
 done
 

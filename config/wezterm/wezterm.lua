@@ -78,25 +78,6 @@ local keys = {
   { key = "[", mods = "SUPER|SHIFT", action = act.ActivateTabRelative(-1) },
   -- Cmd+Shift+]: next tab
   { key = "]", mods = "SUPER|SHIFT", action = act.ActivateTabRelative(1) },
-  -- Cmd+1: jump to tab 1
-  { key = "1", mods = "SUPER", action = act.ActivateTab(0) },
-  -- Cmd+2: jump to tab 2
-  { key = "2", mods = "SUPER", action = act.ActivateTab(1) },
-  -- Cmd+3: jump to tab 3
-  { key = "3", mods = "SUPER", action = act.ActivateTab(2) },
-  -- Cmd+4: jump to tab 4
-  { key = "4", mods = "SUPER", action = act.ActivateTab(3) },
-  -- Cmd+5: jump to tab 5
-  { key = "5", mods = "SUPER", action = act.ActivateTab(4) },
-  -- Cmd+6: jump to tab 6
-  { key = "6", mods = "SUPER", action = act.ActivateTab(5) },
-  -- Cmd+7: jump to tab 7
-  { key = "7", mods = "SUPER", action = act.ActivateTab(6) },
-  -- Cmd+8: jump to tab 8
-  { key = "8", mods = "SUPER", action = act.ActivateTab(7) },
-  -- Cmd+9: jump to tab 9
-  { key = "9", mods = "SUPER", action = act.ActivateTab(8) },
-
   -- Cmd+D: split pane left/right
   { key = "d", mods = "SUPER", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
   -- Cmd+Shift+D: split pane top/bottom
@@ -182,6 +163,11 @@ local keys = {
   -- Cmd+K: clear scrollback and viewport (iTerm/Ghostty muscle memory; remove if unused)
   { key = "k", mods = "SUPER", action = act.ClearScrollback("ScrollbackAndViewport") },
 }
+
+-- Cmd+1..9: jump to tab N
+for i = 1, 9 do
+  table.insert(keys, { key = tostring(i), mods = "SUPER", action = act.ActivateTab(i - 1) })
+end
 
 return {
   -- wezterm terminfo enables true color, undercurl, extended mouse, kitty graphics protocol.

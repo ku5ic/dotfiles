@@ -239,7 +239,6 @@ elif ((ctx_int >= YELLOW_AT)); then
 else
   color=$'\033[32m'
 fi
-reset=$'\033[0m'
 
 bar=""
 for ((i = 0; i < BAR_WIDTH; i++)); do
@@ -264,7 +263,7 @@ fi
 # stat next to cost, not something that should compete for attention.
 duration_color=$'\033[38;5;245m'
 
-row2="${color}${bar}${reset} ${ctx_int}%  \$${cost_fmt}   ${duration_color}${duration_fmt}${reset}"
+row2="${color}${bar}${reset_marker} ${ctx_int}%  \$${cost_fmt}   ${duration_color}${duration_fmt}${reset_marker}"
 tail=""
 [[ -n "$effort_level" ]] && tail="$tail  effort:${effort_level}"
 [[ -n "$five_h" ]] && tail="$tail  5h:${five_h%%.*}%"

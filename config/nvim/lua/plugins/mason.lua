@@ -19,12 +19,10 @@ local function setup_mason()
   -- Stand-alone tools (formatters, linters, debuggers)
   require("mason-tool-installer").setup({
     ensure_installed = {
-      "cspell",
       "eslint",
       "js-debug-adapter",
       "prettier",
       "prettierd",
-      "black",
       "ruff",
       "stylelint",
       "stylua",

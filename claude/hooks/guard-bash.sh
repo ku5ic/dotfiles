@@ -111,24 +111,24 @@ if [[ "$_cmd_struct_stripped" =~ \&\& ]] || [[ "$_cmd_struct_stripped" =~ \|\| ]
 fi
 
 # Prints "manager:lockfile" for the first lockfile match in <dir> or its git
-# toplevel, nothing if none found. Reads _stacks.yml's package_managers table
-# (via bin/_lib.sh's $_STACKS_YML) so there's one source of truth for the
-# mapping instead of a second hardcoded copy.
+# toplevel, nothing if none found. Manager comes from bin/_lib.sh's
+# resolve_package_manager (already sourced); this only adds the matching
+# lockfile name for the block message.
 _resolve_pm_for_dir() {
   local dir="${1:-.}"
+  local mgr
+  mgr="$(resolve_package_manager "$dir")"
+  [[ -z "$mgr" ]] && return 0
+
   local toplevel
   toplevel="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
 
-  local -a lockfiles managers
-  mapfile -t lockfiles < <(yq '.package_managers[].lockfile' "$_STACKS_YML" 2>/dev/null)
-  mapfile -t managers < <(yq '.package_managers[].manager' "$_STACKS_YML" 2>/dev/null)
+  local -a lockfiles
+  mapfile -t lockfiles < <(yq ".package_managers[] | select(.manager == \"$mgr\") | .lockfile" "$_STACKS_YML" 2>/dev/null)
 
-  local i lf mgr
-  for ((i = 0; i < ${#lockfiles[@]}; i++)); do
-    lf="${lockfiles[$i]}"
-    mgr="${managers[$i]}"
+  local lf
+  for lf in "${lockfiles[@]}"; do
     [[ -z "$lf" || "$lf" == "null" ]] && continue
-    [[ -z "$mgr" || "$mgr" == "null" ]] && continue
     if [[ -f "$dir/$lf" || (-n "$toplevel" && -f "$toplevel/$lf") ]]; then
       printf '%s:%s\n' "$mgr" "$lf"
       return 0
