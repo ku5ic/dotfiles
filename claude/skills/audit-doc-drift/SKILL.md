@@ -56,3 +56,4 @@ Use markdown-report format. Write to `$(scratch-dir.sh)/doc-drift-<target-slug>-
 - Do not edit documentation during the audit.
 - Do not flag "missing documentation" as drift. Only flag documented claims that no longer hold.
 - If nothing drifted, the report says "No drift detected" and lists what was checked so the user knows the scope covered.
+- Findings follow `rules/critique.md`: provenance-labeled, report what holds too.

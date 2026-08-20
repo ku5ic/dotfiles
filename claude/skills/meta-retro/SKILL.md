@@ -114,3 +114,4 @@ Write to `$(scratch-dir.sh)/retro-<type>-<slug>-<YYYYMMDD-HHMM>.md`. Print the p
 - No blame language. Describe systems and processes, not individuals.
 - Distinguish lucky from systemic.
 - Keep it scannable. A retro no one reads is worse than no retro.
+- Retro entries follow `rules/critique.md`: provenance-labeled, report what holds too.

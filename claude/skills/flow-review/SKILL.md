@@ -85,3 +85,4 @@ Severity rubric from markdown-report. Skip sections with no findings. Summary li
 - Not every file needs a finding. An empty review is a valid result.
 - Do not rewrite the code in the review. State the fix as instruction or small snippet.
 - Do not flag personal style (semicolons, quote style, etc.) unless it violates the project's lint config.
+- Findings and the overall verdict follow `rules/critique.md`: provenance-labeled, report what holds too.

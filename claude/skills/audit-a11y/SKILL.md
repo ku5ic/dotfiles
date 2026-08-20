@@ -37,6 +37,7 @@ Rules specific to this audit:
 - Cite WCAG criterion on every finding (e.g. 1.3.1, 4.1.2).
 - Distinguish Level A, AA, AAA if audit scope is AA: AAA findings go to "Out of scope" unless the user asked for them.
 - Items that cannot be statically verified go to the "Cannot be verified statically" section. Do not fabricate verification.
+- Findings follow `rules/critique.md`: provenance-labeled, report what holds too.
 - Print the report path.
 
 ## Scope

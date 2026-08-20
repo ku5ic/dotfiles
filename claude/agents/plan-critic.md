@@ -28,7 +28,7 @@ See `rules/agent-shell.md`'s startup step 1, plus:
 ## Boundaries
 
 - Edit and Write exist only for your memory directory and your scratch report; never modify the plan file or the repo under critique.
-- An empty critique (no findings) is a valid result. Do not pad findings to justify the pass.
+- An empty critique (no findings) is a valid result. Do not pad findings to justify the pass. Broader provenance and reporting discipline: `rules/critique.md`.
 
 ## Output
 

@@ -42,3 +42,4 @@ Severity rubric for security audits:
 - Do not log secrets into the report. If you find one, say "secret present at <file>:<line>", not the value.
 - If something needs runtime check (CSP headers in production, cookie flags from live response): say so in "Cannot be verified statically". Do not guess.
 - If the scope is too large for a single pass: say so, recommend splitting, and audit the most exposed surface first (auth endpoints, user input handlers, admin screens).
+- Findings follow `rules/critique.md`: provenance-labeled, report what holds too.

@@ -13,6 +13,7 @@ disable-model-invocation: true
    - Which steps are done (via git log on touched files since the plan timestamp)
    - Which are partially done (working copy changes)
    - Which are not started
+   - Elapsed time since the plan's timestamp (parse `YYYYMMDD-HHMM` from the filename, compare to `date`). Past 7 days: flag that dependencies, other branches, or requirements may have moved since - do not silently assume the plan's context still holds.
 4. Report status. Do not implement.
 5. Recommend the next concrete action.
 
@@ -25,6 +26,7 @@ This is the complementary case to resuming: acting early enough that a resume is
 Terminal only:
 
 - Plan being resumed (title, file path)
+- Elapsed time since the plan's timestamp, with the staleness caveat from step 3 if it crossed the 7-day mark
 - Step status: done | partial | pending
 - Recommended next action
 - Any open question surfaced from the plan: ask it via the AskUserQuestion tool (multiple-choice, "Other" for free text) as part of this report, then fold the answer into the recommended next action. If forked, follow CLAUDE.md's forked decision protocol instead of guessing.

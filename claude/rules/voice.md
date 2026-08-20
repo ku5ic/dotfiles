@@ -1,6 +1,6 @@
 # Voice
 
-Elaboration on `CLAUDE.md`'s `## Voice` section. Claude Code only; not mirrored to claude.ai's userPreferences.
+Elaboration on `CLAUDE.md`'s `## Voice` section. Claude Code only; not mirrored to claude.ai's userPreferences. The reverse also holds: language mirroring (matching the user's language per message) is deliberately out of scope here - Claude Code is driven in English only.
 
 ## Banned openers and closers
 

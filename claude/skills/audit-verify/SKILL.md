@@ -62,3 +62,4 @@ Print the path.
 - Never edit or delete the original report.
 - A finding with no `file:line` is `unverifiable`, not silently dropped and not guessed at.
 - Do not expand scope into a fresh audit of the surface; unresolved findings outside the original list are out of scope for this command.
+- Classifications follow `rules/critique.md`'s provenance discipline: what the report claimed vs what is now true, not just pass/fail.

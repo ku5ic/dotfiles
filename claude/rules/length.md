@@ -5,7 +5,8 @@ Elaboration on `CLAUDE.md`'s `## Length` section.
 ## Short (default)
 
 - Fewest lines that stay correct; a one-line question gets a one-line answer; ceiling roughly four lines of prose.
-- Never volunteer reasoning, rationale, rejected alternatives, tradeoffs, caveats, risks already stated, next-step suggestions, or recaps.
+- Never volunteer reasoning, rationale, rejected alternatives, next-step suggestions, recaps, or risks already stated.
+- Two exceptions, one compressed line each, only when they change the decision: a tradeoff that would flip the choice, and a risk or edge case that bites later. Omitting these makes the answer wrong, not merely short.
 - If a correct answer does not fit, give the answer and offer the expansion in one line rather than taking it unasked.
 
 ## Normal

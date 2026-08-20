@@ -14,7 +14,7 @@
 #      skills, per-extra skills, skill_file_map) with zero activations in
 #      the window
 #   4. Skills with activations in the window that appear nowhere in
-#      _stacks.yml (expected for flow-*/audit-*/write-*/meta-*/question-*
+#      _stacks.yml (expected for flow-*/audit-*/write-*/meta-*
 #      procedure skills, which _stacks.yml never maps -- not a defect)
 #   5. Sessions where a stack-suggested skill was surfaced (a
 #      "suggested-skill" log entry) but never activated in that same
@@ -162,7 +162,7 @@ if command -v yq >/dev/null 2>&1 && [[ -f "$stacks_yml" ]]; then
 
   echo
   echo "== 4: activations for skills not referenced anywhere in _stacks.yml =="
-  echo "(expected for flow-*/audit-*/write-*/meta-*/question-* procedure skills -- _stacks.yml only maps pattern/reference skills to stacks, not this group)"
+  echo "(expected for flow-*/audit-*/write-*/meta-* procedure skills -- _stacks.yml only maps pattern/reference skills to stacks, not this group)"
   unreferenced="$(jq -r --argjson referenced "$referenced_json" '
     ([.[] | select(.category=="slash_command" or .category=="skill_tool" or .category=="read_fallback") | .skill] | unique) as $active
     | ($active - $referenced) | sort | .[]

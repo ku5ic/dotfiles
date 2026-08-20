@@ -51,3 +51,7 @@ Delegate the procedure below (steps 1 onward, through Output file) to the debt-a
 Use markdown-report format. Write to `$(scratch-dir.sh)/debt-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Sort findings by severity, then by effort (smallest first within each severity) so the quick wins are visible at the top.
+
+## Rules
+
+- Findings follow `rules/critique.md`: provenance-labeled, report what holds too.

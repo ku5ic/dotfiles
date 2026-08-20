@@ -180,3 +180,4 @@ Sort findings within each section by severity (failure first, then warning, then
 - Pass 5 (version currency) requires Context7 and may take longer than the other passes. If `--area=` is used and does not include `versions`, skip Pass 5.
 - Do not claim a skill is wrong because its advice differs from the latest version. The claim is specifically that the skill lacks version-differentiation language, which causes it to mislead on projects that differ from the skill's implicit version assumption.
 - One report per invocation. Do not append to an existing report.
+- Findings follow `rules/critique.md`: provenance-labeled, report what holds too.

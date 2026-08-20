@@ -64,3 +64,4 @@ Use markdown-report format. Write to `$(scratch-dir.sh)/perf-<target-slug>-<YYYY
 - Flag what to measure, not what to assume.
 - Ignore micro-optimizations that change code without measurable benefit.
 - A pattern that repeats across the codebase as an established choice is not N separate findings; note it once against the shared source and list the consuming locations.
+- Findings follow `rules/critique.md`: provenance-labeled, report what holds too.
