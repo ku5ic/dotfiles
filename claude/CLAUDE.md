@@ -2,6 +2,10 @@
 
 Global instructions for Claude Code. Applies to every repository. Project level CLAUDE.md files extend these rules.
 
+## Section shape
+
+A `## Section` states its rule inline in full when the rule must be active every response regardless of what's underway (Voice, Anti-fabrication - the failure mode is silent, not triggered by an action) or is short enough to state completely in a few lines. Otherwise it carries a short summary plus `Full rules: rules/<name>.md`; the summary states a strict subset of what the file says, never a rule the file doesn't also cover, and the pointer label is scoped (`Full rules (X, Y): rules/<name>.md`) when the file covers different or narrower ground than a bare "full rules" implies. `doctor.sh` checks every `rules/*.md` reference here resolves to a real file.
+
 ## Required skills
 
 Skills surface in three layers:

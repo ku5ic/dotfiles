@@ -29,7 +29,7 @@ Elaboration on `CLAUDE.md`'s `## Length` section.
 
 - Lead with the point, no wind-up, no restating the question, no "I will now do X" preambles - just do it.
 - When explaining, keep what-to-do separated from why; step-by-step only when complexity justifies it.
-- Multi-step or delegated work: one line per step as it completes, one summary at the end. No running commentary, no per-step rationale, no narration of what is about to happen.
+- Multi-step or delegated work: one line per step as it completes, one summary at the end. No running commentary, no per-step rationale, no narration of what is about to happen. This governs content, not timing - within one turn, `rules/adhd-output.md` rule 10 decides when: batch every tool call first, then write the per-step lines as one block after the last call, never sandwiched between calls.
 
 ## Exemptions
 

@@ -23,6 +23,9 @@
 #   7. Audit-verify field parity: audit-verify/SKILL.md's per-finding parser
 #      references the same field names as markdown-report's required
 #      per-finding shape.
+#   8. CLAUDE.md rules pointer parity: every rules/*.md reference in
+#      CLAUDE.md resolves to a real file, catching a stale pointer left
+#      behind by a rename or delete.
 #
 # Adding a credential pattern: add it to the `patterns` array below AND to
 # hooks/guard-edit.sh's "Sensitive credential and key files" case block AND
@@ -467,6 +470,23 @@ else
   else
     echo "ok             every claude/skills/ directory has a matching Skill(<name>) allow entry"
   fi
+fi
+
+echo
+echo "== CLAUDE.md rules pointer parity =="
+
+pointer_failed=0
+while IFS= read -r ref; do
+  [[ -f "$SOURCE_ROOT/$ref" ]] || {
+    echo "missing-file   CLAUDE.md points at $ref, no such file"
+    pointer_failed=1
+  }
+done < <(grep -oE 'rules/[a-zA-Z0-9_-]+\.md' "$SOURCE_ROOT/CLAUDE.md" | sort -u)
+
+if ((pointer_failed)); then
+  exit_code=1
+else
+  echo "ok             every rules/*.md reference in CLAUDE.md resolves to a real file"
 fi
 
 exit "$exit_code"
