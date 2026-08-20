@@ -26,6 +26,9 @@
 #   8. CLAUDE.md rules pointer parity: every rules/*.md reference in
 #      CLAUDE.md resolves to a real file, catching a stale pointer left
 #      behind by a rename or delete.
+#   9. settings.json machine-local leak: autoMode.environment (machine-
+#      appended per-repo context) never regrows the org-internal detail
+#      stripped from it once already.
 #
 # Adding a credential pattern: add it to the `patterns` array below AND to
 # hooks/guard-edit.sh's "Sensitive credential and key files" case block AND
@@ -487,6 +490,41 @@ if ((pointer_failed)); then
   exit_code=1
 else
   echo "ok             every rules/*.md reference in CLAUDE.md resolves to a real file"
+fi
+
+echo
+echo "== settings.json machine-local leak =="
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "skip           jq not found; skipping settings.json machine-local leak check"
+else
+  SETTINGS_JSON="$SOURCE_ROOT/settings.json"
+  leak_failed=0
+
+  # autoMode.environment is machine-appended per-repo context (see doctor.sh's
+  # header comment, check 9). Scoped to just this array, not the whole file:
+  # one of these patterns also appears legitimately in extraKnownMarketplaces'
+  # public plugin-marketplace source, which is not the leak this guards against.
+  leak_patterns=(
+    "spacelift-io/"
+    "DATADOG_API_KEY"
+    "DD_BUGSNAG"
+    ".env.k8s_simulate"
+  )
+
+  env_blob="$(jq -r '.autoMode.environment // [] | .[]' "$SETTINGS_JSON" 2>/dev/null)"
+  for pat in "${leak_patterns[@]}"; do
+    if grep -qF "$pat" <<<"$env_blob"; then
+      echo "leaked-key     settings.json autoMode.environment contains '$pat'; org-internal detail does not belong in a public repo"
+      leak_failed=1
+    fi
+  done
+
+  if ((leak_failed)); then
+    exit_code=1
+  else
+    echo "ok             autoMode.environment carries no leaked org-internal detail"
+  fi
 fi
 
 exit "$exit_code"
