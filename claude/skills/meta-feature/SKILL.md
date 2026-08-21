@@ -18,7 +18,11 @@ disable-model-invocation: true
 2. Get the scratch directory: `!`scratch-dir.sh``.
 3. Read $ARGUMENTS. If it points to a ticket file or URL string, read the file. Otherwise treat as the request.
 4. Read project CLAUDE.md and any architecture docs.
-5. Verify before writing. For any file path, module, or existing pattern that will land in Problem, Constraints, or Proposed approach, confirm it exists: read directly for a couple of files, or delegate to the scout agent when the request references code or architecture spanning more than a couple of files. Anything unconfirmed stays "unknown, ask requester" per the existing convention, never asserted.
+5. Verify before writing. For any file path, module, or existing pattern that will land in Problem, Constraints, or Proposed approach:
+   1. Confirm it exists.
+   2. Read directly when it is a couple of files.
+   3. Delegate to the scout agent when the request references code or architecture spanning more than a couple of files.
+   4. Anything unconfirmed stays "unknown, ask requester" per the existing convention, never asserted.
 6. Work through the questions below in order. Write the brief as you go. It is fine for a section to end with "unknown, ask requester" rather than a fabricated answer.
 
 ## Output

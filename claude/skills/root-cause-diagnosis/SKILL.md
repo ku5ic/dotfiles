@@ -13,7 +13,13 @@ Before fixing a bug that involves a dependency - a third-party library, an inter
 2. Compare the observed failure against that contract. Does the call site match the documented usage: correct arguments, correct order, correct version, correct configuration?
 3. If the call site deviates from the contract, this is misuse. Fix the call site, not the dependency.
 4. If the call site matches the contract and the dependency still misbehaves, this is a candidate defect. Check the dependency's issue tracker or changelog for a known, matching report before concluding it is a fresh bug.
-5. If diagnosis is genuinely inconclusive after steps 1-4 (the contract is ambiguous, the behavior is undocumented, or a minimal reproduction is needed and has not been built yet), say so explicitly rather than picking a fix at random. A stated "inconclusive, here is what a reproduction would need to confirm" is a valid outcome of this check.
+5. If diagnosis is genuinely inconclusive after steps 1-4, say so explicitly rather than picking a fix at random:
+   - The contract is ambiguous.
+   - The behavior is undocumented.
+   - A minimal reproduction is needed and has not been built yet.
+
+   A stated "inconclusive, here is what a reproduction would need to confirm" is a valid outcome of this check.
+
 6. State the diagnosis - misuse or defect, and the evidence for it - before proposing the fix. The fix location follows from the diagnosis:
    - Misuse: fix the call site.
    - Genuine defect: a workaround at the boundary, isolated rather than spread through the codebase, plus a note that it is a workaround and not a permanent fix.

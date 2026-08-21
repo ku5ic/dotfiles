@@ -13,7 +13,11 @@ Delegate the procedure below (steps 1 onward, through Rules) to the perf-auditor
 
 1. Stack is in the repo context your startup produced (`agent-context.sh`). Get the scratch directory via `scratch-dir.sh`.
 2. Load the patterns skill for the detected stack (react-patterns, django-patterns, etc.) for the anti-pattern reference.
-3. Review the target across these categories, grounding each candidate in this project's own precedent before including it. If the same pattern is already an established, consistent choice elsewhere in the codebase and not flagged as a problem by CLAUDE.md or existing tests, it is a deliberate tradeoff, not a finding, unless it is measurably worse at this location than elsewhere.
+3. Review the target across these categories:
+   - Ground each candidate in this project's own precedent before including it.
+   - An established pattern is one that repeats consistently elsewhere in the codebase and is not flagged as a problem by CLAUDE.md or existing tests.
+   - An established pattern is a deliberate tradeoff, not a finding.
+   - Exception: flag it anyway if it is measurably worse at this location than elsewhere.
 4. Skip categories with no findings.
 
 ### Frontend (React and Next.js)
@@ -44,7 +48,8 @@ Delegate the procedure below (steps 1 onward, through Rules) to the perf-auditor
 
 ## Verification tools
 
-Command-level perf checks (build scripts, codegen, test runner startup, CLI tools) get measured with `hyperfine`, not eyeballed. Render-level perf (React re-renders, bundle cost) gets measured with React DevTools Profiler or browser perf tools at runtime, not from static analysis.
+- Command-level perf checks (build scripts, codegen, test runner startup, CLI tools): measure with `hyperfine`, not eyeballed.
+- Render-level perf (React re-renders, bundle cost): measure with React DevTools Profiler or browser perf tools at runtime, not from static analysis.
 
 ## Output per finding
 

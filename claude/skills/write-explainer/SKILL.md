@@ -10,11 +10,20 @@ The subject is already understood well enough to explain - root cause from `/flo
 
 ## Procedure
 
-1. Establish the subject and source. `$ARGUMENTS` may name a debug report or bug ticket, a feature or module name, a file or directory path, or nothing at all - in which case default to whatever's already been discussed in this conversation. If a file is named, read it in full. If it's a bug/ticket or feature/module name with no artifact, check the conversation and project memory for matching context before asking the user to point at one. If nothing can be found, stop and ask what to explain.
+1. Establish the subject and source.
+   - `$ARGUMENTS` may name a debug report or bug ticket, a feature or module name, a file or directory path, or nothing at all - in which case default to whatever's already been discussed in this conversation.
+   - If a file is named, read it in full.
+   - If it's a bug/ticket or feature/module name with no artifact, check the conversation and project memory for matching context before asking the user to point at one.
+   - If nothing can be found, stop and ask what to explain.
 2. Do not trust any existing citations - from a debug report, prior conversation, or memory - at face value. Re-read every file mentioned in its current state before repeating a citation. Code moves; a prior artifact is a starting hypothesis, not a fact.
 3. Identify the natural entry point for understanding the subject: for a bug, the user action or event that starts the chain; for a feature or module, where it's mounted, its main export, or the first file a reader would open. Name where the relevant state or logic actually lives, not just where it's consumed or re-exported.
 4. Trace hop by hop from the entry point through the rest of the subject. At each hop, cite file:line and state what the code does and why it's written that way - not just a restatement of what it does. Read the actual current file before citing it; never cite from memory of a source artifact alone.
-5. If the subject has more than one distinct mechanism, responsibility, or (for a bug) manifestation, address each separately and state explicitly why one doesn't substitute for or explain the other - this is usually the part a newcomer would otherwise collapse into a single story.
+5. If the subject has more than one distinct mechanism, responsibility, or (for a bug) manifestation:
+   - Address each separately.
+   - State explicitly why one doesn't substitute for or explain the other.
+
+   This is usually the part a newcomer would otherwise collapse into a single story.
+
 6. Close with the underlying design rationale or invariant tying the pieces together, if one exists. Name any known rough edge or open follow-up rather than implying the picture is fully closed.
 
 ## Output

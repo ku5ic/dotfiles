@@ -8,7 +8,13 @@ disable-model-invocation: true
 ## Procedure
 
 1. Look at the current diff (`git diff` / `git diff --cached`) and the conversation so far.
-2. Identify the one or two decisions that were not obvious from the diff alone - a place where an assumption got checked instead of trusted, a simpler option was passed over for a reason, or something turned out different from what was expected going in. Skip anything that's just "what changed" - the diff already says that.
+2. Identify the one or two decisions that were not obvious from the diff alone:
+   - An assumption got checked instead of trusted.
+   - A simpler option was passed over for a reason.
+   - Something turned out different from what was expected going in.
+
+   Skip anything that's just "what changed" - the diff already says that.
+
 3. If $ARGUMENTS names a specific decision, focus on only that one.
 4. If nothing non-obvious happened (the change is mechanical, or the diff already speaks for itself), say so in one line instead of padding.
 

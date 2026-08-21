@@ -24,7 +24,10 @@ context: fork
 For every finding, build a real link instead of relying on GitHub to auto-linkify bare text - auto-linkify only works for paths that are relative to the repo root and present at the linked ref, so it silently fails for absolute paths or paths copied from a report generated in a different working directory.
 
 1. Resolve the finding's path to one relative to the repo root: strip any absolute prefix that falls inside the working tree (e.g. `/Users/x/project/src/y.ts` inside repo `project` becomes `src/y.ts`). This covers "outside of repo" references the same way as already-relative ones - there is only one link-building path, not a special case.
-2. If a single line: `https://github.com/<repo-slug>/blob/<ref>/<relative-path>#L<line>`. If a range `a-b`: `#La-Lb`. If the location is a non-numeric region (e.g. "constructor"), link to the file with no line anchor and keep the region name as text.
+2. Build the URL based on the location shape:
+   - Single line: `https://github.com/<repo-slug>/blob/<ref>/<relative-path>#L<line>`.
+   - Range `a-b`: `#La-Lb`.
+   - Non-numeric region (e.g. "constructor"): link to the file with no line anchor and keep the region name as text.
 3. If the path cannot be resolved inside the repo at all (points to something genuinely outside this working tree), keep it as backticked `path:line` text with no link, and flag it as unresolved rather than guessing a URL.
 4. Skip this entirely if step 6 could not resolve a repo slug.
 
