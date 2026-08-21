@@ -2,6 +2,7 @@
 name: security-auditor
 description: Security audit across frontend and backend surface (input handling, auth, sessions, secrets, injection, external calls). Read-only; returns a severity-rated report. Use when auditing for vulnerabilities; not for applying fixes.
 tools: Read, Grep, Glob, Bash, Skill
+model: opus
 color: orange
 memory: local
 skills: security-patterns
