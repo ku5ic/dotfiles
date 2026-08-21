@@ -12,7 +12,14 @@ Before proposing or applying a fix, name the minimal change that resolves the re
 1. State the defect in one sentence: what is broken, observed how.
 2. Name the minimal fix: the smallest change that would resolve exactly that defect, nothing else.
 3. Compare the minimal fix to the fix about to be applied. If they match, proceed.
-4. If the intended fix is larger - more files, new abstractions, adjacent refactors, unrelated cleanup - name the excess explicitly and the reason for it (e.g., "the minimal fix is one line, but it also requires updating three call sites because the function signature changes"). A named, justified excess is fine. An excess with no stated reason is not.
+4. If the intended fix is larger, name the excess explicitly and the reason for it. Excess takes one of these forms:
+   - More files touched than the defect requires.
+   - New abstractions added.
+   - Adjacent refactors bundled in.
+   - Unrelated cleanup bundled in.
+
+   A named, justified excess is fine (e.g., "the minimal fix is one line, but it also requires updating three call sites because the function signature changes"). An excess with no stated reason is not.
+
 5. If the excess has no justification, stop and ask before proceeding, rather than shipping the larger version by default.
 
 ## What "minimal" means here

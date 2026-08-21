@@ -64,7 +64,10 @@ For each wired hook path:
 
 - Flag (failure): the script file does not exist at the stated path (e.g., `$HOME/.claude/hooks/foo.sh` resolved to the real path).
 - Flag (failure): the script exists but is not executable (`[ -x ]`).
-- For `PreToolUse` and `PostToolUse` entries only: flag (warning) if the `matcher` value is not a recognized Claude Code tool name or `|`-separated combination of them. Split the matcher on `|` and validate each token against the known-good set: `Bash`, `Edit`, `Write`, `MultiEdit`, `Skill`, `Read`, `Agent`, `WebFetch`, `WebSearch`, `Glob`, `Grep`, `LS`. Any unrecognized token gets a warning: "unrecognized matcher token, verify against current Claude Code hook docs".
+- For `PreToolUse` and `PostToolUse` entries only, check the `matcher` value against the known-good tool-name set:
+  1. Split the matcher on `|`.
+  2. Validate each token against the known-good set: `Bash`, `Edit`, `Write`, `MultiEdit`, `Skill`, `Read`, `Agent`, `WebFetch`, `WebSearch`, `Glob`, `Grep`, `LS`.
+  3. Flag (warning) any unrecognized token: "unrecognized matcher token, verify against current Claude Code hook docs".
 - For `UserPromptSubmit` and `UserPromptExpansion` entries: these event types carry no `matcher` field by design. Skip the matcher check entirely; only validate that each entry's `hooks[].command` script exists and is executable.
 - For `PreToolUse` + `Bash` matcher hooks: read the script body and check both of the following:
   - Reads from stdin: sources `_lib.sh` and calls `read_payload`, or contains an explicit stdin read (`read`, `cat`, or `</dev/stdin`).
@@ -119,8 +122,9 @@ Skills not in this list are intentionally excluded -- they cover concepts or sta
 For each examined skill:
 
 1. Extract the version(s) the skill claims to cover (look for explicit version numbers, "vX", "X.x", "as of version", "targeting", etc.).
-2. Use Context7 to fetch current documentation for the library: `mcp__context7__resolve-library-id` to get the library ID, then `mcp__context7__query-docs` to confirm the current latest stable version and any recent breaking changes.
-3. Compare skill coverage against current stable.
+2. Use `mcp__context7__resolve-library-id` to get the library ID.
+3. Use `mcp__context7__query-docs` to confirm the current latest stable version and any recent breaking changes.
+4. Compare skill coverage against current stable.
 
 The finding is NOT "upgrade the skill to latest". The finding is a version-currency note:
 

@@ -41,7 +41,10 @@ Both project signals and keyword aliases are required.
 
 Skill bodies (the procedure in `SKILL.md`) follow `rules/adhd-output.md` with no exception - the reader executes these turn by turn, so a wall-of-text or multi-action step costs real working memory. Matters most for user-invoked skills (`flow-*`, `audit-*`, `meta-*`, `write-*`); they get read and acted on directly, unlike patterns skills that are mostly reference lookups.
 
-`reference/<topic>.md` files are a different content shape: lookup/catalog material, not sequential procedure. A dense 2-3 sentence technical explanation under its own header is not a violation there - it's normal for a reader consulting one entry, not holding the whole file in working memory. Fix only genuine violations in reference files: an enumerable list of named items crammed into one prose sentence, or a multi-branch conditional written as prose instead of a nested list. Do not flatten reference material into bullet soup on principle.
+- Scope: `reference/<topic>.md` files are a different content shape - lookup/catalog material, not sequential procedure.
+- Exemption: a dense 2-3 sentence technical explanation under its own header is not a violation there - it's normal for a reader consulting one entry, not holding the whole file in working memory.
+- Still fix: an enumerable list of named items crammed into one prose sentence, or a multi-branch conditional written as prose instead of a nested list.
+- Don't: flatten reference material into bullet soup on principle.
 
 Recurring defect patterns to avoid on first write, not just catch on review:
 
@@ -100,4 +103,10 @@ No new severity levels.
 
 ## Maintenance note
 
-Skill conventions evolve when new structural patterns emerge (new layout patterns beyond single-file and Pattern 1), when the description contract changes (new required fields), or when the severity rubric changes. The ADHD-output compliance section was added after a full-corpus audit (49 skill bodies, 117 reference files) found real wall-of-text and multi-action-step violations concentrated in procedure bodies, and confirmed reference files are a different content shape - revisit if that boundary stops holding.
+Skill conventions evolve when:
+
+- New structural patterns emerge (new layout patterns beyond single-file and Pattern 1).
+- The description contract changes (new required fields).
+- The severity rubric changes.
+
+The ADHD-output compliance section was added after a full-corpus audit (49 skill bodies, 117 reference files) found real wall-of-text and multi-action-step violations concentrated in procedure bodies, and confirmed reference files are a different content shape - revisit if that boundary stops holding.

@@ -15,7 +15,11 @@ Delegate the procedure below (steps 1 onward, through Rules) to the security-aud
 3. Scope the target:
    - If $ARGUMENTS is a path: audit that path plus any adjacent auth, validation, or boundary code it depends on.
    - If $ARGUMENTS is empty: audit the diff from `main` to `HEAD`.
-4. Pass 0: deterministic secret scan. Run `gitleaks detect --no-banner --redact -v --source . --log-level error` against the working tree. If $ARGUMENTS scopes to a path, narrow with `--source <path>`. Record findings as failure severity, citing file, line, and rule ID; gitleaks `--redact` masks the value. If nothing reported, note "gitleaks: no findings" and proceed to Pass 1.
+4. Pass 0: deterministic secret scan.
+   - Run `gitleaks detect --no-banner --redact -v --source . --log-level error` against the working tree.
+   - If $ARGUMENTS scopes to a path, narrow with `--source <path>`.
+   - Record findings as failure severity, citing file, line, and rule ID; gitleaks `--redact` masks the value.
+   - If nothing reported, note "gitleaks: no findings" and proceed to Pass 1.
 5. Pass 1: look for the concrete anti-patterns listed in security-patterns (XSS, injection, missing validation, exposed secrets, bad CSP, CSRF gaps).
 6. Pass 2: follow data flow for any user input found. Trace from entry point to every sink (DB, file system, template, response body). Flag unchecked paths.
 7. Pass 3: check auth and session boundaries. Who is authenticated on this path? Who is authorized? Is either skipped anywhere?

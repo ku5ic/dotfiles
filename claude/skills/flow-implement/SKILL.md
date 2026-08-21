@@ -61,7 +61,15 @@ No report file. Terminal output only:
 
 ## Stop
 
-Default rule (any plan with two or more phases): implement exactly one phase per turn, then stop and wait for the user to say `continue`, or to invoke `/flow-test` or `/flow-review`. Every phase boundary is a hard stop. Do not roll consecutive phases into the same turn under any rationale, including: the phases are short, mechanical, thematically related, sequentially numbered, or "obviously" safe to batch. A 12-phase plan produces 11 stops, not fewer.
+Default rule (any plan with two or more phases): implement exactly one phase per turn, then stop and wait for the user to say `continue`, or to invoke `/flow-test` or `/flow-review`. Every phase boundary is a hard stop. Do not roll consecutive phases into the same turn under any rationale, including that the phases are:
+
+- short
+- mechanical
+- thematically related
+- sequentially numbered
+- "obviously" safe to batch
+
+A 12-phase plan produces 11 stops, not fewer.
 
 Counting phases: a phase is anything declared with a `Phase` or `Step` heading in the plan. Numbered subheadings inside a single phase are steps, not phases, and are not pause points on their own.
 

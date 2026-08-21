@@ -22,7 +22,11 @@ Use `/flow-plan` instead when root cause is already understood but the fix is st
    - Check recent history: `git log -10 --oneline -- <affected paths>`; if a recent commit aligns with when the behavior started, note it as the prime suspect.
    - Trace the code path from the entry point to where observed diverges from expected; stop at library/external-API boundaries; cap at 10 files.
    - State the first hypothesis in one sentence before checking it: "The bug is caused by X in file Y at line Z."
-   - Test the hypothesis with the least invasive probe available, in order: read the code more carefully, run an existing test that exercises the path, `git bisect` if it's a regression with clean history, then a single targeted log line or assertion reverted after use.
+   - Test the hypothesis with the least invasive probe available, escalating in order:
+     1. Read the code more carefully.
+     2. Run an existing test that exercises the path.
+     3. `git bisect`, if it's a regression with clean history.
+     4. A single targeted log line or assertion, reverted after use.
    - If confirmed, stop with the hypothesis. If wrong, revise and repeat, capped at 3 hypothesis cycles; if exhausted, report what was ruled out.
 
 3. Take the debugger's returned root cause, evidence, and proposed fix location and continue to Output below.

@@ -16,7 +16,13 @@ Before the first edit of a session, and before proposing how a change should loo
 
 ## What this is not
 
-This is not a mandate to read the entire codebase before every change. It is a mandate to check the specific, relevant precedent for the specific change being made, and to say what was checked. A one-line typo fix needs no convention check; a new module, a new API shape, or a new file needs one.
+This is not a mandate to read the entire codebase before every change. It is a mandate to check the specific, relevant precedent for the specific change being made, and to say what was checked.
+
+A one-line typo fix needs no convention check. A convention check is needed for:
+
+- A new module.
+- A new API shape.
+- A new file.
 
 ## Anti-patterns
 

@@ -35,7 +35,11 @@ Classify each PR by semver bump from its title (`Bump x from 1.2.3 to 1.2.4`): p
 
 ### 1b. Dependabot alerts (authoritative for severity; audit is only a cross-check)
 
-Fetch all alerts with one bare GET and filter `state` client-side in jq. Do not pass `-f state=open`: `-f` sends a body field and makes gh issue a POST, which this read-only endpoint rejects with 404. Do not use a bare `?state=open` either; an unquoted `?` is a zsh glob. Let gh follow the Link header with `--paginate`; never construct `page`/`first`/`last`, removed for these endpoints on 2025-10-14.
+Fetch all alerts with one bare GET and filter `state` client-side in jq.
+
+- Do not pass `-f state=open`: `-f` sends a body field and makes gh issue a POST, which this read-only endpoint rejects with 404.
+- Do not use a bare `?state=open` either; an unquoted `?` is a zsh glob.
+- Let gh follow the Link header with `--paginate`; never construct `page`/`first`/`last`, removed for these endpoints on 2025-10-14.
 
 ```
 gh api "repos/<slug>/dependabot/alerts" --paginate \
@@ -66,7 +70,9 @@ If $ARGUMENTS scopes to an ecosystem or PR number, filter to it.
 
 Stop for approval before mutating (`flow-*` pause discipline).
 
-Severity is from 1b when available; where audit and alerts disagree, trust the alert. Map each open alert to a PR by package and fixed version. Annotate `relationship` and `scope`; runtime + direct + critical/high is the priority tier.
+- Severity is from 1b when available; where audit and alerts disagree, trust the alert.
+- Map each open alert to a PR by package and fixed version.
+- Annotate `relationship` and `scope`; runtime + direct + critical/high is the priority tier.
 
 Group PRs:
 
@@ -134,7 +140,25 @@ After any manifest edit:
 
 markdown-report format. Write to `$(scratch-dir.sh)/deps-<YYYYMMDD-HHMM>.md`. Print the path.
 
-Per PR/alert: package, ecosystem, scope, relationship, version delta, bump, severity, action (merged / held / failed checks / parent bumped / pinned / manual PR opened / no fix available / left for user). If alerts were unavailable, state the severity source and name the slug. End with "Still open, needs you": every major bump held, every PR that failed checks, every open alert with no PR (and, if Phase 5 ran, every transitive pin applied so the debt is visible).
+Per PR/alert, report these fields:
+
+| Field         | Value                                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------------------ |
+| package       | package name                                                                                                 |
+| ecosystem     | dependency ecosystem                                                                                         |
+| scope         | `dependency.scope`                                                                                           |
+| relationship  | `dependency.relationship`                                                                                    |
+| version delta | current -> fixed                                                                                             |
+| bump          | patch / minor / major                                                                                        |
+| severity      | from the alert (or local audit if alerts were unavailable)                                                   |
+| action        | merged / held / failed checks / parent bumped / pinned / manual PR opened / no fix available / left for user |
+
+- If alerts were unavailable, state the severity source and name the slug.
+- End with "Still open, needs you", listing:
+  - every major bump held
+  - every PR that failed checks
+  - every open alert with no PR
+  - if Phase 5 ran, every transitive pin applied (so the debt is visible)
 
 ## Rules
 
