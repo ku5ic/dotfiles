@@ -29,6 +29,9 @@
 #   9. settings.json machine-local leak: autoMode.environment (machine-
 #      appended per-repo context) never regrows the org-internal detail
 #      stripped from it once already.
+#   10. MCP allow-list server parity: every mcp__ permission entry's server
+#       segment matches a server actually configured (`claude mcp list`),
+#       catching drift for servers still enumerated by individual tool name.
 #
 # Adding a credential pattern: add it to the `patterns` array below AND to
 # hooks/guard-edit.sh's "Sensitive credential and key files" case block AND
@@ -524,6 +527,57 @@ else
     exit_code=1
   else
     echo "ok             autoMode.environment carries no leaked org-internal detail"
+  fi
+fi
+
+echo
+echo "== mcp allow-list server parity =="
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "skip           jq not found; skipping mcp allow-list server parity"
+elif ! command -v claude >/dev/null 2>&1; then
+  echo "skip           claude CLI not found; skipping mcp allow-list server parity"
+else
+  SETTINGS_JSON="$SOURCE_ROOT/settings.json"
+  mcp_parity_failed=0
+
+  # Known servers, normalized the same way a permission rule's server segment
+  # is derived from a server's `claude mcp list` display name: non-alphanumeric
+  # runs collapse to a single underscore ("claude.ai Figma" -> "claude_ai_Figma",
+  # "plugin:github:github" -> "plugin_github_github"). The name is everything
+  # before the transport (a URL, or a bare command for local/stdio servers).
+  mapfile -t known_servers < <(
+    claude mcp list 2>/dev/null \
+      | grep -vE '^(Checking |\[|$)' \
+      | awk '{ if ($0 ~ /https?:\/\//) { sub(/: *https?:\/\/.*/, "") } else { sub(/:.*/, "") } print }' \
+      | tr -c 'A-Za-z0-9\n' '_' \
+      | sed -E 's/_+/_/g; s/^_//; s/_$//' \
+      | sort -u
+  )
+
+  if ((${#known_servers[@]} == 0)); then
+    echo "skip           \`claude mcp list\` returned no servers; skipping mcp allow-list server parity"
+  else
+    mapfile -t mcp_allow < <(jq -r '.permissions.allow[] | select(startswith("mcp__"))' "$SETTINGS_JSON" 2>/dev/null | sort -u)
+
+    for entry in "${mcp_allow[@]}"; do
+      without_prefix="${entry#mcp__}"
+      server="${without_prefix%%__*}"
+      found=0
+      for ks in "${known_servers[@]}"; do
+        [[ "$ks" == "$server" ]] && found=1 && break
+      done
+      if ((!found)); then
+        echo "unknown-server   $entry: server '$server' has no matching entry in \`claude mcp list\`"
+        mcp_parity_failed=1
+      fi
+    done
+
+    if ((mcp_parity_failed)); then
+      exit_code=1
+    else
+      echo "ok             ${#mcp_allow[@]} mcp__ allow entries match a configured server"
+    fi
   fi
 fi
 
