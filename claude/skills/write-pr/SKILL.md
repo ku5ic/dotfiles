@@ -22,7 +22,7 @@ context: fork
 
    Exact-path checks sidestep both.
 
-   If one exists, read it: its sections replace the default Structure below. If none exists, fall back to the default Structure.
+   If one exists, read it: its sections replace the default Structure below - this is mandatory, not a preference, even for a one-line diff. Never substitute the default Structure when a project template exists. If none exists, fall back to the default Structure.
 
 3. Resolve the base: !`git-base.sh`. Falls through upstream / origin HEAD / main / master / develop / trunk. If $ARGUMENTS is a valid single-word git ref (no spaces, not a sentence), use it as the explicit base instead by running `git-base.sh "$ARGUMENTS"` via Bash.
 4. Pull the diff: !`git-diff-from-base.sh`
@@ -60,6 +60,7 @@ If step 2 found a project PR template, follow its structure, filling each of its
 ## Rules
 
 - Why, not what. Hard rule, not a preference: the reviewer already has the diff for what changed and the test files for what's covered. Never restate either. A bullet that only narrates the diff ("renamed X to Y", "added a null check") earns no place in the description - only the bullet's reason for existing does.
+- Don't assert an impact or failure mode the diff and commit log don't establish. A one-line diff description ("remove stray character") is not license to invent what would have broken - if the actual runtime consequence isn't in the commit message or a linked issue, describe the change itself and stay silent on severity rather than guessing ("could cause X to fail").
 - If a section would only restate the diff or the tests, cut it. This is the usual reason "Changes" or "Testing" ends up empty - that's correct, not a gap to fill.
 - Shortest description that gives full context. Every sentence should help the reviewer approve faster, not pad the page.
 - Tone: direct, professional. Written by the author, not a summarizer.
