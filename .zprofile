@@ -16,6 +16,9 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 export HOMEBREW_NO_ENV_HINTS=1
 export HOMEBREW_NO_REQUIRE_TAP_TRUST=1
 
+# Github
+export GITHUB_PERSONAL_ACCESS_TOKEN="$(gh auth token)"
+
 # PATH. HOMEBREW_PREFIX is set by the shellenv eval above; using it instead of
 # `brew --prefix` keeps this block from spawning a brew process per entry.
 # $HOMEBREW_PREFIX/bin is already on PATH via the shellenv eval above.
