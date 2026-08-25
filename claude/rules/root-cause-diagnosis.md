@@ -1,9 +1,4 @@
----
-name: root-cause-diagnosis
-description: Determines whether a failure is a defect in a dependency (a third-party library, an internal shared module, or any package the current code does not own) or a misuse of it, before proposing a fix, so the fix lands at the right layer. Use whenever a bug involves a library, framework, or internal shared module behaving unexpectedly, OR the user asks whether something is "a bug in the library" versus "how we're using it," even if "root cause" is not mentioned by name.
----
-
-# Root-cause diagnosis discipline
+# Root-cause diagnosis
 
 Before fixing a bug that involves a dependency - a third-party library, an internal shared module, or any package this code does not own - determine whether the failure is a defect in that dependency or a misuse of it. Name which one it is before writing the fix.
 
@@ -26,7 +21,7 @@ Before fixing a bug that involves a dependency - a third-party library, an inter
 
 ## Scope
 
-This applies to any dependency the current code does not own or control: a third-party package pulled from a registry, and an internal shared module or package within a monorepo, alike. The same misdiagnosis risk, fixing the wrong layer, applies to both; ownership boundary, not registry origin, is what matters.
+Applies to any dependency the current code does not own or control: a third-party package pulled from a registry, and an internal shared module or package within a monorepo, alike. The same misdiagnosis risk, fixing the wrong layer, applies to both; ownership boundary, not registry origin, is what matters.
 
 ## Failing tests after a refactor
 
@@ -34,7 +29,7 @@ The same misuse-vs-defect question applies to a test that starts failing after a
 
 1. Do not silently adjust the assertion to match the new output. That is fixing the wrong layer without a diagnosis.
 2. Ask whether the behavior the test asserts on actually changed on purpose. A test asserting on user-visible output (error messages, API responses, returned values) is almost always guarding real behavior, not incidental detail.
-3. State the diagnosis before touching either side: "intentional behavior change, update the test" or "production code broke, fix the code" - the same explicit call this skill requires for a dependency defect.
+3. State the diagnosis before touching either side: "intentional behavior change, update the test" or "production code broke, fix the code" - the same explicit call this rule requires for a dependency defect.
 
 ## Anti-patterns
 
@@ -43,23 +38,3 @@ The same misuse-vs-defect question applies to a test that starts failing after a
 - `warning`: treating a workaround for a genuine dependency defect as the permanent fix, with no note that it should be revisited when the dependency is patched.
 - `warning`: skipping this check because the dependency is "probably fine" - a fix aimed at the wrong layer costs more to unwind later than the diagnosis costs now.
 - `info`: diagnosis concludes misuse more often than defect - expected; most "library bugs" are usage errors, not evidence the check is unnecessary.
-
-## When to load this skill
-
-- Before the first edit of any session (enforced globally, regardless of file type).
-- Any bug report that involves a third-party library, framework, or internal shared module behaving unexpectedly.
-- Before adding a workaround, polyfill, or monkey-patch for dependency behavior.
-
-## When not to load this skill
-
-- Bugs entirely within code this session owns and controls, with no dependency involved.
-- Feature work with no reported failure to diagnose.
-- These exclusions describe when the check has nothing to add, not an exemption from the global first-operation load: the session-start gate loads this skill unconditionally regardless of task type.
-
-## References
-
-Repo-specific discipline, not a citation of external literature. The closest documented parallel is standard defect-triage practice: verify against the dependency's contract before attributing a failure to it.
-
-## Maintenance note
-
-Revisit if a case emerges where the misuse-vs-defect framing does not cleanly apply (e.g., a dependency with genuinely contradictory documentation, or a defect only reproducible in this codebase's specific configuration) - add a third diagnosis outcome only if repeated cases actually need it, not preemptively.

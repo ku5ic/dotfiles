@@ -1,9 +1,4 @@
----
-name: fix-sizing
-description: Right-sizes a bug fix to its actual defect before any edit lands, catching oversized blast radius and overengineered solutions early. Use whenever you are about to read or edit any file in the course of diagnosing, fixing, or patching reported behavior, OR the user asks about scope creep, overengineering, blast radius, or why a change touched more than expected, even if "fix-sizing" is not mentioned by name.
----
-
-# Fix-sizing discipline
+# Fix sizing
 
 Before proposing or applying a fix, name the minimal change that resolves the reported defect, then compare it to what is actually about to be edited. When the two diverge, say so before touching code.
 
@@ -26,6 +21,10 @@ Before proposing or applying a fix, name the minimal change that resolves the re
 
 Minimal is measured against the defect, not against caution. A one-line fix to a one-line bug is minimal. A one-line fix to a bug that is a symptom of a genuinely broken abstraction is not minimal if it papers over the real problem - in that case the right-sized fix might legitimately be larger, and that is the justification to state, not skip past.
 
+## Scope
+
+Applies to bug fixes, patches, and "make X work" requests. Does not apply to net-new feature scoping or to refactors explicitly requested as refactors - there is no defect to be minimal against in either case.
+
 ## Anti-patterns
 
 - `failure`: touching files unrelated to the reported defect without naming why, in the same change.
@@ -34,22 +33,4 @@ Minimal is measured against the defect, not against caution. A one-line fix to a
 - `warning`: describing a fix as "cleanup" or "improvement" when the actual ask was a specific defect.
 - `info`: a fix that is smaller than expected because the defect was smaller than it first appeared - not a violation, just worth noting when it happens.
 
-## When to load this skill
-
-- Before the first edit of any session (enforced globally, regardless of file type).
-- Any bug fix, patch, or "make X work" request, before deciding what to touch.
-- A proposed diff is growing beyond the file or function the bug report named.
-
-## When not to load this skill
-
-- Pure feature work with no reported defect - sizing a net-new feature is a scoping conversation, not this check.
-- Refactors explicitly requested as refactors, not fixes - the "minimal fix" framing does not apply when there is no defect to be minimal against.
-- These exclusions describe when the check has nothing to add, not an exemption from the global first-operation load: the session-start gate loads this skill unconditionally regardless of task type.
-
-## References
-
-Related: `~/.dotfiles/claude/rules/change-discipline.md` - "Name the blast radius before editing shared code" and its dead-code rule share the same right-sizing concern for wide-reaching changes. `~/.dotfiles/claude/skills/flow-implement/SKILL.md`'s step 2 drift rule covers the adjacent case of scope drift discovered mid-execution.
-
-## Maintenance note
-
-Revisit if "minimal fix" needs a more concrete measure than judgment (e.g., a file-count threshold) after observing this in practice.
+Related: `rules/change-discipline.md`'s blast-radius rule covers the same right-sizing concern for wide-reaching changes; the `flow-implement` skill's step 2 drift rule covers scope drift discovered mid-execution.

@@ -71,10 +71,10 @@ run_guard_skills() {
 }
 
 # _stacks.yml's skill_file_map no longer carries a catch-all globs: ["*"] row
-# (removed deliberately; fix-sizing/root-cause-diagnosis/context-gathering are
-# global_skills now, not per-file requirements), so this exercises the
-# composing mechanism itself via a synthetic map rather than asserting on
-# production data that no longer has a catch-all row.
+# (removed deliberately; fix-sizing/root-cause-diagnosis/context-gathering
+# moved to rules/*.md, unconditional and not per-file requirements), so this
+# exercises the composing mechanism itself via a synthetic map rather than
+# asserting on production data that no longer has a catch-all row.
 @test "a catch-all glob entry composes with a specific entry rather than displacing it" {
   write_stacks_yml <<'YAML'
 skill_file_map:

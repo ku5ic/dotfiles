@@ -80,8 +80,10 @@ Match the existing code style of the file and the project. Full rules: `rules/co
 - Before adding a tool, library, or pattern, check what is already in use (`package.json`, lockfile, existing imports, config files) - full follow-or-justify rule in `rules/change-discipline.md`.
 - Before running a script, check the project actually defines it: `scripts` in `package.json`, Makefile, justfile, task runner.
 - When a question concerns current versions, features, or APIs of a fast moving tool, verify against the authoritative source or the project's lockfile. Training memory is not sufficient.
-- Do not assume file paths, directory structure, or naming conventions. Look first.
+- Do not assume file paths, directory structure, or naming conventions. Look first, and state what convention was actually checked - full rule in `rules/context-gathering.md`.
 - Never declare a task complete with failing checks. Run the project's checks (`/flow-checks` or `run-checks.sh`); if any fail, fix them or report and stop.
+- Before fixing a reported defect, size the fix to the defect itself before editing - full rule in `rules/fix-sizing.md`.
+- Before fixing a bug that involves a dependency this code does not own, diagnose misuse vs. defect before touching either side - full rule in `rules/root-cause-diagnosis.md`.
 
 ## Anti-fabrication
 

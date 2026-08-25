@@ -53,9 +53,6 @@
 # universal engineering meta-skills). Keep this list short.
 global_skills:
   - engineering-fundamentals
-  - fix-sizing
-  - root-cause-diagnosis
-  - context-gathering
 
 # File-to-skills map consumed by hooks/guard-skills.sh.
 # Evaluated against every Edit/Write/MultiEdit/Read target; matching is
@@ -113,8 +110,9 @@ skill_file_map:
 # Action-conditioned trigger phrases for every skill any stack/extra maps to.
 # Consumed by hooks/inject-context.sh to build the <suggested-skills> block.
 # Phrases name a concrete action, not a topic, so the reader knows when to load.
-# global_skills (engineering-fundamentals, fix-sizing, root-cause-diagnosis,
-# context-gathering) are excluded; they are always required, not suggested.
+# global_skills (engineering-fundamentals) are excluded; it is always
+# required, not suggested. fix-sizing, root-cause-diagnosis, and
+# context-gathering moved to rules/*.md - unconditional, no invocation step.
 skill_triggers:
   javascript-patterns: "before writing or restructuring JavaScript modules, functions, or async flow"
   typescript-patterns: "before adding or changing types, generics, or type-level APIs"
