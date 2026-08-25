@@ -12,7 +12,7 @@ Personal macOS dotfiles managed as a git repo at `~/.dotfiles`. Files are symlin
 source ~/.dotfiles/install.sh
 ```
 
-This script: pulls the latest repo, installs Homebrew, installs zsh/bash shells, sets zsh as the login shell, runs `brew bundle` from `Brewfile`, creates all symlinks, makes scripts and hooks executable, configures Claude Code via `claude/bin/bootstrap.sh`, installs launchd agents from `launchd/` to `~/Library/LaunchAgents/`, and sets up asdf for Node/Ruby/Python.
+This script: pulls the latest repo, installs Homebrew, installs zsh/bash shells, sets zsh as the login shell, runs `brew bundle` from `Brewfile`, makes scripts and hooks executable, creates all symlinks, configures Claude Code via `claude/bin/bootstrap.sh`, installs launchd agents from `launchd/` to `~/Library/LaunchAgents/`, and sets up asdf for Node/Ruby/Python/Go.
 
 To re-symlink a single config without running the full installer, re-run the `ln -sfv` manually:
 
@@ -33,7 +33,7 @@ ln -sfv ~/.dotfiles/config/nvim ~/.config/
 | `config/starship.toml`                  | Starship prompt config                                                                                                                                                               |
 | `config/wezterm/`                       | WezTerm terminal config                                                                                                                                                              |
 | `macos/set-defaults.sh`                 | macOS system defaults (run once on new machine)                                                                                                                                      |
-| `.tool-versions`                        | asdf runtime versions (Node 24, Ruby 4, Python 3)                                                                                                                                    |
+| `.tool-versions`                        | asdf runtime versions (Node 24, Ruby 4, Python 3, Go 1.26)                                                                                                                           |
 | `claude/`                               | Claude Code config (`settings.json`, `CLAUDE.md`, `agents/`, `hooks/`, `skills/`, `rules/`, `bin/`, `_stacks.yml`) symlinked into `~/.claude/`; `bin/` is on `$PATH` via `.zprofile` |
 
 ## Neovim Architecture
@@ -47,7 +47,7 @@ Top-level layout under `config/nvim/lua/`:
 - `config/icons.lua` - icon set used by lualine, bufferline, diagnostics
 - `config/filetypes.lua` - filetype constants (`JS`, `TS`, `JS_TS`, `JS_REACT`, `CSS`, `WEB`) consumed by formatting, linting, and LSP filetype lists
 - `lsp/servers/` - per-server LSP settings, one file per server. Adding a server is dropping a file here; `lsp/discovery.lua` discovers them via `readdir` and feeds Mason. Switch TypeScript LSP between `ts_ls`/`vtsls` via the `typescript_lsp` variable in `lsp/discovery.lua`
-- `keymaps/keymaps.lua` - global / built-in / cmd-form keymaps (window, tab, buffer, telescope, git, LSP, Trouble, copy paths, Neovide). Plugin-specific keymaps live with their plugin spec via lazy `keys = {...}`
+- `keymaps/keymaps.lua` - global / built-in / cmd-form keymaps (window, tab, buffer, picker, git, LSP, Trouble, copy paths, Neovide). Plugin-specific keymaps live with their plugin spec via lazy `keys = {...}`
 - `keymaps/copilotchat.lua` - AI keymaps
 - `utils/copilotchat.lua`, `utils/copilotchat/prompts.lua` - CopilotChat helpers and prompt templates
 
@@ -68,7 +68,7 @@ Notable files and exceptions:
 
 **Augroups:**
 
-All custom autocmds belong to a `dotfiles_*` augroup created with `clear = true`, so `:source $MYVIMRC` does not duplicate registrations: `dotfiles_autoreload` (FocusGained/BufEnter checktime), `dotfiles_lsp_attach`, `dotfiles_lsp_codelens`, `dotfiles_treesitter_highlight`.
+All custom autocmds belong to a `dotfiles_*` augroup created with `clear = true`, so `:source $MYVIMRC` does not duplicate registrations: `dotfiles_autoreload` (FocusGained/BufEnter checktime), `dotfiles_lsp_attach`, `dotfiles_lsp_codelens`, `dotfiles_treesitter_highlight`, `dotfiles_lint` (linting.lua).
 
 **Keymap prefix conventions** (leader = `<Space>`):
 
