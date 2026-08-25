@@ -2,7 +2,7 @@
 
 ## Startup
 
-Run `agent-context.sh` via Bash for repo context and a `skills-to-load:` list (no session hook).
+Run `agent-context.sh` via Bash for repo context and `<required-skills>`/`<suggested-skills>` tagged blocks (no session hook).
 
 ## Read-only boundary
 

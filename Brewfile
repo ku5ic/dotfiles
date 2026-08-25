@@ -57,7 +57,7 @@ brew 'redis'                        # in-memory data store for local development
 brew 'ripgrep'                      # fast recursive grep, default search backend in Neovim and shell
 brew 'rust'                         # Rust toolchain required by Neovim plugins with native components (e.g. blink.cmp)
 brew 'sd'                           # intuitive find-and-replace CLI, a safer modern sed for scripted substitutions
-brew 'shellcheck'                   # static analysis for shell scripts, used by claude/hooks/lint-shell.sh and CI
+brew 'shellcheck'                   # static analysis for shell scripts, used by claude/hooks/format-dispatch.sh and CI (.github/workflows/lint.yml)
 brew 'shfmt'                        # Formatter for shell scripts
 brew 'ssh-copy-id'                  # helper for installing public keys onto remote hosts
 brew 'starship'                     # cross-shell prompt configured via config/starship.toml
