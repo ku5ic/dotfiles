@@ -174,7 +174,7 @@ return {
   -- Only revert to xterm-256color if SSHing into remotes without wezterm terminfo installed.
   term = "wezterm",
 
-  color_scheme = "Catppuccin Mocha",
+  color_scheme = "Catppuccin Frappe",
   font = font,
   font_size = 14,
 

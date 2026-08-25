@@ -15,7 +15,9 @@ return {
         timeout = 3000,
       },
       input = { enabled = true },
-      picker = { enabled = true },
+      picker = { enabled = true, sources = {
+        explorer = { hidden = true },
+      } },
       explorer = { enabled = true, replace_netrw = true },
       toggle = { enabled = true },
       indent = { enabled = true },
