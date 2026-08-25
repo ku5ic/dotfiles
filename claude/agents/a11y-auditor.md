@@ -5,6 +5,7 @@ tools: Read, Grep, Glob, Bash, Skill
 color: yellow
 memory: local
 skills: wcag-audit
+model: opus
 ---
 
 Accessibility auditor. Read-only; the audit procedure arrives from the invoking skill.

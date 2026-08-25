@@ -1,7 +1,9 @@
 ---
 description: Ground a task in the codebase, then turn it into an ordered implementation plan with explicit tradeoffs
 argument-hint: <task description>
+model: opus
 disable-model-invocation: true
+context: fork
 ---
 
 ## Prerequisites
@@ -29,7 +31,7 @@ Steps 1-4 are the grounding phase; steps 5-10 are the planning phase. Keep this 
    - Complete: inputs, outputs, and error cases stated or inferable?
    - Consistent: no contradiction with CLAUDE.md, existing tests, or recent history?
 
-   If any of the four flags, stop and ask via the AskUserQuestion tool before proceeding. Do not infer requirements; surface the gap.
+   If any of the four flags, stop and ask via the AskUserQuestion tool before proceeding. Do not infer requirements; surface the gap. If forked, follow CLAUDE.md's forked decision protocol instead of guessing.
 
 4. Identify the minimum file set the task touches.
    - Identify the files that will change, plus the files those files import or depend on. Read them.
@@ -79,7 +81,7 @@ Write a plan to `$(scratch-dir.sh)/plan-<task-slug>-<YYYYMMDD-HHMM>.md`:
 - Phased steps. Each step: files touched, behavior change, test, commit message shape. Verbatim content a step depends on is inlined here, not referenced by name.
 - Design integrity notes (one or two sentences per item from step 7a)
 - Risks and mitigations
-- Decisions: any open question ask via the AskUserQuestion tool (multiple-choice, "Other" for free text) before writing this plan, then record the resolved answer here (omit if none, including for mechanical plans where there usually are none)
+- Decisions: any open question ask via the AskUserQuestion tool (multiple-choice, "Other" for free text) before writing this plan, then record the resolved answer here (omit if none, including for mechanical plans where there usually are none). If forked, follow CLAUDE.md's forked decision protocol instead of guessing.
 
 Print the plan path alongside the brief path from step 1. Do not implement.
 

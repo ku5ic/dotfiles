@@ -1,7 +1,6 @@
 ---
 description: Surface technical debt and architectural risks with severity and remediation path
 argument-hint: <file, directory, area name, or a link to an external tracker/doc>
-effort: high
 disable-model-invocation: true
 ---
 

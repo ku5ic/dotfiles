@@ -2,6 +2,20 @@
 
 Elaboration on `CLAUDE.md`'s `## Agents` section.
 
+## Model and effort pins
+
+A skill or agent pins `model:`/`effort:` frontmatter only when it diverges from the session default in `settings.json` - not to restate it. `doctor.sh`'s frontmatter lint flags a pin equal to the session default as `redundant-pin`.
+
+| Work type                                                | Where it runs         | Pin              |
+| -------------------------------------------------------- | --------------------- | ---------------- |
+| Design, critique, adversarial review, fault localization | inline skill or agent | `model: opus`    |
+| Execution against a written spec                         | inline skill          | `effort: xhigh`  |
+| Mechanical: grep, fetch, run a script                    | agent                 | `model: haiku`   |
+| Prose from material already in hand                      | skill                 | `model: haiku`   |
+| Mixed judgment and mechanical work                       | agent                 | no pin (inherit) |
+
+A skill may set `model:` or `effort:`, never both - Claude Code silently drops the model override when both are present on a skill (upstream bug; agents are unaffected). `doctor.sh` enforces this as `model-effort-pair`.
+
 ## Spawn discipline
 
 A subagent costs its own request budget against the 5h session window, so default to doing the work directly. Reach for one only when:
@@ -15,7 +29,7 @@ Not as a reflexive first move for something a single Read or Grep call would ans
 ## Two operational facts
 
 1. Agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the `UserPromptSubmit` hook injection - each shell self-loads stack context via `~/.claude/bin/agent-context.sh` at startup, with `guard-skills` as the enforcement floor for reading or editing agents.
-2. Forked skills (`context: fork`) run their whole body in a subagent; only `flow-checks` names one via `agent: <name>`. Most agent work instead comes from an inline skill body dispatching via the Agent tool, including `flow-plan` and `flow-implement`, which keep their phase-boundary stops in the main conversation.
+2. Forked skills (`context: fork`) run their whole body in a subagent; only `flow-checks` names one via `agent: <name>`. Most agent work instead comes from an inline skill body dispatching via the Agent tool, including `flow-implement`, which keeps its phase-boundary stops in the main conversation. `flow-plan` is forked (`context: fork`) despite using `AskUserQuestion` internally - its clarity-gate and Decisions steps follow the forked decision protocol below instead.
 
 ## Forked decision protocol
 

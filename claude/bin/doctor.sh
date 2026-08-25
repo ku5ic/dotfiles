@@ -13,8 +13,9 @@
 #      the yq derivation queries via bin/_lib.sh instead of holding private
 #      copies.
 #   4. Skill and agent frontmatter lint: every procedure SKILL.md and
-#      agents/*.md has a valid model field, no dated model pin, and a
-#      matching effort field.
+#      agents/*.md has a valid model field, no dated model pin, a matching
+#      effort field, and no pin that just restates the session default in
+#      settings.json.
 #   5. Skill map validation: skill_file_map and skill_triggers reference only
 #      skills that exist, and every stack/extra skill has a trigger entry.
 #   6. Skills-log field parity: log-skills.sh and skills-report.sh reference
@@ -197,6 +198,22 @@ if ! command -v yq >/dev/null 2>&1; then
 else
   SKILLS_DIR="$SOURCE_ROOT/skills"
   AGENTS_DIR="$SOURCE_ROOT/agents"
+
+  # Session defaults a pin is measured against (see the "pins at most one
+  # field: the one that diverges from the session default" rule below). Not
+  # opusplan-aware: opusplan resolves to opus in plan mode and sonnet in
+  # execution, so a bare "opus"/"sonnet" pin is a deliberate phase override,
+  # not a redundant one. Only a literal match to the raw settings.json value
+  # counts - this catches the effort-pin case (Problem 3) now and the
+  # straight-model case (e.g. plain "sonnet") on any future switch back.
+  if ! command -v jq >/dev/null 2>&1; then
+    echo "skip           jq not found; redundant-pin check needs it to read settings.json"
+    session_model=""
+    session_effort=""
+  else
+    session_model=$(jq -r '.model // ""' "$SETTINGS" 2>/dev/null || true)
+    session_effort=$(jq -r '.effortLevel // ""' "$SETTINGS" 2>/dev/null || true)
+  fi
   fm_failed=0
   fm_count=0
 
@@ -274,6 +291,16 @@ else
         fm_failed=1
         ;;
       esac
+    fi
+
+    if [[ -n "$session_model" && "$model" == "$session_model" ]]; then
+      echo "redundant-pin    $rel: model '$model' matches the session default in settings.json; pin nothing instead"
+      fm_failed=1
+    fi
+
+    if [[ -n "$session_effort" && "$effort" == "$session_effort" ]]; then
+      echo "redundant-pin    $rel: effort '$effort' matches the session default in settings.json; pin nothing instead"
+      fm_failed=1
     fi
 
     # Claude Code 2.1.220 silently drops the model override when a skill sets both
@@ -547,12 +574,12 @@ else
   # "plugin:github:github" -> "plugin_github_github"). The name is everything
   # before the transport (a URL, or a bare command for local/stdio servers).
   mapfile -t known_servers < <(
-    claude mcp list 2>/dev/null \
-      | grep -vE '^(Checking |\[|$)' \
-      | awk '{ if ($0 ~ /https?:\/\//) { sub(/: *https?:\/\/.*/, "") } else { sub(/:.*/, "") } print }' \
-      | tr -c 'A-Za-z0-9\n' '_' \
-      | sed -E 's/_+/_/g; s/^_//; s/_$//' \
-      | sort -u
+    claude mcp list 2>/dev/null |
+      grep -vE '^(Checking |\[|$)' |
+      awk '{ if ($0 ~ /https?:\/\//) { sub(/: *https?:\/\/.*/, "") } else { sub(/:.*/, "") } print }' |
+      tr -c 'A-Za-z0-9\n' '_' |
+      sed -E 's/_+/_/g; s/^_//; s/_$//' |
+      sort -u
   )
 
   if ((${#known_servers[@]} == 0)); then

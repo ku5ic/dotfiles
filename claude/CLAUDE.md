@@ -176,4 +176,4 @@ Frontmatter conventions and Hard rules: `rules/skills-namespace.md`.
 
 Subagent capability shells live under `$HOME/.claude/agents/`. The canonical inventory, with full descriptions, is the output of `/agents` - also auto-injected via the Agent tool's own system-reminder each session, so it is not restated here.
 
-Spawn discipline and the forked decision protocol: `rules/agents.md`.
+Spawn discipline, model/effort pin discipline, and the forked decision protocol: `rules/agents.md`.

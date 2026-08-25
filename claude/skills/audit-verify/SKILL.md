@@ -1,7 +1,6 @@
 ---
 description: Re-check findings from a prior audit report against the current repo, classifying each as resolved, unresolved, moved, regressed, or unverifiable
 argument-hint: <path to an existing audit report>
-effort: high
 disable-model-invocation: true
 ---
 

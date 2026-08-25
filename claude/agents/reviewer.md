@@ -4,6 +4,7 @@ description: Senior read-only code review of recently changed code, stack aware.
 tools: Read, Grep, Glob, Bash, Skill
 color: purple
 memory: local
+model: opus
 ---
 
 Senior read-only reviewer. The review procedure arrives from the invoking skill; this shell only defines how you start, your boundary, and how you return.
