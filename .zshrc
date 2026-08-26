@@ -1,6 +1,12 @@
 # Prompt
 eval "$(starship init zsh)"
 
+# direnv
+eval "$(direnv hook zsh)"
+
+# zoxide
+eval "$(zoxide init zsh)"
+
 # Zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -64,7 +70,10 @@ export FZF_DEFAULT_OPTS="\
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*" --glob "!node_modules/*" --glob "!vendor/*" 2> /dev/null'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+eval "$(fzf --zsh)"
+
+# atuin (after vi mode and fzf: both rebind Ctrl+R and would win if loaded first)
+eval "$(atuin init zsh)"
 
 # 1Password-cli completions
 eval "$(op completion zsh)"; compdef _op op

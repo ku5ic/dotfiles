@@ -2,6 +2,7 @@ tap 'jesseduffield/lazygit'
 tap 'owenthereal/upterm'
 
 # CLI tools
+brew 'actionlint'                   # linter for GitHub Actions workflow files
 brew 'asdf'                         # runtime version manager driving Node, Ruby, Python via .tool-versions
 brew 'ast-grep'                     # AST-aware structural code search and rewrite, complements ripgrep for syntax-level matches
 brew 'atuin'                        # shell history sync and search backed by SQLite
@@ -15,6 +16,7 @@ brew 'cmake'                        # build system required by Neovim plugins wi
 brew 'coreutils'                    # GNU core utilities to override BSD versions on macOS
 brew 'ctags'                        # tag generator for code navigation
 brew 'difftastic'                   # structural diff tool wired in as GIT_EXTERNAL_DIFF
+brew 'direnv'                       # per-directory environment variable loader
 brew 'dust'                         # disk usage explorer with a tree view
 brew 'eza'                          # modern ls replacement with color and git status
 brew 'fastfetch'                    # system info display run on terminal launch
