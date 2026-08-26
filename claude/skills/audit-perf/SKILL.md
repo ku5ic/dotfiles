@@ -60,7 +60,7 @@ Delegate the procedure below (steps 1 onward, through Rules) to the perf-auditor
 
 ## Output file
 
-Use markdown-report format. Write to `$(scratch-dir.sh)/perf-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/perf-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 ## Rules
 

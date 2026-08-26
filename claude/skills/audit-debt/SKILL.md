@@ -41,13 +41,13 @@ Delegate the procedure below (steps 1 onward, through Output file) to the debt-a
 
 - What it is
 - Why it is a problem (scale, maintainability, correctness, security, performance, or operability)
-- Severity: failure / warning / info (per markdown-report rubric; "failure" here means active liability, not future risk)
+- Severity: failure / warning / info (per `rules/markdown-report.md` rubric; "failure" here means active liability, not future risk)
 - Effort to remediate: small (hours), medium (days), large (weeks)
 - Remediation: concrete first step
 
 ## Output file
 
-Use markdown-report format. Write to `$(scratch-dir.sh)/debt-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/debt-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Sort findings by severity, then by effort (smallest first within each severity) so the quick wins are visible at the top.
 

@@ -1,11 +1,6 @@
----
-name: markdown-report
-description: Consistent format for audit reports, review output, and workflow artifacts including required sections, severity rubric (failure/warning/info), file naming convention, and summary line rubric. Use whenever a command writes a report to `~/.claude/scratch/` or `docs/`, OR the user asks for a structured audit, review, finding report, or any output requiring the failure/warning/info severity rubric, regardless of domain.
----
-
 # Markdown report format
 
-Use this structure for every report Claude writes to disk. Keep it tight. No padding.
+Consistent format for audit reports, review output, and workflow artifacts. Applies to every report a flow or audit command writes to disk, and to any other structured finding report.
 
 ## Required sections
 
@@ -51,8 +46,9 @@ Stack: <line from $HOME/.claude/bin/detect-stack.sh, if applicable>
 - Code snippets use fenced blocks with language tag.
 - No ASCII decoration, no banner comments, no emoji.
 - Use straight quotes, plain ASCII punctuation.
-- File naming and location: per `~/.dotfiles/claude/rules/scratch-conventions.md` - resolve the directory via `scratch-dir.sh`, then name it `<kind>-<target-slug>-<YYYYMMDD-HHMM>.md`.
+- File naming and location: per `rules/scratch-conventions.md` - resolve the directory via `scratch-dir.sh`, then name it `<kind>-<target-slug>-<YYYYMMDD-HHMM>.md`.
 - Always print the absolute path at the end of execution so the user can open it.
+- Does not govern `write-*` command output (commit messages, PR descriptions, release notes, stakeholder summaries) - those have their own formats per `rules/output-rules.md`.
 
 ## Summary line rubric
 
@@ -73,21 +69,3 @@ The "overall health in one word" at the end of the Summary helps quick scanning:
 - `warning`: hardcoding a literal `~/.claude/scratch/` or `scratch/` path instead of resolving it via `scratch-dir.sh`. The resolved directory is project-scoped inside a recognized project and home-fallback otherwise - a literal is wrong in whichever case it doesn't match.
 - `warning`: not printing the absolute file path after writing -- the user cannot open the file without it.
 - `info`: not sorting findings by severity (failures first, then warnings, then info).
-
-## When to load this skill
-
-- A flow or audit command is about to write a scratch report
-- The user asks for an audit, security review, debt analysis, doc-drift report, a11y audit, or any structured finding report
-- Any task requires the `failure`/`warning`/`info` severity rubric
-- Writing output to `~/.claude/scratch/` or `docs/`
-
-## When not to load this skill
-
-- Short conversational answers that stay in the terminal
-- In-chat code snippets or explanations
-- `write/*` command output (commit messages, PR descriptions, release notes, stakeholder summaries) -- those have their own formats
-
-## References
-
-- Scratch artifact naming convention: `~/.dotfiles/claude/rules/scratch-conventions.md`
-- Skill authoring body conventions: `~/.dotfiles/claude/skills/skill-authoring/SKILL.md`

@@ -33,4 +33,4 @@ See `rules/agent-shell.md`'s startup step 1, plus:
 
 ## Output
 
-Use markdown-report format (load the skill via the Skill tool if `agent-context.sh` did not already surface it). Write to `$(scratch-dir.sh)/plan-critique-<plan-task-slug>-<YYYYMMDD-HHMM>.md`, referencing the plan path you critiqued. Return a digest plus that path.
+Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/plan-critique-<plan-task-slug>-<YYYYMMDD-HHMM>.md`, referencing the plan path you critiqued. Return a digest plus that path.

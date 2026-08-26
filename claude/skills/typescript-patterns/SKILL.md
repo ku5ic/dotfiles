@@ -12,7 +12,7 @@ Default assumption: a TypeScript project with `strict` mode enabled.
 
 ## Severity rubric
 
-Severity rubric: matches `markdown-report` (failure/warning/info).
+Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 
 ## Reference files
 

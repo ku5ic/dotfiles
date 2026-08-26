@@ -15,14 +15,14 @@ disable-model-invocation: true
    - `doc-drift-*` -> doc-drift-auditor
    - `audit-claude-*` -> claude-config-auditor
      If the kind matches none of these, stop and ask rather than guessing an agent.
-3. Extract every finding's Severity, Location, What, Why it matters, Fix, and Refs fields from `## Findings` (markdown-report's required per-finding shape).
+3. Extract every finding's Severity, Location, What, Why it matters, Fix, and Refs fields from `## Findings` (`rules/markdown-report.md`'s required per-finding shape).
 4. Dispatch the identified agent (Agent tool, foreground) with only the extracted finding list, not the full original report, and an explicit instruction: re-check each cited location as it exists in the repo right now. This is a re-check, not a re-audit -- it must not scan for new findings outside the given list.
 5. For each finding, the agent classifies:
    - `resolved`: the described problem is no longer present at the cited location.
    - `unresolved`: the described problem is still present as described.
    - `moved`: the problem still exists but the cited location no longer matches -- the agent must find and cite the new location.
    - `regressed`: evidence (e.g. git history at that location) shows it was fixed and then reintroduced.
-   - `unverifiable`: the original finding had no `file:line` (a free-text region, per markdown-report's own allowance) -- always reported, never dropped.
+   - `unverifiable`: the original finding had no `file:line` (a free-text region, per `rules/markdown-report.md`'s own allowance) -- always reported, never dropped.
 6. Relay the agent's classifications into the output report below. Do not re-run any part of the original audit yourself.
 
 ## Output

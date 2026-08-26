@@ -11,7 +11,7 @@ context: fork
 1. Get the scratch directory: `!`scratch-dir.sh``.
 2. Parse $ARGUMENTS. If the first token resolves to an existing file, treat it as the report path and any remaining token as the PR author username. Otherwise treat the whole of $ARGUMENTS as the PR author username and leave the report path unset.
 3. If no report path was resolved, use the latest one: `ls -t "$(scratch-dir.sh)"/review-\*.md | head -1`. If none exist, stop and ask for a path (forked: follow CLAUDE.md's forked decision protocol instead of guessing).
-4. Read the review report. It follows the markdown-report skill format: a severity rubric (failure/warning/info), each finding with file, line, "What", "Why it matters", and "Fix".
+4. Read the review report. It follows the `rules/markdown-report.md` format: a severity rubric (failure/warning/info), each finding with file, line, "What", "Why it matters", and "Fix".
 5. Look for a PR number in the report's `Scope:` line, its filename, or body (patterns like `pr-123`, `PR #123`, `PR: 123`). If found, run `gh pr view <n> --json author,headRefOid`. Use `.author.login` as the auto-detected author and `.headRefOid` as the ref for links.
 6. Resolve the repo slug: `gh repo view --json nameWithOwner -q .nameWithOwner`. If this fails (no remote, no auth), fall back to plain backticked `path:line` text for every finding - no links - and say so at the top of the comment.
 7. Resolve the ref for links: the PR's head sha from step 5 if a PR was found; otherwise the current commit, `git rev-parse HEAD`.
@@ -59,4 +59,4 @@ Hey @<author>, <genuine one-line compliment about the work>.
 - No AI tells: no "I recommend", "it's worth noting", "let me know if you have questions".
 - Follows `rules/adhd-output.md`, no exception: each issue its own short bullet, never a paragraph of prose per finding.
 - The latest-report fallback in step 3 only ever searches the resolved scratch directory for the current project; never fall back to another project's file.
-- If the resolved input file does not exist or does not match the markdown-report format, say so and stop.
+- If the resolved input file does not exist or does not match the `rules/markdown-report.md` format, say so and stop.

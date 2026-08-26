@@ -49,7 +49,7 @@ Delegate the procedure below (steps 1 onward, through Scope rules) to the doc-dr
 
 ## Output file
 
-Use markdown-report format. Write to `$(scratch-dir.sh)/doc-drift-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/doc-drift-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 ## Scope rules
 

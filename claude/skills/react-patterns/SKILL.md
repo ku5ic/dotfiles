@@ -13,7 +13,7 @@ Default assumption: React 19 with the modern (concurrent) renderer.
 
 ## Severity rubric
 
-Severity rubric: matches `markdown-report` (failure/warning/info).
+Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 
 ## Reference files
 

@@ -14,7 +14,7 @@ The `/flow:*` and `/audit:*` commands enforce these checks as deterministic phas
 
 ## Severity rubric
 
-Severity rubric matches `markdown-report`: cite on findings, do not invent new levels.
+Severity rubric matches `rules/markdown-report.md`: cite on findings, do not invent new levels.
 
 ## When to load this skill
 

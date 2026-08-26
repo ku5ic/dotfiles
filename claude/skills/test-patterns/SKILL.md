@@ -9,7 +9,7 @@ Apply the runner-specific reference matching the detected test runner. Principle
 
 ## Severity rubric
 
-Severity rubric: matches `markdown-report` (failure/warning/info).
+Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 
 ## Reference files
 

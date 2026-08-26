@@ -12,7 +12,7 @@ Default assumption: Next.js 16 (current stable as of writing) with the App Route
 
 ## Severity rubric
 
-Severity rubric: matches `markdown-report` (failure/warning/info).
+Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 
 ## Reference files
 

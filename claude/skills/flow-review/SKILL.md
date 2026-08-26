@@ -76,9 +76,9 @@ Did the change come with tests? Are the tests meaningful or shape-checking?
 
 ## Output
 
-Use the markdown-report skill format. Write to `$(scratch-dir.sh)/review-<scope-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/review-<scope-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
-Severity rubric from markdown-report. Skip sections with no findings. Summary line rates overall health.
+Severity rubric from `rules/markdown-report.md`. Skip sections with no findings. Summary line rates overall health.
 
 ## Rules
 

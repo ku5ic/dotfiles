@@ -32,7 +32,7 @@ Delegate the procedure below (steps 1 onward, through Rules) to the security-aud
 
 ## Output
 
-Use markdown-report format. Write to `$(scratch-dir.sh)/security-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/security-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Severity rubric for security audits:
 

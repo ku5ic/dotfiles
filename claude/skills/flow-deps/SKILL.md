@@ -137,7 +137,7 @@ After any manifest edit:
 
 ## Phase 6: report
 
-markdown-report format. Write to `$(scratch-dir.sh)/deps-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/deps-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Per PR/alert, report these fields:
 

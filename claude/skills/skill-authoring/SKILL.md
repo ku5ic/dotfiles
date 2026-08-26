@@ -81,7 +81,7 @@ Every version-sensitive claim, library version, syntax form, framework feature, 
 - `info`: choosing Pattern 1 for a single-cohesive-topic skill -- use single-file when the topic is one flow.
 - `info`: reference-file prose reformatted into fragmented bullets when it was already a coherent 2-3 sentence explanation -- reference material is lookup, not procedure; not every dense paragraph is a violation.
 
-## Severity rubric (matches markdown-report)
+## Severity rubric (matches `rules/markdown-report.md`)
 
 No new severity levels.
 

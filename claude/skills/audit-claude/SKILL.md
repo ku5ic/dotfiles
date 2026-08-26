@@ -112,7 +112,6 @@ Skills not in this list are intentionally excluded -- they cover concepts or sta
 - `wcag-audit`
 - `test-patterns`
 - `security-patterns`
-- `markdown-report`
 - `engineering-fundamentals`
 - `monitoring-patterns`
 - `logging-patterns`
@@ -137,7 +136,7 @@ If Context7 returns no data for a library, mark "Cannot be verified via Context7
 
 ## Output
 
-Use markdown-report format. Write to `$(scratch-dir.sh)/audit-claude-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/audit-claude-<YYYYMMDD-HHMM>.md`. Print the path.
 
 Report structure:
 

@@ -13,7 +13,7 @@ Default assumption: Vue 3 with the Composition API and `<script setup>` syntax.
 
 ## Severity rubric
 
-Severity rubric: matches `markdown-report` (failure/warning/info).
+Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 
 ## Reference files
 

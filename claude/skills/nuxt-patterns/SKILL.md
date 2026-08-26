@@ -12,7 +12,7 @@ Default assumption: Nuxt 4 (current stable, latest 4.4.x as of writing) with Uni
 
 ## Severity rubric
 
-Severity rubric: matches `markdown-report` (failure/warning/info).
+Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 
 ## Reference files
 

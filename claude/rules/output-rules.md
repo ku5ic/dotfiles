@@ -11,5 +11,5 @@ Elaboration on `CLAUDE.md`'s `## Output rules` section. Canonical for both Claud
 - Markdown is prose, not code: sentences flow on one line regardless of length, never broken across lines - not in paragraphs, not in list items, not anywhere.
 - Hard line breaks only between paragraphs, between list items, and around code fences.
 - Code blocks carry the language tag.
-- Reports use the markdown-report skill format, no embellishment.
+- Reports use `rules/markdown-report.md` format, no embellishment.
 - Structure and mechanics (chunking, step numbering, front-loaded points, one idea per line) follow `rules/adhd-output.md`, applied to every output regardless of medium - chat, terminal, and files alike.

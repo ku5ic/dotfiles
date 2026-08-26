@@ -30,7 +30,7 @@ Delegate the procedure below (steps 1 onward, through Scope) to the a11y-auditor
 
 ## Output
 
-Use the markdown-report format. Write to `$(scratch-dir.sh)/a11y-<target-slug>-<YYYYMMDD-HHMM>.md`.
+Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/a11y-<target-slug>-<YYYYMMDD-HHMM>.md`.
 
 Rules specific to this audit:
 

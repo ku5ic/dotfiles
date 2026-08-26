@@ -11,7 +11,7 @@ description: Bash and shell script patterns covering safety flags, quoting, cond
 
 ## Severity rubric
 
-Severity rubric: matches `markdown-report` (failure/warning/info).
+Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 
 ## Reference files
 
