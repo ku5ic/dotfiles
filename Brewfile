@@ -46,7 +46,6 @@ brew 'moreutils'                    # sponge, ts, vipe and other shell pipeline 
 brew 'ncurses'                      # terminal UI library used by tools like nvim and tmux
 brew 'neovim'                       # primary editor, configured under config/nvim
 brew 'openssl'                      # TLS toolkit linked against by asdf-built Rubies, Pythons, and other compiled deps
-brew 'orbstack'                     # OrbStack container runtime for local development, replaces Docker Desktop
 brew 'oxipng'                       # PNG optimizer for assets
 brew 'pandoc'                       # document converter for markdown workflows
 brew 'pgcli'                        # PostgreSQL CLI with autocompletion and syntax highlighting
@@ -102,6 +101,7 @@ cask 'google-chrome'              # browser for web development
 cask 'hammerspoon'                # desktop automation tool for macOS, configured under config/hammerspoon
 cask 'neovide-app'                # GUI frontend for Neovim
 cask 'onyx'                       # macOS system maintenance utility
+cask 'orbstack'                   # OrbStack container runtime for local development, replaces Docker Desktop
 cask 'owenthereal/upterm/upterm'  # Share terminal sessions securely over the web
 cask 'postman'                    # HTTP API client for manual request building
 cask 'slack'                      # team chat client
