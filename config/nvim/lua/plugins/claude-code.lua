@@ -5,7 +5,7 @@ return {
     dependencies = { "folke/snacks.nvim" },
     config = true,
     -- `cmd` lets lazy.nvim create command stubs on a fresh start so :ClaudeCode
-    -- and friends exist before any <leader>a* key is pressed.
+    -- and friends exist before any <leader>A* key is pressed.
     cmd = {
       "ClaudeCode",
       "ClaudeCodeFocus",
@@ -22,25 +22,25 @@ return {
       "ClaudeCodeDiffDeny",
       "ClaudeCodeCloseAllDiffs",
     },
-    -- Default upstream keymap recipe. CopilotChat has moved to <leader>A (capital) to make room.
+    -- Default upstream keymap recipe, moved to <leader>A (capital) so CopilotChat can take <leader>a.
     keys = {
-      { "<leader>a", nil, desc = "Claude Code" },
-      { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
-      { "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
-      { "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
-      { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
-      { "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model" },
-      { "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
-      { "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
+      { "<leader>A", nil, desc = "Claude Code" },
+      { "<leader>Ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
+      { "<leader>Af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
+      { "<leader>Ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
+      { "<leader>AC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
+      { "<leader>Am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model" },
+      { "<leader>Ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
+      { "<leader>As", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
       {
-        "<leader>as",
+        "<leader>As",
         "<cmd>ClaudeCodeTreeAdd<cr>",
         desc = "Add file",
         ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw", "snacks_picker_list" },
       },
       -- Diff management
-      { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
-      { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
+      { "<leader>Aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
+      { "<leader>Ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
     },
   },
 }
