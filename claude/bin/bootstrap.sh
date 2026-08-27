@@ -107,14 +107,17 @@ for entry in "${ENTRIES[@]}"; do
   fi
 done
 
-install_codebase_memory_mcp() {
-  # codebase-memory-mcp's installer can't write through symlinked
-  # ~/.claude/{agents,hooks,settings.json} (upstream bug: reports
-  # "target: does not exist or cannot be inspected"). Swap each to a
-  # real copy for the run, fold whatever it wrote back into dotfiles,
-  # then restore the symlink.
+# codebase-memory-mcp's installer/update writer can't write through
+# symlinked ~/.claude/{agents,hooks,settings.json} (upstream bug: reports
+# "target: does not exist or cannot be inspected"). Swap each to a real
+# copy, fold whatever CBM wrote back into dotfiles, then restore the
+# symlink. Shared by both the install and update paths below.
+_cbm_swapped=()
+
+_cbm_swap_dotfiles_symlinks() {
   local entries=(agents hooks settings.json)
-  local entry target src swapped=()
+  local entry target src
+  _cbm_swapped=()
 
   for entry in "${entries[@]}"; do
     target="$TARGET_ROOT/$entry"
@@ -122,15 +125,16 @@ install_codebase_memory_mcp() {
     if [[ -L "$target" ]]; then
       rm "$target"
       cp -R "$src" "$target"
-      swapped+=("$entry")
+      _cbm_swapped+=("$entry")
     else
       echo "skip     $target not a symlink, leaving as-is for install"
     fi
   done
+}
 
-  curl -fsSL https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh | bash
-
-  for entry in "${swapped[@]}"; do
+_cbm_restore_dotfiles_symlinks() {
+  local entry target src
+  for entry in "${_cbm_swapped[@]}"; do
     target="$TARGET_ROOT/$entry"
     src="$SOURCE_ROOT/$entry"
     if [[ -d "$target" ]]; then
@@ -142,6 +146,70 @@ install_codebase_memory_mcp() {
     ln -s "$src" "$target"
     echo "restored $target -> $src"
   done
+}
+
+# The installer/update writer refuses to overwrite a cbm-* hook file it
+# doesn't recognize as its own output (e.g. one vendored from another
+# machine or account, with a stale hardcoded $HOME baked into it) and
+# errors out instead of just regenerating it. Clear known CBM-generated
+# hook files from the swapped copy so a fresh, correct version gets
+# written for this machine every time install/update actually runs.
+_cbm_clear_stale_hooks() {
+  local cbm_hooks=(cbm-code-discovery-gate cbm-session-reminder cbm-subagent-reminder)
+  local hook
+  for hook in "${cbm_hooks[@]}"; do
+    rm -f "$TARGET_ROOT/hooks/$hook"
+  done
+}
+
+install_codebase_memory_mcp() {
+  _cbm_swap_dotfiles_symlinks
+  _cbm_clear_stale_hooks
+
+  # Restore the swapped symlinks even if the installer fails - otherwise
+  # a failed run (set -e) leaves ~/.claude/{agents,hooks,settings.json}
+  # stuck as real copies instead of symlinks.
+  local install_failed=""
+  if ! curl -fsSL https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh | bash; then
+    install_failed=1
+  fi
+
+  _cbm_restore_dotfiles_symlinks
+  [[ -z "$install_failed" ]]
+}
+
+update_codebase_memory_mcp() {
+  # `codebase-memory-mcp update` doesn't self-update - it just prints
+  # instructions to run a local install.sh copy the installer never
+  # actually vendors alongside the binary (upstream bug, verified: the
+  # file it names does not exist after a fresh install). Re-running the
+  # same remote install.sh used for a fresh install IS the real update
+  # path (idempotent per its own printed message), so check the latest
+  # release tag first and only pay for that full reinstall when this
+  # machine is actually behind.
+  command -v codebase-memory-mcp >/dev/null 2>&1 || return 0
+
+  local current latest
+  current="$(codebase-memory-mcp --version 2>/dev/null | awk '{print $2}')"
+  latest="$(curl -fsSL https://api.github.com/repos/DeusData/codebase-memory-mcp/releases/latest | jq -r '.tag_name' 2>/dev/null)"
+  latest="${latest#v}"
+
+  if [[ -z "$current" || -z "$latest" ]]; then
+    echo "skipped  codebase-memory-mcp version check failed, leaving as-is"
+    return
+  fi
+
+  if [[ "$current" == "$latest" ]]; then
+    echo "ok       codebase-memory-mcp $current (up to date)"
+    return
+  fi
+
+  echo "updating codebase-memory-mcp $current -> $latest"
+  if install_codebase_memory_mcp; then
+    echo "ok       codebase-memory-mcp updated to $latest"
+  else
+    echo "error    codebase-memory-mcp update failed"
+  fi
 }
 
 setup_mcps() {
@@ -175,6 +243,7 @@ setup_mcps() {
     install_codebase_memory_mcp
   else
     echo "ok       mcp:codebase-memory-mcp"
+    update_codebase_memory_mcp
   fi
 }
 
