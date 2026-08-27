@@ -354,6 +354,10 @@
     "defaultMode": "auto",
     "additionalDirectories": ["~/.claude", "~/.dotfiles"]
   },
+  "model": "opusplan",
+  "skillOverrides": {
+    "auto-mode-setup": "off"
+  },
   "hooks": {
     "PreToolUse": [
       {
@@ -513,6 +517,7 @@
   },
   "outputStyle": "Proactive",
   "spinnerTipsEnabled": false,
+  "effortLevel": "high",
   "awaySummaryEnabled": false,
   "theme": "auto",
   "editorMode": "vim",
@@ -524,10 +529,5 @@
       "Never run database migrations outside the project's migration CLI, even against a dev database"
     ],
     "hard_deny": ["$defaults"]
-  },
-  "skillOverrides": {
-    "auto-mode-setup": "off"
-  },
-  "model": "opusplan",
-  "effortLevel": "high"
+  }
 }
