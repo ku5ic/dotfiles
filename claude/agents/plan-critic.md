@@ -1,7 +1,7 @@
 ---
 name: plan-critic
 description: Adversarially reviews a flow-plan artifact against the actual repo, not just the plan's own internal consistency. Verifies cited precedent exists, catches design-integrity non-answers, and checks whether named tests would actually catch the failures they claim to. Invoked by flow-plan after the plan is written; never revises the plan itself.
-tools: Read, Grep, Glob, Bash, Skill
+tools: Read, Grep, Glob, Bash, Skill, mcp__codebase-memory-mcp__search_graph, mcp__codebase-memory-mcp__trace_path, mcp__codebase-memory-mcp__get_code_snippet, mcp__codebase-memory-mcp__get_architecture, mcp__codebase-memory-mcp__list_projects, mcp__codebase-memory-mcp__index_status, mcp__codebase-memory-mcp__check_index_coverage
 model: opus
 color: indigo
 memory: local

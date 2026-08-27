@@ -1,7 +1,7 @@
 ---
 name: scout
 description: Read-only codebase exploration. Delegate broad "where is X, how is Y done" sweeps that would span many files here to keep the main context clean. Returns findings citing file:line, never edits. Not for review judgment or fixes.
-tools: Read, Grep, Glob, Bash, Skill
+tools: Read, Grep, Glob, Bash, Skill, mcp__codebase-memory-mcp__search_graph, mcp__codebase-memory-mcp__trace_path, mcp__codebase-memory-mcp__get_code_snippet, mcp__codebase-memory-mcp__get_architecture, mcp__codebase-memory-mcp__list_projects, mcp__codebase-memory-mcp__index_status, mcp__codebase-memory-mcp__check_index_coverage
 color: cyan
 model: haiku
 ---

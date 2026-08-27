@@ -1,7 +1,7 @@
 ---
 name: debugger
 description: Investigates unexpected behavior to localize a fault, using read access plus at most one targeted probe edit. Never applies the fix. Use to find where and why something breaks; hand the fix back to the caller.
-tools: Read, Edit, Bash, Grep, Glob, Skill
+tools: Read, Edit, Bash, Grep, Glob, Skill, mcp__codebase-memory-mcp__search_graph, mcp__codebase-memory-mcp__trace_path, mcp__codebase-memory-mcp__get_code_snippet, mcp__codebase-memory-mcp__get_architecture, mcp__codebase-memory-mcp__list_projects, mcp__codebase-memory-mcp__index_status, mcp__codebase-memory-mcp__check_index_coverage
 model: opus
 color: red
 memory: local
