@@ -360,91 +360,151 @@
   },
   "hooks": {
     "PreToolUse": [
-      {
+    {
         "matcher": "Bash",
         "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/guard-bash.sh",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/guard-commit.sh",
-            "timeout": 5
-          }
+            {
+                "type": "command",
+                "command": "$HOME/.claude/hooks/guard-bash.sh",
+                "timeout": 10
+            },
+            {
+                "type": "command",
+                "command": "$HOME/.claude/hooks/guard-commit.sh",
+                "timeout": 5
+            }
         ]
-      },
-      {
+    },
+    {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/guard-dispatch.sh",
-            "timeout": 5
-          }
+            {
+                "type": "command",
+                "command": "$HOME/.claude/hooks/guard-dispatch.sh",
+                "timeout": 5
+            }
         ]
-      },
-      {
+    },
+    {
         "matcher": "Read",
         "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/guard-skills.sh",
-            "timeout": 5
-          }
+            {
+                "type": "command",
+                "command": "$HOME/.claude/hooks/guard-skills.sh",
+                "timeout": 5
+            }
         ]
-      }
-    ],
+    },
+    {
+        "matcher": "Grep|Glob",
+        "hooks": [
+            {
+                "type": "command",
+                "command": "\"$HOME/.claude/hooks/cbm-code-discovery-gate\"",
+                "timeout": 5
+            }
+        ]
+    }
+],
     "PostToolUse": [
-      {
+    {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/sanitize-output.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/format-dispatch.sh",
-            "timeout": 15
-          }
+            {
+                "type": "command",
+                "command": "$HOME/.claude/hooks/sanitize-output.sh",
+                "timeout": 5
+            },
+            {
+                "type": "command",
+                "command": "$HOME/.claude/hooks/format-dispatch.sh",
+                "timeout": 15
+            }
         ]
-      },
-      {
+    },
+    {
         "matcher": "Read",
         "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/log-skills.sh",
-            "timeout": 5
-          }
+            {
+                "type": "command",
+                "command": "$HOME/.claude/hooks/log-skills.sh",
+                "timeout": 5
+            }
         ]
-      },
-      {
+    },
+    {
         "matcher": "Skill",
         "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/log-skills.sh",
-            "timeout": 5
-          }
+            {
+                "type": "command",
+                "command": "$HOME/.claude/hooks/log-skills.sh",
+                "timeout": 5
+            }
         ]
-      }
-    ],
+    },
+    {
+        "matcher": "Read",
+        "hooks": [
+            {
+                "type": "command",
+                "command": "\"$HOME/.claude/hooks/cbm-code-discovery-gate\"",
+                "timeout": 5
+            }
+        ]
+    }
+],
     "SessionStart": [
-      {
+    {
         "matcher": "startup|resume|compact|clear",
         "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/inject-context.sh",
-            "timeout": 5
-          }
+            {
+                "type": "command",
+                "command": "$HOME/.claude/hooks/inject-context.sh",
+                "timeout": 5
+            }
         ]
-      }
-    ],
+    },
+    {
+        "matcher": "startup",
+        "hooks": [
+            {
+                "type": "command",
+                "command": "\"$HOME/.claude/hooks/cbm-session-reminder\"",
+                "timeout": 5
+            }
+        ]
+    },
+    {
+        "matcher": "resume",
+        "hooks": [
+            {
+                "type": "command",
+                "command": "\"$HOME/.claude/hooks/cbm-session-reminder\"",
+                "timeout": 5
+            }
+        ]
+    },
+    {
+        "matcher": "clear",
+        "hooks": [
+            {
+                "type": "command",
+                "command": "\"$HOME/.claude/hooks/cbm-session-reminder\"",
+                "timeout": 5
+            }
+        ]
+    },
+    {
+        "matcher": "compact",
+        "hooks": [
+            {
+                "type": "command",
+                "command": "\"$HOME/.claude/hooks/cbm-session-reminder\"",
+                "timeout": 5
+            }
+        ]
+    }
+],
     "UserPromptExpansion": [
       {
         "hooks": [
@@ -466,7 +526,19 @@
           }
         ]
       }
-    ]
+    ],
+    "SubagentStart": [
+    {
+        "matcher": "*",
+        "hooks": [
+            {
+                "type": "command",
+                "command": "\"$HOME/.claude/hooks/cbm-subagent-reminder\"",
+                "timeout": 5
+            }
+        ]
+    }
+]
   },
   "statusLine": {
     "type": "command",

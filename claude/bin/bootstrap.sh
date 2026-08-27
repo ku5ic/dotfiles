@@ -107,6 +107,43 @@ for entry in "${ENTRIES[@]}"; do
   fi
 done
 
+install_codebase_memory_mcp() {
+  # codebase-memory-mcp's installer can't write through symlinked
+  # ~/.claude/{agents,hooks,settings.json} (upstream bug: reports
+  # "target: does not exist or cannot be inspected"). Swap each to a
+  # real copy for the run, fold whatever it wrote back into dotfiles,
+  # then restore the symlink.
+  local entries=(agents hooks settings.json)
+  local entry target src swapped=()
+
+  for entry in "${entries[@]}"; do
+    target="$TARGET_ROOT/$entry"
+    src="$SOURCE_ROOT/$entry"
+    if [[ -L "$target" ]]; then
+      rm "$target"
+      cp -R "$src" "$target"
+      swapped+=("$entry")
+    else
+      echo "skip     $target not a symlink, leaving as-is for install"
+    fi
+  done
+
+  curl -fsSL https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh | bash
+
+  for entry in "${swapped[@]}"; do
+    target="$TARGET_ROOT/$entry"
+    src="$SOURCE_ROOT/$entry"
+    if [[ -d "$target" ]]; then
+      cp -R "$target/." "$src/"
+    else
+      cp "$target" "$src"
+    fi
+    rm -rf "$target"
+    ln -s "$src" "$target"
+    echo "restored $target -> $src"
+  done
+}
+
 setup_mcps() {
   if ! command -v claude >/dev/null 2>&1; then
     echo "skipped  claude CLI not found; re-run bootstrap.sh after installing Claude Code"
@@ -132,6 +169,12 @@ setup_mcps() {
     echo "created  mcp:playwright"
   else
     echo "ok       mcp:playwright"
+  fi
+
+  if ! claude mcp get codebase-memory-mcp >/dev/null 2>&1; then
+    install_codebase_memory_mcp
+  else
+    echo "ok       mcp:codebase-memory-mcp"
   fi
 }
 

@@ -29,6 +29,7 @@ export PATH="$HOMEBREW_PREFIX/opt/ncurses/bin:$PATH"
 export PATH="$HOMEBREW_PREFIX/opt/openjdk/bin:$PATH"
 export PATH="$HOME/.dotfiles/scripts:$PATH"
 export PATH="$HOME/.claude/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 # Added by OrbStack: command-line tools and integration
 # This won't be added again if you remove it.
