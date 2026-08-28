@@ -1,6 +1,6 @@
 ---
 description: Convert a structured review report into a peer-to-peer GitHub PR comment
-argument-hint: [path to review report] [PR author username]
+argument-hint: "[path to review report] [PR author username]"
 model: haiku
 disable-model-invocation: true
 context: fork

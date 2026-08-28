@@ -1,6 +1,6 @@
 ---
 description: Resume a partially executed plan from a scratch file
-argument-hint: <optional: scratch path or task slug>
+argument-hint: "<optional: scratch path or task slug>"
 effort: low
 disable-model-invocation: true
 ---

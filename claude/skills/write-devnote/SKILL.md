@@ -1,6 +1,6 @@
 ---
 description: Explain a completed change's key reasoning in a few sentences, developer to developer
-argument-hint: <optional: which decision to focus on>
+argument-hint: "<optional: which decision to focus on>"
 model: haiku
 disable-model-invocation: true
 context: fork

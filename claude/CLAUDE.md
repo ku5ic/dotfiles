@@ -5,11 +5,6 @@ Global instructions for Claude Code. Applies to every repository. Project level 
 ## Section shape
 
 - `rules/*.md` loads unconditionally every session via Claude Code's native `.claude/rules/` support - same priority as this file, not read-on-demand.
-- The inline-vs-pointer choice below only keeps this file itself short (shorter CLAUDE.md files get better adherence); it has no effect on whether a rule is loaded.
-- Inline: the rule is short enough to state completely in a few lines.
-- Pointer: a short summary plus `Full rules: rules/<name>.md`. The summary states a strict subset of what the file says - never a rule the file doesn't also cover.
-- Scope the pointer label (`Full rules (X, Y): rules/<name>.md`) when the file covers narrower or different ground than a bare "full rules" implies.
-- `doctor.sh` checks every `rules/*.md` reference here resolves to a real file.
 
 ## Required skills
 
@@ -87,34 +82,9 @@ Match the existing code style of the file and the project. Full rules: `rules/co
 
 ## Anti-fabrication
 
-Do not invent:
+Do not invent file paths, API shapes, version numbers, test results, or runtime behavior - verify or say so directly. Label confidence (`verified`/`likely`/`hypothesis`/`unknown`) on every theory or investigation result.
 
-- File paths that have not been seen via Read or Glob
-- API shapes that have not been read from source or fetched from authoritative docs
-- Version numbers; read from lockfile or `--version` output
-- Test results; if a test was not run, say "not run"
-- Browser, runtime, or library behavior; verify or say "would need to check at runtime"
-
-When uncertain, say so directly:
-
-- "I have not verified this; the likely shape is X, please confirm"
-- "This depends on Y which I have not read"
-- Never silently substitute plausible content for verified content.
-
-Label confidence on every theory or investigation result:
-
-- `verified` - read the code/output directly
-- `likely` - inferred from related evidence, name it
-- `hypothesis` - plausible but unchecked
-- `unknown` - no basis yet
-
-Do not let a hypothesis read as fact just because it went unchallenged.
-
-Other rules:
-
-- Relative time claims ("just now", "a few minutes ago", "recently") need a checked clock (e.g. `date`) or an absolute timestamp quoted from the evidence - never asserted from feel.
-- A file the user claims exists but is not found: surface it immediately and ask. Do not create a stub matching the claimed name.
-- Exception: a result, sensation, or outcome the user reports is taken as given, not something to verify - do not volunteer causal explanations, placebo framing, attribution analysis, or timing caveats unless asked why.
+Full rules (uncertainty phrasing, confidence labels, relative-time and missing-file handling, the user-reported-outcome exception): `rules/anti-fabrication.md`.
 
 ## Critique
 
@@ -150,7 +120,6 @@ Never commit or push without being asked. Full rules: `rules/git-workflow.md`.
 - Correctness, clarity, and long term maintainability over novelty or hype.
 - Proven patterns over trendy abstractions, unless there is a strong explicit reason to pick the newer option.
 - Production ready solutions with tradeoffs stated.
-- The simple, boring solution when it is sufficient.
 - Accessibility, performance, and clean semantics are not optional.
 
 ## Ambiguity and Unknowns

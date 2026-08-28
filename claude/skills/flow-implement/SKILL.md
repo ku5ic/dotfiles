@@ -1,6 +1,6 @@
 ---
 description: Execute an approved plan step by step, staying within scope
-argument-hint: <optional: step number or range>
+argument-hint: "<optional: step number or range>"
 effort: xhigh
 disable-model-invocation: true
 ---

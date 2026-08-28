@@ -1,6 +1,6 @@
 ---
 description: Generate a commit message from the staged diff, matching project style
-argument-hint: <optional: short hint about the change intent>
+argument-hint: "<optional: short hint about the change intent>"
 model: haiku
 disable-model-invocation: true
 context: fork

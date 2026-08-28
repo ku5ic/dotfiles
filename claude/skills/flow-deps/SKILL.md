@@ -1,6 +1,6 @@
 ---
 description: Merge open Dependabot PRs and reconcile GitHub security alerts
-argument-hint: <optional: ecosystem filter, PR number, or "--fix-transitive">
+argument-hint: "<optional: ecosystem filter, PR number, or --fix-transitive>"
 disable-model-invocation: true
 ---
 

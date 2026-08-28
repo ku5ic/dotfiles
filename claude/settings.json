@@ -360,151 +360,151 @@
   },
   "hooks": {
     "PreToolUse": [
-    {
+      {
         "matcher": "Bash",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/guard-bash.sh",
-                "timeout": 10
-            },
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/guard-commit.sh",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-bash.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-commit.sh",
+            "timeout": 5
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/guard-dispatch.sh",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-dispatch.sh",
+            "timeout": 5
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "Read",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/guard-skills.sh",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-skills.sh",
+            "timeout": 5
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "Grep|Glob",
         "hooks": [
-            {
-                "type": "command",
-                "command": "\"$HOME/.claude/hooks/cbm-code-discovery-gate\"",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/cbm-code-discovery-gate\"",
+            "timeout": 5
+          }
         ]
-    }
-],
+      }
+    ],
     "PostToolUse": [
-    {
+      {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/sanitize-output.sh",
-                "timeout": 5
-            },
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/format-dispatch.sh",
-                "timeout": 15
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/sanitize-output.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/format-dispatch.sh",
+            "timeout": 15
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "Read",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/log-skills.sh",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/log-skills.sh",
+            "timeout": 5
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "Skill",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/log-skills.sh",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/log-skills.sh",
+            "timeout": 5
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "Read",
         "hooks": [
-            {
-                "type": "command",
-                "command": "\"$HOME/.claude/hooks/cbm-code-discovery-gate\"",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/cbm-code-discovery-gate\"",
+            "timeout": 5
+          }
         ]
-    }
-],
+      }
+    ],
     "SessionStart": [
-    {
+      {
         "matcher": "startup|resume|compact|clear",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/inject-context.sh",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/inject-context.sh",
+            "timeout": 5
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "startup",
         "hooks": [
-            {
-                "type": "command",
-                "command": "\"$HOME/.claude/hooks/cbm-session-reminder\"",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/cbm-session-reminder\"",
+            "timeout": 5
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "resume",
         "hooks": [
-            {
-                "type": "command",
-                "command": "\"$HOME/.claude/hooks/cbm-session-reminder\"",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/cbm-session-reminder\"",
+            "timeout": 5
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "clear",
         "hooks": [
-            {
-                "type": "command",
-                "command": "\"$HOME/.claude/hooks/cbm-session-reminder\"",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/cbm-session-reminder\"",
+            "timeout": 5
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "compact",
         "hooks": [
-            {
-                "type": "command",
-                "command": "\"$HOME/.claude/hooks/cbm-session-reminder\"",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/cbm-session-reminder\"",
+            "timeout": 5
+          }
         ]
-    }
-],
+      }
+    ],
     "UserPromptExpansion": [
       {
         "hooks": [
@@ -528,17 +528,17 @@
       }
     ],
     "SubagentStart": [
-    {
+      {
         "matcher": "*",
         "hooks": [
-            {
-                "type": "command",
-                "command": "\"$HOME/.claude/hooks/cbm-subagent-reminder\"",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/hooks/cbm-subagent-reminder\"",
+            "timeout": 5
+          }
         ]
-    }
-]
+      }
+    ]
   },
   "statusLine": {
     "type": "command",
@@ -550,19 +550,19 @@
     "command": "~/.claude/bin/subagent-statusline.sh"
   },
   "enabledPlugins": {
-    "lua-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
+    "lua-lsp@claude-plugins-official": false,
+    "typescript-lsp@claude-plugins-official": false,
     "pyright-lsp@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "figma@claude-plugins-official": true,
-    "github@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true,
-    "claude-code-setup@claude-plugins-official": true,
-    "42crunch-api-security-testing@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": false,
+    "figma@claude-plugins-official": false,
+    "github@claude-plugins-official": false,
+    "skill-creator@claude-plugins-official": false,
+    "claude-md-management@claude-plugins-official": false,
+    "claude-code-setup@claude-plugins-official": false,
+    "42crunch-api-security-testing@claude-plugins-official": false,
     "security-guidance@claude-plugins-official": true,
     "hookify@claude-plugins-official": true,
-    "ruby-lsp@claude-plugins-official": true,
+    "ruby-lsp@claude-plugins-official": false,
     "frontend-spacelift@spacelift-engineering": true,
     "i-have-adhd@i-have-adhd": true,
     "ponytail@ponytail": true
@@ -591,6 +591,7 @@
   "spinnerTipsEnabled": false,
   "effortLevel": "high",
   "awaySummaryEnabled": false,
+  "autoMemoryEnabled": true,
   "theme": "auto",
   "editorMode": "vim",
   "agentPushNotifEnabled": true,
