@@ -12,4 +12,4 @@ Elaboration on `CLAUDE.md`'s `## Code Style` line.
 - Prefer idiomatic patterns for the framework in use over generic patterns.
 - Meaningful names. No Hungarian notation. No single letter variables except loop indices.
 - Readability and explicitness over cleverness.
-- No unnecessary abstractions. Inline until duplication hurts, then extract.
+- Simplicity and unnecessary-abstraction avoidance: see the `ponytail` plugin (enabled globally).
