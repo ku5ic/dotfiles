@@ -352,7 +352,10 @@
       "Edit(**/.prettierrc*)"
     ],
     "defaultMode": "auto",
-    "additionalDirectories": ["~/.claude", "~/.dotfiles"]
+    "additionalDirectories": [
+      "~/.claude",
+      "~/.dotfiles"
+    ]
   },
   "model": "opusplan",
   "skillOverrides": {
@@ -550,19 +553,7 @@
     "command": "~/.claude/bin/subagent-statusline.sh"
   },
   "enabledPlugins": {
-    "lua-lsp@claude-plugins-official": false,
-    "typescript-lsp@claude-plugins-official": false,
-    "pyright-lsp@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": false,
-    "figma@claude-plugins-official": false,
-    "github@claude-plugins-official": false,
-    "skill-creator@claude-plugins-official": false,
-    "claude-md-management@claude-plugins-official": false,
-    "claude-code-setup@claude-plugins-official": false,
-    "42crunch-api-security-testing@claude-plugins-official": false,
     "security-guidance@claude-plugins-official": true,
-    "hookify@claude-plugins-official": true,
-    "ruby-lsp@claude-plugins-official": false,
     "frontend-spacelift@spacelift-engineering": true,
     "i-have-adhd@i-have-adhd": true,
     "ponytail@ponytail": true
@@ -596,11 +587,15 @@
   "editorMode": "vim",
   "agentPushNotifEnabled": true,
   "autoMode": {
-    "allow": ["$defaults"],
+    "allow": [
+      "$defaults"
+    ],
     "soft_deny": [
       "$defaults",
       "Never run database migrations outside the project's migration CLI, even against a dev database"
     ],
-    "hard_deny": ["$defaults"]
+    "hard_deny": [
+      "$defaults"
+    ]
   }
 }
