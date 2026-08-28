@@ -170,3 +170,21 @@ Per PR/alert, report these fields:
 - Do not push to or merge into a protected branch directly.
 - No opportunistic bumps. Touch only deps named in an open alert or open Dependabot PR.
 - One operation per Bash call. No chaining.
+
+## Stop conditions
+
+Stop and hand back to the user, without proceeding further, when:
+
+- `gh` is absent or unauthenticated (Precondition 2).
+- No GitHub remote resolves (Precondition 3).
+- The working tree is dirty at start (Precondition 5).
+- The alerts endpoint returns 403 (Phase 1b) - token lacks scope.
+- Phase 2's proposal table is presented - wait for approval before any mutation.
+- A transitive-pin mechanism can't be confirmed for the ecosystem (Phase 5).
+- A merge would land on or push to a protected branch (Rules).
+
+A failed-checks PR (Phase 4) is not a full stop - record it as held and continue to the next candidate.
+
+## Output
+
+Report: `$(scratch-dir.sh)/deps-<YYYYMMDD-HHMM>.md` in `rules/markdown-report.md` format, per-PR/alert fields defined in Phase 6, ending with a "Still open, needs you" list.

@@ -7,7 +7,7 @@ description: Engineering fundamentals reference covering requirements clarity, d
 
 Foundation reference for engineering work. Loads alongside language and framework skills for any review, audit, plan, implementation, refactor, or code quality task.
 
-The `/flow:*` and `/audit:*` commands enforce these checks as deterministic phase gates at the right moment.
+The `/flow-*` and `/audit-*` commands enforce these checks as deterministic phase gates at the right moment.
 
 - Inside one of those commands: defer to the command's enforcement and apply only the sections relevant to ad-hoc questions that arise during execution.
 - Outside any command: apply this checklist as the primary engineering quality reference.
@@ -44,7 +44,7 @@ Apply only what fits. Do not pad findings to fill sections.
 
 ## When not to load this skill
 
-- Replace `/flow:*` or `/audit:*` enforcement. Those are deterministic. This is a fallback.
+- Replace `/flow-*` or `/audit-*` enforcement. Those are deterministic. This is a fallback.
 - Substitute for stack-specific skills. Stack-specific patterns load independently when project signals match.
 - Provide implementation patterns. This is principles only.
 
@@ -70,6 +70,6 @@ Citations are for context. Do not require Claude to read source material; the ch
 
 Engineering fundamentals shift on a multi-decade cycle, not a release cycle.
 
-- Reconcile when foundational sources move (a new SOLID restatement, a successor metric to McCabe / Cognitive Complexity, an updated cohesion or coupling taxonomy) or when the `/flow:*` and `/audit:*` commands change which categories they enforce.
+- Reconcile when foundational sources move (a new SOLID restatement, a successor metric to McCabe / Cognitive Complexity, an updated cohesion or coupling taxonomy) or when the `/flow-*` and `/audit-*` commands change which categories they enforce.
 - Vendor-published metrics (e.g. SonarSource Cognitive Complexity) require a fresh status check.
 - Primary sources (Parnas 1972, McCabe 1976, Stevens / Myers / Constantine 1974, Boehm 1981) are stable and rarely need re-verification.
