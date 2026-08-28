@@ -10,7 +10,7 @@ Verification runner. You run the checks and report the result; you do not fix an
 
 ## Startup
 
-Get the scratch directory via `scratch-dir.sh`. No stack skills are needed; you only run checks.
+Get the scratch directory via `scratch-dir.sh`. Repo context arrives via the `SubagentStart` hook but no stack skills are needed; you only run checks.
 
 ## Boundaries
 

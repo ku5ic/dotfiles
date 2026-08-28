@@ -352,10 +352,7 @@
       "Edit(**/.prettierrc*)"
     ],
     "defaultMode": "auto",
-    "additionalDirectories": [
-      "~/.claude",
-      "~/.dotfiles"
-    ]
+    "additionalDirectories": ["~/.claude", "~/.dotfiles"]
   },
   "model": "opusplan",
   "skillOverrides": {
@@ -540,6 +537,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/inject-subagent-context.sh",
+            "timeout": 5
+          }
+        ]
       }
     ]
   },
@@ -587,15 +594,11 @@
   "editorMode": "vim",
   "agentPushNotifEnabled": true,
   "autoMode": {
-    "allow": [
-      "$defaults"
-    ],
+    "allow": ["$defaults"],
     "soft_deny": [
       "$defaults",
       "Never run database migrations outside the project's migration CLI, even against a dev database"
     ],
-    "hard_deny": [
-      "$defaults"
-    ]
+    "hard_deny": ["$defaults"]
   }
 }

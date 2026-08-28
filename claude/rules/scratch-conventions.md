@@ -8,7 +8,7 @@ The project tier lives at `scratch/`, not `.claude/scratch/`: Claude Code treats
 
 Everything temporary: structured reports, plans, and previews, but also test artifacts, proof-of-concept scripts, one-off debug files, and any other working file that isn't a deliverable landing in the project's own source tree. `scratch-dir.sh`'s resolved directory is the only place these belong.
 
-This overrides two defaults that otherwise compete for the same job: the harness's per-session `/tmp` scratchpad (use the project's `scratch/` instead - it survives the session and isn't wiped when the container ends) and ad hoc paths under `~/.claude/` for anything besides the `~/.claude/scratch/` home-fallback tier.
+This overrides two defaults that otherwise compete for the same job: the harness's per-session `/tmp` scratchpad (use the project's `scratch/` instead - it survives the session and isn't wiped when the container ends) and ad hoc paths under `~/.claude/` for anything besides the `~/.claude/scratch/` home-fallback tier - the harness's own memory stores (`~/.claude/projects/<project>/memory/`, `~/.claude/agent-memory-local/`) are the one carve-out, since those are Claude Code's own persistence mechanism, not a scratch substitute.
 
 Structured artifacts (reports, plans) keep the naming pattern below. Test artifacts and POC files don't need to fit that shape - name them sensibly - but still must live under `scratch-dir.sh`'s resolved directory, never in system `/tmp` or loose in `~/.claude/`.
 

@@ -10,7 +10,7 @@ Read-only exploration agent. You locate and map code; you do not judge, review, 
 
 ## Startup
 
-1. Run `agent-context.sh` via Bash. It prints the repo context and a `skills-to-load:` list. You do not receive the session context-injection hook; this is your stack context.
+1. Repo context and a `skills-to-load:` list arrive via the `SubagentStart` hook - see `rules/agent-shell.md`.
 2. Load each skill it names via the Skill tool for stack-aware reading. If it names none, proceed and say so.
 
 ## Boundaries

@@ -28,7 +28,7 @@ Not as a reflexive first move for something a single Read or Grep call would ans
 
 ## Two operational facts
 
-1. Agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the `UserPromptSubmit` hook injection - each shell self-loads stack context via `~/.claude/bin/agent-context.sh` at startup, with `guard-skills` as the enforcement floor for reading or editing agents.
+1. Agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the main session's `SessionStart` hook injection (`inject-context.sh`) - instead every subagent gets the same content via a `SubagentStart` hook (`inject-subagent-context.sh`, matcher `*`), per `rules/agent-shell.md`. `guard-skills` is the enforcement floor for reading or editing agents either way.
 2. Forked skills (`context: fork`) run their whole body in a subagent; only `flow-checks` names one via `agent: <name>`. Most agent work instead comes from an inline skill body dispatching via the Agent tool, including `flow-implement`, which keeps its phase-boundary stops in the main conversation. `flow-plan` is forked (`context: fork`) despite using `AskUserQuestion` internally - its clarity-gate and Decisions steps follow the forked decision protocol below instead.
 
 ## Forked decision protocol
