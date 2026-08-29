@@ -11,12 +11,14 @@ brew 'bandwhich'                    # per-process network bandwidth monitor, com
 brew 'bash'                         # newer bash than the macOS bundled 3.2
 brew 'bat'                          # syntax-highlighted cat replacement, aliased as the default file viewer
 brew 'bats-core'                    # bash test framework used by tests/guard-bash.bats
+brew 'caddy'                        # reverse proxy with automatic HTTPS, used by the ZanaPhysio deploy stack
 brew 'chafa'                        # terminal image renderer used by fastfetch and similar tools
 brew 'cmake'                        # build system required by Neovim plugins with native components
 brew 'coreutils'                    # GNU core utilities to override BSD versions on macOS
 brew 'ctags'                        # tag generator for code navigation
 brew 'difftastic'                   # structural diff tool wired in as GIT_EXTERNAL_DIFF
 brew 'direnv'                       # per-directory environment variable loader
+brew 'doctl'                        # DigitalOcean CLI, used to bootstrap and inspect the ZanaPhysio droplet
 brew 'dust'                         # disk usage explorer with a tree view
 brew 'eza'                          # modern ls replacement with color and git status
 brew 'fastfetch'                    # system info display run on terminal launch
@@ -46,6 +48,7 @@ brew 'moreutils'                    # sponge, ts, vipe and other shell pipeline 
 brew 'ncurses'                      # terminal UI library used by tools like nvim and tmux
 brew 'neovim'                       # primary editor, configured under config/nvim
 brew 'openssl'                      # TLS toolkit linked against by asdf-built Rubies, Pythons, and other compiled deps
+brew 'opentofu'                     # infrastructure-as-code CLI (tofu), used to provision the ZanaPhysio droplet
 brew 'oxipng'                       # PNG optimizer for assets
 brew 'pandoc'                       # document converter for markdown workflows
 brew 'pgcli'                        # PostgreSQL CLI with autocompletion and syntax highlighting
