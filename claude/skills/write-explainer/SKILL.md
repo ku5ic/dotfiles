@@ -30,7 +30,7 @@ The subject is already understood well enough to explain - root cause from `/flo
 
 Format:
 
-- Structured with section headers - the point is a reader building a mental model, not a peer skimming a decision, so headers earn their keep here unlike in a devnote.
+- Structured with section headers - the point is a reader building a mental model across multiple hops, which a devnote's few sentences are too short to need broken out that far.
 - Full sentences over fragments; a newcomer needs the reasoning spelled out.
 - Cite every claim as `file:line`.
 

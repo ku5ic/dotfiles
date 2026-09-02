@@ -21,7 +21,7 @@ context: fork
 
 ## Output
 
-2-4 sentences. Plain language, developer to developer - assume the reader is a peer engineer who doesn't need the mechanism re-explained, just the reasoning. No headers, no bullet list, no restating the diff, no hedging, no "Summary:" preamble. Print directly to the terminal, not a file.
+Plain language, developer to developer - assume the reader is a peer engineer who doesn't need the mechanism re-explained, just the reasoning. No restating the diff, no hedging, no "Summary:" preamble. Print directly to the terminal, not a file. Follows `rules/adhd-output.md` in full: a single decision is a few plain sentences (nothing to chunk), more than one decision gets a plain bullet per decision so they don't run together. No bold lead-in labels ("**Option A**:") - this prints as a short terminal message, not a scanned file, and a bold prefix there reads as an AI tell.
 
 ## Rules
 
@@ -30,4 +30,4 @@ context: fork
 - Cut every sentence that's only there to sound complete.
 - Voice: first person, as the developer who made the change - "I checked X, turned out Y" - never third-person narration of the change ("This commit does X", "The change adds Y").
 - No AI language. Hard stop: no sycophantic openers/closers, no hedging filler ("it's worth noting", "basically"), no em dashes or smart quotes, no AI signatures. Must read like the developer wrote it, not like a summary of the developer's work.
-- Follows `rules/adhd-output.md`, no exception: 2-4 sentences is already the chunk-sized form this rule wants, so the length cap and the rule reinforce each other, not two things to balance.
+- No insider shorthand: a code invented mid-conversation (a ticket ID, a review-thread number, a D1/F2-style label) means nothing to a reader who wasn't in that conversation. Name the thing itself.

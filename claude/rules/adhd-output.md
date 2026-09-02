@@ -20,12 +20,14 @@ The Length tiers in `CLAUDE.md` still govern how much to say. This file governs 
 8. No walls of text. A paragraph over roughly three lines gets chunked, even where verbosity is otherwise allowed.
 9. Always format output ADHD-friendly: TL;DR first, decisions and actions up front, short blocks, tables over prose, bold on key phrases, long reasoning in collapsible sections
 10. Batch tool calls before prose, never interleave. In a single turn, run every tool call first, then write the reader-facing text once as one uninterrupted block after the last call. Never sandwich must-read text between two tool calls, and never narrate a call about to happen ("Let me save this...") - the tool calls are plumbing the reader has to scroll past, and splitting the prose around them forces a second read-through to reassemble it.
+11. No insider shorthand for a reader outside the process that produced it. A label invented mid-conversation or mid-review - a ticket ID, a review-thread number, a D1/F2-style code from an internal report - carries no meaning on its own for someone who wasn't there when it was assigned. Name the thing itself ("the split-button layout question") instead of leading with its code. This does not apply to a vocabulary the reader already shares, such as the failure/warning/info severity levels in `rules/markdown-report.md` read by the team that defined them.
 
 ## Applying it
 
 - In scope with no exceptions: skill bodies, agent output, audit reports, proposal descriptions, chat replies, and every external-communication deliverable - commit messages, PR descriptions, devnotes, review comments, stakeholder writeups, release notes.
 - A shorter file that is still one dense paragraph does not comply. A longer file broken into scannable chunks does.
 - When DRY and this file conflict (for example, extracting shared text into another file the reader would have to jump to), name the conflict explicitly and default to keeping content in place, unless the duplication is large enough to become its own maintenance burden.
+- Bold lead-in labels ("**Recommendation**:", "**Option A**") are structure for a file, report, or deliverable a reader scans section by section - not for a chat reply or a short prose message (a devnote, a one-line acknowledgment, a quick terminal answer). In those, use plain sentence structure or a bare bullet instead; a bold-label prefix in a short exchange reads as an AI tell, per `rules/voice.md`'s structural tells.
 
 ## External communication
 
