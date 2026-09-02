@@ -26,6 +26,16 @@ A subagent costs its own request budget against the 5h session window, so defaul
 
 Not as a reflexive first move for something a single Read or Grep call would answer. Override for the built-in Explore-agent guidance: spawn `Explore` only past 5 unresolved queries, not 3.
 
+## Nested delegation
+
+An agent invoked via the Agent tool finishes its own task rather than spawning further subagents - this applies inside an agent's own execution, not just at the point the main session spawns one. Nested spawning is allowed only when all three hold:
+
+- The delegating agent is a specialized one (a defined specialty in its own frontmatter), never a generic catch-all (`claude`, `general-purpose`).
+- The sub-task genuinely falls outside the delegating agent's own tool grant or specialty - not a task it could do itself with the tools it already has.
+- At most one subagent per invocation - no chains, no fan-out from inside an agent.
+
+None of the agents under `claude/agents/` grant the `Agent` tool today, so this is a ceiling for future agent design, not a fix to an existing leak - the generic catch-alls are the only ones with wildcard tool access able to spawn at all, and they are exactly the case this rule tells to prefer doing the work directly.
+
 ## Two operational facts
 
 1. Agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the main session's `SessionStart` hook injection (`inject-context.sh`) - instead every subagent gets the same content via a `SubagentStart` hook (`inject-subagent-context.sh`, matcher `*`), per `rules/agent-shell.md`. `guard-skills` is the enforcement floor for reading or editing agents either way.
