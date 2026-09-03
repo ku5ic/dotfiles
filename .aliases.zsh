@@ -64,7 +64,7 @@ uptmux() {
   fi
   upterm host --force-command "tmux attach -t $session" -- tmux new-session -A -s "$session"
 }
-alias brew_all="brew update; brew upgrade; brew upgrade --cask; brew cleanup --prune=all; brew autoremove; brew doctor; brew_upgrade_casks" # Update all brew packages
+alias brew_all="brew update; brew upgrade; brew upgrade --cask; brew_upgrade_casks brew cleanup --prune=all; brew autoremove; brew doctor;" # Update all brew packages
 alias brew_reset='brew update-reset "$(brew --repository)"' # Reset Homebrew to a clean state
 alias brew_clean='brew bundle cleanup --file="$DOTFILES_DIR/Brewfile" --force' # Clean up Homebrew packages not listed in the Brewfile
 alias brew_install='brew bundle --file="$DOTFILES_DIR/Brewfile"' # Install Homebrew packages from the Brewfile
