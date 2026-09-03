@@ -118,3 +118,6 @@ scratch/
 
 # Git
 allowed_signers.work
+
+# MCPs
+.playwright-mcp
