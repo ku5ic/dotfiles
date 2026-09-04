@@ -33,6 +33,10 @@
 #   10. MCP allow-list server parity: every mcp__ permission entry's server
 #       segment matches a server actually configured (`claude mcp list`),
 #       catching drift for servers still enumerated by individual tool name.
+#       Plugin-provided servers (`plugin_*`) are reported as unverifiable:
+#       they live in a plugin's .mcp.json and `claude mcp list` never shows
+#       them. The tool segment is not validated at all; the CLI exposes no
+#       way to enumerate a server's tools.
 #
 # Adding a credential pattern: add it to the `patterns` array below AND to
 # hooks/guard-edit.sh's "Sensitive credential and key files" case block AND
@@ -492,7 +496,7 @@ else
     for sk in "${allow_skills[@]}"; do
       [[ "$sk" == "$name" ]] && found=1 && break
     done
-    if ((!found)); then
+    if ((! found)); then
       echo "missing-allow  $name has no Skill($name) entry in settings.json allow"
       skill_allow_failed=1
     fi
@@ -587,23 +591,35 @@ else
   else
     mapfile -t mcp_allow < <(jq -r '.permissions.allow[] | select(startswith("mcp__"))' "$SETTINGS_JSON" 2>/dev/null | sort -u)
 
+    plugin_entries=0
+
     for entry in "${mcp_allow[@]}"; do
       without_prefix="${entry#mcp__}"
       server="${without_prefix%%__*}"
+      # Plugin-provided servers come from a plugin's own .mcp.json and never
+      # appear in `claude mcp list`, so parity is unverifiable here.
+      if [[ "$server" == plugin_* ]]; then
+        plugin_entries=$((plugin_entries + 1))
+        continue
+      fi
       found=0
       for ks in "${known_servers[@]}"; do
         [[ "$ks" == "$server" ]] && found=1 && break
       done
-      if ((!found)); then
+      if ((! found)); then
         echo "unknown-server   $entry: server '$server' has no matching entry in \`claude mcp list\`"
         mcp_parity_failed=1
       fi
     done
 
+    if ((plugin_entries)); then
+      echo "info           $plugin_entries plugin-provided entries unverifiable; \`claude mcp list\` omits plugin servers"
+    fi
+
     if ((mcp_parity_failed)); then
       exit_code=1
     else
-      echo "ok             ${#mcp_allow[@]} mcp__ allow entries match a configured server"
+      echo "ok             $((${#mcp_allow[@]} - plugin_entries)) mcp__ allow entries match a configured server"
     fi
   fi
 fi
