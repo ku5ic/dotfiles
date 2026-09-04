@@ -1,7 +1,6 @@
 ---
 description: Ground a task in the codebase, then turn it into an ordered implementation plan with explicit tradeoffs
 argument-hint: <task description>
-model: opus
 disable-model-invocation: true
 context: fork
 ---

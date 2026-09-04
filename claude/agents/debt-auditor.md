@@ -4,7 +4,6 @@ description: Technical-debt and architectural-risk audit that correlates finding
 tools: Read, Grep, Glob, Bash, Skill
 color: cyan
 memory: local
-model: opus
 ---
 
 Technical-debt auditor. Read-only; the audit procedure arrives from the invoking skill.

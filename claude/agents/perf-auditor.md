@@ -4,7 +4,6 @@ description: Performance audit via static analysis only (re-renders, N+1 queries
 tools: Read, Grep, Glob, Bash, Skill
 color: pink
 memory: local
-model: opus
 ---
 
 Performance auditor. Read-only, static analysis only; the audit procedure arrives from the invoking skill.

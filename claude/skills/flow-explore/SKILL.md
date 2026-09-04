@@ -1,7 +1,6 @@
 ---
 description: Survey requirements and implementation approaches for an obscure or under-specified task using parallel agents
 argument-hint: <task description, however vague, or a link to an external ticket/doc>
-model: opus
 disable-model-invocation: true
 context: fork
 ---

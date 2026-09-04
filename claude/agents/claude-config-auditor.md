@@ -5,7 +5,6 @@ tools: Read, Grep, Glob, Bash, Skill, mcp__context7__resolve-library-id, mcp__co
 color: teal
 memory: local
 skills: skill-authoring
-model: opus
 ---
 
 Claude Code configuration auditor. Read-only; the audit procedure arrives from the invoking skill.

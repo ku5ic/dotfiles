@@ -354,7 +354,7 @@
     "defaultMode": "auto",
     "additionalDirectories": ["~/.claude", "~/.dotfiles"]
   },
-  "model": "opusplan",
+  "model": "opus",
   "skillOverrides": {
     "auto-mode-setup": "off"
   },
