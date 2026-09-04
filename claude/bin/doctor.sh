@@ -30,13 +30,16 @@
 #   9. settings.json machine-local leak: autoMode.environment (machine-
 #      appended per-repo context) never regrows the org-internal detail
 #      stripped from it once already.
-#   10. MCP allow-list server parity: every mcp__ permission entry's server
-#       segment matches a server actually configured (`claude mcp list`),
-#       catching drift for servers still enumerated by individual tool name.
-#       Plugin-provided servers (`plugin_*`) are reported as unverifiable:
-#       they live in a plugin's .mcp.json and `claude mcp list` never shows
-#       them. The tool segment is not validated at all; the CLI exposes no
-#       way to enumerate a server's tools.
+#   10. MCP allow-list server parity: reports which mcp__ permission entries
+#       name a server actually configured here (`claude mcp list`). Advisory
+#       only, never a failure -- settings.json is shared across machines with
+#       different connector sets, so a rule for a server absent locally is
+#       inert rather than stale, and `claude mcp list` is local-only so the
+#       two cannot be told apart. Plugin-provided servers (`plugin_*`) are
+#       unverifiable for a different reason: they live in a plugin's own
+#       .mcp.json, which `claude mcp list` never shows. The tool segment is
+#       not validated at all; the CLI exposes no way to enumerate a server's
+#       tools.
 #
 # Adding a credential pattern: add it to the `patterns` array below AND to
 # hooks/guard-edit.sh's "Sensitive credential and key files" case block AND
@@ -570,7 +573,6 @@ elif ! command -v claude >/dev/null 2>&1; then
   echo "skip           claude CLI not found; skipping mcp allow-list server parity"
 else
   SETTINGS_JSON="$SOURCE_ROOT/settings.json"
-  mcp_parity_failed=0
 
   # Known servers, normalized the same way a permission rule's server segment
   # is derived from a server's `claude mcp list` display name: non-alphanumeric
@@ -592,6 +594,8 @@ else
     mapfile -t mcp_allow < <(jq -r '.permissions.allow[] | select(startswith("mcp__"))' "$SETTINGS_JSON" 2>/dev/null | sort -u)
 
     plugin_entries=0
+    absent_entries=0
+    absent_servers=()
 
     for entry in "${mcp_allow[@]}"; do
       without_prefix="${entry#mcp__}"
@@ -607,20 +611,22 @@ else
         [[ "$ks" == "$server" ]] && found=1 && break
       done
       if ((! found)); then
-        echo "unknown-server   $entry: server '$server' has no matching entry in \`claude mcp list\`"
-        mcp_parity_failed=1
+        absent_entries=$((absent_entries + 1))
+        absent_servers+=("$server")
       fi
     done
+
+    if ((absent_entries)); then
+      while read -r count server; do
+        echo "info           $server: $count allow entries, no such server on this machine"
+      done < <(printf '%s\n' "${absent_servers[@]}" | sort | uniq -c)
+    fi
 
     if ((plugin_entries)); then
       echo "info           $plugin_entries plugin-provided entries unverifiable; \`claude mcp list\` omits plugin servers"
     fi
 
-    if ((mcp_parity_failed)); then
-      exit_code=1
-    else
-      echo "ok             $((${#mcp_allow[@]} - plugin_entries)) mcp__ allow entries match a configured server"
-    fi
+    echo "ok             $((${#mcp_allow[@]} - plugin_entries - absent_entries)) mcp__ allow entries match a configured server"
   fi
 fi
 
