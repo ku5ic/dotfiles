@@ -203,6 +203,26 @@ fi
 # "stop adhd mode" the way the ponytail segment above reflects /ponytail.
 adhd_color=$'\033[38;5;81m'
 [[ -f "$HOME/.claude/.i-have-adhd-always" ]] && mode_segment="$mode_segment ${adhd_color}[ADHD:ALWAYS-ON]${reset_marker}"
+# claudish-to-english keeps the same kind of state: an off-file pausing
+# rewrites and a mode-file holding append/replace, both re-read by its hooks on
+# every message. The mode-file (written by /claudish) beats the CLAUDISH_MODE
+# env var, so it is checked first. No file and no env var means the plugin
+# isn't configured here - render nothing rather than guessing a default.
+claudish_off_file="${CLAUDISH_OFF_FILE:-$HOME/.claude/claudish-off}"
+claudish_mode_file="${CLAUDISH_MODE_FILE:-$HOME/.claude/claudish-mode}"
+claudish_state=""
+if [[ -f "$claudish_off_file" ]]; then
+  claudish_state="off"
+elif [[ -r "$claudish_mode_file" ]]; then
+  claudish_state="$(head -n1 "$claudish_mode_file" | tr -d '[:space:]')"
+else
+  claudish_state="${CLAUDISH_MODE:-}"
+fi
+if [[ -n "$claudish_state" ]]; then
+  claudish_color=$'\033[38;5;180m'
+  [[ "$claudish_state" == "off" ]] && claudish_color=$'\033[38;5;245m'
+  mode_segment="$mode_segment ${claudish_color}[CLAUDISH:$(printf '%s' "$claudish_state" | tr '[:lower:]' '[:upper:]')]${reset_marker}"
+fi
 
 row1="${model_color}${model_name}${reset_marker}"
 if [[ -n "$declared_model_short" ]]; then

@@ -6,7 +6,10 @@
     "CLAUDE_GUARD_RESPONSE": "1",
     "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION": "30",
     "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "1",
-    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "2"
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "2",
+    "CLAUDISH_PROVIDER": "anthropic",
+    "CLAUDISH_ANTHROPIC_AUTH": "oauth",
+    "CLAUDISH_MODE": "replace"
   },
   "includeCoAuthoredBy": false,
   "permissions": {
@@ -583,7 +586,8 @@
     "security-guidance@claude-plugins-official": true,
     "frontend-spacelift@spacelift-engineering": true,
     "i-have-adhd@i-have-adhd": true,
-    "ponytail@ponytail": true
+    "ponytail@ponytail": true,
+    "claudish-to-english@gvzdv-plugins": true
   },
   "extraKnownMarketplaces": {
     "spacelift-engineering": {
@@ -602,6 +606,12 @@
       "source": {
         "source": "github",
         "repo": "DietrichGebert/ponytail"
+      }
+    },
+    "gvzdv-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "gvzdv/claudish-to-english"
       }
     }
   },
