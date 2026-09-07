@@ -16,6 +16,8 @@ A skill or agent pins `model:`/`effort:` frontmatter only when it diverges from 
 
 A skill may set `model:` or `effort:`, never both - Claude Code silently drops the model override when both are present on a skill (upstream bug; agents are unaffected). `doctor.sh` enforces this as `model-effort-pair`.
 
+A skill forks (`context: fork`) only to carry a `model:` pin or to name an `agent:`. With opus as the session default, a fork with neither buys nothing and costs the AskUserQuestion tool - see the forked decision protocol below. No lint catches this, so check it when removing a pin.
+
 ## Spawn discipline
 
 A subagent costs its own request budget against the 5h session window, so default to doing the work directly. Reach for one only when:
@@ -39,7 +41,7 @@ None of the agents under `claude/agents/` grant the `Agent` tool today, so this 
 ## Two operational facts
 
 1. Agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the main session's `SessionStart` hook injection (`inject-context.sh`) - instead every subagent gets the same content via a `SubagentStart` hook (`inject-subagent-context.sh`, matcher `*`), per `rules/agent-shell.md`. `guard-skills` is the enforcement floor for reading or editing agents either way.
-2. Forked skills (`context: fork`) run their whole body in a subagent; only `flow-checks` names one via `agent: <name>`. Most agent work instead comes from an inline skill body dispatching via the Agent tool, including `flow-implement`, which keeps its phase-boundary stops in the main conversation. `flow-plan` is forked (`context: fork`) despite using `AskUserQuestion` internally - its clarity-gate and Decisions steps follow the forked decision protocol below instead.
+2. Forked skills (`context: fork`) run their whole body in a subagent; only `flow-checks` names one via `agent: <name>`, and the rest fork to carry a `model: haiku` pin. Most agent work instead comes from an inline skill body dispatching via the Agent tool, including `flow-plan`, `flow-explore`, `meta-feature`, and `flow-implement` - all inline so their phase-boundary stops and AskUserQuestion steps stay in the main conversation.
 
 ## Forked decision protocol
 

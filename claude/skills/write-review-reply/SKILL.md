@@ -2,7 +2,6 @@
 description: Draft replies to a reviewer's PR comments, verifying each claim against the actual code before answering
 argument-hint: <reviewer username> [PR number] [--all]
 disable-model-invocation: true
-context: fork
 ---
 
 ## Procedure
@@ -14,11 +13,11 @@ context: fork
    - First non-flag token: reviewer username.
    - A bare number: PR number.
    - `--all`: include every review round, not just the newest (see step 7).
-5. If no PR number was given, resolve the current branch's PR: `gh pr view --json number,url`. If that fails (not on a PR branch, no open PR), forked: return a `## Needs decision` block asking for the PR number or URL instead of guessing.
+5. If no PR number was given, resolve the current branch's PR: `gh pr view --json number,url`. If that fails (not on a PR branch, no open PR), ask for the PR number or URL via the AskUserQuestion tool instead of guessing.
 6. If no reviewer username was given:
    - List distinct reviewers from `gh api repos/<slug>/pulls/<n>/reviews` and `gh api repos/<slug>/pulls/<n>/comments`, excluding the PR author and the current user.
    - Exactly one candidate: use it.
-   - Zero or more than one: forked: return a `## Needs decision` block listing the candidates instead of guessing.
+   - Zero or more than one: ask via the AskUserQuestion tool, listing the candidates, instead of guessing.
 7. Fetch the reviewer's comments:
    - Inline: `gh api repos/<slug>/pulls/<n>/comments --paginate`, filtered to `user.login == <reviewer>`. Keep `id`, `path`, `line` (or `original_line`), `body`, `html_url`, `created_at`, `in_reply_to_id`.
    - Reviews: `gh api repos/<slug>/pulls/<n>/reviews --paginate`, filtered to the same user. Keep `id`, `body`, `html_url`, `submitted_at`. Include a review's own `body` as a comment only if non-empty.
