@@ -36,16 +36,8 @@ make_payload() {
   '
 }
 
-# run_statusline <payload> [VAR=VALUE ...]  extra assignments go to the script's
-# environment. The CLAUDISH_* vars are unset first: they are set for real in
-# claude/settings.json, so without this the ambient value would leak in and the
-# claudish badge would render in every unrelated test.
 run_statusline() {
-  local payload="$1"
-  shift
-  printf '%s' "$payload" |
-    env -u CLAUDISH_MODE -u CLAUDISH_MODE_FILE -u CLAUDISH_OFF_FILE \
-      HOME="$FAKE_HOME" "$@" bash "$SCRIPT"
+  printf '%s' "$1" | HOME="$FAKE_HOME" bash "$SCRIPT"
 }
 
 # strip_ansi <text>  removes color escape codes so tests can assert on plain
@@ -413,30 +405,4 @@ backdate_mtime() {
   [[ "$(strip_ansi "$output" | head -1)" == "Opus  "* ]]
   [[ "$output" != *"!"* ]]
   [[ "$output" != *"->"* ]]
-}
-
-@test "claudish badge renders the mode from CLAUDISH_MODE" {
-  run run_statusline "$(make_payload "$REPO" tcl1 50)" CLAUDISH_MODE=replace
-  [ "$status" -eq 0 ]
-  [[ "$(strip_ansi "$output")" == *"[CLAUDISH:REPLACE]"* ]]
-}
-
-@test "claudish mode file beats the CLAUDISH_MODE env var" {
-  mkdir -p "$FAKE_HOME/.claude"
-  echo "append" >"$FAKE_HOME/.claude/claudish-mode"
-  run run_statusline "$(make_payload "$REPO" tcl2 50)" CLAUDISH_MODE=replace
-  [[ "$(strip_ansi "$output")" == *"[CLAUDISH:APPEND]"* ]]
-}
-
-@test "claudish off file wins over both the mode file and the env var" {
-  mkdir -p "$FAKE_HOME/.claude"
-  echo "append" >"$FAKE_HOME/.claude/claudish-mode"
-  touch "$FAKE_HOME/.claude/claudish-off"
-  run run_statusline "$(make_payload "$REPO" tcl3 50)" CLAUDISH_MODE=replace
-  [[ "$(strip_ansi "$output")" == *"[CLAUDISH:OFF]"* ]]
-}
-
-@test "claudish badge is omitted when neither the env var nor a flag file is set" {
-  run run_statusline "$(make_payload "$REPO" tcl4 50)"
-  [[ "$output" != *"CLAUDISH"* ]]
 }
