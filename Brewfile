@@ -38,6 +38,8 @@ brew 'hyperfine'                    # command-line benchmarking tool
 brew 'imagemagick'                  # image manipulation library used by Neovim image plugins
 brew 'jc'                           # converts CLI output to JSON for piping into jq
 brew 'jq'                           # JSON processor for shell pipelines
+brew 'kind'                         # runs local Kubernetes clusters in Docker for testing manifests and charts
+brew 'kubernetes-cli'               # kubectl, the Kubernetes cluster CLI
 brew 'lazygit'                      # terminal git UI bound to the lg alias
 brew 'less'                         # GNU less from Homebrew, kept current for pager features
 brew 'lua'                          # Lua interpreter required by Neovim Lua plugins and luarocks-based dependencies
