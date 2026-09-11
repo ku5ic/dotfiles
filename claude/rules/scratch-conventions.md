@@ -12,6 +12,18 @@ This overrides two defaults that otherwise compete for the same job: the harness
 
 Structured artifacts (reports, plans) keep the naming pattern below. Test artifacts and POC files don't need to fit that shape - name them sensibly - but still must live under `scratch-dir.sh`'s resolved directory, never in system `/tmp` or loose in `~/.claude/`.
 
+### Never the project root
+
+Nothing temporary is ever written to the project root or loose in the repo tree. That includes downloads (`curl`, `wget`, `gh` artifact fetches), captured screenshots, redirected command output and logs, and generated data files.
+
+Resolve the destination with `scratch-dir.sh` first, then pass that path explicitly to whatever writes the file:
+
+- `curl -o "$(scratch-dir.sh)/<name>"`, not `curl -O`
+- a screenshot or export tool's `out_dir` / `save_to_disk` path argument, not its default
+- `cmd > "$(scratch-dir.sh)/<name>.log"`, not `cmd > out.log`
+
+Never default to `.`, to a bare filename, or to whatever directory the tool picks on its own. The project root is tracked source: a stray file there pollutes `git status`, risks being committed, and lands in every clone.
+
 One naming pattern for structured artifacts, regardless of which tier `scratch-dir.sh` resolves to - the directory itself is what scopes an artifact to a project, not the filename:
 
 $(scratch-dir.sh)/<kind>-<scope-slug>-<YYYYMMDD-HHMM>.md
