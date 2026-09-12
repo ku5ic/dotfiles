@@ -5,7 +5,7 @@ description: Django REST Framework patterns, serializers, viewsets, permissions,
 
 # Django REST Framework patterns
 
-DRF approximately v3.16. Supports Django 4.2, 5.0, 5.1, 5.2, 6.0 and Python 3.10-3.14. Verify current version at https://pypi.org/project/djangorestframework/. Adapt advice to the version in the project's `requirements.txt`, `pyproject.toml`, or lockfile.
+DRF 3.18.x. Supports Django 5.2, 6.0, and 6.1; 3.18.0 dropped Django 4.2, 5.0, and 5.1. Verify current version at https://pypi.org/project/djangorestframework/. Adapt advice to the version in the project's `requirements.txt`, `pyproject.toml`, or lockfile.
 
 ## Reference files
 
@@ -26,3 +26,11 @@ DRF approximately v3.16. Supports Django 4.2, 5.0, 5.1, 5.2, 6.0 and Python 3.10
 - https://www.django-rest-framework.org/api-guide/serializers/
 - https://www.django-rest-framework.org/api-guide/permissions/
 - https://django-rest-framework-simplejwt.readthedocs.io/en/latest/
+
+## Version notes
+
+Checked: 2026-09-12 against https://pypi.org/project/djangorestframework/ and https://www.django-rest-framework.org/community/release-notes/
+
+- 3.18.1 (2026-09-07): 3.18.0 dropped Django 4.2, 5.0, 5.1. A project pinned to one of those stays on 3.17.
+- 3.14: `NullBooleanField` removed; use `BooleanField(allow_null=True)`.
+- 3.5: `ModelSerializer` without `fields` or `exclude` became an error (deprecated since 3.3).

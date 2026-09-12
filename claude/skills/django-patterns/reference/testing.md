@@ -2,7 +2,7 @@
 
 ## pytest-django
 
-Use pytest-django (v4.11.1) over Django's `TestCase` in a pytest codebase. Tests are plain functions, not subclasses. Less boilerplate.
+Use pytest-django (v4.14.0) over Django's `TestCase` in a pytest codebase. Tests are plain functions, not subclasses. Less boilerplate.
 
 ```python
 import pytest

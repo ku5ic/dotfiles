@@ -55,9 +55,13 @@ In current Node.js, an unhandled promise rejection is raised as an uncaught exce
 
 `failure`. Swallowing an error silently hides defects. If the failure is genuinely expected and recoverable, log it (with the value) and continue, or re-throw a wrapped error explaining why it was caught.
 
-## `using` and `await using` (TC39 Stage 3, advisory)
+## `using` and `await using`
 
-The explicit resource management proposal adds `using` (sync) and `await using` (async) declarations that auto-dispose at scope exit. As of writing it is at TC39 Stage 3 and is not yet part of standard ECMAScript. Verify Node and toolchain support before relying on it; until then, use `try`/`finally` for deterministic cleanup.
+Explicit resource management adds `using` (sync) and `await using` (async) declarations that auto-dispose at scope exit. It reached TC39 Stage 4 in 2026 and is part of the ECMAScript spec; Node ships it unflagged (Context7 /nodejs/node cites 20.4.0 as the floor; confirm against the project's Node version before relying on it). Prefer it over hand-written `try`/`finally` for anything with a `[Symbol.dispose]` or `[Symbol.asyncDispose]` method.
+
+### Legacy (pre-Stage 4)
+
+On a toolchain that does not yet parse `using`, keep `try`/`finally` for deterministic cleanup. The proposal was Stage 3 until 2026, so older transpiler configs may need a plugin.
 
 ## References
 

@@ -47,7 +47,7 @@ Branch naming for this machine is `<type>/<slug>` or `<type>/<TICKET-ID>/<slug>`
 ## Anti-patterns
 
 **failure: force-pushing to a shared branch**
-`git push --force` on `main` or any branch other people are using rewrites history and destroys their local branches. Use `--force-with-lease` if you must force-push to your own remote branch; it fails if someone else pushed since your last fetch.
+`git push --force` on `main` or any branch other people are using rewrites history and destroys their local branches. Use `--force-with-lease --force-if-includes` if you must force-push to your own remote branch: the first fails if someone else pushed since your last fetch, the second also fails when a background fetch updated the ref without you seeing it.
 
 **failure: committing secrets**
 If a secret lands in git history, rotate it immediately regardless of whether you think the repo is private. `git rm` does not remove it from history; the secret is still in every clone.
@@ -76,3 +76,13 @@ An `.env` or `*.key` file not listed in `.gitignore` will eventually be committe
 - https://git-scm.com/docs/git-reflog
 - https://git-scm.com/docs/git-bisect
 - https://git-scm.com/docs/git-worktree
+- https://git-scm.com/docs/git-push
+- https://git-scm.com/docs/git-switch
+
+## Version notes
+
+Checked: 2026-09-12 against https://git-scm.com and https://www.conventionalcommits.org/en/v1.0.0/
+
+- git 2.55.0 (2026-06-29): no guidance change. `git switch` / `git restore` are the documented replacements for branch and file `checkout`; `checkout` still works.
+- `--force-if-includes` (2.30+): pairs with `--force-with-lease` against the background-fetch gap; added to the force-push guidance 2026-09-12.
+- Conventional Commits spec is 1.0.0; unchanged.

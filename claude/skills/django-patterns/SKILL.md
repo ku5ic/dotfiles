@@ -30,3 +30,10 @@ DRF-specific patterns load when the project includes `djangorestframework` in de
 - https://pytest-django.readthedocs.io/en/latest/
 - https://factoryboy.readthedocs.io/en/stable/
 - https://github.com/joke2k/django-environ
+
+## Version notes
+
+Checked: 2026-09-12 against https://www.djangoproject.com/download/ and PyPI
+
+- Django 6.1.1 current stable; 5.2 LTS supported to April 2028 (baseline here).
+- pytest-django 4.14.0 (2026-08-10), django-environ 0.14.0 (2026-06-18), Factory Boy 3.3.3 (2025-02-03): pins in the reference files match these.

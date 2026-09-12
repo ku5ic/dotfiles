@@ -11,7 +11,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "price", "slug"]  # explicit
 ```
 
-DRF has required either `fields` or `exclude` since version 3.3.0. Omitting both raises an error at startup.
+DRF has required either `fields` or `exclude` since version 3.5 (deprecated in 3.3.0). Omitting both raises an error at startup.
 
 ## Validation
 

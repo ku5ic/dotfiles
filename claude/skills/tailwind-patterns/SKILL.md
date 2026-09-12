@@ -12,7 +12,7 @@ Default assumption in this dotfiles project: Tailwind v4 with CSS-first config. 
 - v4 setup: a single `@import "tailwindcss"` in the main CSS file. No `@tailwind base / components / utilities` directives.
 - v4 config: lives in CSS via the `@theme` directive. No `tailwind.config.js`. Theme tokens become CSS custom properties automatically.
 - v4 content detection: automatic. The compiler scans the project for class names; you do not configure `content` paths.
-- v4 plugins: still work, but most v3 plugins (typography, forms, container queries) are now built in. Check before installing.
+- v4 plugins: still work. Container queries are built in; typography and forms remain separate `@tailwindcss/*` plugins. Check before installing.
 - v4 build: ~5x faster. The Oxide engine replaces PostCSS for the core compile step.
 
 ## Setting up v4 correctly
@@ -43,8 +43,8 @@ Default assumption in this dotfiles project: Tailwind v4 with CSS-first config. 
 
 ## Using theme values from CSS
 
-- `--theme(--color-brand)`: read a theme value in plain CSS.
-- `--alpha(var(--color-brand) / 50%)`: compute an alpha-modified color in v4. v3 used `theme()` helper differently.
+- `var(--color-brand)`: read a theme value in plain CSS. Every `@theme` key is a CSS custom property; there is no separate read function in the v4 docs.
+- `--alpha(var(--color-brand) / 50%)`: compute an alpha-modified color in v4. v3 used the `theme()` helper, kept in v4 only for compatibility.
 
 ## Variants and modifiers
 
@@ -95,3 +95,11 @@ If both `tailwind.config.js` and `@import "tailwindcss"` are present, the projec
 - v4 release post: https://tailwindcss.com/blog/tailwindcss-v4
 - v3-to-v4 upgrade guide: https://tailwindcss.com/docs/upgrade-guide
 - v4 docs: https://tailwindcss.com/docs
+
+## Version notes
+
+Checked: 2026-09-12 against https://tailwindcss.com/blog and https://tailwindcss.com/docs/theme
+
+- 4.3 (2026-05-08): no directive or function syntax change; no v5 exists.
+- 4.0: CSS-first config (`@import "tailwindcss"`, `@theme`, `@utility`, `--alpha()`), automatic content detection, `not-`, `*:`, and `starting:` variants. Theme values are read with `var(--*)`, not a `--theme()` function (corrected 2026-09-12).
+- 3.x: `tailwind.config.js`, `@tailwind base/components/utilities`, `theme()` helper. See "v3 patterns to avoid in v4".

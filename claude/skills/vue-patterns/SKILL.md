@@ -38,8 +38,8 @@ Default assumption: Vue 3 with the Composition API and `<script setup>` syntax.
 
 ## Version notes
 
-- Vue 3.5 introduced Reactive Props Destructure (replacing the `withDefaults` ergonomic) and `onWatcherCleanup`.
-- Vue 3.4 introduced `defineModel` and watcher `once: true`.
-- Vue 3.3 introduced `defineSlots` and tuple-style `defineEmits` types.
-- When new syntax appears in a code review, check this skill against the current changelog before relying on legacy guidance.
-- Vue 2 reaches end-of-life status; new projects should be Vue 3, and Vue-2-only patterns are out of scope here.
+Checked: 2026-09-12 against Context7 /vuejs/vue (3.5.42) and https://vuejs.org/api/sfc-script-setup.html
+
+- 3.5 (2024-09-01): Reactive Props Destructure is the recommended default-value form over `withDefaults` (which still works); `onWatcherCleanup`.
+- 3.4: `defineModel`; watcher `once: true`.
+- 3.3: `defineSlots`; tuple-style `defineEmits` types.

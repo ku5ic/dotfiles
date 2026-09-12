@@ -33,3 +33,11 @@ Default assumption: a project running on the current Node.js Active LTS (Node 24
 - TC39 proposals: https://github.com/tc39/proposals
 - 2ality (Axel Rauschmayer): https://2ality.com/
 - You Don't Know JS, 2nd ed. (Kyle Simpson): https://github.com/getify/You-Dont-Know-JS
+
+## Version notes
+
+Checked: 2026-09-12 against https://nodejs.org/en/about/previous-releases and https://github.com/tc39/proposals
+
+- Node 26 is Current (2026-05); Node 24 "Krypton" is Active LTS (2025-05). Default assumption above stays on the LTS.
+- Explicit resource management (`using` / `await using`) reached Stage 4 in 2026; `reference/errors.md` updated, old `try`/`finally` advice kept as Legacy.
+- `@satisfies` JSDoc tag: TS 4.9+, unchanged.

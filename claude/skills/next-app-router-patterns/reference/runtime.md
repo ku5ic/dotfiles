@@ -42,7 +42,11 @@ export const config = {
 
 Place the file at the project root (or `src/`), at the same level as `app/` or `pages/`.
 
-The `runtime` config option is not available in Proxy files; the runtime is controlled separately. The file convention (Middleware before v16.0, Proxy after) gained stable Node.js runtime support in v15.5, having been Edge-only previously. Defaults vary by deployment target.
+The `runtime` config option is not available in Proxy files; setting it throws. Proxy runs on the Node.js runtime only. The file convention (Middleware before v16.0, Proxy after) gained stable Node.js runtime support in v15.5, having been Edge-only previously.
+
+### Legacy (Middleware, Edge runtime)
+
+A project that needs the Edge runtime for this file keeps `middleware.ts`; the proxy docs (https://nextjs.org/docs/app/api-reference/file-conventions/proxy) say Edge is not supported in `proxy.ts`. Treat that as the one case where the deprecated name still applies.
 
 ## Matchers
 

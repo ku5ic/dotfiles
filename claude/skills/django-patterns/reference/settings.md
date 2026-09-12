@@ -55,7 +55,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")  # if behind a pro
 
 ## django-environ
 
-`django-environ` (v0.13.0, actively maintained) reads environment variables into typed Python values and parses database URLs:
+`django-environ` (v0.14.0, actively maintained) reads environment variables into typed Python values and parses database URLs:
 
 ```python
 import environ

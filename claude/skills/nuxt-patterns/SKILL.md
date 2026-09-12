@@ -5,9 +5,9 @@ description: Nuxt 3+ patterns - rendering modes, data fetching (useFetch, useAsy
 
 # Nuxt patterns
 
-Default assumption: Nuxt 4 (current stable, latest 4.4.x as of writing) with Universal Rendering (SSR).
+Default assumption: Nuxt 4 (current stable, latest 4.5.x) with Universal Rendering (SSR).
 
-- Nuxt 3 is in maintenance until 2026-07-31 and still receives bug fixes and security patches; Nuxt 3 projects are still common and most patterns here apply, but the maintenance note below covers deltas.
+- Nuxt 3 reached end-of-life on 2026-07-31; Nuxt 3 projects are still common and most patterns here apply, but flag the EOL and the version notes below cover deltas.
 - Verify the installed version via `nuxt --version` or `package.json`; minor-version deltas may affect module resolution and Nitro config.
 
 ## Reference files
@@ -36,7 +36,10 @@ Default assumption: Nuxt 4 (current stable, latest 4.4.x as of writing) with Uni
 
 ## Version notes
 
-- Nuxt 4 is the current stable major; Nuxt 4.4 introduced custom `useFetch`/`useAsyncData` factories and other refinements (March 2026).
-- Nuxt 3 is in maintenance (bug fixes and security patches only) until 2026-07-31; Nuxt 3 projects should plan a Nuxt 4 migration ahead of that date.
-- Nuxt 2 reached EOL on June 30, 2024 and no longer receives updates. Vue 2-based Nuxt 2 patterns are out of scope here.
-- The Nitro runtime and h3 framework underneath are versioned independently and can update without a Nuxt major bump; verify version-sensitive claims against the current docs at https://nuxt.com/docs and the release entries at https://nuxt.com/blog.
+Checked: 2026-09-12 against https://nuxt.com/blog and https://github.com/nuxt/nuxt/releases
+
+- 4.5 (2026-07): `enabled` option on `useFetch`/`useAsyncData`, `useLayout` composable, stable error codes, named views by filename. No pattern here changed.
+- 4.4 (2026-03): custom `useFetch`/`useAsyncData` factories (unverified on 2026-09-12; release notes not reachable).
+- Nuxt 3: end-of-life 2026-07-31, final release 3.21.x. Nuxt 2: end-of-life 2024-06-30.
+
+Nitro and h3 version independently of Nuxt; verify version-sensitive claims against the current docs.

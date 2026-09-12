@@ -5,7 +5,7 @@ description: FastAPI patterns, Pydantic schemas, dependency injection, async cor
 
 # FastAPI patterns
 
-FastAPI 0.136.1, Pydantic 2.13.3 (baseline at time of writing). Verify current versions at https://pypi.org/project/fastapi/ and https://pypi.org/project/pydantic/. Adapt advice to the versions in the project's `requirements.txt`, `pyproject.toml`, or lockfile.
+FastAPI 0.141.x, Pydantic 2.13.x (baseline at time of writing). Verify current versions at https://pypi.org/project/fastapi/ and https://pypi.org/project/pydantic/. Adapt advice to the versions in the project's `requirements.txt`, `pyproject.toml`, or lockfile.
 
 Install: `pip install "fastapi[standard]"`
 
@@ -28,3 +28,11 @@ Install: `pip install "fastapi[standard]"`
 - https://pydantic.dev/docs/validation/latest/
 - https://fastapi.tiangolo.com/tutorial/security/
 - https://fastapi.tiangolo.com/async/
+
+## Version notes
+
+Checked: 2026-09-12 against https://pypi.org/project/fastapi/ and https://fastapi.tiangolo.com/release-notes/
+
+- 0.141.1 (2026-07-29) with Pydantic 2.13.5 (2026-08-28): no guidance change. FastAPI stays on 0.x by design; there is no 1.x and no Pydantic 3.
+- 0.128.0: Pydantic v1 compatibility (`pydantic.v1` models) removed; unsupported on Python 3.14+.
+- 0.95.0: `Annotated` form for `Depends()` became the recommended shape.

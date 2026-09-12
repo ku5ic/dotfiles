@@ -33,7 +33,8 @@ Default assumption: a TypeScript project with `strict` mode enabled.
 
 ## Version notes
 
-When TypeScript evolves (5.x minor releases, 6.x, 7.x), reconcile this skill against the current handbook before trusting deltas above.
+Checked: 2026-09-12 against https://devblogs.microsoft.com/typescript/ and Context7 /microsoft/typescript
 
-- As of writing, 6.0 is the last release of the JavaScript-based compiler.
-- 7.0 is the native (Go) port and may shift defaults around module resolution and strictness.
+- 7.0 (2026-07, latest 7.0.2): native Go compiler. Removed the options 6.0 deprecated: `module` none/amd/umd/system, `moduleResolution` node10/classic, `baseUrl`, `outFile`, `downlevelIteration`, `target: ES5`, `alwaysStrict: false`, `esModuleInterop: false`, `allowSyntheticDefaultImports: false`. A tsconfig using any of these does not compile on 7.
+- 6.0: last JavaScript-based compiler; deprecated the options above.
+- 5.0 (2023-03): `verbatimModuleSyntax`, `const` type parameters. 4.9: `satisfies`. 4.7: `in`/`out` variance annotations.

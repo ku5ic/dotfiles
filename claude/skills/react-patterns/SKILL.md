@@ -33,7 +33,8 @@ Default assumption: React 19 with the modern (concurrent) renderer.
 
 ## Version notes
 
-React's release cadence has slowed since 18; major changes now arrive through the React Compiler and through Server Component primitives that frameworks adopt.
+Checked: 2026-09-12 against https://react.dev/blog and Context7 /react/react
 
-- When new React 19 features (Actions, `use`, `useActionState`) appear in code, verify against the per-hook page on react.dev rather than older blog posts.
-- The React Compiler is stable but opt-in; it is not a default and may not be present in every project.
+- 19.3 (2026-09-09): patch-level; no guidance change. `use()` may be called in conditionals and loops (https://react.dev/reference/react/use); do not branch on the promise's own status before calling it.
+- 19.0 (2024-12-05): Actions, `use`, `useActionState`, `useFormStatus`, `useOptimistic`. Verify against the per-hook page on react.dev, not older blog posts.
+- React Compiler: stable, opt-in, installed per build tool; not present in every project.

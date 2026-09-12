@@ -36,6 +36,7 @@
       "Skill(flow-explore)",
       "Skill(meta-prompt)",
       "Skill(meta-retro)",
+      "Skill(meta-refresh)",
       "Skill(write-commit)",
       "Skill(write-devnote)",
       "Skill(write-explainer)",

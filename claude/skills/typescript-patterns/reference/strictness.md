@@ -19,7 +19,7 @@ When reviewing a TypeScript project's `tsconfig.json`:
 
 - `strict: true` plus the strictness-flag set above. `strict: false` is `failure`; each missing additional strictness flag is `warning`.
 - `target`: matches the runtime. For Node 20+, `es2022` or newer; for browsers, leave the bundler in charge with a sane floor (`es2020` or `es2022`).
-- `module` and `moduleResolution`: `"nodenext"` for both on modern Node. For bundled code, `module: "preserve"` or `"esnext"` paired with `moduleResolution: "bundler"`. Use `"node16"` for libraries publishing dual ESM/CJS. Avoid the legacy `"node"` / `"node10"` on new projects.
+- `module` and `moduleResolution`: `"nodenext"` for both on modern Node. For bundled code, `module: "preserve"` or `"esnext"` paired with `moduleResolution: "bundler"`. Use `"node16"` for libraries publishing dual ESM/CJS. Avoid the legacy `"node"` / `"node10"` on new projects; TypeScript 7.0 removed `node10` and `classic` outright, along with `baseUrl`.
 - `paths` aliases: must match the runtime resolver. A `paths` alias that compiles cleanly but the runtime cannot resolve at execution is a `failure`; bundlers, `tsx`, and runtime path mappers each need their own wiring.
 - `skipLibCheck: true`: commonly enabled. Tradeoff is faster compile vs missing `.d.ts` errors from dependencies. Acceptable in most projects; not a finding on its own.
 - `composite: true` on monorepo packages that participate in project references. Without it, `tsc --build` orchestration falls apart.

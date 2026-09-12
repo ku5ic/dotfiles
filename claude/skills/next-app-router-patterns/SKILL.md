@@ -43,10 +43,8 @@ Default assumption: Next.js 16 (current stable as of writing) with the App Route
 
 ## Version notes
 
-Next.js ships major releases roughly yearly and minor releases monthly. File conventions, cache defaults, and directive names have shifted multiple times:
+Checked: 2026-09-12 against https://nextjs.org/blog and https://nextjs.org/docs/app/api-reference/file-conventions/proxy
 
-- PPR went from preview to stable in 16.
-- `middleware` was renamed to `proxy` in 16.
-- `fetch` default cache behavior changed in 15.
-
-Verify any version-sensitive claim against the current docs at https://nextjs.org/docs and the release entries at https://nextjs.org/blog before relying on it. The Pages Router still exists in 16 but is not covered here.
+- 16.3 (2026-08-03): no guidance change. Proxy runs on Node.js only; a project that needs the Edge runtime keeps `middleware.ts` (proxy docs).
+- 16.0: `middleware` renamed to `proxy` (types `NextMiddleware` -> `NextProxy`, `MiddlewareConfig` -> `ProxyConfig`, `skipMiddlewareUrlNormalize` -> `skipProxyUrlNormalize`); PPR stable and default under Cache Components.
+- 15.0: `fetch()` and Route Handler `GET` no longer cached by default; 15.5 gave the middleware file stable Node.js runtime support.
