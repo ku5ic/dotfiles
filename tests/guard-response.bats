@@ -85,19 +85,26 @@ n_lines() {
   [ "$status" -eq 0 ]
 }
 
-@test "slash-command last user message exits allow regardless of response shape" {
-  append_turns "$(user_turn "/flow-test")" "$(assistant_turn "Certainly, $(n_lines 30 prose)")"
+@test "an ordinary slash command gets the short ceiling, not an exemption" {
+  append_turns "$(user_turn "/flow-test")" "$(assistant_turn "$(n_lines 13 prose)")"
+  run run_guard_response
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"short-tier ceiling is 12"* ]]
+}
+
+@test "a terminal-output command (write-commit) keeps the exemption" {
+  append_turns "$(user_turn "/write-commit")" "$(assistant_turn "$(n_lines 30 prose)")"
   run run_guard_response
   [ "$status" -eq 0 ]
 }
 
-@test "slash-command exemption still fires when the expanded skill body is the later turn (real transcript shape)" {
+@test "the command name itself never lifts the tier (flow-review must not buy the normal ceiling)" {
   # Real shape: the typed command is a plain-string turn carrying the
   # <command-message>/<command-name> tag; Claude Code then injects the
   # skill's own procedure text as a later, array-shaped user turn. last_user
-  # must resolve to the command turn, not the skill body, or the vocabulary
-  # of the skill's own procedure ("review", "report", "audit", "write") gets
-  # evaluated as if the user asked for that.
+  # must resolve to the command turn, not the skill body -- and the command
+  # name's own vocabulary ("review") must not be read as the user asking for
+  # a review, which would lift the ceiling from 12 to 40.
   append_turns \
     "$(user_turn "<command-message>flow-review</command-message>
 <command-name>/flow-review</command-name>" string)" \
@@ -105,9 +112,26 @@ n_lines() {
 
 ## Procedure
 Write the review report and audit every file.")" \
-    "$(assistant_turn "Certainly, $(n_lines 30 prose)")"
+    "$(assistant_turn "$(n_lines 13 prose)")"
+  run run_guard_response
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"short-tier ceiling is 12"* ]]
+}
+
+@test "a write-* command in the wrapper shape keeps the exemption" {
+  append_turns \
+    "$(user_turn "<command-message>write-explainer</command-message>
+<command-name>/write-explainer</command-name>" string)" \
+    "$(assistant_turn "$(n_lines 30 prose)")"
   run run_guard_response
   [ "$status" -eq 0 ]
+}
+
+@test "a banned phrase is still blocked inside an exempt command" {
+  append_turns "$(user_turn "/write-commit")" "$(assistant_turn "Certainly, here is the message.")"
+  run run_guard_response
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"banned AI-tell phrase"* ]]
 }
 
 @test "last_user ignores an isMeta turn that is not the skill-body prefix shape" {
@@ -199,6 +223,22 @@ another prose line"
 
 @test "a per-message 'explain' trigger lifts the ceiling to the normal tier for this reply" {
   append_turns "$(user_turn "explain how this works")" "$(assistant_turn "$(n_lines 20 prose)")"
+  run run_guard_response
+  [ "$status" -eq 0 ]
+}
+
+@test "a trigger word buried mid-sentence does not lift the ceiling" {
+  # The anchored lift is the point: asking "explain X" wants prose, but the
+  # same vocabulary inside an ordinary statement must not buy 40 lines.
+  append_turns "$(user_turn "I fixed the thing you flagged in the review, it works now")" \
+    "$(assistant_turn "$(n_lines 13 prose)")"
+  run run_guard_response
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"short-tier ceiling is 12"* ]]
+}
+
+@test "a polite prefix before the trigger still lifts the ceiling" {
+  append_turns "$(user_turn "can you explain how this works")" "$(assistant_turn "$(n_lines 20 prose)")"
   run run_guard_response
   [ "$status" -eq 0 ]
 }

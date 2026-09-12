@@ -39,7 +39,7 @@ heredoc_body="$(printf '%s\n' "$cmd" | sed -n "/<<-\\{0,1\\}['\"]\\{0,1\\}EOF['\
 if [[ -n "$heredoc_body" ]]; then
   run="$(longest_prose_run "$heredoc_body")"
   if ((run > 4)); then
-    block "commit message has an unchunked wall of text (${run} consecutive prose lines). rules/adhd-output.md rule 8: short paragraphs, no dense blocks." "commit-wall-of-text"
+    block "commit message has an unchunked wall of text (${run} consecutive prose lines). rules/output.md rule 8: short paragraphs, no dense blocks." "commit-wall-of-text"
   fi
 fi
 

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 ## Procedure
 
-0. Resolve external context per `rules/external-context.md`, using the tester agent for lookups.
+0. Resolve external context per `rules/workflow.md`, using the tester agent for lookups.
 
 Delegate the procedure below (steps 1 onward, through Stop) to the tester agent (Agent tool, subagent_type: tester, foreground), passing the resolved arguments from step 0. It executes every step itself and reports results; relay its returned summary.
 

@@ -92,7 +92,7 @@ four_line_prose() {
 }
 
 @test "allow: banned phrase inside a rules/*.md file" {
-  run run_guard_tone '/repo/claude/rules/voice.md' 'Certainly, and Absolutely are banned.'
+  run run_guard_tone '/repo/claude/rules/output.md' 'Certainly, and Absolutely are banned.'
   [ "$status" -eq 0 ]
 }
 

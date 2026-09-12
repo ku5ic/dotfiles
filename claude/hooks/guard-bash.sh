@@ -178,7 +178,7 @@ _is_rc_file() {
 }
 
 # Returns 0 (true) when $1 is a relative write target that would land loose in
-# the repo instead of scratch (rules/scratch-conventions.md). Unresolvable
+# the repo instead of scratch (rules/tooling.md). Unresolvable
 # targets - variables, subshells, quoted strings - return 1: $(scratch-dir.sh)
 # is the sanctioned form and must not trip this.
 _is_loose_write_target() {

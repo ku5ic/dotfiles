@@ -46,9 +46,9 @@ Stack: <line from $HOME/.claude/bin/detect-stack.sh, if applicable>
 - Code snippets use fenced blocks with language tag.
 - No ASCII decoration, no banner comments, no emoji.
 - Use straight quotes, plain ASCII punctuation.
-- File naming and location: per `rules/scratch-conventions.md` - resolve the directory via `scratch-dir.sh`, then name it `<kind>-<target-slug>-<YYYYMMDD-HHMM>.md`.
+- File naming and location: per `rules/tooling.md` - resolve the directory via `scratch-dir.sh`, then name it `<kind>-<target-slug>-<YYYYMMDD-HHMM>.md`.
 - Always print the absolute path at the end of execution so the user can open it.
-- Does not govern `write-*` command output (commit messages, PR descriptions, release notes, stakeholder summaries) - those have their own formats per `rules/output-rules.md`.
+- Does not govern `write-*` command output (commit messages, PR descriptions, release notes, stakeholder summaries) - those have their own formats per `rules/output.md`.
 
 ## Summary line rubric
 

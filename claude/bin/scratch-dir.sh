@@ -2,7 +2,7 @@
 # Resolves the scratch directory for the current context: project-scoped
 # when project-root.sh finds a real anchor (git worktree or stack
 # sentinel), global fallback otherwise. Single source of truth for
-# claude/rules/scratch-conventions.md.
+# claude/rules/tooling.md.
 #
 # project-name.sh's home/root/unknown categories are not a project signal
 # (every directory gets a slug, anchored or not), so this checks

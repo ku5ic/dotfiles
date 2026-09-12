@@ -75,7 +75,7 @@ Structure:
 - Tone: friendly, short, peer-to-peer - the PR author replying to a colleague, not a report. No "Thank you for the feedback", no groveling, no corporate hedging.
 - Disagree plainly when the code contradicts the reviewer. State the evidence, don't soften it.
 - Never post anything to GitHub. This drafts a file only - posting the replies is a separate, explicit action the user takes themselves.
-- Follows `rules/adhd-output.md`, no exception: each answer short and chunked, never a wall-of-text paragraph per comment.
+- Follows `rules/output.md`, no exception: each answer short and chunked, never a wall-of-text paragraph per comment.
 - No AI language: no "it's worth noting", no sycophantic openers/closers, no em dashes or smart quotes.
 - If a comment's thread already has a reply from the current user (step 9), it's excluded silently from the per-comment sections, but counted in the round-summary line at the top.
 - If zero comments remain after scoping and filtering, say so and stop - do not write an empty file.

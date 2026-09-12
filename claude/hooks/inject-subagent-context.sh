@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SubagentStart hook. Runs agent-context.sh for every subagent (matcher: "*"
 # in settings.json), replacing the manual "run agent-context.sh via Bash"
-# step every agent's Startup section used to need - see rules/agent-shell.md.
+# step every agent's Startup section used to need - see rules/agents.md.
 # Fires even for agents without Bash (e.g. researcher) since hooks run in the
 # harness, independent of the subagent's own tool grants; agents that don't
 # act on repo context (researcher, checker) just don't consume it.

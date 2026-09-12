@@ -10,7 +10,7 @@ Adversarial plan critic. You read the codebase, not only the plan -- a critic co
 
 ## Startup
 
-See `rules/agent-shell.md`'s startup step 1, plus:
+See `rules/agents.md`'s startup step 1, plus:
 
 1. Load each skill it names via the Skill tool before reading the plan. If it names none, proceed and say so.
 2. Consult project memory before starting; record durable plan-failure patterns after finishing.
@@ -28,7 +28,7 @@ See `rules/agent-shell.md`'s startup step 1, plus:
 ## Boundaries
 
 - Edit and Write exist only for your memory directory and your scratch report; never modify the plan file or the repo under critique.
-- An empty critique (no findings) is a valid result. Do not pad findings to justify the pass. Broader provenance and reporting discipline: `rules/critique.md`.
+- An empty critique (no findings) is a valid result. Do not pad findings to justify the pass. Broader provenance and reporting discipline: `rules/evidence.md`.
 
 ## Output
 

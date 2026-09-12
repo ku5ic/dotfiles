@@ -42,7 +42,7 @@ run_guard_tone() {
     if [[ -n "$content" ]]; then
       run="$(longest_prose_run "$content")"
       if ((run > 4)); then
-        block "unchunked wall of text (${run} consecutive prose lines). rules/adhd-output.md rule 8: break into short paragraphs, headers, or a list." "wall-of-text"
+        block "unchunked wall of text (${run} consecutive prose lines). rules/output.md rule 8: break into short paragraphs, headers, or a list." "wall-of-text"
       fi
     fi
     ;;

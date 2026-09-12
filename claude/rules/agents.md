@@ -1,6 +1,6 @@
 # Agents
 
-Elaboration on `CLAUDE.md`'s `## Agents` section.
+Subagent capability shells live under `$HOME/.claude/agents/`. The canonical inventory is `/agents` output, also auto-injected via the Agent tool's system-reminder each session.
 
 ## Model and effort pins
 
@@ -40,7 +40,7 @@ None of the agents under `claude/agents/` grant the `Agent` tool today, so this 
 
 ## Two operational facts
 
-1. Agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the main session's `SessionStart` hook injection (`inject-context.sh`) - instead every subagent gets the same content via a `SubagentStart` hook (`inject-subagent-context.sh`, matcher `*`), per `rules/agent-shell.md`. `guard-skills` is the enforcement floor for reading or editing agents either way.
+1. Agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the main session's `SessionStart` hook injection (`inject-context.sh`) - instead every subagent gets the same content via a `SubagentStart` hook (`inject-subagent-context.sh`, matcher `*`), per the agent shell below. `guard-skills` is the enforcement floor for reading or editing agents either way.
 2. Forked skills (`context: fork`) run their whole body in a subagent; only `flow-checks` names one via `agent: <name>`, and the rest fork to carry a `model: haiku` pin. Most agent work instead comes from an inline skill body dispatching via the Agent tool, including `flow-plan`, `flow-explore`, and `flow-implement` - all inline so their phase-boundary stops and AskUserQuestion steps stay in the main conversation.
 
 ## Forked decision protocol
@@ -57,3 +57,11 @@ An agent's report describes what it intended to do, not necessarily what it did 
 - Claimed findings: spot-check at least one cited `file:line` directly.
 
 This is a cheap check against a real failure mode, not general distrust of every agent result - reserve it for claims you are about to build on (commit, report to the user, or hand to another agent), not every intermediate status update.
+
+## Agent shell boilerplate
+
+Every agent definition assumes these three, so none of them needs restating in an agent file:
+
+- **Startup**: repo context and the `<required-skills>`/`<suggested-skills>` blocks arrive automatically via the `SubagentStart` hook (`inject-subagent-context.sh`, matcher `*`). No manual `agent-context.sh` step, including for agents without Bash - hooks run in the harness, independent of the subagent's tool grants. An agent whose job needs no repo context (`checker`, `researcher`) ignores the block.
+- **Read-only boundary**: Edit and Write exist only for memory and a scratch report. Never touch project source; state fixes as instructions.
+- **Output**: follow the invoking skill's format and path. Long output goes to a named scratch path plus a short digest.

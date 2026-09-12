@@ -8,6 +8,10 @@
 # changing it. Long has no ceiling. Tier is derived from the transcript every
 # run - no state file.
 #
+# Slash commands are NOT exempt from the ceiling. Only write-commit,
+# write-devnote, and write-explainer are, because terminal output is their
+# deliverable; every other skill writes to a file and summarizes.
+#
 # exit 0 allows the response; exit 2 blocks (stderr fed back for a retry).
 # Inert unless CLAUDE_GUARD_RESPONSE=1 (set in settings.json). Loop safety:
 # stop_hook_active is true on the retry after a block, so the second pass
@@ -37,13 +41,28 @@ last_user="$(jq -rs '
    | select(length > 0)
    | select(startswith("Base directory for this skill:") | not)] | last // ""' "$transcript" 2>/dev/null || true)"
 
-# Slash commands define their own output shape; no ceiling. Covers a bare
-# "/command" prompt and the "<command-message>...<command-name>..." wrapper
-# Claude Code emits - anchored to message start so a reply merely quoting
-# the tag isn't exempted.
-if [[ "$last_user" == /* || "$last_user" == '<command-message>'* || "$last_user" == '<command-name>'* ]]; then
-  exit 0
+# Slash-command name, if this turn is one. Covers a bare "/command" prompt and
+# the "<command-message>...<command-name>..." wrapper Claude Code emits -
+# anchored to message start so a reply merely quoting the tag isn't matched.
+cmd_name=""
+if [[ "$last_user" == /* ]]; then
+  cmd_name="${last_user#/}"
+  cmd_name="${cmd_name%%[[:space:]]*}"
+elif [[ "$last_user" == '<command-message>'* || "$last_user" == '<command-name>'* ]]; then
+  cmd_name="$(printf '%s' "$last_user" | sed -n 's|.*<command-name>/\{0,1\}\([^<]*\)</command-name>.*|\1|p' | head -1)"
+  [[ -z "$cmd_name" ]] &&
+    cmd_name="$(printf '%s' "$last_user" | sed -n 's|.*<command-message>\([^<]*\)</command-message>.*|\1|p' | head -1)"
 fi
+
+# Only the commands whose deliverable IS terminal output are exempt from the
+# ceiling (rules/output.md names these three). Every other skill writes
+# its deliverable to a file and reports a summary, so the ceiling applies.
+# This exempts length only - the banned-tell check below still runs, since a
+# long deliverable is no licence for an AI-tell opener.
+no_ceiling=0
+case "$cmd_name" in
+write-commit | write-devnote | write-explainer) no_ceiling=1 ;;
+esac
 
 # Sticky tier: a message only sets the tier when it IS a mode-switch command
 # (the whole trimmed message), not when it merely mentions one - otherwise
@@ -63,9 +82,21 @@ done < <(jq -rs '
   | select(length > 0) | gsub("\n"; " ")' "$transcript" 2>/dev/null)
 
 # Per-message lift, this reply only; a trigger never downgrades a sticky tier.
-if printf '%s' "$last_user" | grep -qiE '(--full|\bin detail\b|walk me through|long version)'; then
+# A slash command lifts nothing: its own name ("/flow-review", "/write-commit")
+# would otherwise match the trigger vocabulary and buy a ceiling the user never
+# asked for.
+trigger_text="$last_user"
+[[ -n "$cmd_name" ]] && trigger_text=""
+
+# The normal-tier lift is anchored to the start of the message (bare, or after
+# a short polite prefix): the user asking "explain X" wants prose, whereas the
+# same word buried in "I fixed the thing you flagged in the review" does not.
+# Long-tier triggers stay unanchored - "--full" and "long version" are explicit
+# enough that an incidental match is not a real risk.
+if printf '%s' "$trigger_text" | grep -qiE '(--full|\bin detail\b|walk me through|long version)'; then
   tier="long"
-elif printf '%s' "$last_user" | grep -qiE '(\bexplain\b|\bwhy\b|how come|tradeoffs?|\breport\b|\breview\b|\baudit\b|\bwrite\b)'; then
+elif printf '%s' "$trigger_text" |
+  grep -qiE '^[[:space:]]*((can|could|would)[[:space:]]+you[[:space:]]+)?(please[[:space:]]+)?(explain|why|how come|tradeoffs?|report|review|audit|write)\b'; then
   [[ "$tier" == "short" ]] && tier="normal"
 fi
 
@@ -82,7 +113,8 @@ if printf '%s' "$last_assistant" | grep -qiE "$BANNED_TELL_REGEX"; then
   exit 2
 fi
 
-# Long tier: tells already checked above, no line ceiling.
+# Tells are checked above; past this point only the line ceiling remains.
+((no_ceiling)) && exit 0
 [[ "$tier" == "long" ]] && exit 0
 
 # Ceilings are looser than CLAUDE.md's instructions on purpose: the hook

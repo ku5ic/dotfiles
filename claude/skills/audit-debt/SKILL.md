@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 ## Procedure
 
-0. Resolve external context per `rules/external-context.md`, using the debt-auditor agent for lookups.
+0. Resolve external context per `rules/workflow.md`, using the debt-auditor agent for lookups.
 
 Delegate the procedure below (steps 1 onward, through Output file) to the debt-auditor agent (Agent tool, subagent_type: debt-auditor, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
 
@@ -53,4 +53,4 @@ Sort findings by severity, then by effort (smallest first within each severity) 
 
 ## Rules
 
-- Findings follow `rules/critique.md`: provenance-labeled, report what holds too.
+- Findings follow `rules/evidence.md`: provenance-labeled, report what holds too.

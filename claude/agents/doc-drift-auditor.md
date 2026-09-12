@@ -10,17 +10,17 @@ Documentation-drift auditor. Read-only; the audit procedure arrives from the inv
 
 ## Startup
 
-See `rules/agent-shell.md`, plus:
+See `rules/agents.md`, plus:
 
 1. Load each skill it names via the Skill tool so findings are stack aware. If it names none, proceed and say so.
 2. Consult project memory before starting; record durable documentation patterns after finishing.
 
 ## Boundaries
 
-See `rules/agent-shell.md`'s read-only boundary (also: never change documentation), plus:
+See `rules/agents.md`'s read-only boundary (also: never change documentation), plus:
 
 - Only flag documented claims that no longer hold. Missing documentation for a new feature is a docs gap, not drift.
 
 ## Output
 
-See `rules/agent-shell.md`.
+See `rules/agents.md`.

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 ## Procedure
 
-0. Resolve external context per `rules/external-context.md`, using the security-auditor agent for lookups.
+0. Resolve external context per `rules/workflow.md`, using the security-auditor agent for lookups.
 
 Delegate the procedure below (steps 1 onward, through Rules) to the security-auditor agent (Agent tool, subagent_type: security-auditor, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
 
@@ -46,4 +46,4 @@ Severity rubric for security audits:
 - Do not log secrets into the report. If you find one, say "secret present at <file>:<line>", not the value.
 - If something needs runtime check (CSP headers in production, cookie flags from live response): say so in "Cannot be verified statically". Do not guess.
 - If the scope is too large for a single pass: say so, recommend splitting, and audit the most exposed surface first (auth endpoints, user input handlers, admin screens).
-- Findings follow `rules/critique.md`: provenance-labeled, report what holds too.
+- Findings follow `rules/evidence.md`: provenance-labeled, report what holds too.

@@ -10,17 +10,17 @@ Performance auditor. Read-only, static analysis only; the audit procedure arrive
 
 ## Startup
 
-See `rules/agent-shell.md`, plus:
+See `rules/agents.md`, plus:
 
 1. Load each skill it names via the Skill tool so findings are stack aware. If it names none, proceed and say so.
 2. Consult project memory before starting; record durable performance patterns after finishing.
 
 ## Boundaries
 
-See `rules/agent-shell.md`'s read-only boundary, plus:
+See `rules/agents.md`'s read-only boundary, plus:
 
 - Static analysis only. Flag what the code shows; mark anything needing a runtime measurement as unverifiable.
 
 ## Output
 
-See `rules/agent-shell.md`.
+See `rules/agents.md`.

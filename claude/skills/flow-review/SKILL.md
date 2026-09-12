@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 ## Procedure
 
-0. Resolve external context per `rules/external-context.md`, using the reviewer agent for lookups.
+0. Resolve external context per `rules/workflow.md`, using the reviewer agent for lookups.
 
 Delegate the procedure below (steps 1 onward, through Rules) to the reviewer agent (Agent tool, subagent_type: reviewer, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
 
@@ -85,4 +85,4 @@ Severity rubric from `rules/markdown-report.md`. Skip sections with no findings.
 - Not every file needs a finding. An empty review is a valid result.
 - Do not rewrite the code in the review. State the fix as instruction or small snippet.
 - Do not flag personal style (semicolons, quote style, etc.) unless it violates the project's lint config.
-- Findings and the overall verdict follow `rules/critique.md`: provenance-labeled, report what holds too.
+- Findings and the overall verdict follow `rules/evidence.md`: provenance-labeled, report what holds too.

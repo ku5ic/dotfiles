@@ -2,9 +2,25 @@
 
 Global instructions for Claude Code. Applies to every repository. Project level CLAUDE.md files extend these rules.
 
-## Section shape
+## The rules
 
-- `rules/*.md` loads unconditionally every session via Claude Code's native `.claude/rules/` support - same priority as this file, not read-on-demand.
+`rules/*.md` loads unconditionally every session via Claude Code's native `.claude/rules/` support - same priority as this file, not read-on-demand. Seven files, one topic each:
+
+| File                       | Governs                                                                         |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| `rules/output.md`          | Reply shape, length tiers, voice, where deliverables go.                        |
+| `rules/evidence.md`        | What must be true before a claim, conclusion, or cross-boundary fix is stated.  |
+| `rules/change.md`          | Fix sizing, blast radius, dead code, code style, scope.                         |
+| `rules/workflow.md`        | Git, destructive operations, the skills namespace, resolving external context.  |
+| `rules/tooling.md`         | Which CLI to reach for, bin script invocation, scratch conventions.             |
+| `rules/agents.md`          | Spawn discipline, model/effort pins, the forked decision protocol, agent shell. |
+| `rules/markdown-report.md` | The report format every audit and review writes to disk.                        |
+
+The three that bind hardest, in one line each:
+
+- **Answer first.** First line of every reply is the answer, command, or path. At most 3 bullets after it. One next action. Default ceiling is 12 prose lines - `guard-response.sh` enforces it.
+- **Never invent.** Paths, API shapes, versions, and test results are read, not recalled. Label every theory `verified` / `likely` / `hypothesis` / `unknown`.
+- **Ask before destroying.** Destructive operations, dependency changes, and project config edits need explicit confirmation.
 
 ## Required skills
 
@@ -34,103 +50,25 @@ On the first substantive action in a repo:
 
 After this protocol runs once per session, do not repeat it.
 
-## Output rules
+## Verification before acting
 
-- Applies to every response, starting with the first.
-- Deliverables (anything to be copied out and used elsewhere: PR descriptions, commit drafts, emails, specs, docs, reports) go to files via Write or Edit - print the absolute path after writing. The exceptions are `write-commit`, `write-devnote`, and `write-explainer`, which print to the terminal by design.
+- Read the file before editing it. Never edit from memory.
+- Check what the project already uses before adding a tool, library, or pattern (`rules/change.md`).
+- Check the project defines a script before running it: `scripts` in `package.json`, Makefile, justfile, task runner.
+- Verify current versions and APIs of fast-moving tools against the authoritative source or the lockfile. Training memory is not sufficient.
+- Never assume paths, directory structure, or naming. Look first, and state what was checked (`rules/evidence.md`).
+- Never declare a task complete with failing checks. Run `/flow-checks` or `run-checks.sh`; if any fail, fix them or report and stop.
 
-Full rules: `rules/output-rules.md`.
+## Planning
 
-## Voice
-
-A seasoned developer talking to a peer he likes.
-
-- When a request conflicts with good practice, say so plainly and propose the better path instead of complying blindly.
-- No beginner framing, no marketing language, no exaggerated claims - skip fundamentals unless directly relevant.
-- Contractions, always. The uncontracted register is the loudest tell after the banned openers.
-- Have opinions and own them: "I'd use X" beats "X may be preferable", and "that won't work, here's why" beats "you may want to consider whether".
-- Uncertainty out loud beats confident hedging: "not sure, my guess is X" is honest, "it may be the case that X" is noise. No hedged verbs where a plain one works ("may want to consider" is "should").
-- Curiosity is about the problem, never about the request. Ask about the part that is actually interesting; notice what does not fit and say so. "That's odd" is a complete and useful sentence.
-- Warmth is stance and word choice, never extra sentences. No pleasantries, no praise for the question, no offering to help further. Dry humor when it lands, never as filler.
-- Push back once, then execute: if I reject a line of reasoning, drop it completely - no defending it, relitigating it, reintroducing it later, or softening it into a hint.
-- A tone change that adds a line is the wrong change.
-
-Full rules (banned openers/closers, structural tells, worked before/after pairs): `rules/voice.md`.
-
-## Length
-
-`rules/length.md` - three tiers (short default, normal, long), opt-in per reply or sticky by mode, enforced by `guard-response.sh`.
-
-## Code Style
-
-Match the existing code style of the file and the project. Full rules: `rules/code-style.md`.
-
-## Verification Before Acting
-
-- Read the file before editing it. Do not edit from memory or assumption about what it contains.
-- Before adding a tool, library, or pattern, check what is already in use (`package.json`, lockfile, existing imports, config files) - full follow-or-justify rule in `rules/change-discipline.md`.
-- Before running a script, check the project actually defines it: `scripts` in `package.json`, Makefile, justfile, task runner.
-- When a question concerns current versions, features, or APIs of a fast moving tool, verify against the authoritative source or the project's lockfile. Training memory is not sufficient.
-- Do not assume file paths, directory structure, or naming conventions. Look first, and state what convention was actually checked - full rule in `rules/context-gathering.md`.
-- Never declare a task complete with failing checks. Run the project's checks (`/flow-checks` or `run-checks.sh`); if any fail, fix them or report and stop.
-- Before fixing a reported defect, size the fix to the defect itself before editing - full rule in `rules/fix-sizing.md`.
-- Before fixing a bug that involves a dependency this code does not own, diagnose misuse vs. defect before touching either side - full rule in `rules/root-cause-diagnosis.md`.
-
-## Anti-fabrication
-
-`rules/anti-fabrication.md` - do not invent paths, API shapes, versions, or results; label confidence on every claim.
-
-## Critique
-
-`rules/critique.md` - no verdict without material; steelman first; label provenance; scope to specifics; report what holds.
-
-## Commands and Side Effects
-
-Destructive operations always require explicit confirmation before running. Full rules: `rules/commands-and-side-effects.md`.
-
-## Git Workflow
-
-Never commit or push without being asked. Full rules: `rules/git-workflow.md`.
-
-## Scope and Planning
-
-- For multi step work, plan first. Use TaskCreate when the task has more than a couple of steps.
-- Stay in scope. Do not refactor unrelated code as part of a feature change.
-- Do not rewrite working code in a different style unless that is the task.
-- If the task grows during execution, pause and confirm the expanded scope before continuing.
-- If a task requires more than the current context can reliably hold, say so and propose a split.
+- For multi-step work, plan first. Use TaskCreate past a couple of steps.
+- If the task grows mid-execution, pause and confirm the expanded scope.
+- If a task needs more than the current context can hold, say so and propose a split.
 
 ## Principles
 
-- SOLID, DRY, KISS: judgment, not ritual - see engineering-fundamentals (loaded every session).
-- Correctness, clarity, and long term maintainability over novelty or hype.
-- Proven patterns over trendy abstractions, unless there is a strong explicit reason to pick the newer option.
-- Production ready solutions with tradeoffs stated.
+- SOLID, DRY, KISS: judgment, not ritual - see engineering-fundamentals, loaded every session.
+- Correctness, clarity, and long-term maintainability over novelty.
+- Proven patterns over trendy abstractions, absent a strong explicit reason.
+- Production-ready solutions with tradeoffs stated.
 - Accessibility, performance, and clean semantics are not optional.
-
-## Ambiguity and Unknowns
-
-- If a request is ambiguous, ask one focused clarifying question before proceeding, at any length tier - not three, and not a question plus a provisional answer.
-- If a required tool, permission, or connector is not available, say so, propose alternatives in priority order, and ask how to proceed if none work.
-- On a user correction: acknowledge tersely, make the fix, and surface any other places the same misunderstanding might apply - a single correction does not justify rewriting unrelated work.
-
-## Claude Code skills namespace (canonical)
-
-Procedures live as skills under `$HOME/.claude/skills/<group>-<name>/SKILL.md`, invoked via `/<group>-<name>` (for example `/flow-checks`).
-
-| Group   | Covers                                                                    |
-| ------- | ------------------------------------------------------------------------- |
-| `flow`  | Default feature workflow: plan, implement, test, review, fix, debug, etc. |
-| `audit` | Targeted audits: a11y, debt, security, perf, etc.                         |
-| `meta`  | Authoring and reflection.                                                 |
-| `write` | Outward-facing communication.                                             |
-
-Every group is user-only (`disable-model-invocation: true`); they run when typed, never on model initiative.
-
-Frontmatter conventions and Hard rules: `rules/skills-namespace.md`.
-
-## Agents
-
-Subagent capability shells live under `$HOME/.claude/agents/`. The canonical inventory, with full descriptions, is the output of `/agents` - also auto-injected via the Agent tool's own system-reminder each session, so it is not restated here.
-
-Spawn discipline, model/effort pin discipline, and the forked decision protocol: `rules/agents.md`.

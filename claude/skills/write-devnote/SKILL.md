@@ -21,7 +21,7 @@ context: fork
 
 ## Output
 
-Plain language, developer to developer - assume the reader is a peer engineer who doesn't need the mechanism re-explained, just the reasoning. No restating the diff, no hedging, no "Summary:" preamble. Print directly to the terminal, not a file. Follows `rules/adhd-output.md` in full: a single decision is a few plain sentences (nothing to chunk), more than one decision gets a plain bullet per decision so they don't run together. No bold lead-in labels ("**Option A**:") - this prints as a short terminal message, not a scanned file, and a bold prefix there reads as an AI tell.
+Plain language, developer to developer - assume the reader is a peer engineer who doesn't need the mechanism re-explained, just the reasoning. No restating the diff, no hedging, no "Summary:" preamble. Print directly to the terminal, not a file. Follows `rules/output.md` in full: a single decision is a few plain sentences (nothing to chunk), more than one decision gets a plain bullet per decision so they don't run together. No bold lead-in labels ("**Option A**:") - this prints as a short terminal message, not a scanned file, and a bold prefix there reads as an AI tell.
 
 ## Rules
 

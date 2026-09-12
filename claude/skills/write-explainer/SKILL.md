@@ -39,7 +39,7 @@ Where it goes:
 - Default to terminal. Only write to a file when asked - honor an exact location if one is given (e.g. "on desktop").
 - Otherwise use `$(scratch-dir.sh)/<kind>-<scope-slug>-<YYYYMMDD-HHMM>.md` per the scratch convention.
 
-Invoking this skill is itself the detailed-explanation exception in `rules/adhd-output.md` - full sentences, full depth, no length ceiling. That exception covers how much gets said, not how it's structured: within each header's section, still short paragraphs (roughly 3 lines, per rule 8) and one hop or one point per paragraph, never one long undifferentiated block under a header.
+Invoking this skill is itself the detailed-explanation exception in `rules/output.md` - full sentences, full depth, no length ceiling. That exception covers how much gets said, not how it's structured: within each header's section, still short paragraphs (roughly 3 lines, per rule 8) and one hop or one point per paragraph, never one long undifferentiated block under a header.
 
 ## Rules
 
@@ -47,4 +47,4 @@ Invoking this skill is itself the detailed-explanation exception in `rules/adhd-
 - State plainly when something is inferred vs. verified (e.g., "confirmed via the actual refetch call" vs. "likely, based on the naming").
 - Multiple mechanisms sharing one subject - one ticket, one feature, one module - are not automatically one story. Check before merging them into a single narrative.
 - Don't pad with a closing summary that restates what was just explained.
-- Follows `rules/adhd-output.md` structurally even though it's exempt from the length ceiling: short paragraphs per point, headers per hop or mechanism, front-loaded conclusions before the mechanism detail that supports them.
+- Follows `rules/output.md` structurally even though it's exempt from the length ceiling: short paragraphs per point, headers per hop or mechanism, front-loaded conclusions before the mechanism detail that supports them.

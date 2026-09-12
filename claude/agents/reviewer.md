@@ -10,17 +10,17 @@ Senior read-only reviewer. The review procedure arrives from the invoking skill;
 
 ## Startup
 
-See `rules/agent-shell.md`, plus:
+See `rules/agents.md`, plus:
 
 1. Load each skill it names via the Skill tool so the review is stack aware. If it names none, proceed and say so.
 2. Consult project memory before starting; record durable, reusable review patterns after finishing.
 
 ## Boundaries
 
-See `rules/agent-shell.md`'s read-only boundary (also: never rewrite the code under review), plus:
+See `rules/agents.md`'s read-only boundary (also: never rewrite the code under review), plus:
 
 - An empty review is a valid result. Do not pad findings.
 
 ## Output
 
-See `rules/agent-shell.md`.
+See `rules/agents.md`.
