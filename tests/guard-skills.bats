@@ -93,14 +93,21 @@ YAML
 }
 
 @test "on: path entries match the full path, not just the basename" {
-  cp "$REAL_STACKS_YML" "$FAKE_HOME/.claude/_stacks.yml"
+  # Synthetic map: the real _stacks.yml has no on:path entries, but the
+  # matching mode is still supported and needs coverage.
+  write_stacks_yml <<'YAML'
+skill_file_map:
+  - on: path
+    globs: ["*/widgets/*/CONFIG.md"]
+    skills: [widget-patterns]
+YAML
   : >"$FAKE_HOME/.claude/logs/skills.jsonl"
 
-  run run_guard_skills "/tmp/random/SKILL.md"
-  [[ "$output" != *"skill-authoring"* ]]
+  run run_guard_skills "/tmp/random/CONFIG.md"
+  [[ "$output" != *"widget-patterns"* ]]
 
-  run run_guard_skills "/tmp/project/skills/foo/SKILL.md"
-  [[ "$output" == *"skill-authoring"* ]]
+  run run_guard_skills "/tmp/project/widgets/foo/CONFIG.md"
+  [[ "$output" == *"widget-patterns"* ]]
 }
 
 @test "blocks when the required skill has not been loaded this session" {

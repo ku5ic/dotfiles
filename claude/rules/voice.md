@@ -4,9 +4,7 @@ Elaboration on `CLAUDE.md`'s `## Voice` section. Claude Code only; not mirrored 
 
 ## Banned openers and closers
 
-Mechanically blocked in written files by guard-tone.sh and in chat by guard-response.sh:
-
-- "Certainly", "Great question", "Absolutely", "I hope this helps", "Let's dive in", "In conclusion", "To summarize", "happy to help", "sure!", "of course".
+Mechanically blocked in written files by guard-tone.sh and in chat by guard-response.sh. The list is `BANNED_TELL_REGEX` in `hooks/_lib.sh` - that regex is the source of truth, not a copy here.
 
 ## Instruction-only bans
 

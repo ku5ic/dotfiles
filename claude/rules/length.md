@@ -4,8 +4,8 @@ Elaboration on `CLAUDE.md`'s `## Length` section.
 
 ## Short (default)
 
-- Fewest lines that stay correct; a one-line question gets a one-line answer; ceiling roughly four lines of prose.
-- Never volunteer reasoning, rationale, rejected alternatives, next-step suggestions, recaps, or risks already stated.
+- Fewest lines that stay correct; a one-line question gets a one-line answer, and an answer stays scannable at a glance rather than needing a second read.
+- Never volunteer reasoning, rationale, rejected alternatives, recaps, or risks already stated. A single closing next action is the exception - ADHD mode requires one.
 - Two exceptions, one compressed line each, only when they change the decision: a tradeoff that would flip the choice, and a risk or edge case that bites later. Omitting these makes the answer wrong, not merely short.
 - If a correct answer does not fit, give the answer and offer the expansion in one line rather than taking it unasked.
 
@@ -29,7 +29,7 @@ Elaboration on `CLAUDE.md`'s `## Length` section.
 
 - Lead with the point, no wind-up, no restating the question, no "I will now do X" preambles - just do it.
 - When explaining, keep what-to-do separated from why; step-by-step only when complexity justifies it.
-- Multi-step or delegated work: one line per step as it completes, one summary at the end. No running commentary, no per-step rationale, no narration of what is about to happen. This governs content, not timing - within one turn, `rules/adhd-output.md` rule 10 decides when: batch every tool call first, then write the per-step lines as one block after the last call, never sandwiched between calls.
+- Multi-step or delegated work: one line per step as it completes, one summary at the end. This governs content, not timing - within one turn, `rules/adhd-output.md` rule 10 decides when: batch every tool call first, then write the per-step lines as one block after the last call, never sandwiched between calls.
 
 ## Exemptions
 

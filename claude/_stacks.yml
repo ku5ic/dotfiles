@@ -49,10 +49,10 @@
 #                     keep this list minimal; every entry slows the walk
 
 # Skills loaded for every project regardless of detected stack.
-# Add skills here that should always be available (e.g. output format skills,
-# universal engineering meta-skills). Keep this list short.
-global_skills:
-  - engineering-fundamentals
+# Empty by design: an always-blocking skill is paid for before the task is
+# known. engineering-fundamentals is now reached two ways - the flow-*/audit-*
+# skills cite it directly, and skill_file_map loads it on any source edit.
+global_skills: []
 
 # File-to-skills map consumed by hooks/guard-skills.sh.
 # Evaluated against every Edit/Write/MultiEdit/Read target; matching is
@@ -64,6 +64,9 @@ global_skills:
 # on: path      -> match against the full file path
 # globs: [...]  -> shell globs, tested with bash [[ $target == $glob ]]
 skill_file_map:
+  - on: basename
+    globs: ["*.ts", "*.tsx", "*.js", "*.jsx", "*.mjs", "*.cjs", "*.py", "*.rb", "*.go", "*.rs", "*.java", "*.sh", "*.vue"]
+    skills: [engineering-fundamentals]
   - on: basename
     globs: ["*.test.*", "*.spec.*", "test_*.py", "*_test.py"]
     skills: [test-patterns]
@@ -103,9 +106,6 @@ skill_file_map:
   - on: basename
     globs: ["manage.py"]
     skills: [django-patterns]
-  - on: path
-    globs: ["*/skills/*/SKILL.md"]
-    skills: [skill-authoring]
 
 # Action-conditioned trigger phrases for every skill any stack/extra maps to.
 # Consumed by hooks/inject-context.sh to build the <suggested-skills> block.

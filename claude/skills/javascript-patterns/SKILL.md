@@ -1,6 +1,6 @@
 ---
 name: javascript-patterns
-description: JavaScript language patterns, modern syntax, async handling, module systems (ESM/CJS), error handling, and review checklist for JavaScript code without TypeScript. Use whenever the project contains `.js`, `.mjs`, `.cjs`, or `.jsx` files (and no `tsconfig.json`), `package.json` without TypeScript dependencies, OR the user asks about JavaScript, JS, ECMAScript, async/await, promises, modules, ESM, CommonJS, package.json, npm, pnpm, yarn, bun, or any work in JavaScript code without explicit TypeScript usage, even if "JavaScript" is not mentioned by name.
+description: JavaScript language patterns - modern syntax, async handling, ESM/CJS module systems, error handling, and review checklist, for JavaScript without TypeScript. Use whenever the project contains `.js`/`.mjs`/`.cjs`/`.jsx` files and no `tsconfig.json`, OR the user asks about JavaScript, its async model, its module system, or its package tooling, even if "JavaScript" is not mentioned by name.
 ---
 
 # JavaScript patterns

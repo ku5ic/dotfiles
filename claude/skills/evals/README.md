@@ -40,7 +40,7 @@ The runner prints each eval's prompt, fixture paths, and expected output. Workfl
 
 1. Copy the prompt into Claude Code or claude.ai with the relevant skill loaded.
 2. Compare the produced output against the `expected_output` description.
-3. Record pass / fail / partial in `$(scratch-dir.sh)/eval-<skill-name>-<YYYYMMDD-HHMM>.md`. Use the markdown-report skill format.
+3. Record pass / fail / partial in `$(scratch-dir.sh)/eval-<skill-name>-<YYYYMMDD-HHMM>.md`. Use the `rules/markdown-report.md` format.
 
 ## Iteration ceiling
 

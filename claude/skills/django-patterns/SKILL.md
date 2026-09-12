@@ -1,6 +1,6 @@
 ---
 name: django-patterns
-description: Django patterns, anti-patterns, ORM gotchas, view design, migrations, settings, and review checklist for Django backend work. Use whenever the project contains `manage.py`, `settings.py`, `apps.py`, OR `pyproject.toml`/`requirements.txt`/`Pipfile` with `django` (or `Django`) listed as a dependency, OR the user asks about Django, Python web backend, ORM queries, models, views, forms, templates, migrations, admin, signals, middleware, or any work touching `.py` files in a Django app structure, even if Django is not mentioned by name.
+description: Django patterns - ORM gotchas, view design, migrations, settings, anti-patterns, and review checklist for Django backend work. Use whenever the project contains `manage.py`, `settings.py`, `apps.py`, or `django` in a Python manifest, OR the user asks about Django, its ORM, or any part of its request/model/template stack, even if Django is not mentioned by name.
 ---
 
 # Django patterns

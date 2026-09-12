@@ -1,6 +1,6 @@
 ---
 name: vue-patterns
-description: Vue 3 Composition API patterns, reactivity, single-file components, anti-patterns, and review checklist. Use whenever the project contains `.vue` files, `vue` in `package.json` dependencies, `vite.config.*` with the Vue plugin, OR the user asks about Vue, Vue 3, Composition API, ref, reactive, computed, watch, watchEffect, defineProps, defineEmits, defineSlots, script setup, single-file components, Pinia, even if Vue is not mentioned by name.
+description: Vue 3 patterns - the Composition API, reactivity, single-file components, anti-patterns, and review checklist. Use whenever the project contains `.vue` files, `vue` in `package.json`, or a `vite.config.*` with the Vue plugin, OR the user asks about Vue, its reactivity primitives, `script setup`, or Pinia, even if Vue is not mentioned by name.
 ---
 
 # Vue patterns

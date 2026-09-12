@@ -1,6 +1,6 @@
 ---
 name: next-app-router-patterns
-description: Next.js App Router patterns covering server/client boundary, data fetching and caching, server actions, streaming, parallel and intercepting routes, edge vs node runtime, and review checklist. Use whenever the project contains `next.config.js`, `next.config.mjs`, `next.config.ts`, an `app/` directory with `page.tsx`/`page.jsx`/`layout.tsx`/`layout.jsx`/`route.ts`, OR `next` in `package.json` dependencies, OR the user asks about Next.js, App Router, server components, client components, server actions, route handlers, parallel routes, intercepting routes, streaming, generateMetadata, generateStaticParams, even if Next.js is not mentioned by name.
+description: Next.js App Router patterns - server/client boundary, data fetching and caching, server actions, streaming, parallel and intercepting routes, edge vs node runtime, and review checklist. Use whenever the project contains a `next.config.*`, an `app/` directory with `page`/`layout`/`route` files, or `next` in `package.json`, OR the user asks about the App Router, server and client components, server actions, or route handlers, even if Next.js is not mentioned by name.
 ---
 
 # Next.js App Router patterns

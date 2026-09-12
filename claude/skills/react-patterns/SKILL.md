@@ -1,6 +1,6 @@
 ---
 name: react-patterns
-description: React patterns, anti-patterns, hooks rules, performance, component design, and review checklist for React core (independent of any specific meta-framework). Use whenever the project contains `.jsx` or `.tsx` files, `react` in `package.json` dependencies, OR the user asks about React, hooks, components, JSX, TSX, useState, useEffect, useMemo, useCallback, rendering, hydration, React performance, or any React component work, even if React is not mentioned by name.
+description: React core patterns - hooks rules, component design, rendering performance, anti-patterns, and review checklist, independent of any meta-framework. Use whenever the project contains `.jsx`/`.tsx` files or `react` in `package.json`, OR the user asks about React, its hooks, component structure, or rendering and hydration behavior, even if React is not mentioned by name.
 ---
 
 # React patterns

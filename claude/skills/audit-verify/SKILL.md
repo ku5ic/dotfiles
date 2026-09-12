@@ -13,7 +13,6 @@ disable-model-invocation: true
    - `perf-*` -> perf-auditor
    - `debt-*` -> debt-auditor
    - `doc-drift-*` -> doc-drift-auditor
-   - `audit-claude-*` -> claude-config-auditor
      If the kind matches none of these, stop and ask rather than guessing an agent.
 3. Extract every finding's Severity, Location, What, Why it matters, Fix, and Refs fields from `## Findings` (`rules/markdown-report.md`'s required per-finding shape).
 4. Dispatch the identified agent (Agent tool, foreground) with only the extracted finding list, not the full original report, and an explicit instruction: re-check each cited location as it exists in the repo right now. This is a re-check, not a re-audit -- it must not scan for new findings outside the given list.
@@ -27,7 +26,7 @@ disable-model-invocation: true
 
 ## Output
 
-Write to `$(scratch-dir.sh)/verify-<original-slug>-<YYYYMMDD-HHMM>.md`, where `<original-slug>` is the original report's own target slug, or its full kind-and-timestamp stem if it has none (e.g. `audit-claude-*` reports). Never modify the original report -- this command is append-only across files, so a bad verify run cannot corrupt an audit.
+Write to `$(scratch-dir.sh)/verify-<original-slug>-<YYYYMMDD-HHMM>.md`, where `<original-slug>` is the original report's own target slug, or its full kind-and-timestamp stem if it has none. Never modify the original report -- this command is append-only across files, so a bad verify run cannot corrupt an audit.
 
 ```
 # Verify: <original report filename>

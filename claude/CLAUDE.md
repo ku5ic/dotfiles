@@ -10,11 +10,11 @@ Global instructions for Claude Code. Applies to every repository. Project level 
 
 Skills surface in three layers:
 
-| Layer     | Source                     | Behavior                                                                                                                            |
-| --------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Required  | `<required-skills>` block  | The global core - invoke every listed skill immediately via the Skill tool before any other action; blocking, no exceptions.        |
-| Suggested | `<suggested-skills>` block | Action-conditioned stack skills, one trigger action per line - load the skill when about to take that action.                       |
-| Enforced  | `guard-skills`             | Blocks the first read or edit of any file type mapped in `_stacks.yml` until the relevant patterns skill is loaded for the session. |
+| Layer     | Source                     | Behavior                                                                                                                                                               |
+| --------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Required  | `<required-skills>` block  | The global core, empty by default - when `global_skills` does name a skill, invoke it immediately via the Skill tool before any other action; blocking, no exceptions. |
+| Suggested | `<suggested-skills>` block | Action-conditioned stack skills, one trigger action per line - load the skill when about to take that action.                                                          |
+| Enforced  | `guard-skills`             | Blocks the first read or edit of any file type mapped in `_stacks.yml` until the relevant patterns skill is loaded for the session.                                    |
 
 Source of truth for all skill mappings and trigger phrases: `_stacks.yml`.
 
@@ -37,7 +37,7 @@ After this protocol runs once per session, do not repeat it.
 ## Output rules
 
 - Applies to every response, starting with the first.
-- Deliverables (anything to be copied out and used elsewhere: PR descriptions, commit drafts, emails, specs, docs, reports) go to files via Write or Edit, never terminal output - print the absolute path after writing.
+- Deliverables (anything to be copied out and used elsewhere: PR descriptions, commit drafts, emails, specs, docs, reports) go to files via Write or Edit - print the absolute path after writing. The exceptions are `write-commit`, `write-devnote`, and `write-explainer`, which print to the terminal by design.
 
 Full rules: `rules/output-rules.md`.
 
@@ -59,11 +59,7 @@ Full rules (banned openers/closers, structural tells, worked before/after pairs)
 
 ## Length
 
-- Three tiers: short (default), normal, long.
-- Each is opt-in for one reply via trigger words, or sticky via a mode command.
-- `guard-response.sh` enforces the tier ceilings mechanically behind these instructions.
-
-Full rules (definitions, mode stickiness, multi-step reporting, exemptions): `rules/length.md`.
+`rules/length.md` - three tiers (short default, normal, long), opt-in per reply or sticky by mode, enforced by `guard-response.sh`.
 
 ## Code Style
 
@@ -82,21 +78,11 @@ Match the existing code style of the file and the project. Full rules: `rules/co
 
 ## Anti-fabrication
 
-Do not invent file paths, API shapes, version numbers, test results, or runtime behavior - verify or say so directly. Label confidence (`verified`/`likely`/`hypothesis`/`unknown`) on every theory or investigation result.
-
-Full rules (uncertainty phrasing, confidence labels, relative-time and missing-file handling, the user-reported-outcome exception): `rules/anti-fabrication.md`.
+`rules/anti-fabrication.md` - do not invent paths, API shapes, versions, or results; label confidence on every claim.
 
 ## Critique
 
-When asked to critique a decision, artifact, plan, or account of what happened:
-
-- No verdict without material.
-- Steelman the reasoning first.
-- Label every claim's provenance.
-- Scope criticism to the specific thing.
-- Report what holds alongside what does not.
-
-Full rules: `rules/critique.md`.
+`rules/critique.md` - no verdict without material; steelman first; label provenance; scope to specifics; report what holds.
 
 ## Commands and Side Effects
 

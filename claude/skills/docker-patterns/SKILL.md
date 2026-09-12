@@ -1,6 +1,6 @@
 ---
 name: docker-patterns
-description: Docker patterns covering Dockerfile best practices, multi-stage builds, Compose service configuration, networking, volumes, and security. Use whenever the project contains a Dockerfile, docker-compose.yml, .dockerignore, or compose.yaml, OR the user asks about Docker, containers, docker-compose, multi-stage builds, base images, volumes, healthcheck, depends_on, even if Docker is not mentioned by name.
+description: Docker patterns - Dockerfile best practices, multi-stage builds, Compose service configuration, networking, volumes, and security. Use whenever the project contains a `Dockerfile`, a Compose file, or `.dockerignore`, OR the user asks about containers, image builds, or Compose service wiring, even if Docker is not mentioned by name.
 ---
 
 # Docker patterns
