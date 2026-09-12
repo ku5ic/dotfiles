@@ -34,7 +34,6 @@
       "Skill(flow-debug)",
       "Skill(flow-deps)",
       "Skill(flow-explore)",
-      "Skill(meta-feature)",
       "Skill(meta-prompt)",
       "Skill(meta-retro)",
       "Skill(write-commit)",

@@ -8,7 +8,6 @@ disable-model-invocation: true
 
 The ask is too thin or the codebase area too unfamiliar to shape a brief or a plan yet - a one-line request, a bare link to a ticket or doc with little inline description, or a task that touches a part of the codebase nobody here has mapped recently. The goal is a findings report surveying what the task likely needs and how it could be built, not a committed brief or plan.
 
-Use `/meta-feature` instead when the ask is already clear enough to shape into acceptance criteria without codebase research.
 Use `/flow-plan` instead when the task and a chosen approach are both already confirmed.
 
 ## Procedure
@@ -101,7 +100,7 @@ Source: <resolved link, or "inline prompt">
 
 ## Recommended next step
 
-<"hand off to /meta-feature: <reason>" or "hand off to /flow-plan: <strongest candidate and why>">
+<"hand off to /flow-plan: <strongest candidate and why>">
 ```
 
 Print the absolute path. Terminal output: the task statement, how many candidate approaches were found, and the recommended next step only. Everything else goes in the file.
