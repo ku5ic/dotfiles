@@ -6,9 +6,7 @@ disable-model-invocation: true
 
 ## Procedure
 
-0. Resolve external context per `rules/workflow.md`, using the security-auditor agent for lookups.
-
-Delegate the procedure below (steps 1 onward, through Rules) to the security-auditor agent (Agent tool, subagent_type: security-auditor, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
+0. Resolve external context (`rules/workflow.md` section 4). Then dispatch the auditor agent (subagent_type: auditor, foreground) with steps 1 onward and the resolved arguments; it writes the report, you relay its summary.
 
 1. Stack is in the repo context your startup produced (`agent-context.sh`). Get the scratch directory via `scratch-dir.sh`.
 2. Load the security-patterns skill. Apply only the sections matching the detected stack.
@@ -32,13 +30,7 @@ Delegate the procedure below (steps 1 onward, through Rules) to the security-aud
 
 ## Output
 
-Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/security-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
-
-Severity rubric for security audits:
-
-- **failure**: actively exploitable or direct secret exposure. Fix before merge.
-- **warning**: mitigated but weak (e.g. CSP present but with `unsafe-inline`); or Level A of a broader defense in depth missing
-- **info**: hardening opportunity, not currently exploitable
+Use the `rules/markdown-report.md` format with the severity rubric from security-patterns. Write to `$(scratch-dir.sh)/security-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
 
 ## Rules
 
@@ -46,4 +38,3 @@ Severity rubric for security audits:
 - Do not log secrets into the report. If you find one, say "secret present at <file>:<line>", not the value.
 - If something needs runtime check (CSP headers in production, cookie flags from live response): say so in "Cannot be verified statically". Do not guess.
 - If the scope is too large for a single pass: say so, recommend splitting, and audit the most exposed surface first (auth endpoints, user input handlers, admin screens).
-- Findings follow `rules/evidence.md`: provenance-labeled, report what holds too.

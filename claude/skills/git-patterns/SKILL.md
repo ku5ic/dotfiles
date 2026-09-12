@@ -13,21 +13,6 @@ description: >
 
 Review checklist and the handful of git behaviors that are easy to get wrong. Command syntax is in the man pages; this file is what to flag and what to reach for.
 
-## When to load this skill
-
-- User asks about commit message format, rebase, squash, or fixup
-- User asks about branch naming or branch strategy
-- User asks about recovering lost commits or undoing changes
-- User is resolving merge conflicts
-- User asks about git bisect, worktrees, or stash
-
-## When not to load this skill
-
-- GitHub Actions or CI pipeline configuration
-- GitOps / infrastructure deployment pipelines
-
----
-
 ## Conventional Commits
 
 ```
@@ -54,7 +39,7 @@ Branch naming for this machine is `<type>/<slug>` or `<type>/<TICKET-ID>/<slug>`
 | Need each commit in a series to build    | `exec` lines in the `rebase -i` todo (`exec make test`)                  |
 | Hunting the commit that broke something  | `git bisect run <cmd>` - automates the whole search; exit 0 = good       |
 | Reviewing a branch mid-edit on another   | `git worktree add <dir> <branch>` - separate working tree, shared `.git` |
-| Fixups for already-staged hunks          | `git absorb` (see `rules/tooling.md`) beats hand-written `rebase -i`   |
+| Fixups for already-staged hunks          | `git absorb` (see `rules/tooling.md`) beats hand-written `rebase -i`     |
 | A file is ignored and you cannot see why | `git check-ignore -v <path>` names the rule and its source line          |
 
 ---
@@ -91,7 +76,3 @@ An `.env` or `*.key` file not listed in `.gitignore` will eventually be committe
 - https://git-scm.com/docs/git-reflog
 - https://git-scm.com/docs/git-bisect
 - https://git-scm.com/docs/git-worktree
-
-## Maintenance note
-
-Git's porcelain is stable; this file changes when the review checklist does, not when git releases. Revisit if the project adopts a different commit convention or a merge-queue workflow that makes the rebase guidance wrong.

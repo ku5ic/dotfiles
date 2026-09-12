@@ -15,19 +15,6 @@ description: >
 
 Review checklist and the choices that are expensive to get wrong. Flag tables for `pg_dump`, `rsync`, and `restic` are in their man pages.
 
-## When to load this skill
-
-- Project has backup scripts, cron entries, or systemd timers for backups
-- User asks about rsync, restic, pg_dump, or pg_restore
-- User is setting up a cron job for automated backups
-
-## When not to load this skill
-
-- Database replication or high-availability (separate from backup)
-- Cloud provider snapshot configuration (AWS EBS, GCP PD)
-
----
-
 ## 3-2-1
 
 Three copies, two media, one offsite. A backup that lives only on the same server as the data is not a backup.

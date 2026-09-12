@@ -74,8 +74,7 @@ Structure:
 - If the ask is actually two or three tasks bundled, split them and output multiple prompts.
 - If the ask is under-specified in a way that cannot be inferred: ask via the AskUserQuestion tool (multiple-choice, "Other" for free text) before writing the output file. Record the resolved answers as a "Decisions" section instead of an unresolved "Open questions" list. If forked, follow CLAUDE.md's forked decision protocol instead of guessing.
 - Do not name a file path, function, or API in the output unless it was confirmed this session via Read/Grep/fd or scout; unconfirmed items are marked unverified, never asserted as fact.
-- Plain ASCII, no em dashes, no smart quotes. The output is meant to be copy-pasted.
-- No AI tells. This prompt will be read by another agent or a human, not a chatbot.
+- The output is meant to be copy-pasted by another agent or a human, not a chatbot.
 
 ## Bonus: promoting the prompt to a skill
 

@@ -10,10 +10,6 @@ Default assumption: Next.js 16 (current stable as of writing) with the App Route
 - Cache Components is the new caching model in 16 (opt-in via `cacheComponents: true`); the previous caching model is still supported when the flag is off.
 - Verify via `package.json` or lockfile - caching model and `cacheComponents` flag differ between 15.x and 16.x.
 
-## Severity rubric
-
-Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
-
 ## Reference files
 
 | File                                                             | Covers                                                                                  |
@@ -27,14 +23,7 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 | [reference/runtime.md](reference/runtime.md)                     | Node vs Edge, Proxy (renamed from Middleware in v16), runtime config                    |
 | [reference/client-bundle.md](reference/client-bundle.md)         | `next/image`, `next/font`, `next/dynamic`, tree-shaking and bundle audits               |
 
-## When to load this skill
-
-- Any task touching files under `app/` (`page.tsx`, `layout.tsx`, `route.ts`, `loading.tsx`, etc.).
-- Any task involving `next.config.*`, `proxy.ts` / `middleware.ts`, or Next-specific imports (`next/cache`, `next/server`, `next/image`, `next/font`, `next/dynamic`, `next/navigation`, `next/headers`).
-- Code review where the diff includes server/client boundary changes, cache directives, server actions, or route segment configuration.
-- Migrations from Pages Router to App Router, or between Next.js majors.
-
-## When not to load this skill
+## Out of scope
 
 - Pages Router projects (`pages/` only, no `app/` directory). The patterns differ enough that this skill would mislead.
 - React projects without Next.js (use the React skill alone).
@@ -52,7 +41,7 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 - Lee Robinson (Vercel DX): https://leerob.io/
 - Vercel Engineering: https://vercel.com/blog
 
-## Maintenance note
+## Version notes
 
 Next.js ships major releases roughly yearly and minor releases monthly. File conventions, cache defaults, and directive names have shifted multiple times:
 

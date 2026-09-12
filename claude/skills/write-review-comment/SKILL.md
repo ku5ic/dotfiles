@@ -56,7 +56,6 @@ Hey @<author>, <genuine one-line compliment about the work>.
 - Keep the comment under 500 words. If the report has more findings than fit, split into multiple comments in the same output file, each in its own fenced block, labeled "Comment 1 of N" etc.
 - Describe the problem and point at the fix; do not rewrite the actual code fix.
 - Do not re-run the review or invent findings not present in the source report.
-- No AI tells: no "I recommend", "it's worth noting", "let me know if you have questions".
-- Follows `rules/output.md`, no exception: each issue its own short bullet, never a paragraph of prose per finding.
+- Never "I recommend" or "let me know if you have questions".
 - The latest-report fallback in step 3 only ever searches the resolved scratch directory for the current project; never fall back to another project's file.
 - If the resolved input file does not exist or does not match the `rules/markdown-report.md` format, say so and stop.

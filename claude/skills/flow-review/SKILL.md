@@ -6,9 +6,7 @@ disable-model-invocation: true
 
 ## Procedure
 
-0. Resolve external context per `rules/workflow.md`, using the reviewer agent for lookups.
-
-Delegate the procedure below (steps 1 onward, through Rules) to the reviewer agent (Agent tool, subagent_type: reviewer, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
+0. Resolve external context (`rules/workflow.md` section 4). Then dispatch the reviewer agent (subagent_type: reviewer, foreground) with steps 1 onward and the resolved arguments; it writes the report, you relay its summary.
 
 1. Get the scratch directory via `scratch-dir.sh`. Stack is in the repo context your startup produced (`agent-context.sh`).
 2. Mechanical-skip check. Opt-in by signal - only fires when the plan marks it, not by default:
@@ -85,4 +83,3 @@ Severity rubric from `rules/markdown-report.md`. Skip sections with no findings.
 - Not every file needs a finding. An empty review is a valid result.
 - Do not rewrite the code in the review. State the fix as instruction or small snippet.
 - Do not flag personal style (semicolons, quote style, etc.) unless it violates the project's lint config.
-- Findings and the overall verdict follow `rules/evidence.md`: provenance-labeled, report what holds too.

@@ -24,17 +24,6 @@ Apply the references that match the detected stack. Severity rubric below applie
 | [reference/dependencies.md](reference/dependencies.md)     | Lockfile audit vs OSV-Scanner, SLSA build levels                                                            |
 | [reference/secrets.md](reference/secrets.md)               | Detection (gitleaks, trufflehog, push protection), rotation cadence                                         |
 
-## When to load this skill
-
-- The project includes auth code, session handling, env-var reads, user-input handling, route handlers, server actions, middleware, or external API calls.
-- The user asks about security, hardening, vulnerabilities, auth, sessions, cookies, XSS, CSRF, SQL injection, secrets, env variables, CSP, headers.
-- Reviewing changes that touch user input, auth, or external data.
-
-## When not to load this skill
-
-- Pure presentational changes that touch no input boundary, no auth path, no external call.
-- Style-only edits (CSS, formatting, copy changes).
-
 ## References
 
 - OWASP Top 10: https://owasp.org/www-project-top-ten/
@@ -43,10 +32,3 @@ Apply the references that match the detected stack. Severity rubric below applie
 - MDN Web Security: https://developer.mozilla.org/en-US/docs/Web/Security
 - MDN CSP: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 - WHATWG Fetch (CORS): https://fetch.spec.whatwg.org/
-
-## Maintenance note
-
-Web security best practices evolve as browsers ship new headers, new threat classes emerge, and OWASP updates the Cheat Sheet Series.
-
-- Reconcile this skill against the OWASP Cheat Sheet Series and MDN Web Security at least once a year.
-- Also reconcile on any significant browser release that changes default cookie or fetch semantics.

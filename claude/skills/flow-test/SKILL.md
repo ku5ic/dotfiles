@@ -6,9 +6,7 @@ disable-model-invocation: true
 
 ## Procedure
 
-0. Resolve external context per `rules/workflow.md`, using the tester agent for lookups.
-
-Delegate the procedure below (steps 1 onward, through Stop) to the tester agent (Agent tool, subagent_type: tester, foreground), passing the resolved arguments from step 0. It executes every step itself and reports results; relay its returned summary.
+0. Resolve external context (`rules/workflow.md` section 4). Then dispatch the tester agent (subagent_type: tester, foreground) with steps 1 onward and the resolved arguments; relay its summary.
 
 1. Get the scratch directory via `scratch-dir.sh`. Identify the test runner from the repo context your startup produced (`agent-context.sh`).
 2. Load the `test-patterns` skill and the patterns skill matching the detected stack (`react-patterns`, `django-patterns`, etc.) when relevant to the change.

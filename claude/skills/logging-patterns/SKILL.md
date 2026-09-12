@@ -12,20 +12,6 @@ description: >
 
 Review checklist plus the configuration shapes that are easy to get wrong. Level semantics and handler constructors are in the stdlib docs.
 
-## When to load this skill
-
-- Python project with `import logging` or `import structlog`
-- User asks about log levels, log formatting, structured logs, or JSON logging
-- User asks why logs appear twice or why a logger is silent
-- User is configuring a logging handler, formatter, or filter
-
-## When not to load this skill
-
-- JavaScript/Node.js logging (pino, winston, console)
-- Infrastructure log aggregation configuration (Loki, Elasticsearch)
-
----
-
 ## stdlib gotchas
 
 - `basicConfig` is a no-op if the root logger already has handlers. Call it once at the entry point; pass `force=True` to replace existing handlers (useful in tests).

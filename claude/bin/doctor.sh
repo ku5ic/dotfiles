@@ -5,10 +5,10 @@
 # Checks:
 #   1. Symlinks: each top-level claude/ entry is symlinked to the dotfiles
 #      source. Verifies link existence and target path.
-#   2. Credential pattern parity: guard-edit.sh, guard-bash.sh, and
-#      settings.json all list every credential pattern. Both hook layers exist
-#      as defense in depth (a misconfigured permission file should not be the
-#      only thing standing between an injection and a clobbered key).
+#   2. Credential pattern parity: guard-bash.sh and settings.json both list
+#      every credential pattern. settings.json deny rules cover Read/Edit;
+#      guard-bash.sh covers what permissions cannot express (cat, cp of a
+#      key file).
 #   3. Agent-context / inject-context derivation parity: both consumers share
 #      the yq derivation queries via bin/_lib.sh instead of holding private
 #      copies.
@@ -42,7 +42,6 @@
 #       tools.
 #
 # Adding a credential pattern: add it to the `patterns` array below AND to
-# hooks/guard-edit.sh's "Sensitive credential and key files" case block AND
 # hooks/guard-bash.sh's _is_sensitive_arg block AND settings.json's deny array.
 #
 # Exit codes: 0 = all checks passed, 1 = one or more checks failed.
@@ -92,14 +91,13 @@ fi
 echo
 echo "== credential pattern parity =="
 
-GUARD_EDIT="$SOURCE_ROOT/hooks/guard-edit.sh"
 GUARD_BASH="$SOURCE_ROOT/hooks/guard-bash.sh"
 SETTINGS="$SOURCE_ROOT/settings.json"
 
-# Canonical credential patterns. Each must appear verbatim in all three files.
-# Path-tail forms are used so settings.json's `~/...` and the guard hooks'
+# Canonical credential patterns. Each must appear verbatim in both files.
+# Path-tail forms are used so settings.json's `~/...` and guard-bash.sh's
 # `$HOME/...` both contain the substring.
-# Adding a pattern: add it here AND to guard-edit.sh, guard-bash.sh (_is_sensitive_arg),
+# Adding a pattern: add it here AND to guard-bash.sh (_is_sensitive_arg)
 # and settings.json deny rules.
 patterns=(
   "*.pem"
@@ -128,10 +126,6 @@ patterns=(
 
 parity_failed=0
 for pat in "${patterns[@]}"; do
-  if ! grep -qF "$pat" "$GUARD_EDIT"; then
-    echo "missing-pattern  guard-edit.sh: '$pat'"
-    parity_failed=1
-  fi
   if ! grep -qF "$pat" "$GUARD_BASH"; then
     echo "missing-pattern  guard-bash.sh: '$pat'"
     parity_failed=1
@@ -145,7 +139,7 @@ done
 if ((parity_failed)); then
   exit_code=1
 else
-  echo "ok             ${#patterns[@]} patterns mirrored across guard-edit.sh, guard-bash.sh, and settings.json"
+  echo "ok             ${#patterns[@]} patterns mirrored across guard-bash.sh and settings.json"
 fi
 
 echo

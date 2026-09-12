@@ -10,10 +10,6 @@ Default assumption: Nuxt 4 (current stable, latest 4.4.x as of writing) with Uni
 - Nuxt 3 is in maintenance until 2026-07-31 and still receives bug fixes and security patches; Nuxt 3 projects are still common and most patterns here apply, but the maintenance note below covers deltas.
 - Verify the installed version via `nuxt --version` or `package.json`; minor-version deltas may affect module resolution and Nitro config.
 
-## Severity rubric
-
-Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
-
 ## Reference files
 
 | File                                                     | Covers                                                                              |
@@ -24,18 +20,6 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 | [reference/state.md](reference/state.md)                 | `useState` SSR-safety, module-level leakage, Pinia, composables                     |
 | [reference/routing.md](reference/routing.md)             | File-based routes, layouts, route middleware vs server middleware, `definePageMeta` |
 | [reference/server.md](reference/server.md)               | Nitro, server routes, validation, `runtimeConfig` and env-var conventions           |
-
-## When to load this skill
-
-- Any task touching `nuxt.config.*`, `pages/`, `server/`, `composables/`, `middleware/`, or `layouts/` at project root.
-- Any task involving Nuxt-specific composables (`useFetch`, `useAsyncData`, `useState`, `useRuntimeConfig`, `useRoute`, `useRouter`, `useNuxtApp`).
-- Code review where the diff includes server routes, route middleware, or `routeRules` config.
-- Migrations from Nuxt 2 -> 3 or Nuxt 3 -> 4.
-
-## When not to load this skill
-
-- Pure Vue projects without Nuxt (no `nuxt.config.*`, no `pages/`). The Vue patterns apply, but Nuxt-specific composables and SSR semantics do not.
-- Backend-only TypeScript projects that happen to use h3 or Nitro standalone.
 
 ## References
 
@@ -50,7 +34,7 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 - Anthony Fu (Vite/Nuxt overlap): https://antfu.me/
 - Sebastien Chopin (Nuxt creator): https://github.com/atinux
 
-## Maintenance note
+## Version notes
 
 - Nuxt 4 is the current stable major; Nuxt 4.4 introduced custom `useFetch`/`useAsyncData` factories and other refinements (March 2026).
 - Nuxt 3 is in maintenance (bug fixes and security patches only) until 2026-07-31; Nuxt 3 projects should plan a Nuxt 4 migration ahead of that date.

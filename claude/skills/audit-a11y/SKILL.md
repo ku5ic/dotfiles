@@ -11,9 +11,7 @@ disable-model-invocation: true
 
 ## Procedure
 
-0. Resolve external context per `rules/workflow.md`, using the a11y-auditor agent for lookups.
-
-Delegate the procedure below (steps 1 onward, through Scope) to the a11y-auditor agent (Agent tool, subagent_type: a11y-auditor, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
+0. Resolve external context (`rules/workflow.md` section 4). Then dispatch the auditor agent (subagent_type: auditor, foreground) with steps 1 onward and the resolved arguments; it writes the report, you relay its summary.
 
 1. Stack is in the repo context your startup produced (`agent-context.sh`). Get the scratch directory via `scratch-dir.sh`.
 2. Confirm frontend surface exists. If not, stop.
@@ -37,7 +35,6 @@ Rules specific to this audit:
 - Cite WCAG criterion on every finding (e.g. 1.3.1, 4.1.2).
 - Distinguish Level A, AA, AAA if audit scope is AA: AAA findings go to "Out of scope" unless the user asked for them.
 - Items that cannot be statically verified go to the "Cannot be verified statically" section. Do not fabricate verification.
-- Findings follow `rules/evidence.md`: provenance-labeled, report what holds too.
 - Print the report path.
 
 ## Scope

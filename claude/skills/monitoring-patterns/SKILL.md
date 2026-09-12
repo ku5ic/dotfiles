@@ -13,18 +13,6 @@ description: >
 
 Review checklist for Prometheus instrumentation. Constructor signatures are in the prometheus-client docs; this file is the naming rules, the cardinality trap, and what to flag.
 
-## When to load this skill
-
-- Python project with `prometheus_client` in dependencies
-- User asks about metrics, instrumentation, Prometheus, or health checks
-- User is adding a `/metrics` endpoint or a Kubernetes probe
-
-## When not to load this skill
-
-- OpenTelemetry tracing (separate domain)
-
----
-
 ## Picking a metric type
 
 | Type      | Use for                                                                             | Goes down? |

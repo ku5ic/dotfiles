@@ -33,17 +33,6 @@ For accessibility work, validate against WCAG 2.2 AA explicitly. Do not claim co
 | [reference/robust.md](reference/robust.md)                         | 4.1.2 / 4.1.3 (name/role/value, status messages) plus First Rule of ARIA and APG patterns                  |
 | [reference/cannot-be-verified.md](reference/cannot-be-verified.md) | Items requiring runtime / AT testing, plus React / Django template / plain HTML stack notes                |
 
-## When to load this skill
-
-- The project contains UI code (.jsx, .tsx, .vue, .svelte, HTML, Django templates).
-- The user asks about accessibility, a11y, WCAG, screen readers, keyboard navigation, focus management, ARIA, contrast, semantic HTML, alt text, form labels.
-- Auditing a component, page, or template for accessibility issues.
-
-## When not to load this skill
-
-- Pure backend / data work with no rendered UI.
-- Build / tooling changes that do not touch UI markup.
-
 ## References
 
 - WCAG 2.2 spec: https://www.w3.org/TR/WCAG22/
@@ -54,7 +43,7 @@ For accessibility work, validate against WCAG 2.2 AA explicitly. Do not claim co
 - WebAIM: https://webaim.org/
 - MDN Accessibility: https://developer.mozilla.org/en-US/docs/Web/Accessibility
 
-## Maintenance note
+## Version notes
 
 WCAG evolves:
 

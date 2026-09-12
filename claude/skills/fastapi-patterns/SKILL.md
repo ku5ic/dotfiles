@@ -9,19 +9,6 @@ FastAPI 0.136.1, Pydantic 2.13.3 (baseline at time of writing). Verify current v
 
 Install: `pip install "fastapi[standard]"`
 
-## When to load this skill
-
-- Project has `fastapi` in `requirements.txt`, `pyproject.toml`, or `Pipfile`
-- Files contain `from fastapi import`, `@app.get`, `@router.get`
-- Pydantic `BaseModel` used as route input/output type
-- User asks about FastAPI, Pydantic v2, dependency injection, Depends(), response_model, HTTPException, OAuth2, APIKey
-
-## When not to load this skill
-
-- Django or Flask without FastAPI
-- Pydantic used outside a web framework (standalone validation)
-- GraphQL with strawberry or ariadne
-
 ## Reference files
 
 | File                                                         | Covers                                                                                                        |
@@ -41,7 +28,3 @@ Install: `pip install "fastapi[standard]"`
 - https://pydantic.dev/docs/validation/latest/
 - https://fastapi.tiangolo.com/tutorial/security/
 - https://fastapi.tiangolo.com/async/
-
-## Maintenance
-
-FastAPI and Pydantic release independently. Pydantic v2 introduced breaking changes from v1; verify the project's Pydantic version before applying patterns. Check PyPI for current versions.

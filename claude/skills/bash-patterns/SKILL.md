@@ -9,10 +9,6 @@ description: Bash and shell script patterns - safety flags, quoting, conditional
 - Scripts use `#!/usr/bin/env bash`, so the resolved binary is whatever is first on PATH -- on the user's machine that's the Homebrew 5.x build, not the stock macOS `/bin/bash` 3.2.
 - Anything that requires bash 4.0+ (case modification, `mapfile`, `${parameter@op}`) is unsafe under stock macOS bash; flagged here when the version cut matters.
 
-## Severity rubric
-
-Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
-
 ## Reference files
 
 | File                                                                 | Covers                                                                                                       |
@@ -26,23 +22,6 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 | [reference/shellcheck.md](reference/shellcheck.md)                   | Top SC codes, suppression discipline, POSIX-only contexts (Alpine, BusyBox)                                  |
 | [reference/anti-patterns.md](reference/anti-patterns.md)             | Fifteen review-time anti-patterns with severity calls                                                        |
 
-## When to load this skill
-
-- `.sh`, `.bash`, `.zsh` files; or any file with a bash/sh shebang.
-- Editing dotfiles like `.zshrc`, `.bashrc`, `.zprofile`, `.aliases.zsh`.
-- CI workflow shell steps (GitHub Actions `run:` blocks, GitLab `script:`, etc.).
-- Makefile recipes.
-  - GNU Make defaults to `/bin/sh`; set `SHELL := /bin/bash` at the top of the Makefile if recipes use bash features.
-- Reviewing scripts in `~/.dotfiles/scripts/` and `~/.dotfiles/claude/bin/`.
-
-## When not to load this skill
-
-- One-off command-line invocations in conversation (single pipelines, ad-hoc `find` commands).
-- Pure POSIX `sh` (`#!/bin/sh`) where bashisms would be wrong.
-  - Note the constraint and switch to POSIX-only forms.
-- Fish or other non-POSIX shells.
-- zsh-specific features beyond what bash shares.
-
 ## References
 
 - GNU Bash manual: https://www.gnu.org/software/bash/manual/bash.html
@@ -52,7 +31,3 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 - BashPitfalls: https://mywiki.wooledge.org/BashPitfalls
 - BashGuide: https://mywiki.wooledge.org/BashGuide
 - Google Shell Style Guide: https://google.github.io/styleguide/shellguide.html
-
-## Maintenance note
-
-When bash evolves -- 6.x or beyond -- reconcile this skill against the manual before trusting deltas above. The 4.0+ feature cuts (case modification, `mapfile`, `${parameter@op}`) are the main version-sensitive items today; once stock macOS ships a bash 4+ default, those notes can come out.

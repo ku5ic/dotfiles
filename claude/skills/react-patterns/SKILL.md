@@ -11,10 +11,6 @@ Default assumption: React 19 with the modern (concurrent) renderer.
 - Server Components are a feature of frameworks built on React; framework-specific patterns load when those framework signals are present in the project.
 - Adapt advice to the version in the project's `package.json` or lockfile.
 
-## Severity rubric
-
-Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
-
 ## Reference files
 
 | File                                                     | Covers                                                                              |
@@ -24,18 +20,6 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 | [reference/structure.md](reference/structure.md)         | Controlled vs uncontrolled, derived state, prop drilling, effects vs handlers       |
 | [reference/anti-patterns.md](reference/anti-patterns.md) | Seven review-time anti-patterns with severity calls                                 |
 | [reference/when-to-split.md](reference/when-to-split.md) | Heuristics for component splitting and what does not justify a split                |
-
-## When to load this skill
-
-- Any task touching `.jsx` or `.tsx` files.
-- Any task involving React component design, hooks, state management, or render performance.
-- Code review where the diff includes React components, custom hooks, or context usage.
-- Migrations between React major versions (17 -> 18 -> 19).
-
-## When not to load this skill
-
-- Pure utility code with no React surface (the language patterns apply, not these).
-- Styling-only changes that do not touch components or hooks.
 
 ## References
 
@@ -47,7 +31,7 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 - Dan Abramov on React internals: https://overreacted.io/
 - Mark Erikson on React state management: https://blog.isquaredsoftware.com/
 
-## Maintenance note
+## Version notes
 
 React's release cadence has slowed since 18; major changes now arrive through the React Compiler and through Server Component primitives that frameworks adopt.
 

@@ -10,7 +10,7 @@ $ARGUMENTS should point to the code surface to check. Required.
 
 ## Procedure
 
-Delegate the procedure below (steps 1 onward, through Scope rules) to the doc-drift-auditor agent (Agent tool, subagent_type: doc-drift-auditor, foreground). It executes every step itself and writes the report; relay its returned summary.
+Dispatch the auditor agent (subagent_type: auditor, foreground) with steps 1 onward; it writes the report, you relay its summary.
 
 1. Stack is in the injected `<repo-context>` block. Get the scratch directory: `!`scratch-dir.sh``.
 2. Read the code at $ARGUMENTS.
@@ -56,4 +56,3 @@ Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/doc-drift
 - Do not edit documentation during the audit.
 - Do not flag "missing documentation" as drift. Only flag documented claims that no longer hold.
 - If nothing drifted, the report says "No drift detected" and lists what was checked so the user knows the scope covered.
-- Findings follow `rules/evidence.md`: provenance-labeled, report what holds too.

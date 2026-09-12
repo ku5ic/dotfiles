@@ -11,10 +11,6 @@ Default assumption: Python 3.11 or later, type hints required on public function
 - 3.14 (current stable, released 2025-10-07) made deferred annotation evaluation the default; on older supported versions, `from __future__ import annotations` is still useful for forward references.
 - Adapt advice to the version in the project's `.tool-versions`, `pyproject.toml`, or `.python-version`.
 
-## Severity rubric
-
-Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
-
 ## Reference files
 
 | File                                                         | Covers                                                                                         |
@@ -25,18 +21,6 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 | [reference/errors.md](reference/errors.md)                   | Exception design, chaining, LBYL vs EAFP, `logger.exception`                                   |
 | [reference/common-patterns.md](reference/common-patterns.md) | Dataclasses, enums, `pathlib`, `functools.cache`, Pydantic v2 patterns                         |
 | [reference/anti-patterns.md](reference/anti-patterns.md)     | Thirteen language anti-patterns, free-threaded build implications, testing-adjacent items      |
-
-## When to load this skill
-
-- Any work in a `.py` file.
-- Code review of Python with type hints, async, packaging.
-- Edits to `pyproject.toml`, `requirements.txt`, `uv.lock`, `poetry.lock`.
-- Migrations between Python versions (3.10 -> 3.11+ for TaskGroup; 3.11 -> 3.12 for PEP 695 syntax).
-
-## When not to load this skill
-
-- Trivial Python utility scripts under 50 lines with no public API surface.
-- Non-Python code with a `.py` file in the working directory by accident (build scripts in vendored projects).
 
 ## References
 
@@ -50,7 +34,7 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 - PyPA src vs flat: https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/
 - Pydantic v2 models: https://pydantic.dev/docs/validation/latest/concepts/models/
 
-## Maintenance note
+## Version notes
 
 Python gets a new minor version each October; reconcile this skill against the current `whatsnew` page and the PEP index before trusting the deltas above.
 

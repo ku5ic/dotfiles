@@ -11,10 +11,6 @@ Default assumption: Vue 3 with the Composition API and `<script setup>` syntax.
 - Options API is acceptable for legacy code; flag as legacy when reviewed.
 - Adapt advice to the version in the project's `package.json` or lockfile.
 
-## Severity rubric
-
-Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
-
 ## Reference files
 
 | File                                                     | Covers                                                                          |
@@ -25,14 +21,7 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 | [reference/state.md](reference/state.md)                 | `provide`/`inject`, Pinia, composables                                          |
 | [reference/anti-patterns.md](reference/anti-patterns.md) | Nine review-time anti-patterns with severity calls                              |
 
-## When to load this skill
-
-- Any task touching `.vue` files (Single-File Components).
-- Any task involving Vue Composition API primitives, custom composables, or Pinia stores.
-- Code review where the diff includes reactivity, watchers, or component boundary changes.
-- Migrations between Vue 3 minor versions (especially 3.4 -> 3.5 for reactive props destructure).
-
-## When not to load this skill
+## Out of scope
 
 - Vue 2 projects. The Options API is the default and the reactivity model is fundamentally different. Flag the project's Vue major and stop; the patterns here will mislead.
 - React projects. Despite surface similarities (component tree, hooks-like primitives), the reactivity models differ.
@@ -47,7 +36,7 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 - Anthony Fu (core team, Vite/Nuxt contributor): https://antfu.me/
 - Eduardo San Martin Morote (Vue Router, Pinia maintainer): https://esm.dev/
 
-## Maintenance note
+## Version notes
 
 - Vue 3.5 introduced Reactive Props Destructure (replacing the `withDefaults` ergonomic) and `onWatcherCleanup`.
 - Vue 3.4 introduced `defineModel` and watcher `once: true`.

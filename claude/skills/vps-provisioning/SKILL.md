@@ -7,19 +7,6 @@ description: VPS provisioning patterns for Linux servers covering initial setup,
 
 Targeting Debian 12 (Bookworm) and Ubuntu 24.04 LTS. Commands and package names are Debian/Ubuntu unless noted. Verify against your distribution's current docs.
 
-## When to load this skill
-
-- Project contains Ansible playbooks, Terraform configs, shell provisioning scripts
-- Files contain nginx `server {}` blocks, certbot commands, systemd unit files
-- `.service` files, `ufw allow` commands, `sshd_config` references
-- User asks about VPS setup, SSH hardening, nginx config, Let's Encrypt, fail2ban, systemd, ufw, unattended-upgrades
-
-## When not to load this skill
-
-- Kubernetes cluster management (different abstraction layer)
-- Cloud-managed services where the OS is not directly accessible (PaaS, Lambda)
-- Windows Server administration
-
 ## Reference files
 
 | File                                           | Covers                                                               |
@@ -39,7 +26,7 @@ Targeting Debian 12 (Bookworm) and Ubuntu 24.04 LTS. Commands and package names 
 - https://wiki.debian.org/UnattendedUpgrades
 - https://manpages.ubuntu.com/manpages/noble/man8/ufw.8.html
 
-## Maintenance
+## Version notes
 
 Check distribution LTS support windows before provisioning.
 

@@ -10,10 +10,6 @@ Default assumption: a TypeScript project with `strict` mode enabled.
 - If `strict` is off, that itself is a finding.
 - Verify version-sensitive claims (which flags exist, which syntax is available) against the `typescript` version pinned in the project's `package.json` and lockfile before applying deltas below.
 
-## Severity rubric
-
-Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
-
 ## Reference files
 
 | File                                                             | Covers                                                                                                     |
@@ -23,18 +19,6 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 | [reference/narrowing.md](reference/narrowing.md)                 | `typeof` / `in` / `instanceof`, predicates, exhaustiveness, `assertNever`                                  |
 | [reference/module-boundaries.md](reference/module-boundaries.md) | `import type`, project references, circular imports, barrel-file anti-pattern                              |
 | [reference/anti-patterns.md](reference/anti-patterns.md)         | Twelve review-time anti-patterns with severity calls                                                       |
-
-## When to load this skill
-
-- Any task touching `.ts` or `.tsx` files.
-- Any task involving `tsconfig.json`.
-- Code review where the diff includes type definitions, generic helpers, or module boundary changes.
-- Migrations from `.js` to `.ts`.
-
-## When not to load this skill
-
-- Pure `.js` or `.jsx` work in a project with no TypeScript adoption.
-- Trivial type imports from a known-good third-party package.
 
 ## References
 
@@ -47,7 +31,7 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 - typescript-eslint rules (`no-empty-object-type`, `prefer-ts-expect-error`, `no-explicit-any`): https://typescript-eslint.io/rules/
 - Vercel: package import optimization (barrel files): https://vercel.com/blog/how-we-optimized-package-imports-in-next-js
 
-## Maintenance note
+## Version notes
 
 When TypeScript evolves (5.x minor releases, 6.x, 7.x), reconcile this skill against the current handbook before trusting deltas above.
 

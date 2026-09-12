@@ -35,54 +35,11 @@ run_guard_edit() {
     ;;
   esac
 
-  # Defense in depth: settings.json deny rules cover the same ground, but a
-  # misconfigured permission file shouldn't be the only thing standing
-  # between an injection and a clobbered key. Patterns must mirror
-  # settings.json; bin/doctor.sh enforces parity.
-  case "$(basename "$path")" in
-  *.pem | *.key | *.pfx | *.p12)
-    block "credential or key file" "cred-file"
-    ;;
-  id_rsa | id_ed25519 | id_ecdsa)
-    block "SSH private key" "ssh-key"
-    ;;
-  .env | .env.*)
-    block ".env file" "env-file"
-    ;;
-  esac
-
-  case "$path" in
-  "$HOME/.ssh/"*)
-    block "edit inside ~/.ssh/" "ssh-dir"
-    ;;
-  "$HOME/.gnupg/"*)
-    block "edit inside ~/.gnupg/" "gnupg-dir"
-    ;;
-  "$HOME/.aws/credentials" | "$HOME/.aws/config")
-    block "AWS credentials or config" "aws-creds"
-    ;;
-  "$HOME/.docker/config.json")
-    block "docker auth config" "docker-config"
-    ;;
-  "$HOME/.config/gh/hosts.yml")
-    block "gh CLI auth" "gh-auth"
-    ;;
-  "$HOME/.netrc" | "$HOME/.pgpass" | "$HOME/.npmrc")
-    block "credential file" "dotfile-cred"
-    ;;
-  "$HOME/.pypirc")
-    block "PyPI credentials" "pypi-creds"
-    ;;
-  "$HOME/.cargo/credentials")
-    block "cargo registry credentials" "cargo-creds"
-    ;;
-  "$HOME/.gem/credentials")
-    block "RubyGems credentials" "gem-creds"
-    ;;
-  "$HOME/Library/Keychains/"*)
-    block "macOS keychain" "keychain"
-    ;;
-  esac
+  # Credential and key paths are not repeated here: settings.json's deny
+  # rules fire before any hook runs (verified 2026-09-12 by writing to a
+  # scratch .env: the permission layer refused it and this hook never saw
+  # the call). guard-bash.sh keeps its own copy because permissions cannot
+  # express `cat ~/.ssh/id_rsa`.
 
   if [[ "$path" =~ \.github/workflows/.*\.ya?ml$ ]]; then
     echo "guard-edit: editing CI workflow $path" >&2

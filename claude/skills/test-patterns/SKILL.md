@@ -7,10 +7,6 @@ description: Testing conventions - test design, fixtures, mocking, query priorit
 
 Apply the runner-specific reference matching the detected test runner. Principles apply to all stacks.
 
-## Severity rubric
-
-Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
-
 ## Reference files
 
 | File                                                                     | Covers                                                                             |
@@ -22,17 +18,6 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 | [reference/playwright.md](reference/playwright.md)                       | Playwright patterns, page object, property-based testing (fast-check, hypothesis)  |
 | [reference/pytest.md](reference/pytest.md)                               | pytest fixtures, parametrize, pytest-django                                        |
 | [reference/coverage-and-skip.md](reference/coverage-and-skip.md)         | Coverage discipline, what to skip, output expectations                             |
-
-## When to load this skill
-
-- Project contains test config (`vitest.config.*`, `jest.config.*`, `playwright.config.*`, `pytest.ini`, `conftest.py`) or test directories (`tests/`, `__tests__/`, `spec/`).
-- User asks about tests, testing, unit / integration / e2e tests, mocking, fixtures, coverage, or test failures.
-- Adding or extending tests in any stack.
-
-## When not to load this skill
-
-- Pure refactor with existing test coverage and no test changes needed.
-- One-off scripts with no testable surface.
 
 ## References
 
@@ -48,10 +33,3 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 - MSW: https://mswjs.io/
 - fast-check: https://github.com/dubzzz/fast-check
 - hypothesis: https://hypothesis.readthedocs.io/en/latest/
-
-## Maintenance note
-
-Test runner choices shift on a multi-year cycle.
-
-- Reconcile against current Vitest, Jest, Playwright, pytest releases when the project uses an older config.
-- Property-based and HTTP-mocking choices (fast-check, hypothesis, MSW) have been stable for several years; verify they remain maintained at major version bumps.

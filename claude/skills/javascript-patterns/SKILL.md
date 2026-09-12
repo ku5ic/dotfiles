@@ -10,10 +10,6 @@ Default assumption: a project running on the current Node.js Active LTS (Node 24
 - If the project also uses TypeScript, the type-aware skill applies on top of these language patterns.
 - Adapt advice to the Node version in the project's `.nvmrc`, `.tool-versions`, or `engines` field in `package.json`.
 
-## Severity rubric
-
-Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
-
 ## Reference files
 
 | File                                                                   | Covers                                                                           |
@@ -27,18 +23,6 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 | [reference/jsdoc.md](reference/jsdoc.md)                               | `// @ts-check` plus JSDoc tags for editor-checked types in `.js` files           |
 | [reference/anti-patterns.md](reference/anti-patterns.md)               | Twelve review-time anti-patterns with severity calls                             |
 
-## When to load this skill
-
-- Any task touching `.js`, `.mjs`, `.cjs`, or `.jsx` files.
-- Any task involving `package.json`, npm / pnpm / yarn / bun workflows, or Node runtime configuration.
-- Code review where the diff includes module structure, async control flow, or error handling in JavaScript.
-- Migrations between ESM and CJS, or between Node major versions.
-
-## When not to load this skill
-
-- TypeScript projects that already load type-aware patterns (this skill still applies for the language-level rules, but `any`-vs-`unknown`, generics, and tsconfig live elsewhere).
-- Projects with no JavaScript surface (pure backends in another language).
-
 ## References
 
 - MDN JavaScript reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
@@ -49,11 +33,3 @@ Severity rubric: matches `rules/markdown-report.md` (failure/warning/info).
 - TC39 proposals: https://github.com/tc39/proposals
 - 2ality (Axel Rauschmayer): https://2ality.com/
 - You Don't Know JS, 2nd ed. (Kyle Simpson): https://github.com/getify/You-Dont-Know-JS
-
-## Maintenance note
-
-ECMAScript ships a new edition each June.
-
-- New syntax tends to land in V8 and Node within a release cycle of being standardized; TC39 stage 3 proposals can sometimes land in Node behind a flag before reaching stage 4.
-- When new syntax appears in a code review, check this skill against the current MDN page and the current Node Active LTS before relying on legacy guidance here.
-- Dropping support for an older Node major in `engines.node` is a breaking change for downstream consumers; treat it as such.

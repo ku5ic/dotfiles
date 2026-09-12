@@ -6,9 +6,7 @@ disable-model-invocation: true
 
 ## Procedure
 
-0. Resolve external context per `rules/workflow.md`, using the perf-auditor agent for lookups.
-
-Delegate the procedure below (steps 1 onward, through Rules) to the perf-auditor agent (Agent tool, subagent_type: perf-auditor, foreground), passing the resolved arguments from step 0. It executes every step itself and writes the report; relay its returned summary.
+0. Resolve external context (`rules/workflow.md` section 4). Then dispatch the auditor agent (subagent_type: auditor, foreground) with steps 1 onward and the resolved arguments; it writes the report, you relay its summary.
 
 1. Stack is in the repo context your startup produced (`agent-context.sh`). Get the scratch directory via `scratch-dir.sh`.
 2. Load the patterns skill for the detected stack (react-patterns, django-patterns, etc.) for the anti-pattern reference.
@@ -68,4 +66,3 @@ Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/perf-<tar
 - Flag what to measure, not what to assume.
 - Ignore micro-optimizations that change code without measurable benefit.
 - A pattern that repeats across the codebase as an established choice is not N separate findings; note it once against the shared source and list the consuming locations.
-- Findings follow `rules/evidence.md`: provenance-labeled, report what holds too.

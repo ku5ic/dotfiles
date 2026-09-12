@@ -7,19 +7,6 @@ description: Docker patterns - Dockerfile best practices, multi-stage builds, Co
 
 Docker Engine 29.4.2. Compose Specification (current format, supersedes 2.x and 3.x). Verify at https://docs.docker.com/engine/release-notes/ and https://docs.docker.com/compose/compose-file/.
 
-## When to load this skill
-
-- Project contains `Dockerfile`, `docker-compose.yml`, `compose.yaml`, or `.dockerignore`
-- `FROM` instructions in any file
-- `services:` key in YAML files
-- User asks about Docker, containers, docker-compose, multi-stage, base images, healthcheck, volumes
-
-## When not to load this skill
-
-- Kubernetes without Docker build context
-- Podman (different CLI, mostly compatible but diverges on rootless and socket behavior)
-- Container runtimes (containerd, CRI-O) used directly without Docker tooling
-
 ## Reference files
 
 | File                                           | Covers                                                                                       |
@@ -39,6 +26,6 @@ Docker Engine 29.4.2. Compose Specification (current format, supersedes 2.x and 
 - https://docs.docker.com/engine/network/
 - https://docs.docker.com/engine/storage/
 
-## Maintenance
+## Version notes
 
 Docker Engine and Docker Compose release independently. The Compose Specification supersedes the versioned format (version: "3") -- the `version` top-level key is now ignored. Check https://docs.docker.com/engine/release-notes/ for current versions.

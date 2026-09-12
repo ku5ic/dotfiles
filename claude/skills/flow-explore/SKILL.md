@@ -12,7 +12,7 @@ Use `/flow-plan` instead when the task and a chosen approach are both already co
 
 ## Procedure
 
-0. Resolve external context per `rules/workflow.md`. If no connected tool matches the URL's domain, say so and ask for the content pasted inline instead.
+0. Resolve external context (`rules/workflow.md` section 4).
 
 1. Do the following:
    1. State the task in one sentence, your own words.

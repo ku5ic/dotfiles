@@ -12,11 +12,7 @@ The `/flow-*` and `/audit-*` commands enforce these checks as deterministic phas
 - Inside one of those commands: defer to the command's enforcement and apply only the sections relevant to ad-hoc questions that arise during execution.
 - Outside any command: apply this checklist as the primary engineering quality reference.
 
-## Severity rubric
-
-Severity rubric matches `rules/markdown-report.md`: cite on findings, do not invent new levels.
-
-## When to load this skill
+## Which sections apply
 
 | Activity                                    | Sections to apply                                         |
 | ------------------------------------------- | --------------------------------------------------------- |
@@ -42,12 +38,6 @@ Apply only what fits. Do not pad findings to fill sections.
 | [reference/anti-patterns.md](reference/anti-patterns.md)                             | Eight anti-patterns covering the gap between citing principles and applying them          |
 | [reference/decision-frameworks.md](reference/decision-frameworks.md)                 | When to extract, add a test, commit, or refactor in place vs. defer                       |
 
-## When not to load this skill
-
-- Replace `/flow-*` or `/audit-*` enforcement. Those are deterministic. This is a fallback.
-- Substitute for stack-specific skills. Stack-specific patterns load independently when project signals match.
-- Provide implementation patterns. This is principles only.
-
 ## References
 
 These checklists distill widely accepted software engineering practice. For deeper background:
@@ -65,11 +55,3 @@ These checklists distill widely accepted software engineering practice. For deep
 - SEI CERT Coding Standards: https://wiki.sei.cmu.edu/confluence/display/seccode
 
 Citations are for context. Do not require Claude to read source material; the checklists above are the operational version.
-
-## Maintenance note
-
-Engineering fundamentals shift on a multi-decade cycle, not a release cycle.
-
-- Reconcile when foundational sources move (a new SOLID restatement, a successor metric to McCabe / Cognitive Complexity, an updated cohesion or coupling taxonomy) or when the `/flow-*` and `/audit-*` commands change which categories they enforce.
-- Vendor-published metrics (e.g. SonarSource Cognitive Complexity) require a fresh status check.
-- Primary sources (Parnas 1972, McCabe 1976, Stevens / Myers / Constantine 1974, Boehm 1981) are stable and rarely need re-verification.

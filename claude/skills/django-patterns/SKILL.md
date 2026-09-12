@@ -9,17 +9,6 @@ Django 5.2 LTS (extended support through April 2028). Django 6.1 is current stab
 
 DRF-specific patterns load when the project includes `djangorestframework` in dependencies.
 
-## When to load this skill
-
-- Project contains `manage.py`, `settings.py`, `apps.py`
-- `pyproject.toml`, `requirements.txt`, or `Pipfile` lists `django` or `Django`
-- User asks about Django, models, ORM, views, forms, templates, migrations, admin, signals, middleware
-
-## When not to load this skill
-
-- Pure FastAPI, Flask, or other Python web frameworks without Django
-- Django REST Framework questions only (DRF-specific patterns live in their own skill)
-
 ## Reference files
 
 | File                                               | Covers                                                                                      |
@@ -41,7 +30,3 @@ DRF-specific patterns load when the project includes `djangorestframework` in de
 - https://pytest-django.readthedocs.io/en/latest/
 - https://factoryboy.readthedocs.io/en/stable/
 - https://github.com/joke2k/django-environ
-
-## Maintenance
-
-Django releases roughly every 8 months. LTS releases every 2 years. Verify version claims against https://www.djangoproject.com/download/ before citing. pytest-django, Factory Boy, and model_bakery follow their own release cycles; check PyPI for current versions.

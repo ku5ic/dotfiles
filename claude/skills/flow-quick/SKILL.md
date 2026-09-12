@@ -18,16 +18,7 @@ Use the full `/flow-*` cycle when the work involves a design choice worth record
 2. Identify the files the change will touch. Read them before editing. If the target files cannot be identified from $ARGUMENTS alone with one quick search, stop and escalate to `/flow-plan`.
 3. Load the patterns skill for the stack if the change is stack-specific.
 4. State the approach in one sentence before changing anything: which files, what each gets, what the verification will be. This is the no-artifact equivalent of a plan; it lives in the chat, not in scratch.
-5. Make the changes. After each file, apply the code-level integrity gates from `/flow-implement`:
-   - Match existing style, naming, and patterns. Read a nearby file first if unsure.
-   - Cohesion: each function does one thing; if the function name needs an "and", split it.
-   - Coupling: a new module depends on the fewest concrete other modules possible. If a new file imports more than five non-stdlib modules, name why.
-   - Naming: names describe what, not how. `processItems` is weak; `validatePaymentBatch` is concrete.
-   - Magic values: literal numbers or strings beyond 0, 1, -1, "", and obvious enums get a named constant with a comment explaining the value.
-   - Single source of truth: a piece of data lives in one place. If you find yourself synchronizing two stores, stop and surface.
-   - Comments: explain why, not what. Remove comments that paraphrase the next line.
-   - Do not refactor unrelated code.
-   - Do not upgrade or add dependencies unless the approach statement in step 4 explicitly includes them.
+5. Make the changes. After each file, apply the code-level integrity gates from `/flow-implement` (its "Code-level integrity" section: cohesion, coupling, naming, magic values, single source of truth, comments). Do not refactor unrelated code. Do not upgrade or add dependencies unless the approach statement in step 4 explicitly includes them.
 6. Run narrow verification: type check on the touched files, the closest tests, the project's linter on the touched files. Do not run the full suite; that is `/flow-checks` territory.
 7. Self-check before reporting: would a senior reviewer accept this on first pass? If no, fix it before reporting.
 
