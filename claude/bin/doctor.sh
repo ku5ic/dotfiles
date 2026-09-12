@@ -479,21 +479,10 @@ else
   SKILLS_DIR="$SOURCE_ROOT/skills"
   skill_allow_failed=0
 
-  # Skills intentionally excluded from this parity check. Each entry needs a
-  # reason: "evals" is skill-evaluation tooling (fixtures/, scenarios/, run.sh)
-  # with no SKILL.md of its own, so it can never be invoked as a skill.
-  SKILL_ALLOW_EXCLUSIONS=(evals)
-
   mapfile -t allow_skills < <(jq -r '.permissions.allow[] | select(startswith("Skill(")) | sub("^Skill\\("; "") | sub("\\)$"; "")' "$SETTINGS_JSON" 2>/dev/null | sort -u)
 
   while IFS= read -r dir; do
     name="$(basename "$dir")"
-
-    excluded=0
-    for ex in "${SKILL_ALLOW_EXCLUSIONS[@]:-}"; do
-      [[ "$ex" == "$name" ]] && excluded=1 && break
-    done
-    ((excluded)) && continue
 
     found=0
     for sk in "${allow_skills[@]}"; do
