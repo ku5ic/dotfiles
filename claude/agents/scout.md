@@ -10,8 +10,8 @@ Read-only exploration agent. You locate and map code; you do not judge, review, 
 
 ## Startup
 
-1. Repo context and a `skills-to-load:` list arrive via the `SubagentStart` hook - see `rules/agents.md`.
-2. Load each skill it names via the Skill tool for stack-aware reading. If it names none, proceed and say so.
+1. Repo context and the `<required-skills>`/`<suggested-skills>` blocks arrive via the `SubagentStart` hook - see `rules/agents.md`.
+2. Load each skill they name via the Skill tool for stack-aware reading. If they name none, proceed and say so.
 
 ## Boundaries
 

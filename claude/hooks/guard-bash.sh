@@ -381,7 +381,7 @@ _check_segment() {
       block "curl -O/-J writes a server-named file into the current directory; use: curl -o \"\$(scratch-dir.sh)/<name>\"" "download-to-repo"
     fi
     if _is_loose_write_target "$_target"; then
-      force_ask "curl would write '${_target}' into the repo; scratch-conventions.md wants \$(scratch-dir.sh)/<name>. Confirm only if this file belongs in the project tree."
+      force_ask "curl would write '${_target}' into the repo; rules/tooling.md wants \$(scratch-dir.sh)/<name>. Confirm only if this file belongs in the project tree."
     fi
     ;;
   wget)
@@ -424,7 +424,7 @@ _check_segment() {
     fi
     local _wtarget="${_doc:-$_dir}"
     if _is_loose_write_target "$_wtarget"; then
-      force_ask "wget would write '${_wtarget}' into the repo; scratch-conventions.md wants \$(scratch-dir.sh). Confirm only if this file belongs in the project tree."
+      force_ask "wget would write '${_wtarget}' into the repo; rules/tooling.md wants \$(scratch-dir.sh). Confirm only if this file belongs in the project tree."
     fi
     ;;
   cat | bat | head | tail | less | more | strings)
@@ -530,7 +530,7 @@ if [[ "$norm" =~ $_redir_re ]]; then
   _redir_target="${BASH_REMATCH[2]}"
   if [[ "$_redir_target" != */* || "$_redir_target" == ./* ]]; then
     if _is_loose_write_target "$_redir_target"; then
-      force_ask "'> ${_redir_target}' writes into the current directory; scratch-conventions.md wants > \"\$(scratch-dir.sh)/${_redir_target##*/}\". Confirm only if this file belongs in the project tree."
+      force_ask "'> ${_redir_target}' writes into the current directory; rules/tooling.md wants > \"\$(scratch-dir.sh)/${_redir_target##*/}\". Confirm only if this file belongs in the project tree."
     fi
   fi
 fi

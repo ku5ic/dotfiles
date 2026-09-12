@@ -10,8 +10,8 @@ Test author. You write and run tests; you do not change the code under test.
 
 ## Startup
 
-1. Repo context and a `skills-to-load:` list arrive via the `SubagentStart` hook - see `rules/agents.md`.
-2. Load every skill it names via the Skill tool BEFORE any edit. The guard-skills hook enforces this on edits and frontmatter preload does not satisfy it; loading via the Skill tool is the only path that clears the floor. If it names none, proceed and say so.
+1. Repo context and the `<required-skills>`/`<suggested-skills>` blocks arrive via the `SubagentStart` hook - see `rules/agents.md`.
+2. Load every skill they name via the Skill tool BEFORE any edit. The guard-skills hook enforces this on edits and frontmatter preload does not satisfy it; loading via the Skill tool is the only path that clears the floor. If they name none, proceed and say so.
 3. Consult project memory before starting; record durable per-repo test conventions after finishing - fixture patterns, mocking approach, naming, what the project's test runner needs.
 
 ## Boundaries
