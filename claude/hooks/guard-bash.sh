@@ -177,6 +177,21 @@ _is_rc_file() {
   return 1
 }
 
+# Returns 0 (true) when $1 is a relative write target that would land loose in
+# the repo instead of scratch (rules/scratch-conventions.md). Unresolvable
+# targets - variables, subshells, quoted strings - return 1: $(scratch-dir.sh)
+# is the sanctioned form and must not trip this.
+_is_loose_write_target() {
+  local p="$1"
+  # shellcheck disable=SC2016  # matching a literal "$(" is the point here
+  case "$p" in
+  '' | - | \$* | *'$('* | \"* | \'*) return 1 ;;
+  scratch | scratch/* | */scratch | */scratch/*) return 1 ;;
+  /* | \~*) return 1 ;;
+  esac
+  return 0
+}
+
 # Per-segment checks: split on &&, ||, ;, newlines - not | so pipe chains
 # like curl|bash stay intact for the full-string check above. Each segment
 # is only checked when its leading token is a known dangerous command, so
@@ -380,6 +395,79 @@ _check_segment() {
     fi
     block "this repo uses ${_expected} (${_lf_found}); rerun as: ${_suggest}" "pm-mismatch"
     ;;
+  curl)
+    # -O/-J let the server name the file and drop it in cwd; there is no case
+    # where that is intended. An explicit -o/--output-dir target still has to
+    # resolve outside the repo, so a relative one gets a prompt.
+    local _carg _remote=0 _want_target=0 _target=""
+    for _carg in ${seg#"$lead"}; do
+      if ((_want_target)); then
+        _target="$_carg"
+        _want_target=0
+        continue
+      fi
+      case "$_carg" in
+      --) break ;;
+      --remote-name | --remote-name-all | --remote-header-name) _remote=1 ;;
+      --output | --output-dir) _want_target=1 ;;
+      --*) ;;
+      -*)
+        [[ "$_carg" == *O* || "$_carg" == *J* ]] && _remote=1
+        # Only a trailing -o consumes the next word as its value.
+        [[ "$_carg" == *o ]] && _want_target=1
+        ;;
+      esac
+    done
+    if ((_remote)); then
+      block "curl -O/-J writes a server-named file into the current directory; use: curl -o \"\$(scratch-dir.sh)/<name>\"" "download-to-repo"
+    fi
+    if _is_loose_write_target "$_target"; then
+      force_ask "curl would write '${_target}' into the repo; scratch-conventions.md wants \$(scratch-dir.sh)/<name>. Confirm only if this file belongs in the project tree."
+    fi
+    ;;
+  wget)
+    # wget's default is to write into cwd, so an output flag is mandatory.
+    # -O - is stdout; -P names a directory, -O a file. Both get path-checked.
+    local _warg _want_doc=0 _want_dir=0 _doc="" _dir="" _has_out=0
+    for _warg in ${seg#"$lead"}; do
+      if ((_want_doc)); then
+        _doc="$_warg"
+        _want_doc=0
+        _has_out=1
+        continue
+      fi
+      if ((_want_dir)); then
+        _dir="$_warg"
+        _want_dir=0
+        _has_out=1
+        continue
+      fi
+      case "$_warg" in
+      --) break ;;
+      --output-document=*)
+        _doc="${_warg#*=}"
+        _has_out=1
+        ;;
+      --directory-prefix=*)
+        _dir="${_warg#*=}"
+        _has_out=1
+        ;;
+      --output-document) _want_doc=1 ;;
+      --directory-prefix) _want_dir=1 ;;
+      --*) ;;
+      -O) _want_doc=1 ;;
+      -P) _want_dir=1 ;;
+      -*) ;;
+      esac
+    done
+    if ((_has_out == 0)); then
+      block "wget writes into the current directory by default; use: wget -P \"\$(scratch-dir.sh)\" <url>" "download-to-repo"
+    fi
+    local _wtarget="${_doc:-$_dir}"
+    if _is_loose_write_target "$_wtarget"; then
+      force_ask "wget would write '${_wtarget}' into the repo; scratch-conventions.md wants \$(scratch-dir.sh). Confirm only if this file belongs in the project tree."
+    fi
+    ;;
   cat | bat | head | tail | less | more | strings)
     local _sarg
     for _sarg in ${seg#"$lead"}; do
@@ -473,5 +561,19 @@ _check_segment() {
 while IFS= read -r _seg; do
   _check_segment "$_seg"
 done < <(printf '%s\n' "$norm" | sed -E 's/[[:space:]]*(&&|\|\|)[[:space:]]*/\n/g' | tr ';' '\n')
+
+# Redirected output to a bare filename or ./name lands in cwd - the repo root,
+# in a project session. Narrower than _is_loose_write_target on purpose: a
+# subdir target (docs/report.md) is plausibly a deliverable, a bare one is not.
+# The char class drops >&2, >(...), and /dev/* before they reach the check.
+_redir_re='(^|[[:space:]])[0-9]?>>?[[:space:]]*([^[:space:]&|$"'"'"'();<>]+)'
+if [[ "$norm" =~ $_redir_re ]]; then
+  _redir_target="${BASH_REMATCH[2]}"
+  if [[ "$_redir_target" != */* || "$_redir_target" == ./* ]]; then
+    if _is_loose_write_target "$_redir_target"; then
+      force_ask "'> ${_redir_target}' writes into the current directory; scratch-conventions.md wants > \"\$(scratch-dir.sh)/${_redir_target##*/}\". Confirm only if this file belongs in the project tree."
+    fi
+  fi
+fi
 
 exit 0

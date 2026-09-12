@@ -24,6 +24,8 @@ Resolve the destination with `scratch-dir.sh` first, then pass that path explici
 
 Never default to `.`, to a bare filename, or to whatever directory the tool picks on its own. The project root is tracked source: a stray file there pollutes `git status`, risks being committed, and lands in every clone.
 
+`guard-bash.sh` enforces the shell cases: `curl -O`/`-J` and a bare `wget` are blocked outright (the server picks the name, so there is no intended target), while an explicit relative target (`curl -o notes.json`, `wget -P downloads`, `cmd > out.log`) forces the permission prompt rather than a denial - a file that genuinely belongs in the project tree is a decision to confirm, not a mistake to block. Targets under `scratch/`, absolute paths, and `$(scratch-dir.sh)` forms pass untouched. Tool-driven writes (a browser screenshot's `out_dir`, an MCP server's own download path) are outside what a bash hook can see and rely on this rule alone.
+
 One naming pattern for structured artifacts, regardless of which tier `scratch-dir.sh` resolves to - the directory itself is what scopes an artifact to a project, not the filename:
 
 $(scratch-dir.sh)/<kind>-<scope-slug>-<YYYYMMDD-HHMM>.md
