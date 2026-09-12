@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # PreToolUse hook: inspects content being written/edited and blocks (1)
 # banned AI-tell opener/closer phrases (CLAUDE.md Voice section) and (2)
-# unchunked walls of text in write-* deliverables (adhd-output.md rule 8).
+# unchunked walls of text in write-* deliverables (rules/output.md section 1).
 # exit 2 blocks; any other nonzero exit is a soft failure. Callable
 # standalone or sourced by guard-dispatch.sh for the Edit|Write|MultiEdit path.
 
@@ -42,7 +42,7 @@ run_guard_tone() {
     if [[ -n "$content" ]]; then
       run="$(longest_prose_run "$content")"
       if ((run > 4)); then
-        block "unchunked wall of text (${run} consecutive prose lines). rules/output.md rule 8: break into short paragraphs, headers, or a list." "wall-of-text"
+        block "unchunked wall of text (${run} consecutive prose lines). rules/output.md section 1: break into short paragraphs, headers, or a list." "wall-of-text"
       fi
     fi
     ;;

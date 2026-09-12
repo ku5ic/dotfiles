@@ -169,7 +169,7 @@ Per PR/alert, report these fields:
 - Only `state == "open"` alerts are actionable. `fixed`, `dismissed`, `auto_dismissed` are not.
 - Do not push to or merge into a protected branch directly.
 - No opportunistic bumps. Touch only deps named in an open alert or open Dependabot PR.
-- One operation per Bash call. No chaining.
+- One mutating operation per Bash call.
 
 ## Stop conditions
 

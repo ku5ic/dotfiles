@@ -3,7 +3,7 @@
 #
 # guard-skills.sh reads $HOME/.claude/_stacks.yml (skill_file_map) and
 # $HOME/.claude/logs/skills.jsonl (what has been loaded this session) on
-# every Edit/Write/MultiEdit/Read. Each test fakes $HOME so real machine
+# every Edit/Write/MultiEdit. Each test fakes $HOME so real machine
 # state never leaks into the assertions; some tests copy the real repo's
 # _stacks.yml into the fake $HOME so the production map itself is exercised.
 #
@@ -157,19 +157,6 @@ YAML
   write_skills_log '{"ts":"2026-01-01T00:00:00Z","hook":"log-skills.sh","event":"PreToolUse","session_id":"other-session","cwd":"/x","expansion_type":null,"command_name":null,"command_args":null,"command_source":null,"skill_file":"bash-patterns","tool_name":"Skill"}'
   run run_guard_skills "/tmp/project/foo.sh" "s1"
   [ "$status" -eq 2 ]
-}
-
-@test "Read tool_name produces a read-verb block message" {
-  write_stacks_yml <<'YAML'
-skill_file_map:
-  - on: basename
-    globs: ["*.sh"]
-    skills: [bash-patterns]
-YAML
-  : >"$FAKE_HOME/.claude/logs/skills.jsonl"
-  run run_guard_skills "/tmp/project/foo.sh" "s1" "Read"
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"This read touches"* ]]
 }
 
 @test "Edit tool_name produces an edit-verb block message" {

@@ -174,14 +174,9 @@ run_guard() {
   [ "$status" -eq 0 ]
 }
 
-# Accepted limitation, not a bug: a for/while/until/case construct collapses
-# to one segment whose lead is a keyword ("for"), never on the safe-chain
-# list, so combining one with a real trailing chain operator always blocks -
-# even when the loop body is read-only. Verifying the body would need real
-# parsing; blocking conservatively here is the deliberate, simpler choice.
-@test "block: control-flow construct combined with a trailing chain operator" {
+@test "allow: control-flow construct combined with a trailing chain operator" {
   run run_guard 'for f in *.sh; do echo $f; done && ls'
-  [ "$status" -eq 2 ]
+  [ "$status" -eq 0 ]
 }
 
 @test "allow: double-quoted chain-operator text, no real chain present" {
@@ -306,43 +301,36 @@ run_guard() {
   [ "$status" -eq 2 ]
 }
 
-@test "block: mixed chain, unsafe command after &&" {
-  run run_guard 'ls && rm -rf /tmp/x'
-  [ "$status" -eq 2 ]
-}
-
-@test "block: mixed chain, unsafe command after ||" {
-  run run_guard 'ls || rm -rf /tmp/x'
-  [ "$status" -eq 2 ]
-}
-
-@test "block: mixed chain, unsafe command after ; (non-structural)" {
-  run run_guard 'ls; rm -rf /tmp/x'
-  [ "$status" -eq 2 ]
-}
-
-@test "block: chain of git commands (git excluded from safe-chain list)" {
+# Chaining itself is not a block: settings.json's ask list and the auto-mode
+# classifier own ordinary mutating commands. The hook still inspects every
+# segment, so a blocked pattern anywhere in a chain still blocks.
+@test "allow: chain of git commands" {
   run run_guard 'git fetch && git log'
-  [ "$status" -eq 2 ]
+  [ "$status" -eq 0 ]
 }
 
-@test "block: chain mixing git (leading) with a safe command" {
-  run run_guard 'git status && ls'
-  [ "$status" -eq 2 ]
-}
-
-@test "block: chain mixing git (trailing) with a safe command" {
+@test "allow: chain mixing git with a read-only command" {
   run run_guard 'ls && git status'
+  [ "$status" -eq 0 ]
+}
+
+@test "allow: chain with an ordinary rm (permission rules own it, not the hook)" {
+  run run_guard 'ls && rm -rf /tmp/x'
+  [ "$status" -eq 0 ]
+}
+
+@test "block: blocked pattern in a later && segment" {
+  run run_guard 'ls && pwd && rm -rf /'
   [ "$status" -eq 2 ]
 }
 
-@test "block: 3-segment chain, unsafe command in final position" {
-  run run_guard 'ls && pwd && rm -rf /tmp/x'
+@test "block: blocked pattern in a later || segment" {
+  run run_guard 'ls || rm -rf ~'
   [ "$status" -eq 2 ]
 }
 
-@test "block: for-loop with trailing unsafe && segment" {
-  run run_guard 'for f in *.sh; do echo $f; done && rm -rf /tmp/x'
+@test "block: blocked pattern after a for-loop" {
+  run run_guard 'for f in *.sh; do echo $f; done && rm -rf /'
   [ "$status" -eq 2 ]
 }
 

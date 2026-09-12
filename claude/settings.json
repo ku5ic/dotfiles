@@ -403,16 +403,6 @@
         ]
       },
       {
-        "matcher": "Read",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/guard-skills.sh",
-            "timeout": 5
-          }
-        ]
-      },
-      {
         "matcher": "Grep|Glob",
         "hooks": [
           {
@@ -577,7 +567,7 @@
     "command": "~/.claude/bin/subagent-statusline.sh"
   },
   "enabledPlugins": {
-    "security-guidance@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": false,
     "frontend-spacelift@spacelift-engineering": true,
     "i-have-adhd@i-have-adhd": true,
     "ponytail@ponytail": true
@@ -605,6 +595,14 @@
   "outputStyle": "Proactive",
   "spinnerTipsEnabled": false,
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "normal"
+    },
+    "claude-opus-5": {
+      "effortLevel": "high"
+    }
+  },
   "awaySummaryEnabled": false,
   "autoMemoryEnabled": true,
   "theme": "auto",

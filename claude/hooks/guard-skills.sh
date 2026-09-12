@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# PreToolUse hook for Edit, Write, MultiEdit, Read. Blocks edits/reads of
-# mapped file types until the required patterns skill is loaded for this
-# session - one extra round trip per skill-set per session, by design.
-# Callable standalone (also the sole PreToolUse Read hook) or sourced by
+# PreToolUse hook for Edit, Write, MultiEdit. Blocks edits of mapped file
+# types until the required patterns skill is loaded for this session - one
+# extra round trip per skill-set per session, by design. Reads are not
+# gated: reading a file is not writing it. Callable standalone or sourced by
 # guard-dispatch.sh for the Edit|Write|MultiEdit path.
 HOOK_NAME="guard-skills.sh"
 # shellcheck source=_lib.sh
@@ -20,12 +20,6 @@ run_guard_skills() {
 
   session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty')"
   [[ -z "$session_id" ]] && return 0
-
-  tool_name="$(printf '%s' "$payload" | jq -r '.tool_name // empty')"
-  case "$tool_name" in
-  Read) verb="read" ;;
-  *) verb="edit" ;;
-  esac
 
   stacks_yml="$HOME/.claude/_stacks.yml"
   command -v yq >/dev/null 2>&1 || return 0
@@ -124,7 +118,7 @@ run_guard_skills() {
   missing_list="$(printf '%s, ' "${missing[@]}")"
   missing_list="${missing_list%, }"
 
-  echo "This $verb touches $path. Load the following skills via the Skill tool first, then retry the $verb: $missing_list" >&2
+  echo "This edit touches $path. Load the following skills via the Skill tool first, then retry the edit: $missing_list" >&2
   exit 2
 }
 

@@ -2,18 +2,17 @@
 # Tests for ~/.dotfiles/claude/hooks/guard-response.sh.
 #
 # guard-response.sh is a Stop hook: it reads a synthetic transcript_path
-# (JSONL, one line per turn) plus stop_hook_active off the payload, derives a
-# sticky short/normal/long tier from every prior user message, and blocks the
-# final assistant message on banned opener/closer phrases or an over-length
-# prose ceiling. Each test writes its own transcript fixture (oldest turn
-# first, matching real JSONL append order) and feeds a payload referencing it
-# on stdin. CLAUDE_GUARD_RESPONSE=1 is set explicitly per the experiment gate
-# the hook itself documents; the disabled-by-default case is tested without it.
+# (JSONL, one line per turn) plus stop_hook_active off the payload and blocks
+# the final assistant message on banned opener/closer phrases or an unchunked
+# wall of text (more than 4 consecutive prose lines outside a fence). Each
+# test writes its own transcript fixture (oldest turn first, matching real
+# JSONL append order) and feeds a payload referencing it on stdin.
+# CLAUDE_GUARD_RESPONSE=1 is set explicitly per the gate the hook itself
+# documents; the disabled-by-default case is tested without it.
 #
 # user_turn/assistant_turn default to the array content shape ([{type: text,
 # text: ...}]) real transcripts overwhelmingly use; pass "string" as the
-# second arg for the plain-string shape the hook also has to handle (see the
-# back-compat test below).
+# second arg for the plain-string shape the hook also has to handle.
 #
 # Run with: bats tests/
 
@@ -23,11 +22,6 @@ setup() {
   : >"$TRANSCRIPT"
 }
 
-# user_turn <text> [shape]  shape defaults to "array" -- the shape a real
-# transcript uses for typed prompts and skill-body-expansion turns alike
-# (159/178 of this session's own user entries). Pass "string" for the plain-
-# string shape Claude Code also emits (e.g. the raw <command-message>/
-# <command-name> tag for a slash command, or a bare "/command" prompt).
 user_turn() {
   local text="$1" shape="${2:-array}"
   if [[ "$shape" == "string" ]]; then
@@ -46,14 +40,11 @@ assistant_turn() {
   fi
 }
 
-# append_turns <jsonl-line> [jsonl-line ...]  appends to $TRANSCRIPT in order.
 append_turns() {
   printf '%s\n' "$@" >>"$TRANSCRIPT"
 }
 
 # run_guard_response [stop_hook_active] [transcript_path]
-# Enables the experiment gate (CLAUDE_GUARD_RESPONSE=1) unless the caller
-# overrides the env directly (see the disabled-by-default test).
 run_guard_response() {
   local stop_active="${1:-false}" transcript_path="${2:-$TRANSCRIPT}"
   jq -n --arg t "$transcript_path" --argjson stop "$stop_active" \
@@ -61,7 +52,8 @@ run_guard_response() {
     CLAUDE_GUARD_RESPONSE=1 "$HOOK"
 }
 
-# n_lines <count> <label>  builds <count> distinct non-empty prose lines.
+# n_lines <count> <label>  builds <count> distinct non-empty prose lines with
+# no blank line between them - a wall.
 n_lines() {
   local count="$1" label="$2" i out=""
   for ((i = 1; i <= count; i++)); do
@@ -70,90 +62,27 @@ n_lines() {
   printf '%s' "$out"
 }
 
-@test "disabled by default: a banned-phrase, over-length response is not blocked when CLAUDE_GUARD_RESPONSE is unset" {
+# n_paragraphs <count> <label>  same lines, blank-line separated - chunked.
+n_paragraphs() {
+  local count="$1" label="$2" i out=""
+  for ((i = 1; i <= count; i++)); do
+    out+="${label} paragraph ${i}"$'\n\n'
+  done
+  printf '%s' "$out"
+}
+
+@test "disabled by default: a banned-phrase wall of text is not blocked when CLAUDE_GUARD_RESPONSE is unset" {
   append_turns "$(user_turn "hello")" "$(assistant_turn "Certainly, $(n_lines 30 prose)")"
-  # env -u, not a bare omission: this session's own settings.json env block
-  # already exports CLAUDE_GUARD_RESPONSE=1 into every Bash tool call, so an
-  # omitted assignment here would silently inherit it and defeat the test.
+  # env -u, not a bare omission: settings.json exports CLAUDE_GUARD_RESPONSE=1
+  # into every Bash tool call, so an omitted assignment would inherit it.
   run env -u CLAUDE_GUARD_RESPONSE bash -c "jq -n --arg t '$TRANSCRIPT' '{transcript_path: \$t}' | '$HOOK'"
   [ "$status" -eq 0 ]
 }
 
-@test "loop safety: stop_hook_active true allows the response through even when over the short ceiling" {
+@test "loop safety: stop_hook_active true allows a wall of text through" {
   append_turns "$(user_turn "hello")" "$(assistant_turn "$(n_lines 30 prose)")"
   run run_guard_response true
   [ "$status" -eq 0 ]
-}
-
-@test "an ordinary slash command gets the short ceiling, not an exemption" {
-  append_turns "$(user_turn "/flow-test")" "$(assistant_turn "$(n_lines 13 prose)")"
-  run run_guard_response
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"short-tier ceiling is 12"* ]]
-}
-
-@test "a terminal-output command (write-commit) keeps the exemption" {
-  append_turns "$(user_turn "/write-commit")" "$(assistant_turn "$(n_lines 30 prose)")"
-  run run_guard_response
-  [ "$status" -eq 0 ]
-}
-
-@test "the command name itself never lifts the tier (flow-review must not buy the normal ceiling)" {
-  # Real shape: the typed command is a plain-string turn carrying the
-  # <command-message>/<command-name> tag; Claude Code then injects the
-  # skill's own procedure text as a later, array-shaped user turn. last_user
-  # must resolve to the command turn, not the skill body -- and the command
-  # name's own vocabulary ("review") must not be read as the user asking for
-  # a review, which would lift the ceiling from 12 to 40.
-  append_turns \
-    "$(user_turn "<command-message>flow-review</command-message>
-<command-name>/flow-review</command-name>" string)" \
-    "$(user_turn "Base directory for this skill: /Users/ku5ic/.claude/skills/flow-review
-
-## Procedure
-Write the review report and audit every file.")" \
-    "$(assistant_turn "$(n_lines 13 prose)")"
-  run run_guard_response
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"short-tier ceiling is 12"* ]]
-}
-
-@test "a write-* command in the wrapper shape keeps the exemption" {
-  append_turns \
-    "$(user_turn "<command-message>write-explainer</command-message>
-<command-name>/write-explainer</command-name>" string)" \
-    "$(assistant_turn "$(n_lines 30 prose)")"
-  run run_guard_response
-  [ "$status" -eq 0 ]
-}
-
-@test "a banned phrase is still blocked inside an exempt command" {
-  append_turns "$(user_turn "/write-commit")" "$(assistant_turn "Certainly, here is the message.")"
-  run run_guard_response
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"banned AI-tell phrase"* ]]
-}
-
-@test "last_user ignores an isMeta turn that is not the skill-body prefix shape" {
-  # isMeta marks any injected content the user did not type, not only the
-  # skill-body case above - e.g. a relayed message from another agent. Without
-  # filtering on isMeta, its vocabulary ("report") fires the per-message
-  # trigger and lifts the tier past the point where 13 lines still blocks.
-  append_turns \
-    "$(user_turn "hello")" \
-    "$(jq -nc --arg text "Another Claude session sent a message: it has a bug report for you." \
-      '{type: "user", isMeta: true, message: {content: [{type: "text", text: $text}]}}')" \
-    "$(assistant_turn "$(n_lines 13 prose)")"
-  run run_guard_response
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"short-tier ceiling is 12"* ]]
-}
-
-@test "string-shaped content (back-compat): a banned-phrase response is still blocked" {
-  append_turns "$(user_turn "hello" string)" "$(assistant_turn "Certainly, here is the answer." string)"
-  run run_guard_response
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"banned AI-tell phrase"* ]]
 }
 
 @test "no transcript_path in the payload fails open" {
@@ -180,9 +109,8 @@ Write the review report and audit every file.")" \
 }
 
 @test "blocks a banned closer phrase even when it opens a later line, not just the first" {
-  # Built from two fragments (not one literal line) so this test file's own
-  # source text never contains the trigger phrase at a line start -- that
-  # would otherwise trip guard-tone.sh on this very file.
+  # Built from two fragments so this file's own source never contains the
+  # trigger phrase at a line start (that would trip guard-tone.sh on it).
   local closer="In conclu"
   closer+="sion, that covers it."
   append_turns "$(user_turn "hello")" "$(assistant_turn "First line of the answer.
@@ -197,20 +125,53 @@ ${closer}")"
   [ "$status" -eq 0 ]
 }
 
-@test "short tier: a response over the default 12-line ceiling is blocked" {
-  append_turns "$(user_turn "hello")" "$(assistant_turn "$(n_lines 13 prose)")"
+@test "string-shaped content (back-compat): a banned-phrase response is still blocked" {
+  append_turns "$(user_turn "hello" string)" "$(assistant_turn "Certainly, here is the answer." string)"
   run run_guard_response
   [ "$status" -eq 2 ]
-  [[ "$output" == *"short-tier ceiling is 12"* ]]
+  [[ "$output" == *"banned AI-tell phrase"* ]]
 }
 
-@test "short tier: a response at exactly the 12-line ceiling is allowed" {
-  append_turns "$(user_turn "hello")" "$(assistant_turn "$(n_lines 12 prose)")"
+@test "a banned phrase is blocked inside a slash-command reply too (no exemptions)" {
+  append_turns "$(user_turn "/write-commit")" "$(assistant_turn "Certainly, here is the message.")"
+  run run_guard_response
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"banned AI-tell phrase"* ]]
+}
+
+@test "wall of text: 5 consecutive prose lines with no blank line are blocked" {
+  append_turns "$(user_turn "hello")" "$(assistant_turn "$(n_lines 5 prose)")"
+  run run_guard_response
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"wall of text"* ]]
+}
+
+@test "wall of text: exactly 4 consecutive prose lines are allowed" {
+  append_turns "$(user_turn "hello")" "$(assistant_turn "$(n_lines 4 prose)")"
   run run_guard_response
   [ "$status" -eq 0 ]
 }
 
-@test "fenced code block lines do not count toward the prose ceiling" {
+@test "no length ceiling: 40 blank-line-separated paragraphs are allowed" {
+  append_turns "$(user_turn "hello")" "$(assistant_turn "$(n_paragraphs 40 prose)")"
+  run run_guard_response
+  [ "$status" -eq 0 ]
+}
+
+@test "list items never count toward a wall" {
+  response="Answer line.
+- one
+- two
+- three
+- four
+- five
+- six"
+  append_turns "$(user_turn "hello")" "$(assistant_turn "$response")"
+  run run_guard_response
+  [ "$status" -eq 0 ]
+}
+
+@test "fenced code block lines never count toward a wall" {
   response="one prose line
 \`\`\`
 $(n_lines 30 code)
@@ -219,65 +180,4 @@ another prose line"
   append_turns "$(user_turn "hello")" "$(assistant_turn "$response")"
   run run_guard_response
   [ "$status" -eq 0 ]
-}
-
-@test "a per-message 'explain' trigger lifts the ceiling to the normal tier for this reply" {
-  append_turns "$(user_turn "explain how this works")" "$(assistant_turn "$(n_lines 20 prose)")"
-  run run_guard_response
-  [ "$status" -eq 0 ]
-}
-
-@test "a trigger word buried mid-sentence does not lift the ceiling" {
-  # The anchored lift is the point: asking "explain X" wants prose, but the
-  # same vocabulary inside an ordinary statement must not buy 40 lines.
-  append_turns "$(user_turn "I fixed the thing you flagged in the review, it works now")" \
-    "$(assistant_turn "$(n_lines 13 prose)")"
-  run run_guard_response
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"short-tier ceiling is 12"* ]]
-}
-
-@test "a polite prefix before the trigger still lifts the ceiling" {
-  append_turns "$(user_turn "can you explain how this works")" "$(assistant_turn "$(n_lines 20 prose)")"
-  run run_guard_response
-  [ "$status" -eq 0 ]
-}
-
-@test "the normal-tier ceiling still blocks a response over 40 lines" {
-  append_turns "$(user_turn "explain how this works")" "$(assistant_turn "$(n_lines 41 prose)")"
-  run run_guard_response
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"normal-tier ceiling is 40"* ]]
-}
-
-@test "sticky long mode set in an earlier message removes the line ceiling for a later, unrelated reply" {
-  append_turns "$(user_turn "long mode")" \
-    "$(user_turn "what time is it")" \
-    "$(assistant_turn "$(n_lines 80 prose)")"
-  run run_guard_response
-  [ "$status" -eq 0 ]
-}
-
-@test "sticky mode uses the last mode word, not the first, when both appear across the session" {
-  append_turns "$(user_turn "long mode")" \
-    "$(user_turn "switch to short mode")" \
-    "$(assistant_turn "$(n_lines 20 prose)")"
-  run run_guard_response
-  [ "$status" -eq 2 ]
-}
-
-@test "a message quoting all three mode words does not pin the tier (must BE the command, not mention one)" {
-  append_turns "$(user_turn "Quick check: does long mode, normal mode, and short mode all live in the same file?")" \
-    "$(assistant_turn "$(n_lines 13 prose)")"
-  run run_guard_response
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"short-tier ceiling is 12"* ]]
-}
-
-@test "a compound same-message mode-switch sentence does not resolve to long via if/elif precedence" {
-  append_turns "$(user_turn "we were in long mode, switch to short mode")" \
-    "$(assistant_turn "$(n_lines 13 prose)")"
-  run run_guard_response
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"short-tier ceiling is 12"* ]]
 }

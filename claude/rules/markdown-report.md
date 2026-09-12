@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/scratch/**/*.md"
+---
+
 # Markdown report format
 
 Consistent format for audit reports, review output, and workflow artifacts. Applies to every report a flow or audit command writes to disk, and to any other structured finding report.

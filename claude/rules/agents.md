@@ -1,67 +1,31 @@
 # Agents
 
-Subagent capability shells live under `$HOME/.claude/agents/`. The canonical inventory is `/agents` output, also auto-injected via the Agent tool's system-reminder each session.
-
-## Model and effort pins
-
-A skill or agent pins `model:`/`effort:` frontmatter only when it diverges from the session default in `settings.json` - not to restate it. `doctor.sh`'s frontmatter lint flags a pin equal to the session default as `redundant-pin`.
-
-| Work type                                                | Where it runs         | Pin              |
-| -------------------------------------------------------- | --------------------- | ---------------- |
-| Design, critique, adversarial review, fault localization | inline skill or agent | `model: opus`    |
-| Execution against a written spec                         | inline skill          | `effort: xhigh`  |
-| Mechanical: grep, fetch, run a script                    | agent                 | `model: haiku`   |
-| Prose from material already in hand                      | skill                 | `model: haiku`   |
-| Mixed judgment and mechanical work                       | agent                 | no pin (inherit) |
-
-A skill may set `model:` or `effort:`, never both - Claude Code silently drops the model override when both are present on a skill (upstream bug; agents are unaffected). `doctor.sh` enforces this as `model-effort-pair`.
-
-A skill forks (`context: fork`) only to carry a `model:` pin or to name an `agent:`. With opus as the session default, a fork with neither buys nothing and costs the AskUserQuestion tool - see the forked decision protocol below. No lint catches this, so check it when removing a pin.
+Subagent shells live under `$HOME/.claude/agents/`. The canonical inventory is `/agents` output.
 
 ## Spawn discipline
 
-A subagent costs its own request budget against the 5h session window, so default to doing the work directly. Reach for one only when:
+A subagent costs its own request budget, so default to doing the work directly. Spawn one only when the task matches an agent's specialty, needs isolation from the main context (a broad sweep, a read-only audit), or genuinely parallelizes across independent items. Spawn `Explore` only past 5 unresolved queries, not 3.
 
-- The task matches an agent's specialty.
-- It needs isolation from the main context (a broad multi-file sweep, a read-only audit).
-- It genuinely parallelizes across independent items.
+An agent finishes its own task rather than spawning further subagents. Nested spawning is allowed only from a specialized agent, for a sub-task outside its own tool grant, at most one per invocation.
 
-Not as a reflexive first move for something a single Read or Grep call would answer. Override for the built-in Explore-agent guidance: spawn `Explore` only past 5 unresolved queries, not 3.
+## Model and effort pins
 
-## Nested delegation
-
-An agent invoked via the Agent tool finishes its own task rather than spawning further subagents - this applies inside an agent's own execution, not just at the point the main session spawns one. Nested spawning is allowed only when all three hold:
-
-- The delegating agent is a specialized one (a defined specialty in its own frontmatter), never a generic catch-all (`claude`, `general-purpose`).
-- The sub-task genuinely falls outside the delegating agent's own tool grant or specialty - not a task it could do itself with the tools it already has.
-- At most one subagent per invocation - no chains, no fan-out from inside an agent.
-
-None of the agents under `claude/agents/` grant the `Agent` tool today, so this is a ceiling for future agent design, not a fix to an existing leak - the generic catch-alls are the only ones with wildcard tool access able to spawn at all, and they are exactly the case this rule tells to prefer doing the work directly.
-
-## Two operational facts
-
-1. Agents inherit the CLAUDE.md hierarchy and git status automatically, but do NOT receive the main session's `SessionStart` hook injection (`inject-context.sh`) - instead every subagent gets the same content via a `SubagentStart` hook (`inject-subagent-context.sh`, matcher `*`), per the agent shell below. `guard-skills` is the enforcement floor for reading or editing agents either way.
-2. Forked skills (`context: fork`) run their whole body in a subagent; only `flow-checks` names one via `agent: <name>`, and the rest fork to carry a `model: haiku` pin. Most agent work instead comes from an inline skill body dispatching via the Agent tool, including `flow-plan`, `flow-explore`, and `flow-implement` - all inline so their phase-boundary stops and AskUserQuestion steps stay in the main conversation.
+Pin `model:` or `effort:` frontmatter only when it diverges from the session default; `doctor.sh` flags a redundant pin. A skill may set `model:` or `effort:`, never both (Claude Code drops the model override when both are present on a skill). A skill forks (`context: fork`) only to carry a `model:` pin or to name an `agent:`.
 
 ## Forked decision protocol
 
-1. A forked skill has no access to the AskUserQuestion tool.
-2. A step that would otherwise ask via AskUserQuestion instead stops and returns the question(s) and options under a `## Needs decision` heading, rather than guessing or silently deferring the answer in prose.
-3. On a task-notification whose result carries that heading, ask the question(s) via AskUserQuestion in the main conversation, then resume the same agent via SendMessage with the resolved answer(s) so it can finish the rest of its procedure.
+1. A forked skill has no AskUserQuestion tool.
+2. A step that would ask instead stops and returns the question(s) and options under a `## Needs decision` heading.
+3. On a task-notification carrying that heading, ask via AskUserQuestion in the main conversation, then resume the same agent via SendMessage with the answer(s).
 
 ## Verify agent-claimed work before building on it
 
-An agent's report describes what it intended to do, not necessarily what it did - a subagent can report a fully fabricated result (a convincing diff, passing tests, a clean lint run) for work that never happened. Before trusting "I changed/found X" enough to act on it:
-
-- Claimed edits: `git status` or `git diff --stat` for the touched paths.
-- Claimed findings: spot-check at least one cited `file:line` directly.
-
-This is a cheap check against a real failure mode, not general distrust of every agent result - reserve it for claims you are about to build on (commit, report to the user, or hand to another agent), not every intermediate status update.
+An agent's report describes what it intended, not necessarily what it did. Before committing, reporting, or handing a claim to another agent: claimed edits get a `git diff --stat` on the touched paths; claimed findings get one cited `file:line` spot-checked.
 
 ## Agent shell boilerplate
 
-Every agent definition assumes these three, so none of them needs restating in an agent file:
+Every agent definition assumes these three, so no agent file restates them:
 
-- **Startup**: repo context and the `<required-skills>`/`<suggested-skills>` blocks arrive automatically via the `SubagentStart` hook (`inject-subagent-context.sh`, matcher `*`). No manual `agent-context.sh` step, including for agents without Bash - hooks run in the harness, independent of the subagent's tool grants. An agent whose job needs no repo context (`checker`, `researcher`) ignores the block.
+- **Startup**: repo context and the `<required-skills>`/`<suggested-skills>` blocks arrive via the `SubagentStart` hook (`inject-subagent-context.sh`), independent of the agent's tool grants. Agents that need no repo context (`checker`, `researcher`) ignore the block.
 - **Read-only boundary**: Edit and Write exist only for memory and a scratch report. Never touch project source; state fixes as instructions.
 - **Output**: follow the invoking skill's format and path. Long output goes to a named scratch path plus a short digest.

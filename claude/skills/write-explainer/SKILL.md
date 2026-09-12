@@ -39,7 +39,7 @@ Where it goes:
 - Default to terminal. Only write to a file when asked - honor an exact location if one is given (e.g. "on desktop").
 - Otherwise use `$(scratch-dir.sh)/<kind>-<scope-slug>-<YYYYMMDD-HHMM>.md` per the scratch convention.
 
-Invoking this skill is itself the detailed-explanation exception in `rules/output.md` - full sentences, full depth, no length ceiling. That exception covers how much gets said, not how it's structured: within each header's section, still short paragraphs (roughly 3 lines, per rule 8) and one hop or one point per paragraph, never one long undifferentiated block under a header.
+Invoking this skill is itself the detailed-explanation exception in `rules/output.md` - full sentences, full depth, no length ceiling. That exception covers how much gets said, not how it's structured: within each header's section, still short paragraphs (roughly 3 lines, per rules/output.md section 1) and one hop or one point per paragraph, never one long undifferentiated block under a header.
 
 ## Rules
 

@@ -48,7 +48,7 @@ Factual question (how big, what secrets, how fast, what is in this JSON): reach 
 
 Arguments go as plain positional args after a space. Do not wrap a call in `bash` or `sh`; the shebang handles it. Inline skill injection uses the same form: `` !`project-name.sh` ``.
 
-`settings.json` grants scoped `Bash(<name>:*)` allows keyed to the bare name - a pathful or wrapped invocation will not match and triggers a permission prompt. It also matters for `guard-bash.sh`'s chain-safety classification, which keys on the leading binary name.
+`settings.json` grants scoped `Bash(<name>:*)` allows keyed to the bare name - a pathful or wrapped invocation will not match and triggers a permission prompt.
 
 Script-to-script calls inside the bin scripts are exempt; they resolve paths internally.
 

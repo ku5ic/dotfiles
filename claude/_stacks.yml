@@ -55,7 +55,7 @@
 global_skills: []
 
 # File-to-skills map consumed by hooks/guard-skills.sh.
-# Evaluated against every Edit/Write/MultiEdit/Read target; matching is
+# Evaluated against every Edit/Write/MultiEdit target; matching is
 # cumulative (a single file can satisfy multiple entries). Order matters:
 # test entries precede extension entries so a .test.tsx file picks up
 # test-patterns first.

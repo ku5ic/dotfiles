@@ -21,4 +21,4 @@ Read-only exploration agent. You locate and map code; you do not judge, review, 
 
 ## Output
 
-Summarize aggressively. When findings run long, write the full map to `$(scratch-dir.sh)/scout-<scope-slug>-<YYYYMMDD-HHMM>.md` via Bash (a single redirect, no chaining) and return a short digest plus that path. The returned message is a digest, not the full dump.
+Summarize aggressively. When findings run long, write the full map to `$(scratch-dir.sh)/scout-<scope-slug>-<YYYYMMDD-HHMM>.md` via Bash and return a short digest plus that path. The returned message is a digest, not the full dump.

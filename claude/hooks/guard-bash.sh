@@ -69,47 +69,6 @@ if [[ "$_cmd_sq" =~ xargs[[:space:]]+((-[^[:space:]]+[[:space:]]+)*)rm[[:space:]
   block "xargs rm with recursive or force flag" "xargs-rm"
 fi
 
-# Returns 0 (true) when $1's side effects are read-only regardless of args,
-# safe in a &&/||/; chain. git is deliberately excluded: some subcommands
-# mutate, and chain-safety here is classified by binary name only.
-_is_safe_chain_lead() {
-  case "$1" in
-  ls | cat | bat | head | tail | less | more | grep | rg | fd | find | \
-    pwd | echo | printf | date | wc | sort | uniq | jq | yq | gron | qsv | \
-    stat | file | tree | du | df | which | type | tokei | hyperfine | diff | \
-    basename | dirname) return 0 ;;
-  esac
-  return 1
-}
-
-# Chaining (&&, ||, ;) is allowed only when every command is on the
-# read-only list above. Strip structural ; first (case terminator ;; and ;
-# before do/done/then/else/elif/fi/case/esac) - those never count as
-# chaining. Pipes are unrestricted here; the segment splitter handles them
-# and each side is still checked per-segment below.
-_cmd_struct_stripped="$(printf '%s' "$_cmd_sq" | sed -E -e 's/;;/ /g' -e 's/;[[:space:]]*(do|done|then|else|elif|fi|case|esac)([^a-zA-Z0-9_]|$)/ /g')"
-
-if [[ "$_cmd_struct_stripped" =~ \&\& ]] || [[ "$_cmd_struct_stripped" =~ \|\| ]] || [[ "$_cmd_struct_stripped" =~ \; ]]; then
-  _chain_unsafe_lead=""
-  # Walk $_cmd_struct_stripped, not raw $norm: already quote-stripped and
-  # structural ; already blanked, so neither can resurface a bogus segment.
-  while IFS= read -r _chain_seg; do
-    _chain_seg="${_chain_seg#"${_chain_seg%%[![:space:]]*}"}"
-    [[ -z "$_chain_seg" ]] && continue
-    _chain_lead="${_chain_seg%% *}"
-    if ! _is_safe_chain_lead "$_chain_lead"; then
-      _chain_unsafe_lead="$_chain_lead"
-      break
-    fi
-  done < <(printf '%s\n' "$_cmd_struct_stripped" | sed -E 's/[[:space:]]*(&&|\|\|)[[:space:]]*/\n/g' | tr ';' '\n')
-
-  if [[ -n "$_chain_unsafe_lead" ]]; then
-    echo "Blocked by ${HOOK_NAME}: chain operator detected; '${_chain_unsafe_lead}' is not on the read-only safe-chain list" >&2
-    echo "Run as separate Bash tool calls, or use the tool's native path/dir argument (git -C, tokei <path>, etc.)." >&2
-    exit 2
-  fi
-fi
-
 # Prints "manager:lockfile" for the first lockfile match in <dir> or its git
 # toplevel, nothing if none found. Manager comes from bin/_lib.sh's
 # resolve_package_manager (already sourced); this only adds the matching

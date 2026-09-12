@@ -56,7 +56,7 @@ readonly BANNED_TELL_REGEX='^(certainly|absolutely|of course|sure)[!,.]|^(great 
 
 # Longest run of consecutive non-blank, non-list/heading/blockquote/table
 # lines in $1, outside fenced code blocks - a deterministic stand-in for
-# adhd-output.md rule 8 (no walls of text); the rest of that rule needs
+# rules/output.md section 1 (no walls of text); the rest of that rule needs
 # judgment a hook can't make.
 longest_prose_run() {
   printf '%s\n' "$1" | awk '

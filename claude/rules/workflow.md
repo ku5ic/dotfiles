@@ -27,8 +27,7 @@ Destructive operations require explicit confirmation before running: `rm`, `git 
 
 Most of this is enforced by `guard-bash.sh`.
 
-- Chaining with `&&`, `||`, or `;` is allowed only when every command in the chain is read-only (see `_is_safe_chain_lead`). `git` is never chain-safe, even for read-only subcommands - chain safety is classified by binary name, not subcommand.
-- A chain containing any mutating command goes in separate Bash calls.
+- Chaining with `&&`, `||`, or `;` is fine; every segment is still checked on its own. Keep a mutating command (`rm`, `git commit`, an install) in its own Bash call so a failure earlier in the chain cannot mask it.
 - Pipes are for single-operation semantics only: `cmd | grep`, `find | wc -l`, `git log | head`. Sequential checks go in separate calls.
 - Use native path arguments instead of `cd <dir> && cmd`: `git -C <dir>`, `tokei <path>`. See `rules/tooling.md`.
 - `2>&1` is unnecessary (the Bash tool merges stderr) but no longer blocked.
