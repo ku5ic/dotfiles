@@ -45,7 +45,7 @@ gh api "repos/<slug>/dependabot/alerts" --paginate \
   --jq '.[] | select(.state=="open") | {number, severity: .security_vulnerability.severity, cvss: .security_advisory.cvss.score, ghsa: .security_advisory.ghsa_id, pkg: .dependency.package.name, ecosystem: .dependency.package.ecosystem, scope: .dependency.scope, relationship: .dependency.relationship, manifest: .dependency.manifest_path, fixed: .security_vulnerability.first_patched_version.identifier, range: .security_vulnerability.vulnerable_version_range}'
 ```
 
-Field paths are verified against a live payload. The `ecosystem` field identifies each alert's ecosystem; use it. `state` is one of `open`, `fixed`, `dismissed`, `auto_dismissed`; only `open` is actionable.
+Field paths were verified against a live payload on 2026-07-02; re-check them if the endpoint's shape has moved since. The `ecosystem` field identifies each alert's ecosystem; use it. `state` is one of `open`, `fixed`, `dismissed`, `auto_dismissed`; only `open` is actionable.
 
 Branch on the outcome (read it with `--include` and the `HTTP/2 <code>` line):
 

@@ -10,6 +10,8 @@ description: >
 
 # Logging Patterns
 
+Review checklist plus the configuration shapes that are easy to get wrong. Level semantics and handler constructors are in the stdlib docs.
+
 ## When to load this skill
 
 - Python project with `import logging` or `import structlog`
@@ -24,82 +26,15 @@ description: >
 
 ---
 
-## stdlib logging
+## stdlib gotchas
 
-### Logger setup
+- `basicConfig` is a no-op if the root logger already has handlers. Call it once at the entry point; pass `force=True` to replace existing handlers (useful in tests).
+- Records propagate up the dot-separated hierarchy to parent handlers. Set `propagate = False` only when you have deliberately attached a handler to that logger - otherwise you get every record twice.
+- Silence a noisy dependency by name rather than lowering the global level: `logging.getLogger("httpx").setLevel(logging.WARNING)`.
 
-Get a module-level logger. Never use the root logger directly in library code.
+## structlog configuration
 
-```python
-import logging
-
-logger = logging.getLogger(__name__)
-```
-
-### Log levels
-
-| Level    | Value | When to use                           |
-| -------- | ----- | ------------------------------------- |
-| DEBUG    | 10    | Detailed diagnostic info, dev only    |
-| INFO     | 20    | Routine operational events            |
-| WARNING  | 30    | Something unexpected but recoverable  |
-| ERROR    | 40    | Operation failed, execution continues |
-| CRITICAL | 50    | Application cannot continue           |
-
-### Application bootstrap (call once at startup)
-
-```python
-import logging
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s %(message)s",
-    datefmt="%Y-%m-%dT%H:%M:%S",
-)
-```
-
-`basicConfig` only takes effect if the root logger has no handlers. Call it exactly once at the entry point. Pass `force=True` to replace existing handlers (useful in tests).
-
-### Rotating file handler
-
-```python
-from logging.handlers import RotatingFileHandler
-
-handler = RotatingFileHandler(
-    "app.log",
-    maxBytes=10_000_000,  # 10 MB
-    backupCount=5,
-)
-handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s"))
-logging.getLogger().addHandler(handler)
-```
-
-### Logger hierarchy
-
-Loggers are organized by dot-separated name. `foo.bar` is a child of `foo` which is a child of the root logger. Log records propagate up to parent handlers by default.
-
-Suppress a noisy third-party logger without disabling all logging:
-
-```python
-logging.getLogger("httpx").setLevel(logging.WARNING)
-logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
-```
-
-Set `propagate = False` on a logger only when you have deliberately attached a handler to it and do not want records reaching the root handler (prevents double logging).
-
----
-
-## structlog
-
-structlog adds structured key-value context to log records. Prefer it over stdlib alone for any application that parses logs downstream (log aggregators, alerting systems).
-
-### Install
-
-```bash
-pip install structlog
-```
-
-### Configure once at startup
+The processor chain is order-sensitive and the API shifts between minor versions - pin this shape and verify against the docs on upgrade.
 
 ```python
 import logging
@@ -112,7 +47,7 @@ structlog.configure(
         structlog.processors.StackInfoRenderer(),
         structlog.dev.set_exc_info,
         structlog.processors.TimeStamper(fmt="iso", utc=True),
-        structlog.dev.ConsoleRenderer(),  # swap for JSONRenderer in production
+        structlog.dev.ConsoleRenderer(),  # JSONRenderer() in production
     ],
     wrapper_class=structlog.make_filtering_bound_logger(logging.DEBUG),
     logger_factory=structlog.PrintLoggerFactory(),
@@ -120,74 +55,22 @@ structlog.configure(
 )
 ```
 
-For production, replace `ConsoleRenderer()` with `structlog.processors.JSONRenderer()` to emit machine-readable JSON.
-
-### Per-module logger
-
-```python
-import structlog
-
-logger = structlog.get_logger(__name__)
-
-logger.info("user.created", user_id=42, email="a@example.com")
-```
-
-### Bind context to a logger instance
-
-```python
-request_log = logger.bind(request_id=request.id, user_id=current_user.id)
-request_log.info("payment.started", amount=99.99)
-request_log.info("payment.completed")
-```
-
-`bind` returns a new logger; the original is unchanged. Chain calls to accumulate context.
-
-### Bind context across async tasks (contextvars)
-
-For request-scoped context that survives across awaits and task boundaries:
-
-```python
-import structlog
-
-structlog.contextvars.bind_contextvars(request_id=request.id)
-# All log calls in this context automatically include request_id
-logger.info("processing")
-structlog.contextvars.unbind_contextvars("request_id")  # or clear_contextvars()
-```
-
-`merge_contextvars` in the processor chain merges these into every log record.
-
-### Async logging
-
-```python
-async def handle_request():
-    await logger.ainfo("request.received", path="/api/orders")
-```
-
-Use `ainfo`, `adebug`, `aerror` etc. in async code to avoid blocking.
-
-### stdlib integration
-
-To route structlog output through Python's stdlib logging (useful when third-party libraries also log):
-
-```python
-structlog.stdlib.recreate_defaults()
-```
-
-This reconfigures structlog to use stdlib as its output and sets up compatible processors.
+- Request-scoped context that survives awaits and task boundaries goes through `structlog.contextvars.bind_contextvars(...)`, which `merge_contextvars` folds into every record. `logger.bind(...)` returns a new logger and does not cross task boundaries.
+- Use the `a`-prefixed calls (`ainfo`, `aerror`) in async code so rendering does not block the loop.
+- `structlog.stdlib.recreate_defaults()` routes structlog through stdlib logging - needed when third-party libraries log too.
 
 ---
 
 ## Anti-patterns
 
-**failure: logging.warning("msg: %s %s", a, b) with f-strings mixed in**
-Using `logger.warning(f"msg: {a}")` forces string interpolation even if the record is filtered out. Use `logger.warning("msg: %s", a)` for stdlib, or `logger.warning("msg", key=a)` for structlog.
+**failure: f-strings in log calls**
+`logger.warning(f"msg: {a}")` interpolates even when the record is filtered out. Use `logger.warning("msg: %s", a)` for stdlib, or `logger.warning("msg", key=a)` for structlog.
 
 **failure: bare except with logging.exception inside a loop**
-Catching all exceptions and logging them without re-raising hides bugs in long-running loops. Either re-raise or use a specific exception type.
+Catching all exceptions and logging them without re-raising hides bugs in long-running loops. Either re-raise or catch a specific exception type.
 
 **warning: configuring logging inside library code**
-Libraries must not call `basicConfig`, `addHandler`, or `setLevel` at module level. Configure only in the application entry point. Libraries should add only a `NullHandler` to their top-level logger.
+Libraries must not call `basicConfig`, `addHandler`, or `setLevel` at module level. Configure only in the application entry point. Libraries add a `NullHandler` to their top-level logger and nothing else.
 
 **warning: print() for diagnostic output in server code**
 `print` bypasses handlers, formatters, and level filters. Replace with a logger at the appropriate level.
