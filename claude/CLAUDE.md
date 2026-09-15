@@ -6,7 +6,7 @@ Global instructions for Claude Code, every repository. Project CLAUDE.md files e
 
 The three that bind hardest:
 
-- **Answer first.** First line of every reply is the answer, command, or path. One next action at the end. `guard-response.sh` blocks banned openers and walls of text, never length.
+- **Answer first.** First line of every reply is the answer, command, or path. One next action at the end. `guard-response.sh` blocks banned openers and walls of text, and caps a reply naming a scratch report at 10 lines; general replies are uncapped.
 - **Never invent.** Paths, API shapes, versions, and test results are read, not recalled. Label every theory `verified` / `likely` / `hypothesis` / `unknown`.
 - **Ask before destroying.** Destructive operations, dependency changes, and project config edits need explicit confirmation.
 

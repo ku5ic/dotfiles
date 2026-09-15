@@ -26,6 +26,6 @@ An agent's report describes what it intended, not necessarily what it did. Befor
 
 Every agent definition assumes these three, so no agent file restates them except where noted:
 
-- **Startup**: repo context and the `<required-skills>`/`<suggested-skills>` blocks arrive via the `SubagentStart` hook (`inject-subagent-context.sh`), independent of the agent's tool grants. Agents that need no repo context (`checker`, `researcher`) ignore the block.
+- **Startup**: the resolved `<scratch>` path, repo context, and the `<required-skills>`/`<suggested-skills>` blocks arrive via the `SubagentStart` hook (`inject-subagent-context.sh`), independent of the agent's tool grants. Agents that need no repo context (`checker`, `researcher`) ignore the block.
 - **Read-only boundary**: the default. Edit and Write exist only for memory and a scratch report; never touch project source, state fixes as instructions. `tester` and `debugger` hold scoped write grants instead - test files and a single reverted probe edit - and each states its own scope in its Boundaries section.
 - **Output**: follow the invoking skill's format and path. Unbounded output - logs, traces, a full map - goes to a named scratch path plus a short digest. Output the agent's own contract already bounds, like a pass/fail line or a ranked shortlist, is returned inline and never written to a file. Writing needs a real grant: `Write` in `tools:`, or the one `memory: local` implies. An agent without that grant returns everything in its response.

@@ -181,3 +181,23 @@ another prose line"
   run run_guard_response
   [ "$status" -eq 0 ]
 }
+
+@test "reply naming a scratch report is capped at 10 lines" {
+  response="Wrote scratch/audit-20260915-1200.md
+$(n_paragraphs 6 prose)"
+  append_turns "$(user_turn "hello")" "$(assistant_turn "$response")"
+  run run_guard_response
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"cap is 10"* ]]
+}
+
+@test "short reply naming a scratch report is allowed" {
+  response="scratch/audit-20260915-1200.md
+
+3 findings, 1 blocker.
+
+Next: open the report."
+  append_turns "$(user_turn "hello")" "$(assistant_turn "$response")"
+  run run_guard_response
+  [ "$status" -eq 0 ]
+}

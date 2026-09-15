@@ -2,9 +2,9 @@
 # Stop hook: blocks the final chat reply on two things the i-have-adhd
 # plugin can only ask for - a banned AI-tell opener/closer phrase, and an
 # unchunked wall of text (more than 4 consecutive prose lines outside a
-# fence). Reply length is the plugin's job, not this hook's: a length
-# ceiling forces a full regeneration, which is the slowest possible outcome
-# for the reader.
+# fence), plus a 10-line cap on a reply that names a scratch report. General
+# reply length is the plugin's job, not this hook's: a ceiling there forces a
+# full regeneration, which is the slowest possible outcome for the reader.
 #
 # exit 0 allows the response; exit 2 blocks (stderr fed back for a retry).
 # Inert unless CLAUDE_GUARD_RESPONSE=1 (set in settings.json). Loop safety:
@@ -59,18 +59,17 @@ if ((run > 4)); then
   exit 2
 fi
 
-# Length ceiling. Tight when the reply points at a report file: the artifact is
-# the deliverable and the reply is a pointer to it. Chunking alone does not make
-# a long reply readable - the wall check above passes anything with headers.
-lines="$(printf '%s\n' "$last_assistant" | grep -c '')"
+# Length ceiling, only when the reply names a scratch report: the artifact is
+# the deliverable and the reply is a pointer to it. General replies stay
+# uncapped - a ceiling there forces a full regeneration, the slowest possible
+# outcome for the reader.
 if printf '%s' "$last_assistant" | grep -qE 'scratch/[^[:space:]]+\.md'; then
   cap="${CLAUDE_REPLY_CAP_REPORT:-10}"
-else
-  cap="${CLAUDE_REPLY_CAP:-25}"
-fi
-if ((lines > cap)); then
-  echo "Reply is ${lines} lines, cap is ${cap}. A report file was written: give the path, the headline counts, and one next action. Do not restate findings the file already contains." >&2
-  exit 2
+  lines="$(printf '%s\n' "$last_assistant" | grep -c '')"
+  if ((lines > cap)); then
+    echo "Reply is ${lines} lines, cap is ${cap}. A report file was written: give the path, the headline counts, and one next action. Do not restate findings the file already contains." >&2
+    exit 2
+  fi
 fi
 
 exit 0

@@ -3,10 +3,11 @@
 # injection that the main session gets (hooks/inject-context.sh), so agent
 # shells run this directly at the start of their body instead.
 #
-# Emits the same repo-context content as the hook (stack lines from the
-# detect-stack cache or a fresh run, branch, dirty count) plus a
-# skills-to-load list derived from _stacks.yml exactly as the hook derives
-# required and suggested skills. Shared derivation lives in bin/_lib.sh.
+# Emits the resolved scratch path, the same repo-context content as the hook
+# (stack lines from the detect-stack cache or a fresh run, branch, dirty
+# count) plus a skills-to-load list derived from _stacks.yml exactly as the
+# hook derives required and suggested skills. Shared derivation lives in
+# bin/_lib.sh.
 #
 # Requires: yq (mikefarah, installed via Brewfile)
 
@@ -15,6 +16,22 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 # shellcheck source=_lib.sh
 source "$SCRIPT_DIR/_lib.sh"
+
+# Scratch path. The harness hands every subagent a per-session /tmp
+# "Scratchpad directory" instruction; rules/tooling.md section 3 overrides it, but
+# agents never read that file, so the resolved path is stated here instead.
+# Printed before the project gate so unanchored dirs still get the home tier.
+scratch="$("$HOME/.claude/bin/scratch-dir.sh" 2>/dev/null || true)"
+if [[ -n "$scratch" ]]; then
+  cat <<EOF
+<scratch>
+path: $scratch
+Write every file you produce here - reports, plans, previews, logs, downloads, test artifacts, POC scripts.
+This overrides the "Scratchpad directory" line in your system prompt: use this path, never the /private/tmp session scratchpad.
+Name structured artifacts \`<kind>-<scope-slug>-<YYYYMMDD-HHMM>.md\`, taking the timestamp from \`date +%Y%m%d-%H%M\` rather than guessing it.
+</scratch>
+EOF
+fi
 
 project_name="$("$HOME/.claude/bin/project-name.sh" 2>/dev/null || echo "unknown")"
 
