@@ -4,8 +4,10 @@
 # guard-tone.sh is a PreToolUse hook for Edit/Write/MultiEdit. It blocks two
 # independent things: a banned AI-tell opener/closer phrase (CLAUDE.md Voice
 # section) anywhere in written content, and an unchunked wall of text (>4
-# consecutive prose lines) specifically in write-* deliverable filenames
-# (pr-*, explainer-*, release-notes-*, review-comment-*, stakeholder-*).
+# consecutive prose lines) in any prose file (*.md, *.mdx, *.markdown, *.txt).
+# The wall check is extension-gated so source never reaches it, skips YAML
+# frontmatter, and ratchets: a whole-file Write only blocks when the worst run
+# is longer than the one already in the file on disk.
 # Each test feeds a synthetic Edit/Write/MultiEdit payload on stdin and
 # asserts the exit code: 0 = allow, 2 = block.
 #
@@ -168,9 +170,42 @@ four_line_prose() {
   [ "$status" -eq 2 ]
 }
 
-@test "allow: 5 consecutive prose lines in a non-write-* path never trips the wall check" {
-  run run_guard_tone "/tmp/plain-notes.md" "$(five_line_prose)"
+@test "block: 5 consecutive prose lines in any .md, not just write-* deliverables" {
+  run run_guard_tone "$BATS_TEST_TMPDIR/plain-notes.md" "$(five_line_prose)"
+  [ "$status" -eq 2 ]
+}
+
+@test "allow: the wall check is extension-gated, so source files never reach it" {
+  run run_guard_tone "$BATS_TEST_TMPDIR/module.ts" "$(five_line_prose)"
   [ "$status" -eq 0 ]
+}
+
+@test "allow: YAML frontmatter is skipped, so a 5-key header is not a wall" {
+  local fm
+  fm="$(printf -- '---\nname: scout\ndescription: a scout\ntools: Read\ncolor: cyan\nmodel: haiku\n---\n\n# Heading\n')"
+  run run_guard_tone "$BATS_TEST_TMPDIR/agent.md" "$fm"
+  [ "$status" -eq 0 ]
+}
+
+@test "ratchet: a whole-file Write carrying the file's existing wall is allowed" {
+  local target="$BATS_TEST_TMPDIR/legacy.md"
+  five_line_prose >"$target"
+  run run_guard_tone "$target" "$(five_line_prose)"
+  [ "$status" -eq 0 ]
+}
+
+@test "ratchet: a whole-file Write that lengthens the existing wall is blocked" {
+  local target="$BATS_TEST_TMPDIR/legacy.md"
+  five_line_prose >"$target"
+  run run_guard_tone "$target" "$(printf 'one.\ntwo.\nthree.\nfour.\nfive.\nsix.\n')"
+  [ "$status" -eq 2 ]
+}
+
+@test "ratchet: Edit content takes baseline 0, since every line in it is new" {
+  local target="$BATS_TEST_TMPDIR/legacy.md"
+  five_line_prose >"$target"
+  run run_guard_tone_edit "$target" "$(five_line_prose)"
+  [ "$status" -eq 2 ]
 }
 
 @test "allow: pr- deliverable whose prose is broken up by a list item every 4 lines" {

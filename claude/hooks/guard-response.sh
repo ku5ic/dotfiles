@@ -49,7 +49,7 @@ last_assistant="$(jq -rs '
 # the rule sends the rewrite hunting and it lands on the wrong line.
 matched="$(printf '%s' "$last_assistant" | grep -m1 -ioE "$BANNED_TELL_REGEX" || true)"
 if [[ -n "$matched" ]]; then
-  echo "Banned AI-tell phrase: '${matched}'. Rewrite without it; do not add anything else." >&2
+  echo "The response contains a banned AI-tell phrase: '${matched}'. Rewrite without it; do not add anything else." >&2
   exit 2
 fi
 
