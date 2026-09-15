@@ -8,7 +8,14 @@
 set -euo pipefail
 trap 'exit 0' ERR
 
-readonly CACHE_TTL=5  # seconds; matches the git-status refresh window in the spec
+# Seconds the git-status cache is reused. 1 matches statusLine.refreshInterval
+# in settings.json, so the git segment can't be more than one render stale.
+# Overridable so tests can pin a wide window and assert cache reuse without
+# racing the clock; a non-numeric value would make the `(( ))` age comparison
+# below abort the whole render, so it falls back rather than trusting it.
+CACHE_TTL="${STATUSLINE_CACHE_TTL:-1}"
+[[ "$CACHE_TTL" =~ ^[0-9]+$ ]] || CACHE_TTL=1
+readonly CACHE_TTL
 readonly BAR_WIDTH=10 # blocks in the context-usage bar
 readonly YELLOW_AT=70 # bar turns yellow at >=70% context used
 readonly RED_AT=90    # bar turns red at >=90% context used

@@ -51,6 +51,7 @@ A deliverable is anything the user copies out and uses elsewhere: PR description
 - Deliverables go to a file via Write or Edit. Print the absolute path as the first line.
 - Default location: the directory `scratch-dir.sh` resolves (see `rules/tooling.md`).
 - Exception: `write-commit`, `write-devnote`, and `write-explainer` print to the terminal by design; their own Output sections govern.
+- **A written artifact replaces its own summary.** When a report, plan, or review file is written, the reply is: path, headline counts, one next action. Never restate findings the file already contains. Enforced by `guard-response.sh`, which caps a reply naming a scratch report at 10 lines.
 
 Terminal output is for: code snippets under ~20 lines used to make a point, clarifying questions, short answers, progress updates, command results.
 

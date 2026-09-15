@@ -59,4 +59,18 @@ if ((run > 4)); then
   exit 2
 fi
 
+# Length ceiling. Tight when the reply points at a report file: the artifact is
+# the deliverable and the reply is a pointer to it. Chunking alone does not make
+# a long reply readable - the wall check above passes anything with headers.
+lines="$(printf '%s\n' "$last_assistant" | grep -c '')"
+if printf '%s' "$last_assistant" | grep -qE 'scratch/[^[:space:]]+\.md'; then
+  cap="${CLAUDE_REPLY_CAP_REPORT:-10}"
+else
+  cap="${CLAUDE_REPLY_CAP:-25}"
+fi
+if ((lines > cap)); then
+  echo "Reply is ${lines} lines, cap is ${cap}. A report file was written: give the path, the headline counts, and one next action. Do not restate findings the file already contains." >&2
+  exit 2
+fi
+
 exit 0

@@ -244,7 +244,16 @@ backdate_mtime() {
   [ "$(strip_ansi "$output" | head -1)" = "Opus  plain" ]
 }
 
+# The default CACHE_TTL is 1 second, which is far too narrow to assert cache
+# REUSE against: the git commits between two run_statusline calls can easily
+# take longer than the window, so the second call would legitimately refresh
+# and the test would flake. Reuse tests therefore export a wide
+# STATUSLINE_CACHE_TTL and make no assumption about elapsed wall time;
+# expiry tests keep the real 1s default and backdate the cache mtime so the
+# boundary is hit deterministically, with no sleep.
+
 @test "git status cache is reused within the TTL" {
+  export STATUSLINE_CACHE_TTL=3600
   printf 'one' >"$REPO/a.txt"
   git -C "$REPO" add a.txt
   git -C "$REPO" commit -qm init
@@ -272,7 +281,7 @@ backdate_mtime() {
   git -C "$REPO" add b.txt
   git -C "$REPO" commit -qm second
   printf 'y' >>"$REPO/b.txt"
-  sleep 6
+  sleep 2
   run run_statusline "$(make_payload "$REPO" tcache2 50)"
   [[ "$(strip_ansi "$output")" == *"+2 ~2"* ]]
 }
@@ -289,14 +298,17 @@ backdate_mtime() {
   git -C "$REPO" add b.txt
   git -C "$REPO" commit -qm second
   printf 'y' >>"$REPO/b.txt"
-  # CACHE_TTL in statusline.sh is 5; backdating the cache file's mtime by
-  # exactly 5 seconds hits the `>=` boundary deterministically, no sleep.
-  backdate_mtime "$FAKE_HOME/.claude/cache/statusline/git-tboundary1" 5
+  # Default CACHE_TTL is 1; backdating the cache file's mtime by exactly 1
+  # second hits the `>=` boundary deterministically, no sleep.
+  backdate_mtime "$FAKE_HOME/.claude/cache/statusline/git-tboundary1" 1
   run run_statusline "$(make_payload "$REPO" tboundary1 50)"
   [[ "$(strip_ansi "$output")" == *"+2 ~2"* ]]
 }
 
 @test "git status cache is reused comfortably under the TTL boundary" {
+  # A fresh (not backdated) cache file under a wide TTL - the only way to
+  # assert the reuse side without the elapsed-time race described above.
+  export STATUSLINE_CACHE_TTL=3600
   printf 'one' >"$REPO/a.txt"
   git -C "$REPO" add a.txt
   git -C "$REPO" commit -qm init
@@ -308,13 +320,19 @@ backdate_mtime() {
   git -C "$REPO" add b.txt
   git -C "$REPO" commit -qm second
   printf 'y' >>"$REPO/b.txt"
-  # Backdating by 2 (not CACHE_TTL - 1 = 4) leaves real margin against the
-  # git/subprocess overhead between this backdate and statusline.sh's own
-  # `date +%s` read - on a loaded CI runner that overhead can eat a full
-  # second, and a 4s backdate had already crossed the 5s TTL by the time
-  # `now` was read, flaking this test intermittently.
-  backdate_mtime "$FAKE_HOME/.claude/cache/statusline/git-tboundary2" 2
+  backdate_mtime "$FAKE_HOME/.claude/cache/statusline/git-tboundary2" 60
   run run_statusline "$(make_payload "$REPO" tboundary2 50)"
+  [[ "$(strip_ansi "$output")" == *"+1 ~1"* ]]
+}
+
+@test "a non-numeric STATUSLINE_CACHE_TTL falls back instead of blanking the line" {
+  export STATUSLINE_CACHE_TTL=notanumber
+  printf 'one' >"$REPO/a.txt"
+  git -C "$REPO" add a.txt
+  git -C "$REPO" commit -qm init
+  printf 'x' >>"$REPO/a.txt"
+  run run_statusline "$(make_payload "$REPO" tbadttl 50)"
+  [ "$status" -eq 0 ]
   [[ "$(strip_ansi "$output")" == *"+1 ~1"* ]]
 }
 
