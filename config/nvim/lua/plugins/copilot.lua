@@ -35,6 +35,7 @@ return {
       prompts = prompts,
       model = "claude-sonnet-5", -- global default; fast-tier prompts (Commit, etc.) override this per-call
       auto_follow_cursor = false, -- Don't follow the cursor after getting response
+      chat_autocomplete = false, -- Don't fetch models on keystroke; <Tab> triggers completion manually
       clear_chat_on_new_prompt = false, -- Keep chat history so in-chat corrections can refine the prior turn; reset a new task explicitly with <C-x> (reset mapping below)
       remember_as_sticky = false, -- Don't carry prior config as sticky prompts into subsequent requests
       mappings = {
@@ -88,6 +89,28 @@ return {
     -- event = "VeryLazy",
     config = function(_, opts)
       require("CopilotChat").setup(opts)
+      -- Upstream POSTs /models/<id>/policy for every policy-disabled model on each
+      -- fetch. Our plan can't enable the premium ones (the API returns 200 and
+      -- ignores it), so that is ~5.6s of serial round trips per fetch, every 5
+      -- minutes. Drop just those POSTs; every other request passes through.
+      local providers = require("CopilotChat").config.providers
+      local curl = require("CopilotChat.utils.curl")
+      local fetch_models = providers.copilot.get_models
+      providers.copilot.get_models = function(headers)
+        local post = curl.post
+        curl.post = function(url, ...)
+          if url:match("/models/.+/policy$") then
+            return { status = 200 }
+          end
+          return post(url, ...)
+        end
+        local ok, models = pcall(fetch_models, headers)
+        curl.post = post
+        if not ok then
+          error(models)
+        end
+        return models
+      end
       -- Prepend the plugin's build dir so tiktoken_core.dylib is found before any
       -- stale system .so of the same name that may sit earlier in package.cpath.
       local build = vim.fn.stdpath("data") .. "/lazy/CopilotChat.nvim/build"
