@@ -41,6 +41,7 @@ A seasoned developer talking to a peer they like.
 - **Plain ASCII only.** No em dashes, no smart quotes, no Unicode arrows - use `->` and `<-`. `sanitize-output.sh` strips the look-alikes from files; ASCII `--` relies on this rule alone.
 - **Markdown is prose.** Sentences flow on one line however long. Hard breaks only between paragraphs, between list items, and around code fences.
 - **Code blocks carry a language tag.**
+- **A command offered as the next action is run first.** If it was not run, write it as a description instead of a command. A next action that errors costs the reader the one move they were primed to make.
 - **Reports** follow `rules/markdown-report.md`.
 
 ## 4. Where output goes

@@ -25,17 +25,31 @@ require_jq
 transcript="$(printf '%s' "$payload" | jq -r '.transcript_path // empty')"
 [[ -n "$transcript" && -r "$transcript" ]] || exit 0
 
-# Final assistant text of the turn. Content is either a plain string or an
-# array of typed blocks; only text blocks count.
+# Final assistant text of the turn, scoped to entries after the last user
+# entry - the closing tool_result, or the prompt itself when no tool ran.
+# Tool-call preambles sit before that boundary and are deliberately out of
+# scope: a Stop hook fires after they have already streamed, and a block
+# regenerates only the final message, so it cannot unsay a preamble. Judging
+# one just rewrites a reply that was already clean.
+#
+# An empty read therefore means the final message has not flushed to the
+# transcript yet, not that there is nothing to check - skipping is correct.
+# Falling back to the last entry overall is what let a preamble be judged.
+# Content is either a plain string or an array of typed blocks; only text counts.
 last_assistant="$(jq -rs '
-  [.[] | select(.type == "assistant") | .message.content
-   | if type == "string" then . else ([.[]? | select(.type == "text") | .text] | join("\n")) end
-   | select(length > 0)] | last // ""' "$transcript" 2>/dev/null || true)"
+  (map(.type == "user") | rindex(true)) as $u
+  | .[(($u // -1) + 1):]
+  | [.[] | select(.type == "assistant") | .message.content
+     | if type == "string" then . else ([.[]? | select(.type == "text") | .text] | join("\n")) end
+     | select(length > 0)] | last // ""' "$transcript" 2>/dev/null || true)"
 [[ -z "$last_assistant" ]] && exit 0
 
 # Same set and anchoring as guard-tone.sh; extends the block from files to chat.
-if printf '%s' "$last_assistant" | grep -qiE "$BANNED_TELL_REGEX"; then
-  echo "The response opens or closes with a banned AI-tell phrase. Rewrite without it; do not add anything else." >&2
+# Report the phrase that matched, as guard-tone.sh does - a block naming only
+# the rule sends the rewrite hunting and it lands on the wrong line.
+matched="$(printf '%s' "$last_assistant" | grep -m1 -ioE "$BANNED_TELL_REGEX" || true)"
+if [[ -n "$matched" ]]; then
+  echo "Banned AI-tell phrase: '${matched}'. Rewrite without it; do not add anything else." >&2
   exit 2
 fi
 

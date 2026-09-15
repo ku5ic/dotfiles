@@ -22,6 +22,13 @@ extract_content() {
   '
 }
 
+# True only for Write's flat content, which carries the whole file and so can
+# carry a wall the file already had. Edit and MultiEdit carry only the
+# replacement text, where every line is by definition newly added.
+is_full_file_write() {
+  [[ "$(printf '%s' "$payload" | jq -r 'if .tool_input.content != null then "y" else "n" end')" == "y" ]]
+}
+
 run_guard_tone() {
   # See run_guard_edit.sh - same HOOK_NAME shadowing need.
   local HOOK_NAME="guard-tone.sh"
@@ -37,12 +44,33 @@ run_guard_tone() {
   # the banned-phrase check only - audit/planning notes in scratch legitimately
   # quote those phrases, but a deliverable never needs to and never skips
   # the structure pass.
-  case "$(basename -- "$path")" in
-  pr-* | explainer-* | release-notes-* | review-comment-* | stakeholder-*)
+  # Every prose file, not just the write-* deliverables: rules/output.md
+  # section 1 applies wherever the reader reads, scratch reports and rule
+  # files included. Extension-gated because longest_prose_run counts any
+  # non-list, non-heading line - in a .ts file every statement would read as
+  # a wall, so source must never reach it.
+  #
+  # Known gap: on Edit/MultiEdit the content is a fragment, so a replacement
+  # landing wholly inside a fenced code block has no opening fence to detect
+  # and its lines count as prose. Rare enough to accept; chunk or rewrite the
+  # surrounding block if it trips.
+  case "$path" in
+  *.md | *.mdx | *.markdown | *.txt)
     if [[ -n "$content" ]]; then
       run="$(longest_prose_run "$content")"
       if ((run > 4)); then
-        block "unchunked wall of text (${run} consecutive prose lines). rules/output.md section 1: break into short paragraphs, headers, or a list." "wall-of-text"
+        # Ratchet, not a gate: a whole-file Write over existing documentation
+        # carries walls the file already had, which this change did not write.
+        # Block only when the worst run is new or got worse, so legacy docs
+        # stay editable while nothing regresses. Edit/MultiEdit take baseline
+        # 0 - their content is only the new text, so every line counts.
+        local baseline=0
+        if is_full_file_write && [[ -f "$path" ]]; then
+          baseline="$(longest_prose_run "$(cat -- "$path")")"
+        fi
+        if ((run > baseline)); then
+          block "unchunked wall of text (${run} consecutive prose lines, was ${baseline}). rules/output.md section 1: break into short paragraphs, headers, or a list." "wall-of-text"
+        fi
       fi
     fi
     ;;
@@ -52,7 +80,8 @@ run_guard_tone() {
   # must be able to quote them without tripping the block.
   case "$path" in
   */claude/CLAUDE.md | */.claude/CLAUDE.md | */claude/rules/*.md | */.claude/rules/*.md | \
-    */claude/skills/*.md | */.claude/skills/*.md | */.claude/scratch/* | */scratch/*) return 0 ;;
+    */claude/skills/*.md | */.claude/skills/*.md | */claude/agents/*.md | */.claude/agents/*.md | \
+    */.claude/scratch/* | */scratch/*) return 0 ;;
   esac
 
   [[ -z "$content" ]] && return 0

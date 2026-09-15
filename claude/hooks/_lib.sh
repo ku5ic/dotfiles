@@ -52,14 +52,21 @@ block() {
 # Shared by guard-tone.sh (files) and guard-response.sh (chat) so the two
 # enforcement paths can't drift apart.
 # shellcheck disable=SC2034
-readonly BANNED_TELL_REGEX='^(certainly|absolutely|of course|sure)[!,.]|^(great question|i hope this helps|let.s dive in|happy to help|in conclusion|to summarize|in summary)([[:space:]]|[!,.]|$)'
+readonly BANNED_TELL_REGEX='^(certainly|absolutely|of course|sure)[!,.]|^(great question|that.s a great|(i )?hope this helps|let.s dive in|happy to (help|clarify|assist)|let me know if|feel free to|it.s (worth noting|important to note)|it is (worth noting|important to note)|looking at your|to answer your question|in conclusion|to summarize|in summary)([[:space:]]|[!,.]|$)|^(let me|i.ll|i will)[[:space:]]'
 
 # Longest run of consecutive non-blank, non-list/heading/blockquote/table
-# lines in $1, outside fenced code blocks - a deterministic stand-in for
-# rules/output.md section 1 (no walls of text); the rest of that rule needs
-# judgment a hook can't make.
+# lines in $1, outside fenced code blocks and outside YAML frontmatter - a
+# deterministic stand-in for rules/output.md section 1 (no walls of text);
+# the rest of that rule needs judgment a hook can't make.
+#
+# Frontmatter is skipped because its delimiters and key: value lines match no
+# skip pattern: a 5-key block reads as a 7-line wall, so every agent and skill
+# definition would block on its own header.
 longest_prose_run() {
   printf '%s\n' "$1" | awk '
+    NR == 1 && /^---[[:space:]]*$/ { infm = 1; next }
+    infm && /^---[[:space:]]*$/ { infm = 0; next }
+    infm { next }
     /^```/ { infence = !infence; next }
     infence { next }
     NF == 0 { run = 0; next }
