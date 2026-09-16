@@ -20,6 +20,21 @@ notify() {
     -- "$1" 2>/dev/null || true
 }
 
+# Every caller is terminal, so this exits rather than returning. Capturing rc
+# via `|| rc=$?` is what keeps `set -e` from killing us before the notify.
+# TMUX_THUMB_DRY_RUN prints the target instead; /usr/bin/open is hardcoded and
+# unstubbable, so the bats suite needs the seam.
+launch() {
+  local target="$1" failure="$2" rc=0
+  if [ -n "${TMUX_THUMB_DRY_RUN:-}" ]; then
+    printf '%s\n' "$target"
+    exit 0
+  fi
+  /usr/bin/open "$target" || rc=$?
+  [ "$rc" -eq 0 ] || notify "$failure: $target"
+  exit "$rc"
+}
+
 closer_is_balanced() {
   local s="$1" open="$2" close="$3" opens closes
   opens="${s//[^"$open"]/}"
@@ -112,8 +127,7 @@ fi
 # URLs and other schemes go straight to Launch Services.
 case "$trimmed" in
 *://* | mailto:* | file:*)
-  /usr/bin/open "$trimmed"
-  exit $?
+  launch "$trimmed" "open failed"
   ;;
 esac
 
@@ -179,13 +193,17 @@ for candidate in "$target" "$trimmed"; do
 done
 
 if [ -n "$resolved" ]; then
-  /usr/bin/open "$resolved"
-  rc=$?
-  [ "$rc" -ne 0 ] && notify "open failed: $resolved"
-  exit "$rc"
+  launch "$resolved" "open failed"
 fi
 
-/usr/bin/open "$target"
-rc=$?
-[ "$rc" -ne 0 ] && notify "could not resolve: $target"
-exit "$rc"
+# Nothing on disk matched, so a dotted host with a real TLD is a URL wearing no
+# scheme: `github.com/foo/bar`, `www.example.com`, `docs.rs/serde`.
+# Assume https. Checked after file resolution on purpose, so an actual file
+# named `foo.com` still beats the domain reading of the same string.
+host_label='[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?'
+scheme_less_url="^$host_label(\.$host_label)*\.[A-Za-z]{2,}(:[0-9]+)?([/?#].*)?$"
+if [[ "$trimmed" =~ $scheme_less_url ]]; then
+  launch "https://$trimmed" "open failed"
+fi
+
+launch "$target" "could not resolve"
