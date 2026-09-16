@@ -30,7 +30,7 @@ Most of this is enforced by `guard-bash.sh`.
 - Chaining with `&&`, `||`, or `;` is fine; every segment is still checked on its own. Keep a mutating command (`rm`, `git commit`, an install) in its own Bash call so a failure earlier in the chain cannot mask it.
 - Pipes are for single-operation semantics only: `cmd | grep`, `find | wc -l`, `git log | head`. Sequential checks go in separate calls.
 - Use native path arguments instead of `cd <dir> && cmd`: `git -C <dir>`, `tokei <path>`. See `rules/tooling.md`.
-- `2>&1` is unnecessary (the Bash tool merges stderr) but no longer blocked.
+- `2>&1` is unnecessary; the Bash tool merges stderr.
 
 ## 3. Skills
 
@@ -48,7 +48,6 @@ Every group is user-only (`disable-model-invocation: true`). They run when typed
 **Hard rules:**
 
 - Pause after each `/flow-*` step, and after any other logical segment, so the user can review and commit before continuing.
-- The stale `cmd-*` naming must be corrected to `<group>-<name>` wherever found, on touch.
 - Unprefixed references (`/plan`, `/implement`) are ambiguous; normalize to the full form.
 - Any step that would write an "Open questions" list instead asks via AskUserQuestion - one question per item, multiple choice, with the built-in "Other" covering anything without discrete options.
 - Record resolved answers in the output as decisions. Never leave an unresolved list.

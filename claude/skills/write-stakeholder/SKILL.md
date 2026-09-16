@@ -43,9 +43,9 @@ Structure:
 
 ## Length guidance
 
-- CEO brief: under 200 words total. One screen.
-- PM writeup: 300 to 500 words.
-- Client note: 200 to 300 words, more context on next steps.
+- CEO brief: one screen, read standing up. Situation, impact, recommendation - nothing else.
+- PM writeup: enough to act on without a follow-up meeting. Options and their tradeoffs survive; mechanism does not.
+- Client note: as short as the CEO brief on the problem, longer on what happens next and when.
 
 ## Rules
 

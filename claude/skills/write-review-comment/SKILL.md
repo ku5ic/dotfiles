@@ -50,12 +50,11 @@ Hey @<author>, <genuine one-line compliment about the work>.
 
 ## Rules
 
-- Tone: peer to peer, professional, warm. Never "I recommend" or "you should".
+- Tone: peer to peer, professional, warm. Never "I recommend", "you should", or "let me know if you have questions".
 - Every finding link points at the exact line(s) from the source report, unedited.
 - Skip info-level findings unless they are quick wins or visibly affect code quality.
-- Keep the comment under 500 words. If the report has more findings than fit, split into multiple comments in the same output file, each in its own fenced block, labeled "Comment 1 of N" etc.
+- The comment is read in a PR thread, so it stays scannable in one screen and covers only the findings worth the author's time. If it grows past what one comment can carry, split it in the same output file, each in its own fenced block, labeled "Comment 1 of N" etc.
 - Describe the problem and point at the fix; do not rewrite the actual code fix.
 - Do not re-run the review or invent findings not present in the source report.
-- Never "I recommend" or "let me know if you have questions".
 - The latest-report fallback in step 3 only ever searches the resolved scratch directory for the current project; never fall back to another project's file.
 - If the resolved input file does not exist or does not match the `rules/markdown-report.md` format, say so and stop.

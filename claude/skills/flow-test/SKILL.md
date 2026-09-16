@@ -31,7 +31,7 @@ disable-model-invocation: true
    - Independence: tests do not depend on order; each sets up and tears down its own state.
    - Determinism: no time, random, or network without explicit control. If the test fails intermittently in CI, it is broken.
 
-   If any test fails this check, fix the test. Do not proceed to step 6 with shape-checking tests masquerading as behavior tests.
+   If any test fails this check, fix the test. Do not proceed to step 7 with shape-checking tests masquerading as behavior tests.
 
 7. Run the new tests narrowly first (single file). Then run the adjacent test suite (module or package).
 8. If tests fail:

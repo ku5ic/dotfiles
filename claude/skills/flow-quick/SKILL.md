@@ -33,7 +33,7 @@ Stop immediately and escalate to `/flow-plan` (do not continue, do not silently 
 - The work reveals a design choice worth recording (more than one viable approach, tradeoffs worth naming).
 - A drive-by fix becomes load-bearing for the feature. Note the drive-by, do not absorb it; escalate.
 
-The stop is hard. Do not rationalize past it because the remaining work is "short" or "obvious" or "thematically related". If the premise of `/flow-quick` no longer holds, the right answer is `/flow-plan`, not a stretched `/flow-quick`.
+The stop is hard. If the premise of `/flow-quick` no longer holds, the right answer is `/flow-plan`, not a stretched `/flow-quick`.
 
 ## Output
 
