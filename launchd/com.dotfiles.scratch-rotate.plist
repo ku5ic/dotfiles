@@ -18,9 +18,9 @@
     <integer>0</integer>
   </dict>
   <key>StandardOutPath</key>
-  <string>/tmp/scratch-rotate.log</string>
+  <string>__HOME__/.claude/logs/scratch-rotate.log</string>
   <key>StandardErrorPath</key>
-  <string>/tmp/scratch-rotate.log</string>
+  <string>__HOME__/.claude/logs/scratch-rotate.log</string>
   <key>RunAtLoad</key>
   <false/>
 </dict>
