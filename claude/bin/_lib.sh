@@ -17,42 +17,119 @@ if ! command -v yq >/dev/null 2>&1; then
   STACK_SENTINELS_FULL=()
   STACK_SENTINELS_PROJECT_ROOT=()
   STACK_DETECT_FILES=()
+  STACK_PM_LOCKFILES=()
+  STACK_PM_MANAGERS=()
   resolve_package_manager() { return 0; }
   return 0
 fi
 
-# Full set: every sentinel any consumer cares about.
-# Used by inject-context.sh for cache invalidation and by detect-stack.sh
-# as the canonical union.
-# shellcheck disable=SC2034
-mapfile -t STACK_SENTINELS_FULL < <(
-  yq '.stacks[].sentinels[].name' "$_STACKS_YML" 2>/dev/null
-)
-
-# Anchor-walk subset: the small, fast list project-root.sh walks ancestors
-# with. Marked anchor: true in _stacks.yml. Keep minimal; every entry
-# slows the ancestor walk for repos without that sentinel.
-# shellcheck disable=SC2034
-mapfile -t STACK_SENTINELS_PROJECT_ROOT < <(
-  yq '.stacks[].sentinels[] | select(.anchor == true) | .name' "$_STACKS_YML" 2>/dev/null
-)
-
-# Union of every file that influences stack detection: sentinels plus every
-# path referenced in extras rules (file:, in:, any_of[].file, any_of[].in[]).
-# Used by inject-context.sh for cache invalidation so that adding tsconfig.json
-# or conftest.py to an existing project triggers re-detection.
+# Every derived list below comes from one yq pass, cached as sourceable
+# `declare -p` output for as long as _stacks.yml is unchanged. Sourcing this
+# file used to spawn five yq processes (~59ms), paid by guard-bash.sh on
+# every Bash tool call and by project-root.sh on every bin script.
+#
+# STACK_SENTINELS_FULL: every sentinel any consumer cares about - used by
+# inject-context.sh for cache invalidation and by detect-stack.sh as the
+# canonical union.
+# STACK_SENTINELS_PROJECT_ROOT: the anchor: true subset project-root.sh walks
+# ancestors with. Keep minimal; every entry slows the walk for repos without
+# that sentinel.
+# STACK_DETECT_FILES: union of every file that influences stack detection -
+# sentinels, every path referenced in extras rules (file:, in:, any_of[].file,
+# any_of[].in[]), and every package_managers lockfile, so adding tsconfig.json
+# or conftest.py, or switching a project from package-lock.json to
+# pnpm-lock.yaml, triggers re-detection. Without the lockfiles a switched
+# project kept advertising its old [pm] tag in <repo-context> while
+# resolve_package_manager (which stats lockfiles live) had already moved on.
 # Known limit: only $project_root/<file> is checked, not search_dirs subdirs;
 # this matches the sentinel walk scope and is intentional.
-# shellcheck disable=SC2034
-mapfile -t STACK_DETECT_FILES < <(
-  {
-    yq '.stacks[].sentinels[].name' "$_STACKS_YML"
-    yq '.stacks[].extras[] | select(has("file")) | .file' "$_STACKS_YML"
-    yq '.stacks[].extras[] | select(has("in")) | .in[]' "$_STACKS_YML"
-    yq '.stacks[].extras[] | .any_of // [] | .[] | select(has("file")) | .file' "$_STACKS_YML"
-    yq '.stacks[].extras[] | .any_of // [] | .[] | select(has("in")) | .in[]' "$_STACKS_YML"
-  } 2>/dev/null | sort -u
-)
+# STACK_PM_LOCKFILES / STACK_PM_MANAGERS: positional pairs from
+# .package_managers, walked by resolve_package_manager.
+_stacks_lists_cache="$HOME/.claude/cache/stacks-lists.bash"
+
+# Bump on every change to the queries below or to the cache's shape. The
+# mtime check only sees _stacks.yml, so without this an existing cache
+# outlives a rewritten derivation and keeps serving the old lists.
+_stacks_lists_format=2
+
+# Each emitted row is "<list-tag>\t<value>" so one yq call fills all five.
+_build_stacks_lists() {
+  local kind value
+  STACK_SENTINELS_FULL=()
+  STACK_SENTINELS_PROJECT_ROOT=()
+  STACK_DETECT_FILES=()
+  STACK_PM_LOCKFILES=()
+  STACK_PM_MANAGERS=()
+
+  while IFS=$'\t' read -r kind value; do
+    [[ -z "$value" || "$value" == "null" ]] && continue
+    case "$kind" in
+    FULL) STACK_SENTINELS_FULL+=("$value") ;;
+    ANCHOR) STACK_SENTINELS_PROJECT_ROOT+=("$value") ;;
+    DETECT) STACK_DETECT_FILES+=("$value") ;;
+    LOCKFILE) STACK_PM_LOCKFILES+=("$value") ;;
+    MANAGER) STACK_PM_MANAGERS+=("$value") ;;
+    esac
+  done < <(
+    yq -r '
+      [
+        (.stacks[].sentinels[] | ["FULL", .name]),
+        (.stacks[].sentinels[] | select(.anchor == true) | ["ANCHOR", .name]),
+        (.stacks[].sentinels[] | ["DETECT", .name]),
+        (.stacks[].extras[]? | select(has("file")) | ["DETECT", .file]),
+        (.stacks[].extras[]? | select(has("in")) | .in[] | ["DETECT", .]),
+        (.stacks[].extras[]? | .any_of // [] | .[] | select(has("file")) | ["DETECT", .file]),
+        (.stacks[].extras[]? | .any_of // [] | .[] | select(has("in")) | .in[] | ["DETECT", .]),
+        (.package_managers[] | ["DETECT", .lockfile]),
+        (.package_managers[] | ["LOCKFILE", .lockfile]),
+        (.package_managers[] | ["MANAGER", .manager])
+      ] | .[] | join("\t")
+    ' "$_STACKS_YML" 2>/dev/null
+  )
+
+  # DETECT lists the same sentinel once per stack that declares it; the
+  # previous build deduped with `sort -u`.
+  local -A seen=()
+  local -a uniq=()
+  local f
+  for f in "${STACK_DETECT_FILES[@]}"; do
+    [[ -n "${seen[$f]:-}" ]] && continue
+    seen[$f]=1
+    uniq+=("$f")
+  done
+  STACK_DETECT_FILES=("${uniq[@]}")
+}
+
+_stacks_lists_cached_format=""
+if [[ -s "$_stacks_lists_cache" && "$_stacks_lists_cache" -nt "$_STACKS_YML" ]]; then
+  # shellcheck disable=SC1090
+  source "$_stacks_lists_cache"
+fi
+
+if [[ "$_stacks_lists_cached_format" != "$_stacks_lists_format" ]]; then
+  _build_stacks_lists
+  _stacks_lists_cached_format="$_stacks_lists_format"
+  # The temp file goes in the cache dir, not TMPDIR: mv is only atomic
+  # within one filesystem, and a half-written cache is sourceable garbage.
+  if ((${#STACK_SENTINELS_FULL[@]} > 0)); then
+    mkdir -p "$(dirname "$_stacks_lists_cache")" 2>/dev/null || true
+    _stacks_tmp="$(mktemp "$(dirname "$_stacks_lists_cache")/.stacks-lists.XXXXXX" 2>/dev/null || true)"
+    if [[ -n "${_stacks_tmp:-}" ]]; then
+      # -g: sourcing this file from inside a function would otherwise scope
+      # every array to that function and hand the caller empty lists.
+      if declare -p STACK_SENTINELS_FULL STACK_SENTINELS_PROJECT_ROOT \
+        STACK_DETECT_FILES STACK_PM_LOCKFILES STACK_PM_MANAGERS \
+        _stacks_lists_cached_format |
+        sed -E -e 's/^declare -- /declare -g /' -e 's/^declare -([aA])/declare -g\1/' \
+          >"$_stacks_tmp" 2>/dev/null; then
+        mv "$_stacks_tmp" "$_stacks_lists_cache" 2>/dev/null || rm -f "$_stacks_tmp"
+      else
+        rm -f "$_stacks_tmp"
+      fi
+      unset _stacks_tmp
+    fi
+  fi
+fi
 
 # resolve_package_manager <dir>
 # Prints the package manager name for <dir> by walking the package_managers
@@ -65,14 +142,10 @@ resolve_package_manager() {
   local toplevel
   toplevel="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
 
-  local -a lockfiles managers
-  mapfile -t lockfiles < <(yq '.package_managers[].lockfile' "$_STACKS_YML" 2>/dev/null)
-  mapfile -t managers < <(yq '.package_managers[].manager' "$_STACKS_YML" 2>/dev/null)
-
   local i lf mgr
-  for ((i = 0; i < ${#lockfiles[@]}; i++)); do
-    lf="${lockfiles[$i]}"
-    mgr="${managers[$i]}"
+  for ((i = 0; i < ${#STACK_PM_LOCKFILES[@]}; i++)); do
+    lf="${STACK_PM_LOCKFILES[$i]}"
+    mgr="${STACK_PM_MANAGERS[$i]}"
     [[ -z "$lf" || "$lf" == "null" ]] && continue
     [[ -z "$mgr" || "$mgr" == "null" ]] && continue
     if [[ -f "$dir/$lf" || (-n "$toplevel" && -f "$toplevel/$lf") ]]; then
@@ -103,14 +176,23 @@ stack_cache_file() {
 # Regenerates the cache by running detect-stack.sh when any detection-relevant
 # file (STACK_DETECT_FILES) is newer than the cache, or the cache is
 # empty/missing. No output; callers read $cache_file afterward.
+#
+# _stacks.yml counts as detection-relevant: it defines what detect-stack.sh
+# looks for, so adding a stack, sentinel or extra must re-detect every
+# project. Without it a cached project kept serving the old detection until
+# one of its own sentinel files happened to be touched, while the
+# stacks-lists and skill-map caches had already moved on.
 refresh_stack_cache_if_stale() {
   local project_root="$1" cache_file="$2"
   mkdir -p "$(dirname "$cache_file")"
 
+  # -L on both stat forms: $_STACKS_YML is the ~/.claude symlink into the
+  # dotfiles repo, and an undereferenced stat reports the link's own mtime,
+  # which never changes when the file behind it is edited.
   local newest_sentinel=0 f m
-  for f in "${STACK_DETECT_FILES[@]/#/$project_root/}"; do
+  for f in "${STACK_DETECT_FILES[@]/#/$project_root/}" "$_STACKS_YML"; do
     [[ -f "$f" ]] || continue
-    m="$(stat -c '%Y' "$f" 2>/dev/null || stat -f '%m' "$f" 2>/dev/null || echo 0)"
+    m="$(stat -L -c '%Y' "$f" 2>/dev/null || stat -L -f '%m' "$f" 2>/dev/null || echo 0)"
     ((m > newest_sentinel)) && newest_sentinel="$m"
   done
 

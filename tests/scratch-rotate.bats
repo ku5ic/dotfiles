@@ -108,7 +108,7 @@ run_rotate() {
 }
 
 @test "prunes an old file in a registered project scratch dir" {
-  PROJ="$BATS_TEST_TMPDIR/proj/scratch"
+  PROJ="$FAKE_HOME/proj/scratch"
   mkdir -p "$PROJ"
   : >"$PROJ/poc.py"
   backdate_mtime "$PROJ/poc.py" $((40 * 86400))
@@ -122,7 +122,7 @@ run_rotate() {
 }
 
 @test "keeps a fresh file in a registered project scratch dir" {
-  PROJ="$BATS_TEST_TMPDIR/proj/scratch"
+  PROJ="$FAKE_HOME/proj/scratch"
   mkdir -p "$PROJ"
   : >"$PROJ/poc.py"
   backdate_mtime "$PROJ/poc.py" 3600
@@ -145,8 +145,8 @@ run_rotate() {
 }
 
 @test "prunes multiple registered project dirs and keeps existing entries" {
-  PROJ_A="$BATS_TEST_TMPDIR/proj-a/scratch"
-  PROJ_B="$BATS_TEST_TMPDIR/proj-b/scratch"
+  PROJ_A="$FAKE_HOME/proj-a/scratch"
+  PROJ_B="$FAKE_HOME/proj-b/scratch"
   mkdir -p "$PROJ_A" "$PROJ_B"
   : >"$PROJ_A/old.py"
   backdate_mtime "$PROJ_A/old.py" $((40 * 86400))
@@ -159,6 +159,23 @@ run_rotate() {
   [ ! -e "$PROJ_A/old.py" ]
   [ -e "$PROJ_B/fresh.py" ]
   [[ "$(cat "$REGISTRY")" == "$(printf '%s\n%s' "$PROJ_A" "$PROJ_B")" ]]
+}
+
+# The guard that makes every project dir above live under $FAKE_HOME: a
+# registry line is untrusted input, so anything outside $HOME is refused
+# rather than pruned.
+@test "refuses a registered dir outside HOME instead of pruning it" {
+  OUTSIDE="$BATS_TEST_TMPDIR/outside/scratch"
+  mkdir -p "$OUTSIDE"
+  : >"$OUTSIDE/old.py"
+  backdate_mtime "$OUTSIDE/old.py" $((40 * 86400))
+  mkdir -p "$(dirname "$REGISTRY")"
+  echo "$OUTSIDE" >"$REGISTRY"
+  run run_rotate 30
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"REFUSING registry entry $OUTSIDE"* ]]
+  [ -e "$OUTSIDE/old.py" ]
+  [[ "$(cat "$REGISTRY")" == "$OUTSIDE" ]]
 }
 
 @test "no registry file: exits 0 without error" {

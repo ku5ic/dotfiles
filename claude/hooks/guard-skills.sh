@@ -90,23 +90,37 @@ run_guard_skills() {
 
   mkdir -p "$cache_dir" 2>/dev/null || true
 
+  # One streaming pass for every skill still to check, not one slurp of the
+  # whole log per skill: the log is append-only and reaches 10k lines, so the
+  # per-skill loop re-parsed all of it N times on every blocked edit.
+  # Excludes inject-context.sh's synthetic required-skill/suggested-skill
+  # markers, which mean "surfaced", not "loaded" - without the exclusion
+  # either would satisfy the check for a skill never actually invoked.
+  declare -A loaded=()
+  while IFS= read -r sk_file; do
+    [[ -n "$sk_file" ]] && loaded["$sk_file"]=1
+  done < <(jq -r --arg sid "$session_id" \
+    'select(.session_id == $sid and .skill_file != null
+       and .event != "required-skill" and .event != "suggested-skill")
+     | .skill_file' \
+    "$skills_log" 2>/dev/null || true)
+
   declare -a missing=()
   for sk in "${to_check[@]}"; do
     found=""
-    # Accept exact skill_file match (Skill tool) or path match (Read of
-    # <skill>/SKILL.md). Excludes inject-context.sh's synthetic
-    # required-skill/suggested-skill markers, which mean "surfaced", not
-    # "loaded" - without the exclusion either would satisfy the check for a
-    # skill never actually invoked.
-    found="$(jq -rs --arg sid "$session_id" --arg sk "$sk" \
-      'any(.[]; .session_id == $sid and .skill_file != null
-        and .event != "required-skill" and .event != "suggested-skill"
-        and (
-        .skill_file == $sk or
-        (.skill_file | contains("/skills/" + $sk + "/"))
-      ))' \
-      "$skills_log" 2>/dev/null)" || true
-    if [[ "$found" == "true" ]]; then
+    # Exact skill_file match (Skill tool), or a logged path containing
+    # /skills/<name>/ (Read of <skill>/SKILL.md).
+    if [[ -n "${loaded[$sk]:-}" ]]; then
+      found=1
+    else
+      for sk_file in "${!loaded[@]}"; do
+        if [[ "$sk_file" == *"/skills/${sk}/"* ]]; then
+          found=1
+          break
+        fi
+      done
+    fi
+    if [[ -n "$found" ]]; then
       touch "$cache_dir/${session_id}-${sk}" 2>/dev/null || true
     else
       missing+=("$sk")

@@ -82,11 +82,12 @@ _resolve_pm_for_dir() {
   local toplevel
   toplevel="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
 
-  local -a lockfiles
-  mapfile -t lockfiles < <(yq ".package_managers[] | select(.manager == \"$mgr\") | .lockfile" "$_STACKS_YML" 2>/dev/null)
-
-  local lf
-  for lf in "${lockfiles[@]}"; do
+  # Walks the cached package_managers table from bin/_lib.sh rather than
+  # re-querying _stacks.yml with yq on every package-manager command.
+  local i lf
+  for ((i = 0; i < ${#STACK_PM_MANAGERS[@]}; i++)); do
+    [[ "${STACK_PM_MANAGERS[$i]}" == "$mgr" ]] || continue
+    lf="${STACK_PM_LOCKFILES[$i]}"
     [[ -z "$lf" || "$lf" == "null" ]] && continue
     if [[ -f "$dir/$lf" || (-n "$toplevel" && -f "$toplevel/$lf") ]]; then
       printf '%s:%s\n' "$mgr" "$lf"

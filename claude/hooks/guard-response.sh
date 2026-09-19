@@ -36,12 +36,18 @@ transcript="$(printf '%s' "$payload" | jq -r '.transcript_path // empty')"
 # transcript yet, not that there is nothing to check - skipping is correct.
 # Falling back to the last entry overall is what let a preamble be judged.
 # Content is either a plain string or an array of typed blocks; only text counts.
-last_assistant="$(jq -rs '
+#
+# Only the transcript's tail is parsed: slurping the whole file costs time
+# proportional to the session's history (38ms on a 4MB transcript, and it
+# only grows) to read entries that are, by definition, at the end. A turn
+# longer than the window leaves $u null, which falls back to scanning the
+# window - still the final assistant message.
+last_assistant="$(tail -n "${CLAUDE_TRANSCRIPT_TAIL:-400}" "$transcript" | jq -rs '
   (map(.type == "user") | rindex(true)) as $u
   | .[(($u // -1) + 1):]
   | [.[] | select(.type == "assistant") | .message.content
      | if type == "string" then . else ([.[]? | select(.type == "text") | .text] | join("\n")) end
-     | select(length > 0)] | last // ""' "$transcript" 2>/dev/null || true)"
+     | select(length > 0)] | last // ""' 2>/dev/null || true)"
 [[ -z "$last_assistant" ]] && exit 0
 
 # Same set and anchoring as guard-tone.sh; extends the block from files to chat.
