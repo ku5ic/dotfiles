@@ -352,81 +352,119 @@
   },
   "hooks": {
     "PreToolUse": [
-    {
+      {
         "matcher": "Bash",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/guard-bash.sh",
-                "timeout": 10
-            },
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/guard-commit.sh",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-bash.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-commit.sh",
+            "timeout": 5
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/guard-dispatch.sh",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/guard-dispatch.sh",
+            "timeout": 5
+          }
         ]
-    }
-],
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks remind --client=claude-code"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__serena__*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks auto-approve --client=claude-code"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
-    {
+      {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/sanitize-output.sh",
-                "timeout": 5
-            },
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/format-dispatch.sh",
-                "timeout": 15
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/sanitize-output.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/format-dispatch.sh",
+            "timeout": 15
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "Read",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/log-skills.sh",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/log-skills.sh",
+            "timeout": 5
+          }
         ]
-    },
-    {
+      },
+      {
         "matcher": "Skill",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/log-skills.sh",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/log-skills.sh",
+            "timeout": 5
+          }
         ]
-    }
-],
+      }
+    ],
     "SessionStart": [
-    {
+      {
         "matcher": "startup|resume|compact|clear",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/inject-context.sh",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/inject-context.sh",
+            "timeout": 5
+          }
         ]
-    }
-],
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks activate --client=claude-code"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "serena-hooks cleanup --client=claude-code"
+          }
+        ]
+      }
+    ],
     "UserPromptExpansion": [
       {
         "hooks": [
@@ -450,17 +488,17 @@
       }
     ],
     "SubagentStart": [
-    {
+      {
         "matcher": "*",
         "hooks": [
-            {
-                "type": "command",
-                "command": "$HOME/.claude/hooks/inject-subagent-context.sh",
-                "timeout": 5
-            }
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/inject-subagent-context.sh",
+            "timeout": 5
+          }
         ]
-    }
-]
+      }
+    ]
   },
   "statusLine": {
     "type": "command",

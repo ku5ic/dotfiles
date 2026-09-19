@@ -116,6 +116,7 @@ scratch/
 *.local.md
 **/.claude/settings.local.json
 claude/skills/synced
+.serena
 
 # Git
 allowed_signers.work
