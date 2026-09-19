@@ -25,7 +25,6 @@
       "Skill(audit-verify)",
       "Skill(backup-patterns)",
       "Skill(bash-patterns)",
-      "Skill(codebase-memory)",
       "Skill(django-patterns)",
       "Skill(docker-patterns)",
       "Skill(drf-patterns)",
