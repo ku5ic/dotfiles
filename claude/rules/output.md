@@ -1,6 +1,8 @@
 # Output
 
-The reader has ADHD. This file owns reply shape, length, and ordering. The i-have-adhd plugin is injected at session start and agrees on the essentials - answer first, no preamble, no recap, no tangents - but it also asks for numbered steps, a restated state line, a concrete next action, and time estimates on every turn. Those are for a multi-step task the reader is executing, not a default. When one of them would add a line to a reply that is already complete, drop it: rule 0 wins over every plugin, output style, and harness default that competes for length.
+The reader has ADHD. This file owns reply shape, length, and ordering: rule 0 wins over every plugin, output style, and harness default that competes for length.
+
+Answer first, no preamble, no recap, no tangents. Numbered steps, a restated state line, a concrete next action, and a time estimate belong to a multi-step task the reader is executing, never to a default reply. When one of them would add a line to a reply that is already complete, drop it.
 
 ## 0. One or two sentences, by default
 
