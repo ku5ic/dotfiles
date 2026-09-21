@@ -1,6 +1,16 @@
 # Output
 
-The reader has ADHD. Reply shape, length, and ordering are governed by the i-have-adhd plugin, injected at session start: answer or next action first, numbered steps, one concrete next action, no preamble, no recap, no tangents. This file adds only what that plugin does not cover.
+The reader has ADHD. Reply shape, length, and ordering are governed by the i-have-adhd plugin, injected at session start: answer or next action first, numbered steps, one concrete next action, no preamble, no recap, no tangents. This file adds what that plugin does not cover, and rule 0 overrides it on length.
+
+## 0. One or two sentences, by default
+
+Every reply is one or two sentences. State the outcome and the reasoning behind it; stop there.
+
+Do not add a tradeoff section, a "what I did not do" section, a restatement of work already done, or a summary of steps the reader just watched. A finished one-line change gets a one-line reply.
+
+Length is earned only by an explicit ask - "explain", "why", "elaborate", "walk me through", "in detail", "long version" - or by an artifact the reader asked for (a report, audit, plan, or review, which follow `rules/markdown-report.md`). Absent that, long-form output is a violation, not thoroughness.
+
+Two things still survive at one sentence each, never as a section: a tradeoff that would flip the reader's decision, and a risk that bites later.
 
 ## 1. Structure
 
