@@ -133,15 +133,6 @@ setup_mcps() {
   else
     echo "ok       mcp:playwright"
   fi
-
-  if ! claude mcp get serena >/dev/null 2>&1; then
-    uv tool install -p 3.13 serena-agent
-    serena init
-    serena setup claude-code
-    echo "created  mcp:serena"
-  else
-    echo "ok       mcp:serena"
-  fi
 }
 
 setup_mcps

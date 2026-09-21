@@ -108,6 +108,23 @@ n_paragraphs() {
   [[ "$output" == *"banned AI-tell phrase"* ]]
 }
 
+@test "blocks the alarmed error openers i-have-adhd rule 8 forbids" {
+  local opener
+  for opener in "Uh oh, the test is failing." "Oh no, that broke the build." "There seems to be a problem with the config."; do
+    : >"$TRANSCRIPT"
+    append_turns "$(user_turn "hello")" "$(assistant_turn "$opener")"
+    run run_guard_response
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"banned AI-tell phrase"* ]]
+  done
+}
+
+@test "does not block a matter-of-fact error report" {
+  append_turns "$(user_turn "hello")" "$(assistant_turn "Test fails at auth.spec.ts:42: expected 200, got 401.")"
+  run run_guard_response
+  [ "$status" -eq 0 ]
+}
+
 @test "blocks a banned closer phrase even when it opens a later line, not just the first" {
   # Built from two fragments so this file's own source never contains the
   # trigger phrase at a line start (that would trip guard-tone.sh on it).

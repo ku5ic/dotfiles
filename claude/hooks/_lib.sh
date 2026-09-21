@@ -52,7 +52,7 @@ block() {
 # Shared by guard-tone.sh (files) and guard-response.sh (chat) so the two
 # enforcement paths can't drift apart.
 # shellcheck disable=SC2034
-readonly BANNED_TELL_REGEX='^(certainly|absolutely|of course|sure)[!,.]|^(great question|that.s a great|(i )?hope this helps|let.s dive in|happy to (help|clarify|assist)|let me know if|feel free to|it.s (worth noting|important to note)|it is (worth noting|important to note)|looking at your|to answer your question|in conclusion|to summarize|in summary)([[:space:]]|[!,.]|$)|^(let me|i.ll|i will)[[:space:]]'
+readonly BANNED_TELL_REGEX='^(certainly|absolutely|of course|sure)[!,.]|^(great question|that.s a great|(i )?hope this helps|let.s dive in|happy to (help|clarify|assist)|let me know if|feel free to|it.s (worth noting|important to note)|it is (worth noting|important to note)|looking at your|to answer your question|in conclusion|to summarize|in summary|uh.oh|oh no|there seems to be)([[:space:]]|[!,.]|$)|^(let me|i.ll|i will)[[:space:]]'
 
 # Longest run of consecutive non-blank, non-list/heading/blockquote/table
 # lines in $1, outside fenced code blocks and outside YAML frontmatter - a
