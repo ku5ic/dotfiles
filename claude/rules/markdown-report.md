@@ -5,7 +5,7 @@ paths:
 
 # Markdown report format
 
-Consistent format for audit reports, review output, and workflow artifacts. Applies to every report a flow or audit command writes to disk, and to any other structured finding report.
+Consistent format for findings reports: audits, reviews, dependency runs, and any other structured list of problems found. A skill that defines its own report template (`flow-explore`, `flow-debug`, `flow-plan`) owns its shape; only the file-naming, path-printing, and ASCII rules below apply to those.
 
 ## Required sections
 
@@ -68,7 +68,7 @@ The "overall health in one word" at the end of the Summary helps quick scanning:
 ## Anti-patterns
 
 - `failure`: writing the report body to terminal output instead of a file -- the artifact becomes ephemeral and unreferenceable.
-- `failure`: omitting the `## Summary` section or the `## Findings` section when findings exist.
+- `failure`: omitting the `## Summary` section or the `## Findings` section when findings exist, in a report this format governs.
 - `warning`: inventing severity levels outside `failure`, `warning`, `info` -- e.g. `critical`, `high`, `medium`, `low`, `error`. The rubric has three levels; anything else breaks downstream tooling that parses reports.
 - `warning`: leaving placeholder text in empty sections (e.g. `<none>`, `N/A`) rather than omitting the section.
 - `warning`: hardcoding a literal `~/.claude/scratch/` or `scratch/` path instead of resolving it via `scratch-dir.sh`. The resolved directory is project-scoped inside a recognized project and home-fallback otherwise - a literal is wrong in whichever case it doesn't match.

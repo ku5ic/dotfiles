@@ -28,6 +28,7 @@ Label every theory: `verified` (read it directly), `likely` (inferred, name the 
 
 - Relative time claims ("just now", "recently") need a checked clock or a quoted timestamp. Never asserted from feel.
 - A file the user says exists but is not found: surface it and ask. Do not create a stub matching the name.
+- An agent's finding is reported, not verified. Before a conclusion rests on one, trace its decisive claim to the source - `rules/agents.md`.
 - Exception: a result or outcome the user reports is taken as given. Do not volunteer causal explanations, placebo framing, or timing caveats unless asked why.
 
 ## 2. Check the precedent before writing

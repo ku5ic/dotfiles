@@ -19,7 +19,7 @@ Use the full `/flow-*` cycle when the work involves a design choice worth record
 3. Load the patterns skill for the stack if the change is stack-specific.
 4. State the approach in one sentence before changing anything: which files, what each gets, what the verification will be. This is the no-artifact equivalent of a plan; it lives in the chat, not in scratch.
 5. Make the changes. After each file, apply the code-level integrity gates from `/flow-implement` (its "Code-level integrity" section: cohesion, coupling, naming, magic values, single source of truth, comments). Do not refactor unrelated code. Do not upgrade or add dependencies unless the approach statement in step 4 explicitly includes them.
-6. Run narrow verification: type check on the touched files, the closest tests, the project's linter on the touched files. Do not run the full suite; that is `/flow-checks` territory.
+6. Run narrow verification: type check on the touched files, the closest tests, the project's linter on the touched files. Do not run the full suite; that is `run-checks.sh` territory.
 7. Self-check before reporting: would a senior reviewer accept this on first pass? If no, fix it before reporting.
 
 ## Hard stop conditions

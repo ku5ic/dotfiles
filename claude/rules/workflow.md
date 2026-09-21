@@ -50,7 +50,7 @@ Every group is user-only (`disable-model-invocation: true`). They run when typed
 - Pause after each `/flow-*` step, and after any other logical segment, so the user can review and commit before continuing.
 - Unprefixed references (`/plan`, `/implement`) are ambiguous; normalize to the full form.
 - Any step that would write an "Open questions" list instead asks via AskUserQuestion - one question per item, multiple choice, with the built-in "Other" covering anything without discrete options.
-- Record resolved answers in the output as decisions. Never leave an unresolved list.
+- Record resolved answers in the output as decisions. Never leave an unresolved list. An "unknowns" section is not a parking lot either: a question the requester could answer goes to AskUserQuestion, an option you declined goes to the rejected list, and only what research cannot settle stays.
 
 ## 4. Resolve external context first
 

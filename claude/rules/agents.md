@@ -22,6 +22,8 @@ Pin `model:` or `effort:` frontmatter only when it diverges from the session def
 
 An agent's report describes what it intended, not necessarily what it did. Before committing, reporting, or handing a claim to another agent: claimed edits get a `git diff --stat` on the touched paths; claimed findings get one cited `file:line` spot-checked.
 
+Before synthesizing a fan-out, each agent's findings get one more pass: identify the single claim that result's viability rests on and trace it to the source yourself. Two agents disagreeing means neither is correct until traced. A couple of tool calls, not a re-run of the agent's work.
+
 ## Agent shell boilerplate
 
 Every agent definition assumes these three, so no agent file restates them except where noted:

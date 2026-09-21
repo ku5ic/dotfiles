@@ -26,6 +26,8 @@ Use `/flow-plan` instead when the task and a chosen approach are both already co
 
 2. Quick codebase skim: read project CLAUDE.md, grep for existing patterns that resemble the task, identify candidate modules or files. Keep this to a handful of tool calls - enough to name 2-4 plausible implementation directions, not the research itself. If nothing plausible turns up, say so and stop rather than manufacturing directions to fill the fan-out.
 
+   One candidate slot is the cheapest thing that could work, per `rules/change.md` section 7. Not viable -> one line under Ruled out.
+
 3. Fan out. For each candidate direction from step 2, dispatch one scout agent (Agent tool, subagent_type: scout) in the same message as the others so they run in parallel. Give each scout:
    - The resolved task statement
    - The specific direction it owns
@@ -39,15 +41,17 @@ Use `/flow-plan` instead when the task and a chosen approach are both already co
 
    If only one direction is plausible, dispatch one agent and say so plainly in the report - a single-path finding is a valid outcome, not a shortfall.
 
-4. Synthesize, pruning by convention as you go. For each direction, turn its scout findings into:
+4. Re-verify before synthesizing, per `rules/agents.md` section "Verify agent-claimed work before building on it".
+
+5. Synthesize, pruning by convention as you go. For each direction, turn its scout findings into:
    - A scope estimate (files/modules touched)
    - A rough risk note
    - A convention-fit read (matches an existing pattern, or names a divergence with justification - per the project's own conventions, not generic best practice)
    - How well it addresses the task statement
 
-   A direction whose only path forward is an unjustified divergence from established convention does not make the candidate list - move it to Ruled out instead of presenting it as a peer option. This is what keeps the report short on a complex task: convention-fit prunes, it does not just annotate. Among the survivors this stays a survey, not a decision - do not pick a winner. Naming the strongest candidate when one clearly stands out is fine; committing to it with full tradeoffs is `/flow-plan`'s job.
+   A direction whose only path forward is an unjustified divergence from established convention does not make the candidate list - move it to Ruled out instead of presenting it as a peer option. This is what keeps the report short on a complex task: convention-fit prunes, it does not merely annotate. Among the survivors this stays a survey, not a decision - do not pick a winner. Naming the strongest candidate when one clearly stands out is fine; committing to it with full tradeoffs is `/flow-plan`'s job.
 
-5. Decisions. Any question that came up - which direction looks worth pursuing, a requirement that stayed ambiguous after research, scope that needs the requester's input - ask via the AskUserQuestion tool (multiple-choice, "Other" for free text). Record the resolved answers in the report's Decisions section. Do not leave an open-questions list.
+6. Decisions. Any question that came up - which direction looks worth pursuing, a requirement that stayed ambiguous after research, scope that needs the requester's input - ask via the AskUserQuestion tool (multiple-choice, "Other" for free text). Record the resolved answers in the report's Decisions section. Do not leave an open-questions list.
 
 ## Stop conditions
 
@@ -79,7 +83,8 @@ Source: <resolved link, or "inline prompt">
 ### 1. <name>
 
 - Scope: <files/modules>
-- Findings: <scout summary, file:line citations>
+- Findings: <scout summary, file:line citations, each labelled per rules/evidence.md section 1>
+- Decisive claim: <the claim this direction rests on, and how step 4 traced it>
 - Risk: <one line>
 - Convention fit: <matches existing pattern <name/citation>, or "no precedent found">
 - Fit: <how well it addresses the task statement>
@@ -92,7 +97,7 @@ Source: <resolved link, or "inline prompt">
 
 ## Open unknowns
 
-<anything still unclear after research>
+<only what research cannot settle - not a parking lot, per `rules/workflow.md` section 3.>
 
 ## Decisions
 

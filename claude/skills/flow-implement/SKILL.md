@@ -28,7 +28,7 @@ disable-model-invocation: true
    - Do not upgrade or add dependencies unless the plan explicitly includes them.
    - Comments only where the code does not explain itself. Explain why, not what.
 5. Run the narrow verification the plan prescribed (one file's tests, one type check).
-6. Run `/flow-checks` after each Phase.
+6. Run `run-checks.sh` after each Phase. (`/flow-checks` is the user-typed form of the same script; a skill is never model-invocable - `rules/workflow.md` section 3.)
 7. Pause. Report what was done, what was verified, what is left in the step.
 
 ## Scope rules

@@ -40,7 +40,7 @@ If user input, auth, or external data involved: security depth review is a separ
 
 ### 5. Design principles
 
-SOLID, DRY, KISS applied with judgment. Flag actual problems, not preferences. Duplication with divergent lifecycles is not a DRY violation.
+KISS, YAGNI, DRY, SOLID per `rules/change.md` section 8 - the judgment calls are defined there. Flag actual problems, not preferences.
 
 ### 6. Performance
 

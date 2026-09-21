@@ -58,9 +58,26 @@ The one exception is scaffolding explicitly requested or explicitly marked for a
 - Do not rewrite working code in a different style unless that is the task.
 - If the task grows during execution, pause and confirm the expanded scope.
 - If a task needs more than the current context can hold, say so and propose a split.
-- Never declare a task complete with failing checks. Run `/flow-checks` or `run-checks.sh`; if any fail, fix them or report and stop.
+- Never declare a task complete with failing checks. Run `run-checks.sh` (`/flow-checks` is the same script when the user types it); if any fail, fix them or report and stop.
 
-Simplicity and unnecessary-abstraction avoidance: the `ponytail` plugin, enabled globally.
+## 7. Price the cheapest option
+
+Whenever options are enumerated - candidate directions, alternatives, approaches - one slot belongs to the cheapest thing that could work: a data, config, or lookup-table row, an existing entry extended, or doing nothing.
+
+It counts as an option even when it is not a code change, and it gets the same scope, risk, and fit treatment as the rest. Insufficient -> say why in one line and rule it out. The failure is never writing it down.
+
+## 8. Principles, with the judgment call named
+
+Each of these is enforced by the judgment it turns on, not by reciting the acronym:
+
+- **KISS**: the simplest sufficient solution wins. Non-obvious complexity gets one sentence saying why it earns its place.
+- **YAGNI**: speculative need is not need. No code, config, or abstraction for a call site that does not exist yet.
+- **DRY**: duplication along a stable axis is a violation. Duplication whose copies have divergent lifecycles is correct and stays.
+- **SOLID**: one reason to change per unit; extend rather than modify working code; no interface whose only implementation is its only caller.
+
+A finding names the principle and the concrete cost. A preference dressed as a principle is not a finding.
+
+Simplicity and unnecessary-abstraction avoidance is also enforced by the `ponytail` plugin, enabled globally.
 
 ## Anti-patterns
 
@@ -68,4 +85,5 @@ Simplicity and unnecessary-abstraction avoidance: the `ponytail` plugin, enabled
 - `failure`: a new abstraction (interface, config layer, helper module) for a single call site, without stating why now rather than at the second call site.
 - `warning`: refactoring surrounding code "while in there" during a bug fix.
 - `warning`: describing a fix as "cleanup" when the ask was a specific defect.
+- `warning`: an option list with no cheapest option priced, or one mentioned in passing instead of ruled out.
 - `info`: a fix smaller than expected because the defect was smaller than it looked. Worth noting, not a violation.

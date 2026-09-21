@@ -41,7 +41,7 @@ Steps 1-4 are the grounding phase; steps 5-10 are the planning phase. Keep this 
    - If $ARGUMENTS contains "mechanical:" or "plan-shape: mechanical", the plan is mechanical: skip steps 7 and 9 below (no rejected alternatives, no per-step test strategy beyond a single end verification).
    - If the work is clearly mechanical from the grounding phase (pure file edits, no architectural choice), the agent may self-mark mechanical, stating the reason so the user can override.
    - `--full` in $ARGUMENTS forces a substantive plan even when the work looks mechanical.
-7. Consider two implementation approaches. For each, evaluate:
+7. Consider two implementation approaches, one of which is the cheapest thing that could work (`rules/change.md` section 7). For each, evaluate:
    - Scope
    - Risk
    - Effort
@@ -53,11 +53,10 @@ Steps 1-4 are the grounding phase; steps 5-10 are the planning phase. Keep this 
    - Modularity: which module owns this change? If the change crosses module boundaries, name them and justify.
    - Abstraction level: is the new code at the right level of abstraction for its callers? Concretely: does any caller need to know an implementation detail to use it?
    - Separation of concerns: does any new function or component combine independently changing concerns (data fetching + presentation, validation + persistence, etc.)? If yes, split or justify the merge.
-   - KISS: is the simplest sufficient solution being chosen? Name any non-obvious complexity and why it earns its place.
-   - DRY judgment: if this introduces apparent duplication, is the duplication along a stable axis or a divergent one? Duplication with divergent lifecycles is correct.
+   - KISS, YAGNI, DRY: per `rules/change.md` section 8. Name any non-obvious complexity that earns its place, and for apparent duplication, which axis it sits on.
    - Reversibility: if this approach proves wrong after merge, what is the cost to reverse? If high, justify the choice over a more reversible alternative.
    - Verifiability: how will the implemented code be verified against this plan? Name the test, the type check, or the manual check. If "manual eyeball" is the answer, the plan is incomplete.
-   - Convention fit: does the chosen approach match how this codebase already solves this class of problem? Cite the precedent. If it diverges, name the divergence and justify it - an unnamed divergence is not acceptable in the plan.
+   - Convention fit: does the chosen approach match how this codebase already solves this class of problem? Cite the precedent per `rules/evidence.md` section 2: read one concrete instance this session, do not cite it by name alone. If it diverges, name the divergence and justify it - an unnamed divergence is not acceptable in the plan.
 
 8. Break the chosen approach into phased steps.
    - Each step is independently committable and leaves the codebase in a working state.
@@ -75,9 +74,9 @@ Write a plan to `$(scratch-dir.sh)/plan-<task-slug>-<YYYYMMDD-HHMM>.md`:
 - Goal (one sentence)
 - Non-goals (what this change explicitly does not do)
 - Chosen approach and rationale
-- Rejected alternatives (one line each, why rejected) -- omit for mechanical plans
+- Rejected alternatives (one line each, why rejected); omit for mechanical plans. The cheapest option is among them and priced, per `rules/change.md` section 7.
 - Phased steps. Each step: files touched, behavior change, test, commit message shape. Verbatim content a step depends on is inlined here, not referenced by name.
-- Design integrity notes (one or two sentences per item from step 7a)
+- Design integrity notes (one or two sentences per item from step 7a); omit for mechanical plans, which skip step 7a
 - Risks and mitigations
 - Decisions: any open question ask via the AskUserQuestion tool (multiple-choice, "Other" for free text) before writing this plan, then record the resolved answer here (omit if none, including for mechanical plans where there usually are none).
 
@@ -85,7 +84,7 @@ Print the plan path alongside the brief path from step 1. Do not implement.
 
 ## Critique
 
-Skip this step when `plan-shape: mechanical`. Otherwise, dispatch the `plan-critic` agent (Agent tool, subagent_type: plan-critic, foreground) with the plan's absolute path. It reads the codebase, not only the plan, and reports findings against the plan's cited precedent, its design-integrity answers, verifiability, phase independence, non-goals, rollback, and unstated assumptions. Do not act on its findings by revising the plan yourself -- present the plan and the critique together, unmodified, at the Stop below.
+Skip this step when `plan-shape: mechanical`. Otherwise, dispatch the `plan-critic` agent (Agent tool, subagent_type: plan-critic, foreground) with the plan's absolute path. It reads the codebase, not only the plan, and reports findings against the plan's cited precedent, its design-integrity answers, verifiability, phase independence, non-goals, rollback, and unstated assumptions. Do not act on its findings by revising the plan yourself. Present the plan and the critique together, unmodified, at the Stop below.
 
 ## Stop
 
