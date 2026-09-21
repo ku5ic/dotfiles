@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-# PreToolUse hook for Edit, Write, MultiEdit. Runs guard-edit's, guard-skills'
-# and guard-tone's checks in one process against one payload read, instead of
-# three processes each re-parsing it. Mirrors format-dispatch.sh's role on
+# PreToolUse hook for Edit, Write, MultiEdit. Runs guard-edit's and
+# guard-skills' checks in one process against one payload read, instead of
+# two processes each re-parsing it. Mirrors format-dispatch.sh's role on
 # the PostToolUse side.
 #
-# Order matches the old settings.json registration: edit-safety, skills-gate,
-# tone. A call violating more than one check now surfaces only the first
-# violation's message instead of one per hook - the call is still correctly
-# blocked either way.
+# Order matches the old settings.json registration: edit-safety, skills-gate.
+# A call violating both checks surfaces only the first violation's message
+# instead of one per hook - the call is still correctly blocked either way.
 HOOK_NAME="guard-dispatch.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
@@ -19,8 +18,6 @@ require_jq
 source "$(dirname "$0")/guard-edit.sh"
 # shellcheck source=guard-skills.sh
 source "$(dirname "$0")/guard-skills.sh"
-# shellcheck source=guard-tone.sh
-source "$(dirname "$0")/guard-tone.sh"
 
 # _lib.sh's ERR trap is process-wide: left in place, an unexpected error in
 # ANY one check would fail open the whole dispatcher, skipping the remaining
@@ -73,6 +70,5 @@ run_dispatch_check() {
 
 run_dispatch_check run_guard_edit guard-edit.sh
 run_dispatch_check run_guard_skills guard-skills.sh
-run_dispatch_check run_guard_tone guard-tone.sh
 
 exit "${soft_rc:-0}"

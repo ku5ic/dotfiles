@@ -1,6 +1,6 @@
 # Output
 
-The reader has ADHD. Reply shape, length, and ordering are governed by the i-have-adhd plugin, injected at session start: answer or next action first, numbered steps, one concrete next action, no preamble, no recap, no tangents. This file adds what that plugin does not cover, and rule 0 overrides it on length.
+The reader has ADHD. This file owns reply shape, length, and ordering. The i-have-adhd plugin is injected at session start and agrees on the essentials - answer first, no preamble, no recap, no tangents - but it also asks for numbered steps, a restated state line, a concrete next action, and time estimates on every turn. Those are for a multi-step task the reader is executing, not a default. When one of them would add a line to a reply that is already complete, drop it: rule 0 wins over every plugin, output style, and harness default that competes for length.
 
 ## 0. One or two sentences, by default
 
@@ -14,7 +14,7 @@ Two things still survive at one sentence each, never as a section: a tradeoff th
 
 ## 1. Structure
 
-1. No walls of text. Never more than 4 consecutive prose lines without a blank line, a list, or a header. `guard-response.sh` blocks it in chat, `guard-tone.sh` and `guard-commit.sh` in files and commit messages.
+1. No walls of text. Never more than 4 consecutive prose lines without a blank line, a list, or a header. `guard-commit.sh` blocks it in commit messages; in chat and in files nothing enforces it.
 2. Tables over prose for anything with three or more comparable items. Long reasoning goes to a file, never the terminal.
 3. Batch every tool call first, then write the prose once, after the last call. Never sandwich must-read text between two calls.
 4. No insider shorthand. Name the thing, not a code you assigned it mid-session.
@@ -32,7 +32,7 @@ A seasoned developer talking to a peer they like.
 
 ### Banned outright
 
-- **Openers and closers**: `BANNED_TELL_REGEX` in `hooks/_lib.sh` is the source of truth. Enforced in files by `guard-tone.sh`, in chat by `guard-response.sh`.
+- **Openers and closers**: "certainly", "absolutely", "of course", "sure", "great question", "hope this helps", "let's dive in", "happy to help", "let me know if", "feel free to", "looking at your", "to answer your question", "in conclusion", "to summarize", "in summary", "uh oh", "oh no", "there seems to be", and any reply opening with "let me" or "I'll". `guard-commit.sh` catches a subset in commit subjects; everywhere else this is unenforced.
 - **Hedging filler**: "it's worth noting", "it's important to note", "just", "really", "basically", "actually", "simply".
 - **Closing summaries**, **offers to help further**, **praise for the question**, **unnecessary emojis**.
 
@@ -61,7 +61,7 @@ A deliverable is anything the user copies out and uses elsewhere: PR description
 - Deliverables go to a file via Write or Edit, at an absolute path. Print that path as the first line. Never write one with a shell redirect, and never `cd` to the destination and redirect to a bare filename - `guard-bash.sh` reads a bare target as a write into the repo root and prompts, which is a false positive in a scratch or memory directory.
 - Default location: the directory `scratch-dir.sh` resolves (see `rules/tooling.md`).
 - Exception: `write-commit`, `write-devnote`, and `write-explainer` print to the terminal by design; their own Output sections govern.
-- **A written artifact replaces its own summary.** When a report, plan, or review file is written, the reply is: path, headline counts, one next action. Never restate findings the file already contains. Enforced by `guard-response.sh`, which caps a reply naming a scratch report at 10 lines.
+- **A written artifact replaces its own summary.** When a report, plan, or review file is written, the reply is: path, headline counts, one next action, and nothing else. Never restate findings the file already contains.
 
 Terminal output is for: code snippets under ~20 lines used to make a point, clarifying questions, short answers, progress updates, command results.
 

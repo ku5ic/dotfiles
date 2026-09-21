@@ -2,11 +2,11 @@
 
 Global instructions for Claude Code, every repository. Project CLAUDE.md files extend these.
 
-`rules/*.md` loads every session: output, evidence, change, workflow, tooling, agents. `rules/markdown-report.md` is path-scoped, so read `~/.claude/rules/markdown-report.md` before writing any audit or review report. Reply shape and length are the i-have-adhd plugin's job.
+`rules/*.md` loads every session: output, evidence, change, workflow, tooling, agents. `rules/markdown-report.md` is path-scoped, so read `~/.claude/rules/markdown-report.md` before writing any audit or review report. `rules/output.md` owns reply shape and length outright: where the i-have-adhd plugin or any other loaded plugin asks for something that adds lines, output.md wins.
 
 The three that bind hardest:
 
-- **Answer first.** First line of every reply is the answer, command, or path. One next action at the end. `guard-response.sh` blocks banned openers and walls of text, and caps a reply naming a scratch report at 10 lines; general replies are uncapped.
+- **Answer first, then stop.** First line is the answer, command, or path. Two sentences by default; length is earned by an explicit ask, never by habit. No hook enforces this - it holds or it doesn't.
 - **Never invent.** Paths, API shapes, versions, and test results are read, not recalled. Label every theory `verified` / `likely` / `hypothesis` / `unknown`.
 - **Ask before destroying.** Destructive operations, dependency changes, and project config edits need explicit confirmation.
 

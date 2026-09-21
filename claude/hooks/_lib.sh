@@ -4,9 +4,9 @@
 # stderr, exits 0, instead of blocking a legitimate tool call on a hook bug).
 
 # Idempotency guard: guard-dispatch.sh sources this directly, then sources
-# guard-edit.sh/guard-skills.sh/guard-tone.sh which each source it again for
-# standalone use - without this, the second sourcing reruns the `readonly
-# BANNED_TELL_REGEX` below and errors.
+# guard-edit.sh/guard-skills.sh which each source it again for standalone
+# use - without this, the second sourcing reruns the `readonly` declarations
+# below and errors.
 [[ -n "${_CLAUDE_HOOKS_LIB_SOURCED:-}" ]] && return
 _CLAUDE_HOOKS_LIB_SOURCED=1
 
@@ -46,13 +46,6 @@ block() {
   echo "Blocked by ${HOOK_NAME:-hook}: $1" >&2
   exit 2
 }
-
-# Banned AI-tell opener/closer phrases (CLAUDE.md Voice section), anchored to
-# line start so mid-sentence uses ("this is certainly true") aren't flagged.
-# Shared by guard-tone.sh (files) and guard-response.sh (chat) so the two
-# enforcement paths can't drift apart.
-# shellcheck disable=SC2034
-readonly BANNED_TELL_REGEX='^(certainly|absolutely|of course|sure)[!,.]|^(great question|that.s a great|(i )?hope this helps|let.s dive in|happy to (help|clarify|assist)|let me know if|feel free to|it.s (worth noting|important to note)|it is (worth noting|important to note)|looking at your|to answer your question|in conclusion|to summarize|in summary|uh.oh|oh no|there seems to be)([[:space:]]|[!,.]|$)|^(let me|i.ll|i will)[[:space:]]'
 
 # Longest run of consecutive non-blank, non-list/heading/blockquote/table
 # lines in $1, outside fenced code blocks and outside YAML frontmatter - a

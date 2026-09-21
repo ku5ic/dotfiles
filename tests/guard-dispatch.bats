@@ -2,11 +2,11 @@
 # Tests for ~/.claude/hooks/guard-dispatch.sh.
 #
 # guard-dispatch.sh is the single PreToolUse hook wired to Edit|Write|
-# MultiEdit in settings.json. It sources guard-edit.sh, guard-skills.sh, and
-# guard-tone.sh once each and runs their run_guard_* functions in declared
-# order (edit-safety, then skills-gate, then tone), each inside its own
-# subshell with a fresh set -e/errtrace/ERR trap so one check's fail-open
-# never masks a different check's genuine violation.
+# MultiEdit in settings.json. It sources guard-edit.sh and guard-skills.sh
+# once each and runs their run_guard_* functions in declared order
+# (edit-safety, then skills-gate), each inside its own subshell with a fresh
+# set -e/errtrace/ERR trap so one check's fail-open never masks a different
+# check's genuine violation.
 #
 # Each test fakes $HOME so guard-skills.sh's _stacks.yml/skills.jsonl/cache
 # reads never touch real machine state, same convention as guard-skills.bats.
@@ -29,7 +29,7 @@ run_dispatch() {
     HOME="$FAKE_HOME" "$HOOK"
 }
 
-@test "clean write with no _stacks.yml, no risky path, no banned phrase passes all three checks" {
+@test "clean write with no _stacks.yml and no risky path passes both checks" {
   run run_dispatch '/tmp/project/notes.md' 'A normal sentence with nothing wrong.'
   [ "$status" -eq 0 ]
 }
@@ -53,36 +53,23 @@ YAML
   [[ "$output" == *"bash-patterns"* ]]
 }
 
-@test "guard-tone's check blocks a banned AI-tell phrase when the other two checks pass" {
-  run run_dispatch '/tmp/project/notes.md' 'Certainly, this should be blocked by tone.'
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"Blocked by guard-tone.sh"* ]]
-}
-
-@test "ordering: a lockfile edit that also contains a banned phrase surfaces only guard-edit's message" {
-  run run_dispatch '/tmp/project/yarn.lock' 'Certainly, this content has both violations.'
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"Blocked by guard-edit.sh"* ]]
-  # The dispatcher exits at the first blocking check instead of running the
-  # remaining two, so guard-tone's message never appears alongside it.
-  [[ "$output" != *"Blocked by guard-tone.sh"* ]]
-}
-
-@test "a required skill already loaded this session passes the skills-gate and reaches the tone check" {
+@test "ordering: a lockfile edit that would also trip the skills-gate surfaces only guard-edit's message" {
   cat >"$FAKE_HOME/.claude/_stacks.yml" <<'YAML'
 skill_file_map:
   - on: basename
-    globs: ["*.sh"]
+    globs: ["*.lock"]
     skills: [bash-patterns]
 YAML
-  jq -nc --arg sid s1 '{ts:"2026-01-01T00:00:00Z",hook:"log-skills.sh",event:"PreToolUse",session_id:$sid,cwd:"/x",expansion_type:null,command_name:null,command_args:null,command_source:null,skill_file:"bash-patterns",tool_name:"Skill"}' \
-    >"$FAKE_HOME/.claude/logs/skills.jsonl"
-  run run_dispatch '/tmp/project/deploy.sh' 'Certainly, tone should still catch this.'
+  : >"$FAKE_HOME/.claude/logs/skills.jsonl"
+  run run_dispatch '/tmp/project/yarn.lock' 'harmless content'
   [ "$status" -eq 2 ]
-  [[ "$output" == *"Blocked by guard-tone.sh"* ]]
+  [[ "$output" == *"Blocked by guard-edit.sh"* ]]
+  # The dispatcher exits at the first blocking check instead of running the
+  # remaining one, so the skills-gate message never appears alongside it.
+  [[ "$output" != *"bash-patterns"* ]]
 }
 
-@test "a required skill already loaded this session allows a clean write through all three checks" {
+@test "a required skill already loaded this session allows a clean write through both checks" {
   cat >"$FAKE_HOME/.claude/_stacks.yml" <<'YAML'
 skill_file_map:
   - on: basename
@@ -98,17 +85,16 @@ YAML
 # Resilience: each check runs inside its own subshell with a fresh ERR trap,
 # so an unexpected internal error in one does not abort the dispatcher before
 # the remaining checks run. Malformed JSON breaks every extract_path/jq call
-# identically (all three checks share the same $payload), so this cannot
+# identically (both checks share the same $payload), so this cannot
 # isolate one specific check's failure from another's success -- but it does
 # prove the dispatcher survives and fails open end-to-end instead of hanging
 # or erroring out at the first broken check, printing a distinct
 # "unexpected error, failing open" notice per check along the way.
-@test "malformed JSON payload fails open through all three checks instead of erroring out" {
+@test "malformed JSON payload fails open through both checks instead of erroring out" {
   run bash -c "printf 'not valid json' | HOME='$FAKE_HOME' '$HOOK'"
   [ "$status" -eq 0 ]
   [[ "$output" == *"guard-edit.sh: unexpected error, failing open"* ]]
   [[ "$output" == *"guard-skills.sh: unexpected error, failing open"* ]]
-  [[ "$output" == *"guard-tone.sh: unexpected error, failing open"* ]]
 }
 
 @test "empty stdin payload fails open cleanly" {
@@ -121,7 +107,7 @@ YAML
 # the implementation under test is never touched. Two fault classes: one the
 # subshell's own ERR trap catches (`false`), and one that bypasses it
 # entirely (a `set -u` unbound variable - see statusline.sh's own comment on
-# the same bypass). Both must leave guard-skills.sh/guard-tone.sh running
+# the same bypass). Both must leave guard-skills.sh running
 # against the untouched implementation.
 
 setup_isolated_hooks() {
@@ -143,6 +129,17 @@ inject_fault() {
   mv "$tmp" "$file"
 }
 
+# A skills-gate that must block: *.sh requires bash-patterns, nothing loaded.
+setup_skills_gate() {
+  cat >"$FAKE_HOME/.claude/_stacks.yml" <<'YAML'
+skill_file_map:
+  - on: basename
+    globs: ["*.sh"]
+    skills: [bash-patterns]
+YAML
+  : >"$FAKE_HOME/.claude/logs/skills.jsonl"
+}
+
 run_dispatch_isolated() {
   local path="$1" content="$2" session="${3:-s1}" tool_name="${4:-Write}"
   jq -n --arg path "$path" --arg content "$content" --arg sess "$session" --arg tn "$tool_name" \
@@ -153,16 +150,18 @@ run_dispatch_isolated() {
 @test "isolation survives an ERR-trappable fault in an earlier check" {
   setup_isolated_hooks
   inject_fault 'false'
-  run run_dispatch_isolated '/tmp/project/notes.md' 'Certainly, this should still be blocked by tone.'
+  setup_skills_gate
+  run run_dispatch_isolated '/tmp/project/deploy.sh' 'harmless content'
   [ "$status" -eq 2 ]
   [[ "$output" == *"guard-edit.sh: unexpected error, failing open"* ]]
-  [[ "$output" == *"Blocked by guard-tone.sh"* ]]
+  [[ "$output" == *"bash-patterns"* ]]
 }
 
 @test "isolation survives a fault that bypasses the ERR trap (set -u unbound variable)" {
   setup_isolated_hooks
   inject_fault 'echo "$definitely_not_set"'
-  run run_dispatch_isolated '/tmp/project/notes.md' 'Certainly, this should still be blocked by tone.'
+  setup_skills_gate
+  run run_dispatch_isolated '/tmp/project/deploy.sh' 'harmless content'
   [ "$status" -eq 2 ]
-  [[ "$output" == *"Blocked by guard-tone.sh"* ]]
+  [[ "$output" == *"bash-patterns"* ]]
 }
