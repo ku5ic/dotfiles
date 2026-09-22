@@ -12,8 +12,8 @@ disable-model-invocation: true
 
 Steps 1-4 are the grounding phase; steps 5-10 are the planning phase. Keep this context lean: delegate broad code exploration and check-running to the scout or checker agent. Every phase-boundary stop stays in the main conversation.
 
-1. Get the scratch directory using `!scratch-dir.sh`. The stack is in the injected `<repo-context>` block. Persist the task's verbatim source as follows:
-   - If a matching brief already exists (check with `ls -t "$(scratch-dir.sh)"/brief-\*.md "$(scratch-dir.sh)"/feature-\*.md 2>/dev/null | head -1`), read it.
+1. Get both directories: `!scratch-dir.sh` for the brief, `!plans-dir.sh` for the plan. The stack is in the injected `<repo-context>` block. Persist the task's verbatim source as follows:
+   - If a matching brief already exists (check with `ls -t "$(scratch-dir.sh)"/brief-\*.md 2>/dev/null | head -1`), read it.
    - Otherwise, write `$ARGUMENTS` byte-for-byte-including any embedded code, scripts, or replacement text blocks-to `$(scratch-dir.sh)/brief-<slug>-<YYYYMMDD-HHMM>.md`. Exception: if `$ARGUMENTS` points to a file, reference it instead.
    - This file is the durable source of truth for anything the task provides verbatim; conversation context may be compacted, but this file persists.
    - If `$ARGUMENTS` is empty because the task was only stated in prior conversation, write the fullest available verbatim restatement and note plainly in the file that it is a reconstruction, not the original.
@@ -67,7 +67,7 @@ Steps 1-4 are the grounding phase; steps 5-10 are the planning phase. Keep this 
 
 ## Output
 
-Write a plan to `$(scratch-dir.sh)/plan-<task-slug>-<YYYYMMDD-HHMM>.md`:
+Write a plan to `$(plans-dir.sh)/plan-<task-slug>.md`, where `<task-slug>` is at most four words describing the task itself, not the wording of the prompt. No timestamp: the plans directory is browsed by eye, and `/flow-resume` reads a plan's age from its birth time. If that path already exists, this is a replan - say so and confirm before overwriting.
 
 - `plan-shape: mechanical | substantive` field at the top of the plan artifact, before "Goal".
 - Context: stack summary (from `<repo-context>` plus the tokei headline), CI health at plan time (what exists, what is missing), blast radius (files that will change plus their dependents, and which module owns the change).

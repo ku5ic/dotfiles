@@ -12,9 +12,11 @@
 # a bare `>` redirect instead of the Write tool) have no other chance to
 # mkdir before their first write.
 #
-# Project tier lives outside .claude/ on purpose: Claude Code treats .claude/
-# as a hardcoded protected directory and always confirms edits there, even
-# with an Edit(...) allow rule. scratch/ isn't on that protected list.
+# Both tiers live under .claude/ so scratch sits beside plans/ and tasks/.
+# Claude Code gates .claude/ writes behind its own confirmation; a project's
+# settings.json carries Edit()/Write() allows for these paths. If the prompts
+# come back regardless, move the project tier back to <root>/scratch - that
+# was the previous arrangement, and that gating was the reason for it.
 #
 # Registers each project dir it resolves in scratch-registry.txt so
 # scratch-rotate.sh's scheduled (launchd) run can find and prune it later -
@@ -23,7 +25,7 @@
 set -euo pipefail
 
 if "$HOME/.claude/bin/project-root.sh" --check; then
-  dir="$("$HOME/.claude/bin/project-root.sh")/scratch"
+  dir="$("$HOME/.claude/bin/project-root.sh")/.claude/scratch"
   registry="$HOME/.claude/logs/scratch-registry.txt"
   mkdir -p "$(dirname "$registry")"
   grep -qxF "$dir" "$registry" 2>/dev/null || echo "$dir" >>"$registry"

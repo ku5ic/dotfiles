@@ -51,11 +51,19 @@ Script-to-script calls inside the bin scripts are exempt; they resolve paths int
 
 ## 3. Scratch
 
-Scratch is whatever `scratch-dir.sh` prints: `<project-root>/scratch/` inside a recognized project (a git worktree, or a stack sentinel matched during the ancestor walk), `$HOME/.claude/scratch/` everywhere else.
+Scratch is whatever `scratch-dir.sh` prints: `<project-root>/.claude/scratch/` inside a recognized project (a git worktree, or a stack sentinel matched during the ancestor walk), `$HOME/.claude/scratch/` everywhere else.
 
-The project tier is `scratch/`, not `.claude/scratch/`: Claude Code treats `.claude/` as protected and always confirms edits there regardless of allow rules.
+Three sibling directories under a project's `.claude/`, each with one job:
 
-**Everything temporary goes there**: reports, plans, previews, test artifacts, proof-of-concept scripts, one-off debug files, downloads, screenshots, logs. This overrides two competing defaults - the harness's per-session `/tmp` scratchpad (the project `scratch/` survives the session) and ad hoc paths under `~/.claude/`. The harness's own memory stores are the one carve-out.
+| Directory          | Holds                                                                            | Tracked?        |
+| ------------------ | -------------------------------------------------------------------------------- | --------------- |
+| `.claude/scratch/` | Throwaway work: POCs, one-off scripts, logs, downloads, screenshots              | No - gitignored |
+| `.claude/plans/`   | Plan-mode files, via `plansDirectory` in the project settings                    | No - gitignored |
+| `.claude/tasks/`   | Handover plans a person is meant to read - written by hand, no skill writes here | Yes             |
+
+Claude Code gates every `.claude/` write behind its own confirmation. A project's `settings.json` carries `Edit()`/`Write()` allows for these three paths to suppress that. If the prompts appear anyway, the allows are not doing their job - move the project scratch tier back to `<project-root>/scratch/` and revert `scratch-dir.sh` with it.
+
+**Everything temporary goes to scratch**: reports, previews, test artifacts, proof-of-concept scripts, one-off debug files, downloads, screenshots, logs. Plans are the exception - they have their own directory above. This overrides two competing defaults: the harness's per-session `/tmp` scratchpad (the project tier survives the session), and ad hoc paths under `~/.claude/`. The harness's own memory stores are the one carve-out.
 
 ### Never the project root
 
@@ -71,7 +79,7 @@ Never default to `.`, a bare filename, or whatever directory the tool picks. A s
 
 ### Naming
 
-Structured artifacts (reports, plans):
+Structured artifacts (reports, reviews, audits):
 
 ```
 $(scratch-dir.sh)/<kind>-<scope-slug>-<YYYYMMDD-HHMM>.md
@@ -79,6 +87,8 @@ $(scratch-dir.sh)/<kind>-<YYYYMMDD-HHMM>.md        # no scope slug
 ```
 
 Test artifacts and POC files need no fixed shape - name them sensibly, but keep them under the resolved directory.
+
+Plans are the exception to the timestamp. `.claude/plans/` is browsed by eye and shares a directory with the harness's own plan-mode files, so a plan is `plan-<task-slug>.md` - no date, slug capped at four words. Its age comes from the file's birth time (`stat -f %B`), which beats a filename date anyway: editing a plan no longer hides how old it is.
 
 Reading the most recent artifact of a kind, always filtered to the resolved directory:
 
@@ -90,4 +100,8 @@ Never read across projects. If none exists for this project, run the predecessor
 
 ### Retention
 
-`scratch-rotate.sh` prunes both tiers on a 30-day default (pass a custom window as the first argument). The home tier is pruned directly. Project tiers are pruned via a registry: `scratch-dir.sh` appends each project scratch path it resolves to `~/.claude/logs/scratch-registry.txt`, and the rotate run reads that file, since the scheduled launchd run has no project cwd of its own. Project `scratch/` directories are gitignored.
+`scratch-rotate.sh` prunes both tiers on a 30-day default (pass a custom window as the first argument). The home tier is pruned directly. Project tiers are pruned via a registry: `scratch-dir.sh` appends each project scratch path it resolves to `~/.claude/logs/scratch-registry.txt`, and the rotate run reads that file, since the scheduled launchd run has no project cwd of its own. Project `.claude/scratch/` directories are gitignored.
+
+Registry entries are absolute paths, so any `<project-root>/scratch` rows left from the pre-`.claude/` layout stay valid and keep getting pruned until those directories are gone.
+
+`.claude/plans/` is not on the rotation. Plan files accumulate until cleared by hand.
