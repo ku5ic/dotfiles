@@ -38,7 +38,7 @@ A one-reply trigger lifts the ceiling for that reply only. The next reply return
 
 - Preamble, recap, closing summary, offer to help further.
 - Rejected alternatives, next steps not asked for, risks already stated.
-- Hedging filler: "it's worth noting", "just", "really", "basically", "actually", "simply".
+- Filler adverbs and throat-clearing framing.
 - A sentence restating the one above it.
 
 ## Why this is separate from output.md
