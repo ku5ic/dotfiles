@@ -45,7 +45,7 @@ The kit's `bin/` is on PATH (the plugin's `bin/`, or `~/.claude/bin` in a symlin
 
 Arguments go as plain positional args after a space. Do not wrap a call in `bash` or `sh`; the shebang handles it. Inline skill injection uses the same form: `` !`project-name.sh` ``.
 
-`settings.json` grants scoped `Bash(<name>:*)` allows keyed to the bare name - a pathful or wrapped invocation will not match and triggers a permission prompt.
+Permission allows for these scripts are written against the bare command, so a pathful or `bash`-wrapped call won't match one and triggers a permission prompt.
 
 Script-to-script calls inside the bin scripts are exempt; they resolve paths internally.
 

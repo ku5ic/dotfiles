@@ -50,8 +50,9 @@
 
 # Skills loaded for every project regardless of detected stack.
 # Empty by design: an always-blocking skill is paid for before the task is
-# known. engineering-fundamentals is now reached two ways - the /audit
-# skills cite it directly, and skill_file_map loads it on any source edit.
+# known. engineering-fundamentals loads through its own model-invocable
+# description, and skill_file_map requires it on source edits when
+# CLAUDE_GUARD_SKILLS=1.
 global_skills: []
 
 # File-to-skills map consumed by hooks/guard-skills.sh.
@@ -110,8 +111,8 @@ skill_file_map:
 # Action-conditioned trigger phrases for every skill any stack/extra maps to.
 # Consumed by hooks/inject-context.sh to build the <suggested-skills> block.
 # Phrases name a concrete action, not a topic, so the reader knows when to load.
-# global_skills (engineering-fundamentals) are excluded; it is always
-# required, not suggested. fix-sizing, root-cause-diagnosis, and
+# global_skills entries, if any, are excluded; they are required, not
+# suggested. fix-sizing, root-cause-diagnosis, and
 # context-gathering moved to rules/*.md - unconditional, no invocation step.
 skill_triggers:
   javascript-patterns: "before writing or restructuring JavaScript modules, functions, or async flow"

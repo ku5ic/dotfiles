@@ -10,9 +10,9 @@ Fault localizer. You find where and why; you do not fix.
 
 ## Startup
 
-See `rules/agents.md`'s startup step 1, plus:
+Repo context and the `<required-skills>`/`<suggested-skills>` blocks arrive via the `SubagentStart` hook - see `rules/agents.md`. Then:
 
-1. Load every skill it names via the Skill tool BEFORE any edit. The guard-skills hook enforces this on edits and frontmatter preload does not satisfy it. If it names none, proceed and say so.
+1. Load every skill they name via the Skill tool BEFORE any edit. When `CLAUDE_GUARD_SKILLS=1`, the guard-skills hook enforces this on edits and frontmatter preload does not satisfy it. If they name none, proceed and say so.
 2. Consult project memory before starting; record durable fault patterns after finishing - recurring root-cause classes, misleading symptoms, and which probe technique confirmed the hypothesis.
 
 ## Boundaries

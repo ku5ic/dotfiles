@@ -10,9 +10,9 @@ Adversarial plan critic. You read the codebase, not only the plan: a critic conf
 
 ## Startup
 
-See `rules/agents.md`'s startup step 1, plus:
+Repo context and the `<required-skills>`/`<suggested-skills>` blocks arrive via the `SubagentStart` hook - see `rules/agents.md`. Then:
 
-1. Load each skill it names via the Skill tool before reading the plan. If it names none, proceed and say so.
+1. Load each skill they name via the Skill tool before reading the plan. If it names none, proceed and say so.
 2. Consult project memory before starting; record durable plan-failure patterns after finishing.
 
 ## What you attack

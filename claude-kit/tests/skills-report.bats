@@ -42,7 +42,7 @@ run_report() {
 @test "malformed lines are counted and reported, not fatal" {
   ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   write_log \
-    "{\"ts\":\"$ts\",\"hook\":\"log-skills.sh\",\"event\":\"PreToolUse\",\"session_id\":\"s1\",\"cwd\":\"/x\",\"expansion_type\":null,\"command_name\":null,\"command_args\":null,\"command_source\":null,\"skill_file\":\"bash-patterns\",\"tool_name\":\"Skill\"}" \
+    "{\"ts\":\"$ts\",\"hook\":\"log-skills.sh\",\"event\":\"PostToolUse\",\"session_id\":\"s1\",\"cwd\":\"/x\",\"expansion_type\":null,\"command_name\":null,\"command_args\":null,\"command_source\":null,\"skill_file\":\"bash-patterns\",\"tool_name\":\"Skill\"}" \
     'not valid json{{{'
   run run_report
   [ "$status" -eq 0 ]
@@ -54,8 +54,8 @@ run_report() {
   old_ts="$(date -u -v-90d +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -d '-90 days' +%Y-%m-%dT%H:%M:%SZ)"
   recent_ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   write_log \
-    "{\"ts\":\"$old_ts\",\"hook\":\"log-skills.sh\",\"event\":\"PreToolUse\",\"session_id\":\"s1\",\"cwd\":\"/x\",\"expansion_type\":null,\"command_name\":null,\"command_args\":null,\"command_source\":null,\"skill_file\":\"old-skill\",\"tool_name\":\"Skill\"}" \
-    "{\"ts\":\"$recent_ts\",\"hook\":\"log-skills.sh\",\"event\":\"PreToolUse\",\"session_id\":\"s1\",\"cwd\":\"/x\",\"expansion_type\":null,\"command_name\":null,\"command_args\":null,\"command_source\":null,\"skill_file\":\"new-skill\",\"tool_name\":\"Skill\"}"
+    "{\"ts\":\"$old_ts\",\"hook\":\"log-skills.sh\",\"event\":\"PostToolUse\",\"session_id\":\"s1\",\"cwd\":\"/x\",\"expansion_type\":null,\"command_name\":null,\"command_args\":null,\"command_source\":null,\"skill_file\":\"old-skill\",\"tool_name\":\"Skill\"}" \
+    "{\"ts\":\"$recent_ts\",\"hook\":\"log-skills.sh\",\"event\":\"PostToolUse\",\"session_id\":\"s1\",\"cwd\":\"/x\",\"expansion_type\":null,\"command_name\":null,\"command_args\":null,\"command_source\":null,\"skill_file\":\"new-skill\",\"tool_name\":\"Skill\"}"
 
   run run_report 30
   [[ "$output" == *"new-skill"* ]]
@@ -66,10 +66,9 @@ run_report() {
   [[ "$output" == *"new-skill"* ]]
 }
 
-@test "PreToolUse and PostToolUse Skill entries for the same invocation count once, not twice" {
+@test "one PostToolUse Skill entry counts as one Skill-tool activation" {
   ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   write_log \
-    "{\"ts\":\"$ts\",\"hook\":\"log-skills.sh\",\"event\":\"PreToolUse\",\"session_id\":\"s1\",\"cwd\":\"/x\",\"expansion_type\":null,\"command_name\":null,\"command_args\":null,\"command_source\":null,\"skill_file\":\"bash-patterns\",\"tool_name\":\"Skill\"}" \
     "{\"ts\":\"$ts\",\"hook\":\"log-skills.sh\",\"event\":\"PostToolUse\",\"session_id\":\"s1\",\"cwd\":\"/x\",\"expansion_type\":null,\"command_name\":null,\"command_args\":null,\"command_source\":null,\"skill_file\":\"bash-patterns\",\"tool_name\":\"Skill\"}"
 
   run run_report
@@ -108,7 +107,7 @@ YAML
 
   ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   write_log \
-    "{\"ts\":\"$ts\",\"hook\":\"log-skills.sh\",\"event\":\"PreToolUse\",\"session_id\":\"s1\",\"cwd\":\"/x\",\"expansion_type\":null,\"command_name\":null,\"command_args\":null,\"command_source\":null,\"skill_file\":\"bash-patterns\",\"tool_name\":\"Skill\"}" \
+    "{\"ts\":\"$ts\",\"hook\":\"log-skills.sh\",\"event\":\"PostToolUse\",\"session_id\":\"s1\",\"cwd\":\"/x\",\"expansion_type\":null,\"command_name\":null,\"command_args\":null,\"command_source\":null,\"skill_file\":\"bash-patterns\",\"tool_name\":\"Skill\"}" \
     "{\"ts\":\"$ts\",\"hook\":\"log-skills.sh\",\"event\":\"UserPromptExpansion\",\"session_id\":\"s1\",\"cwd\":\"/x\",\"expansion_type\":\"slash_command\",\"command_name\":\"/flow-plan\",\"command_args\":null,\"command_source\":\"user\",\"skill_file\":null,\"tool_name\":null}"
 
   run run_report

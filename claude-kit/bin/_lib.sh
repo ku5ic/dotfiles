@@ -159,8 +159,8 @@ resolve_package_manager() {
 }
 
 # Shared stack-cache and skill-derivation logic. Consumed by:
-#   hooks/inject-context.sh (UserPromptSubmit hook, main session only)
-#   bin/agent-context.sh (agent startup; agents never see the hook output)
+#   hooks/inject-context.sh (SessionStart hook, main session)
+#   bin/agent-context.sh (run by the SubagentStart hook for subagents)
 # Kept here so the two never carry a private copy of the same yq queries.
 
 # stack_cache_file <project_name> <project_root>

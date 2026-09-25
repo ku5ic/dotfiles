@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Agent startup context. Agents never receive the SessionStart hook
-# injection that the main session gets (hooks/inject-context.sh), so agent
-# shells run this directly at the start of their body instead.
+# Agent startup context. Run by hooks/inject-subagent-context.sh on
+# SubagentStart, the subagent counterpart of hooks/inject-context.sh.
 #
 # Emits the resolved scratch path, the same repo-context content as the hook
 # (stack lines from the detect-stack cache or a fresh run, branch, dirty

@@ -22,12 +22,8 @@
 #      emitting suggested-skill markers; earlier sessions have no marker and
 #      are silently excluded here, not counted as followed
 #
-# log-skills.sh fires on both PreToolUse+Skill and PostToolUse+Skill for a
-# single Skill-tool invocation (settings.json wires both matchers so the
-# invocation and its completion both land in the log). Counting both would
-# double every Skill-tool activation, so this report counts the PreToolUse
-# entry only and treats PostToolUse+Skill as a duplicate confirmation, not a
-# second activation.
+# log-skills.sh logs one PostToolUse+Skill entry per Skill-tool invocation;
+# that entry is the Skill-tool activation count.
 #
 # Usage:
 #   skills-report.sh        # last 30 days
@@ -79,8 +75,6 @@ if [[ "$entry_count" -eq 0 ]]; then
   exit 0
 fi
 
-# PostToolUse+Skill entries are dropped here (see header note above) so the
-# duplicate never reaches the counts below.
 augmented="$(jq '
   def skill_name:
     if .category == "slash_command" then
@@ -93,7 +87,7 @@ augmented="$(jq '
   [.[]
    | . + {category: (
        if .event == "UserPromptExpansion" and .expansion_type == "slash_command" then "slash_command"
-       elif .event == "PreToolUse" and .tool_name == "Skill" then "skill_tool"
+       elif .event == "PostToolUse" and .tool_name == "Skill" then "skill_tool"
        elif .event == "PostToolUse" and .tool_name == "Read" then "read_fallback"
        elif .event == "required-skill" then "surfaced_required"
        elif .event == "suggested-skill" then "surfaced_suggested"
