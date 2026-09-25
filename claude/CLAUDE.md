@@ -32,7 +32,7 @@ Once per session, on the first substantive action in a repo:
 ## Planning
 
 - Multi-step work: TaskCreate past a couple of steps, one item per step, one in progress at a time. Scope growth and context limits: `rules/change.md` section 6.
-- Never declare a task complete with failing checks. Run `run-checks.sh` (the `Stop` hook runs it too when the turn changed files); if any fail, fix them or report and stop.
+- Never declare a task complete with failing checks. Don't run `run-checks.sh` yourself after a change: the `Stop` hook runs it whenever the turn changed files and blocks on failure. If it fails, fix it or report and stop.
 
 ## Compaction
 
