@@ -491,6 +491,7 @@
     "ponytail@ponytail": true
   },
   "syncClaudeAiPlugins": false,
+  "plansDirectory": ".claude/plans",
   "extraKnownMarketplaces": {
     "spacelift-engineering": {
       "source": {

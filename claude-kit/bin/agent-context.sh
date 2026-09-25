@@ -18,8 +18,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/_lib.sh"
 
 # Scratch path. The harness hands every subagent a per-session /tmp
-# "Scratchpad directory" instruction; rules/tooling.md section 3 overrides it, but
-# agents never read that file, so the resolved path is stated here instead.
+# "Scratchpad directory" instruction; rules/tooling.md section 3 overrides it.
+# Most subagents load rules, but Explore/Plan and omitClaudeMd agents don't,
+# and a resolved path beats a rule telling the agent to resolve one.
 # Printed before the project gate so unanchored dirs still get the home tier.
 scratch="$("$KIT_ROOT/bin/scratch-dir.sh" 2>/dev/null || true)"
 if [[ -n "$scratch" ]]; then

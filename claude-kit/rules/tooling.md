@@ -58,7 +58,7 @@ Three sibling directories under a project's `.claude/`, each with one job:
 | Directory          | Holds                                                                            | Tracked?        |
 | ------------------ | -------------------------------------------------------------------------------- | --------------- |
 | `.claude/scratch/` | Throwaway work: POCs, one-off scripts, logs, downloads, screenshots              | No - gitignored |
-| `.claude/plans/`   | Plan-mode files, via `plansDirectory` in the project settings                    | No - gitignored |
+| `.claude/plans/`   | Plan-mode files, via `plansDirectory: ".claude/plans"`                           | No - gitignored |
 | `.claude/tasks/`   | Handover plans a person is meant to read - written by hand, no skill writes here | Yes             |
 
 **Everything temporary goes to scratch**: reports, previews, test artifacts, proof-of-concept scripts, one-off debug files, downloads, screenshots, logs. Plans are the exception - they have their own directory above. This overrides two competing defaults: the harness's per-session `/tmp` scratchpad (the project tier survives the session), and ad hoc paths under `~/.claude/`. The harness's own memory stores are the one carve-out.
@@ -72,6 +72,10 @@ Resolve the destination first, then pass it explicitly:
 - `cmd > "$(scratch-dir.sh)/<name>.log"`, not `cmd > out.log`
 
 Never default to `.`, a bare filename, or whatever directory the tool picks. A stray file in the project root pollutes `git status`, risks being committed, and lands in every clone.
+
+- Read web pages and docs with WebFetch, never `curl` to disk. If you only need to search a page, pipe it (`curl ... | rg`) instead of saving it.
+- After any download, and after any subagent that has Bash returns, run `git status --short`. A new untracked file you didn't intend to create gets moved to scratch or flagged before you do anything else.
+- A subagent prompt that may write files names `$(scratch-dir.sh)` as the only place it may write.
 
 `guard-bash.sh` blocks `curl -O`/`-J` and bare `wget` outright, and forces a prompt on an explicit relative target. Tool-driven writes (a browser screenshot's `out_dir`, an MCP server's download path) are invisible to the hook and rely on this rule.
 
