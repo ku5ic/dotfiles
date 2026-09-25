@@ -69,6 +69,10 @@ run_dispatch_check() {
 }
 
 run_dispatch_check run_guard_edit guard-edit.sh
-run_dispatch_check run_guard_skills guard-skills.sh
+# Opt-in: blocking edits until a patterns skill loads is a personal policy,
+# not a default a new adopter should inherit.
+if [[ "${CLAUDE_GUARD_SKILLS:-0}" == "1" ]]; then
+  run_dispatch_check run_guard_skills guard-skills.sh
+fi
 
 exit "${soft_rc:-0}"

@@ -5,7 +5,8 @@
   "env": {
     "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION": "30",
     "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "3",
-    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "3"
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "3",
+    "CLAUDE_GUARD_SKILLS": "1"
   },
   "includeCoAuthoredBy": false,
   "permissions": {
@@ -19,6 +20,7 @@
       "Bash(plans-dir:*)",
       "Bash(doctor:*)",
       "Bash(tokei:*)",
+      "Bash(claude plugin list *)",
       "Bash(defaults read:*)",
       "Bash(pnpm exec jest:*)",
       "Bash(pnpm run test:*)",
@@ -181,6 +183,9 @@
       "mcp__claude_ai_Figma__*list_file_components_for_code_connect",
       "mcp__claude_ai_Figma__*search_design_system",
       "mcp__claude_ai_Figma__*whoami",
+      "mcp__claude_ai_PubMed__*search_articles",
+      "mcp__codebase-memory-mcp__list_projects",
+      "mcp__codebase-memory-mcp__index_status",
       "mcp__claude-in-chrome__navigate",
       "mcp__claude-in-chrome__get_page_text",
       "mcp__claude-in-chrome__tabs_context_mcp",
@@ -485,6 +490,7 @@
     "frontend-spacelift@spacelift-engineering": true,
     "ponytail@ponytail": true
   },
+  "syncClaudeAiPlugins": false,
   "extraKnownMarketplaces": {
     "spacelift-engineering": {
       "source": {

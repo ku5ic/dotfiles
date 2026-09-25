@@ -26,7 +26,7 @@ context: fork
 5. Verify before writing. For any file path, symbol, or API the prompt is about to name:
    1. Confirm it exists.
    2. Read it directly when the input names a couple of files.
-   3. Delegate to the scout agent when the input references code or architecture spanning more than a couple of files.
+   3. Delegate to the built-in Explore agent when the input references code or architecture spanning more than a couple of files.
    4. Anything that cannot be verified goes into the output as "unverified, please confirm", not asserted.
 6. Rewrite as a structured prompt.
 
@@ -73,7 +73,7 @@ Structure:
 - Extract the underlying goal, do not repeat the fuzzy phrasing.
 - If the ask is actually two or three tasks bundled, split them and output multiple prompts.
 - If the ask is under-specified in a way that cannot be inferred: ask via the AskUserQuestion tool (multiple-choice, "Other" for free text) before writing the output file. Record the resolved answers as a "Decisions" section instead of an unresolved "Open questions" list. If forked, follow the forked decision protocol in `rules/agents.md` instead of guessing.
-- Do not name a file path, function, or API in the output unless it was confirmed this session via Read/Grep/fd or scout; unconfirmed items are marked unverified, never asserted as fact.
+- Do not name a file path, function, or API in the output unless it was confirmed this session via Read/Grep/fd or Explore; unconfirmed items are marked unverified, never asserted as fact.
 - The output is meant to be copy-pasted by another agent or a human, not a chatbot.
 
 ## Bonus: promoting the prompt to a skill

@@ -17,6 +17,7 @@ setup() {
   HOOK="$BATS_TEST_DIRNAME/../claude/hooks/guard-dispatch.sh"
   FAKE_HOME="$BATS_TEST_TMPDIR/home"
   mkdir -p "$FAKE_HOME/.claude/logs"
+  export CLAUDE_GUARD_SKILLS=1
 }
 
 # run_dispatch <path> <content> [session_id] [tool_name]
@@ -51,6 +52,18 @@ YAML
   run run_dispatch '/tmp/project/deploy.sh' 'harmless content'
   [ "$status" -eq 2 ]
   [[ "$output" == *"bash-patterns"* ]]
+}
+
+@test "guard-skills' check is skipped unless CLAUDE_GUARD_SKILLS=1" {
+  cat >"$FAKE_HOME/.claude/_stacks.yml" <<'YAML'
+skill_file_map:
+  - on: basename
+    globs: ["*.sh"]
+    skills: [bash-patterns]
+YAML
+  : >"$FAKE_HOME/.claude/logs/skills.jsonl"
+  CLAUDE_GUARD_SKILLS=0 run run_dispatch '/tmp/project/deploy.sh' 'harmless content'
+  [ "$status" -eq 0 ]
 }
 
 @test "ordering: a lockfile edit that would also trip the skills-gate surfaces only guard-edit's message" {

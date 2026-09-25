@@ -16,7 +16,7 @@ The three that bind hardest:
 
 - `<required-skills>` block: invoke each named skill via the Skill tool before any other action. Blocking.
 - `<suggested-skills>` block: load the named skill when about to take that action.
-- `guard-skills` blocks the first edit of a mapped file type until its patterns skill is loaded for the session.
+- `guard-skills` (opt-in, `CLAUDE_GUARD_SKILLS=1`) blocks the first edit of a mapped file type until its patterns skill is loaded for the session.
 - Source of truth for every mapping and trigger phrase: `_stacks.yml`.
 
 ## Project boot protocol
