@@ -87,7 +87,7 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/.editorconfig" ~
   ln -sfv "$DOTFILES_DIR/.hammerspoon" ~
 
-  bash "$DOTFILES_DIR/claude/bin/bootstrap.sh" --non-interactive
+  bash "$DOTFILES_DIR/claude-kit/bin/bootstrap.sh" --non-interactive
 
   mkdir -p ~/.config
   ln -sfv "$DOTFILES_DIR/config/nvim" ~/.config/
@@ -116,8 +116,8 @@ install_launchd_agents() {
 fix_permissions() {
   find "$DOTFILES_DIR/scripts" \
     "$DOTFILES_DIR/completions/" \
-    "$DOTFILES_DIR/claude/bin" \
-    "$DOTFILES_DIR/claude/hooks" \
+    "$DOTFILES_DIR/claude-kit/bin" \
+    "$DOTFILES_DIR/claude-kit/hooks" \
     "$DOTFILES_DIR/macos" \
     -type f -name '*.sh' -exec chmod +x {} +
 }

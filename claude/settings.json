@@ -5,7 +5,8 @@
   "env": {
     "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION": "30",
     "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "3",
-    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "3"
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "3",
+    "CLAUDE_GUARD_SKILLS": "1"
   },
   "includeCoAuthoredBy": false,
   "permissions": {
@@ -19,6 +20,7 @@
       "Bash(plans-dir:*)",
       "Bash(doctor:*)",
       "Bash(tokei:*)",
+      "Bash(claude plugin list *)",
       "Bash(defaults read:*)",
       "Bash(pnpm exec jest:*)",
       "Bash(pnpm run test:*)",
@@ -34,30 +36,16 @@
       "Bash(aws iam get-role:*)",
       "Bash(aws s3api list-buckets:*)",
       "Bash(aws s3api list-object-versions:*)",
-      "Skill(audit-a11y)",
-      "Skill(audit-debt)",
-      "Skill(audit-doc-drift)",
-      "Skill(audit-perf)",
-      "Skill(audit-security)",
-      "Skill(audit-verify)",
+      "Skill(audit)",
       "Skill(backup-patterns)",
       "Skill(bash-patterns)",
+      "Skill(deps)",
       "Skill(django-patterns)",
       "Skill(docker-patterns)",
       "Skill(drf-patterns)",
       "Skill(engineering-fundamentals)",
+      "Skill(explore-patterns)",
       "Skill(fastapi-patterns)",
-      "Skill(flow-checks)",
-      "Skill(flow-debug)",
-      "Skill(flow-deps)",
-      "Skill(flow-explore)",
-      "Skill(flow-fix)",
-      "Skill(flow-implement)",
-      "Skill(flow-plan)",
-      "Skill(flow-quick)",
-      "Skill(flow-resume)",
-      "Skill(flow-review)",
-      "Skill(flow-test)",
       "Skill(git-patterns)",
       "Skill(javascript-patterns)",
       "Skill(logging-patterns)",
@@ -76,14 +64,7 @@
       "Skill(vps-provisioning)",
       "Skill(vue-patterns)",
       "Skill(wcag-audit)",
-      "Skill(write-commit)",
-      "Skill(write-devnote)",
-      "Skill(write-explainer)",
-      "Skill(write-pr)",
-      "Skill(write-release-notes)",
-      "Skill(write-review-comment)",
-      "Skill(write-review-reply)",
-      "Skill(write-stakeholder)",
+      "Skill(write)",
       "Edit(**)",
       "Read(**)",
       "WebSearch",
@@ -202,6 +183,9 @@
       "mcp__claude_ai_Figma__*list_file_components_for_code_connect",
       "mcp__claude_ai_Figma__*search_design_system",
       "mcp__claude_ai_Figma__*whoami",
+      "mcp__claude_ai_PubMed__*search_articles",
+      "mcp__codebase-memory-mcp__list_projects",
+      "mcp__codebase-memory-mcp__index_status",
       "mcp__claude-in-chrome__navigate",
       "mcp__claude-in-chrome__get_page_text",
       "mcp__claude-in-chrome__tabs_context_mcp",
@@ -456,6 +440,28 @@
         ]
       }
     ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/plan-mode-context.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/stop-checks.sh",
+            "timeout": 300
+          }
+        ]
+      }
+    ],
     "SubagentStart": [
       {
         "matcher": "*",
@@ -484,6 +490,8 @@
     "frontend-spacelift@spacelift-engineering": true,
     "ponytail@ponytail": true
   },
+  "syncClaudeAiPlugins": false,
+  "plansDirectory": ".claude/plans",
   "extraKnownMarketplaces": {
     "spacelift-engineering": {
       "source": {

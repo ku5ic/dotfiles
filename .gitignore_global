@@ -116,7 +116,7 @@ tags
 scratch/
 *.local.md
 **/.claude/settings.local.json
-claude/skills/synced
+claude-kit/skills/synced
 
 # Git
 allowed_signers.work

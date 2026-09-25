@@ -28,7 +28,7 @@ git clone git@github.com:ku5ic/dotfiles.git ~/.dotfiles
 source ~/.dotfiles/install.sh
 ```
 
-This pulls the repo, installs Homebrew, installs zsh and bash, sets zsh as the login shell, runs `brew bundle` from the `Brewfile`, makes scripts and hooks executable, creates all symlinks, configures Claude Code via `claude/bin/bootstrap.sh`, installs launchd agents from `launchd/` to `~/Library/LaunchAgents/`, and sets up Node, Ruby, Python, and Go via asdf.
+This pulls the repo, installs Homebrew, installs zsh and bash, sets zsh as the login shell, runs `brew bundle` from the `Brewfile`, makes scripts and hooks executable, creates all symlinks, configures Claude Code via `claude-kit/bin/bootstrap.sh` (see `claude-kit/README.md` to use the kit on its own), installs launchd agents from `launchd/` to `~/Library/LaunchAgents/`, and sets up Node, Ruby, Python, and Go via asdf.
 
 ## Updating
 

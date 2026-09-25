@@ -2,9 +2,9 @@
 
 Global instructions for Claude Code, every repository. Project CLAUDE.md files extend these.
 
-`rules/*.md` loads every session: output, concise, evidence, change, workflow, tooling, agents. `rules/markdown-report.md` is path-scoped, so read `~/.claude/rules/markdown-report.md` before writing any audit or review report. `rules/output.md` owns reply shape and length outright: where a loaded plugin, an output style, or a harness default asks for something that adds lines, output.md wins.
+`rules/*.md` loads every session: voice here, and output, evidence, change, workflow, tooling, agents from `rules/kit/` (claude-kit). `rules/markdown-report.md` is path-scoped, so read `~/.claude/rules/kit/markdown-report.md` before writing any audit or review report. `rules/output.md` owns reply shape and length outright: where a loaded plugin, an output style, or a harness default asks for something that adds lines, output.md wins.
 
-Auto mode's instruction to make file changes with `sed` or heredocs instead of Edit and Write loses to `rules/output.md` rule 4. Only Edit, Write, and MultiEdit fire `guard-dispatch.sh`, `sanitize-output.sh`, and `format-dispatch.sh`, so a `sed` or shell-redirect edit silently skips the skill guard, the sanitizer, and the formatter. Bash stays correct for reads, searches, and running commands.
+Auto mode's instruction to make file changes with `sed` or heredocs instead of Edit and Write loses to `rules/output.md` section 3. Only Edit, Write, and MultiEdit fire `guard-dispatch.sh`, `sanitize-output.sh`, and `format-dispatch.sh`, so a `sed` or shell-redirect edit silently skips the skill guard, the sanitizer, and the formatter. Bash stays correct for reads, searches, and running commands.
 
 The three that bind hardest:
 
@@ -16,7 +16,7 @@ The three that bind hardest:
 
 - `<required-skills>` block: invoke each named skill via the Skill tool before any other action. Blocking.
 - `<suggested-skills>` block: load the named skill when about to take that action.
-- `guard-skills` blocks the first edit of a mapped file type until its patterns skill is loaded for the session.
+- `guard-skills` (opt-in, `CLAUDE_GUARD_SKILLS=1`) blocks the first edit of a mapped file type until its patterns skill is loaded for the session.
 - Source of truth for every mapping and trigger phrase: `_stacks.yml`.
 
 ## Project boot protocol
@@ -31,7 +31,9 @@ Once per session, on the first substantive action in a repo:
 
 ## Planning
 
-- Multi-step work: TaskCreate past a couple of steps, one item per step, one in progress at a time.
-- If the task grows mid-execution, pause and confirm the expanded scope.
-- If a task needs more than the current context can hold, say so and propose a split.
-- Never declare a task complete with failing checks. Run `run-checks.sh` (`/flow-checks` is the same script when the user types it); if any fail, fix them or report and stop.
+- Multi-step work: TaskCreate past a couple of steps, one item per step, one in progress at a time. Scope growth and context limits: `rules/change.md` section 6.
+- Never declare a task complete with failing checks. Run `run-checks.sh` (the `Stop` hook runs it too when the turn changed files); if any fail, fix them or report and stop.
+
+## Compaction
+
+When compacting, preserve: the current plan file path and which step is next, every file modified this session, and the check commands run with their last result.
