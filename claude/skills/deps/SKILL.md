@@ -67,7 +67,7 @@ If $ARGUMENTS scopes to an ecosystem or PR number, filter to it.
 
 ## Phase 2: triage and present
 
-Stop for approval before mutating (`flow-*` pause discipline).
+Stop for approval before mutating (`rules/workflow.md` section 3 pause discipline).
 
 - Severity is from 1b when available; where audit and alerts disagree, trust the alert.
 - Map each open alert to a PR by package and fixed version.

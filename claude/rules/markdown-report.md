@@ -5,7 +5,7 @@ paths:
 
 # Markdown report format
 
-Consistent format for findings reports: audits, reviews, dependency runs, and any other structured list of problems found. A skill that defines its own report template (`flow-explore`, `flow-debug`, `flow-plan`) owns its shape; only the file-naming, path-printing, and ASCII rules below apply to those.
+Consistent format for findings reports: audits, reviews, dependency runs, and any other structured list of problems found. A skill that defines its own report template (`explore-patterns`) owns its shape; only the file-naming, path-printing, and ASCII rules below apply to those.
 
 ## Required sections
 

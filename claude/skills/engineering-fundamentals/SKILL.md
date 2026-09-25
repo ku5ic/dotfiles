@@ -7,7 +7,7 @@ description: Engineering fundamentals reference covering requirements clarity, d
 
 Foundation reference for engineering work. Loads alongside language and framework skills for any review, audit, plan, implementation, refactor, or code quality task.
 
-The `/flow-*` and `/audit-*` commands enforce these checks as deterministic phase gates at the right moment.
+The `/audit-*` commands enforce these checks as deterministic phase gates at the right moment.
 
 - Inside one of those commands: defer to the command's enforcement and apply only the sections relevant to ad-hoc questions that arise during execution.
 - Outside any command: apply this checklist as the primary engineering quality reference.

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 ## When to use this
 
-The subject is already understood well enough to explain - root cause from `/flow-debug`, a feature just built or reviewed, or a module/section of code someone needs oriented to - and the goal is understanding, not a change. Produces a citation-heavy walkthrough for a reader unfamiliar with the code. Use `/write-devnote` instead for a short peer-to-peer note on a completed change. Use `/flow-fix` or `/flow-plan` instead when the goal is to change code, not explain it.
+The subject is already understood well enough to explain - root cause from `explore-patterns`, a feature just built or reviewed, or a module/section of code someone needs oriented to - and the goal is understanding, not a change. Produces a citation-heavy walkthrough for a reader unfamiliar with the code. Use `/write-devnote` instead for a short peer-to-peer note on a completed change. Use a direct edit or `/plan` instead when the goal is to change code, not explain it.
 
 ## Procedure
 

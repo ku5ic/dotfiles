@@ -41,23 +41,14 @@
       "Skill(audit-security)",
       "Skill(audit-verify)",
       "Skill(backup-patterns)",
+      "Skill(deps)",
       "Skill(bash-patterns)",
       "Skill(django-patterns)",
       "Skill(docker-patterns)",
       "Skill(drf-patterns)",
       "Skill(engineering-fundamentals)",
+      "Skill(explore-patterns)",
       "Skill(fastapi-patterns)",
-      "Skill(flow-checks)",
-      "Skill(flow-debug)",
-      "Skill(flow-deps)",
-      "Skill(flow-explore)",
-      "Skill(flow-fix)",
-      "Skill(flow-implement)",
-      "Skill(flow-plan)",
-      "Skill(flow-quick)",
-      "Skill(flow-resume)",
-      "Skill(flow-review)",
-      "Skill(flow-test)",
       "Skill(git-patterns)",
       "Skill(javascript-patterns)",
       "Skill(logging-patterns)",
@@ -452,6 +443,28 @@
             "type": "command",
             "command": "$HOME/.claude/hooks/log-skills.sh",
             "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/plan-mode-context.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/stop-checks.sh",
+            "timeout": 300
           }
         ]
       }

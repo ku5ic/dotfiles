@@ -50,7 +50,7 @@
 
 # Skills loaded for every project regardless of detected stack.
 # Empty by design: an always-blocking skill is paid for before the task is
-# known. engineering-fundamentals is now reached two ways - the flow-*/audit-*
+# known. engineering-fundamentals is now reached two ways - the audit-*
 # skills cite it directly, and skill_file_map loads it on any source edit.
 global_skills: []
 

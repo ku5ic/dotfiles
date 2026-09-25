@@ -36,25 +36,26 @@ Most of this is enforced by `guard-bash.sh`.
 
 Procedures live at `$HOME/.claude/skills/<group>-<name>/SKILL.md`, invoked as `/<group>-<name>`.
 
-| Group   | Covers                                                          |
-| ------- | --------------------------------------------------------------- |
-| `flow`  | Default feature workflow: plan, implement, test, review, debug. |
-| `audit` | Targeted audits: a11y, debt, security, perf.                    |
-| `meta`  | Authoring and reflection.                                       |
-| `write` | Outward-facing communication.                                   |
+| Group   | Covers                                       |
+| ------- | -------------------------------------------- |
+| `audit` | Targeted audits: a11y, debt, security, perf. |
+| `meta`  | Authoring and reflection.                    |
+| `write` | Outward-facing communication.                |
 
 Every group is user-only (`disable-model-invocation: true`). They run when typed, never on model initiative. The canonical inventory is `/skills` output, not any UI label.
 
+Explore, plan, implement, and verify use the built-ins: `explore-patterns` (model-invocable, read-only), `/plan`, approving the plan, and the `Stop` hook running `run-checks.sh` plus `/code-review`.
+
 **Hard rules:**
 
-- Pause after each `/flow-*` step, and after any other logical segment, so the user can review and commit before continuing.
-- Unprefixed references (`/plan`, `/implement`) are ambiguous; normalize to the full form.
+- A question is answered, never acted on: no edits until the user asks for a change.
+- After a plan is approved, do one plan step, then stop so the user can review and commit before continuing. Same pause after any other logical segment.
 - Any step that would write an "Open questions" list instead asks via AskUserQuestion - one question per item, multiple choice, with the built-in "Other" covering anything without discrete options.
 - Record resolved answers in the output as decisions. Never leave an unresolved list. An "unknowns" section is not a parking lot either: a question the requester could answer goes to AskUserQuestion, an option you declined goes to the rejected list, and only what research cannot settle stays.
 
 ## 4. Resolve external context first
 
-Step 0 for `flow-review`, `flow-test`, `flow-debug`, `flow-explore`, `audit-security`, `audit-perf`, `audit-debt`, and `audit-a11y`: if `$ARGUMENTS` contains a URL with little inline description, resolve it before anything else.
+Step 0 for `explore-patterns`, `audit-security`, `audit-perf`, `audit-debt`, and `audit-a11y`: if `$ARGUMENTS` contains a URL with little inline description, resolve it before anything else.
 
 Identify the service from the domain, use ToolSearch to find the matching fetch tool (`app.clickup.com` -> ClickUp tools, `notion.so` -> Notion, `github.com` -> `gh` or the GitHub tools), and call it. Extract the scope and requirements from what comes back.
 
