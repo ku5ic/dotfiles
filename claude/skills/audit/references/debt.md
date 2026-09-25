@@ -1,8 +1,6 @@
----
-description: Surface technical debt and architectural risks with severity and remediation path
-argument-hint: <file, directory, area name, or a link to an external tracker/doc>
-disable-model-invocation: true
----
+# /audit debt
+
+Surface technical debt and architectural risks with severity and remediation path. Arguments: `<file, directory, area name, or a link to an external tracker/doc>`.
 
 ## Procedure
 

@@ -1,8 +1,6 @@
----
-description: Draft replies to a reviewer's PR comments, verifying each claim against the actual code before answering
-argument-hint: <reviewer username> [PR number] [--all]
-disable-model-invocation: true
----
+# /write review-reply
+
+Draft replies to a reviewer's PR comments, verifying each claim against the actual code before answering. Arguments: `<reviewer username> [PR number] [--all]`.
 
 ## Procedure
 

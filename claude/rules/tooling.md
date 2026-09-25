@@ -61,8 +61,6 @@ Three sibling directories under a project's `.claude/`, each with one job:
 | `.claude/plans/`   | Plan-mode files, via `plansDirectory` in the project settings                    | No - gitignored |
 | `.claude/tasks/`   | Handover plans a person is meant to read - written by hand, no skill writes here | Yes             |
 
-Claude Code gates every `.claude/` write behind its own confirmation. A project's `settings.json` carries `Edit()`/`Write()` allows for these three paths to suppress that. If the prompts appear anyway, the allows are not doing their job - move the project scratch tier back to `<project-root>/scratch/` and revert `scratch-dir.sh` with it.
-
 **Everything temporary goes to scratch**: reports, previews, test artifacts, proof-of-concept scripts, one-off debug files, downloads, screenshots, logs. Plans are the exception - they have their own directory above. This overrides two competing defaults: the harness's per-session `/tmp` scratchpad (the project tier survives the session), and ad hoc paths under `~/.claude/`. The harness's own memory stores are the one carve-out.
 
 ### Never the project root
@@ -98,10 +96,4 @@ ls -t "$(scratch-dir.sh)"/<kind>-*.md | head -1
 
 Never read across projects. If none exists for this project, run the predecessor command first.
 
-### Retention
-
-`scratch-rotate.sh` prunes both tiers on a 30-day default (pass a custom window as the first argument). The home tier is pruned directly. Project tiers are pruned via a registry: `scratch-dir.sh` appends each project scratch path it resolves to `~/.claude/logs/scratch-registry.txt`, and the rotate run reads that file, since the scheduled launchd run has no project cwd of its own. Project `.claude/scratch/` directories are gitignored.
-
-Registry entries are absolute paths, so any `<project-root>/scratch` rows left from the pre-`.claude/` layout stay valid and keep getting pruned until those directories are gone.
-
-`.claude/plans/` is not on the rotation. Plan files accumulate until cleared by hand.
+Retention, the prune registry, and `.claude/` write gating are documented in the headers of `scratch-dir.sh`, `scratch-rotate.sh`, and `plans-dir.sh`.

@@ -21,7 +21,7 @@
 #   6. Skills-log field parity: log-skills.sh and skills-report.sh reference
 #      the same skills.jsonl field names, so a rename in the emitter cannot
 #      silently break the report.
-#   7. Audit-verify field parity: audit-verify/SKILL.md's per-finding parser
+#   7. Audit-verify field parity: audit/references/verify.md's per-finding parser
 #      references the same field names as rules/markdown-report.md's required
 #      per-finding shape.
 #   8. CLAUDE.md rules pointer parity: every rules/*.md reference in
@@ -434,7 +434,7 @@ echo
 echo "== audit-verify field parity =="
 
 MARKDOWN_REPORT="$SOURCE_ROOT/rules/markdown-report.md"
-AUDIT_VERIFY="$SOURCE_ROOT/skills/audit-verify/SKILL.md"
+AUDIT_VERIFY="$SOURCE_ROOT/skills/audit/references/verify.md"
 verify_parity_failed=0
 
 # audit-verify's step 3 parses these per-finding fields out of a
@@ -452,7 +452,7 @@ for field in "${finding_fields[@]}"; do
     verify_parity_failed=1
   fi
   if [[ -f "$AUDIT_VERIFY" ]] && ! grep -qE "\\b${field}\\b" "$AUDIT_VERIFY"; then
-    echo "missing-field  audit-verify/SKILL.md: '$field'"
+    echo "missing-field  audit/references/verify.md: '$field'"
     verify_parity_failed=1
   fi
 done
@@ -460,7 +460,7 @@ done
 if ((verify_parity_failed)); then
   exit_code=1
 else
-  echo "ok             ${#finding_fields[@]} per-finding fields referenced in both rules/markdown-report.md and audit-verify"
+  echo "ok             ${#finding_fields[@]} per-finding fields referenced in both rules/markdown-report.md and audit/references/verify.md"
 fi
 
 echo

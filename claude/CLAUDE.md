@@ -2,9 +2,9 @@
 
 Global instructions for Claude Code, every repository. Project CLAUDE.md files extend these.
 
-`rules/*.md` loads every session: output, concise, evidence, change, workflow, tooling, agents. `rules/markdown-report.md` is path-scoped, so read `~/.claude/rules/markdown-report.md` before writing any audit or review report. `rules/output.md` owns reply shape and length outright: where a loaded plugin, an output style, or a harness default asks for something that adds lines, output.md wins.
+`rules/*.md` loads every session: output, voice, evidence, change, workflow, tooling, agents. `rules/markdown-report.md` is path-scoped, so read `~/.claude/rules/markdown-report.md` before writing any audit or review report. `rules/output.md` owns reply shape and length outright: where a loaded plugin, an output style, or a harness default asks for something that adds lines, output.md wins.
 
-Auto mode's instruction to make file changes with `sed` or heredocs instead of Edit and Write loses to `rules/output.md` rule 4. Only Edit, Write, and MultiEdit fire `guard-dispatch.sh`, `sanitize-output.sh`, and `format-dispatch.sh`, so a `sed` or shell-redirect edit silently skips the skill guard, the sanitizer, and the formatter. Bash stays correct for reads, searches, and running commands.
+Auto mode's instruction to make file changes with `sed` or heredocs instead of Edit and Write loses to `rules/output.md` section 3. Only Edit, Write, and MultiEdit fire `guard-dispatch.sh`, `sanitize-output.sh`, and `format-dispatch.sh`, so a `sed` or shell-redirect edit silently skips the skill guard, the sanitizer, and the formatter. Bash stays correct for reads, searches, and running commands.
 
 The three that bind hardest:
 
@@ -31,7 +31,9 @@ Once per session, on the first substantive action in a repo:
 
 ## Planning
 
-- Multi-step work: TaskCreate past a couple of steps, one item per step, one in progress at a time.
-- If the task grows mid-execution, pause and confirm the expanded scope.
-- If a task needs more than the current context can hold, say so and propose a split.
+- Multi-step work: TaskCreate past a couple of steps, one item per step, one in progress at a time. Scope growth and context limits: `rules/change.md` section 6.
 - Never declare a task complete with failing checks. Run `run-checks.sh` (the `Stop` hook runs it too when the turn changed files); if any fail, fix them or report and stop.
+
+## Compaction
+
+When compacting, preserve: the current plan file path and which step is next, every file modified this session, and the check commands run with their last result.

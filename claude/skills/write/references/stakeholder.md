@@ -1,9 +1,6 @@
----
-description: Reframe a technical finding or proposal for a non-technical audience
-argument-hint: <technical content, or path to a file with it>
-model: haiku
-disable-model-invocation: true
----
+# /write stakeholder
+
+Reframe a technical finding or proposal for a non-technical audience. Arguments: `<technical content, or path to a file with it>`.
 
 ## Procedure
 

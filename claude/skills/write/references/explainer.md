@@ -1,12 +1,10 @@
----
-description: Explain a bug, feature, module, or section of code to someone new to the codebase - full mechanism, file:line citations, developer to developer
-argument-hint: <what to explain - a bug/ticket, a debug report path, a feature or module name, a file/directory, or blank to use what's already been discussed in this conversation>
-disable-model-invocation: true
----
+# /write explainer
+
+Explain a bug, feature, module, or section of code to someone new to the codebase - full mechanism, file:line citations, developer to developer. Arguments: `<what to explain - a bug/ticket, a debug report path, a feature or module name, a file/directory, or blank to use what's already been discussed in this conversation>`.
 
 ## When to use this
 
-The subject is already understood well enough to explain - root cause from `explore-patterns`, a feature just built or reviewed, or a module/section of code someone needs oriented to - and the goal is understanding, not a change. Produces a citation-heavy walkthrough for a reader unfamiliar with the code. Use `/write-devnote` instead for a short peer-to-peer note on a completed change. Use a direct edit or `/plan` instead when the goal is to change code, not explain it.
+The subject is already understood well enough to explain - root cause from `explore-patterns`, a feature just built or reviewed, or a module/section of code someone needs oriented to - and the goal is understanding, not a change. Produces a citation-heavy walkthrough for a reader unfamiliar with the code. Use `/write devnote` instead for a short peer-to-peer note on a completed change. Use a direct edit or `/plan` instead when the goal is to change code, not explain it.
 
 ## Procedure
 

@@ -1,8 +1,6 @@
----
-description: Detect drift between code and markdown or inline documentation
-argument-hint: <code path to check>
-disable-model-invocation: true
----
+# /audit doc-drift
+
+Detect drift between code and markdown or inline documentation. Arguments: `<code path to check>`.
 
 ## Prerequisites
 

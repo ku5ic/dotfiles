@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 ## What this maintains
 
-Reference skills are every `skills/*/SKILL.md` not prefixed `audit-`, `write-`, or `meta-`, excluding the procedure skills `deps` and `explore-patterns`. Each carries a `## Version notes` section that this skill owns:
+Reference skills are every `skills/*/SKILL.md` except the procedure skills `audit`, `write`, `deps`, `explore-patterns`, and `meta-*`. Each carries a `## Version notes` section that this skill owns:
 
 ```
 ## Version notes

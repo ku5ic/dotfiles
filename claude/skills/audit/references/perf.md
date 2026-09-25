@@ -1,8 +1,6 @@
----
-description: Performance audit focused on statically detectable issues
-argument-hint: <file, directory, area name, or a link to an external tracker/doc>
-disable-model-invocation: true
----
+# /audit perf
+
+Performance audit focused on statically detectable issues. Arguments: `<file, directory, area name, or a link to an external tracker/doc>`.
 
 ## Procedure
 

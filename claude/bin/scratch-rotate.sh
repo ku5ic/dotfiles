@@ -16,6 +16,9 @@
 # single bad line would otherwise mean unrecoverable mass deletion.
 # Every deleted path is appended to the rotate log so an accident stays
 # diagnosable after the fact.
+#
+# Registry entries are absolute, so <root>/scratch rows left from the
+# pre-.claude/ layout stay valid and keep getting pruned until those dirs go.
 
 set -euo pipefail
 

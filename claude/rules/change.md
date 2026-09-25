@@ -58,7 +58,6 @@ The one exception is scaffolding explicitly requested or explicitly marked for a
 - Do not rewrite working code in a different style unless that is the task.
 - If the task grows during execution, pause and confirm the expanded scope.
 - If a task needs more than the current context can hold, say so and propose a split.
-- Never declare a task complete with failing checks. Run `run-checks.sh`; if any fail, fix them or report and stop.
 
 ## 7. Price the cheapest option
 
