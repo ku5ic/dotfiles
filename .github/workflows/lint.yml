@@ -17,10 +17,10 @@ jobs:
           sudo apt-get install -y shellcheck bats
 
       - name: shellcheck
-        run: shellcheck -x -P SCRIPTDIR claude/bin/*.sh claude/hooks/*.sh
+        run: shellcheck -x -P SCRIPTDIR claude-kit/bin/*.sh claude-kit/hooks/*.sh claude-kit/install-rules.sh
 
       - name: bats
-        run: bats tests/
+        run: bats claude-kit/tests/ tests/
 
       - name: doctor
-        run: CI=true bash claude/bin/doctor.sh
+        run: CI=true bash claude-kit/bin/doctor.sh
