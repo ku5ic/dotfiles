@@ -870,19 +870,30 @@ kit_providers() {
 # kit_tasks [dir]
 # Prints "<provider>\t<stack>\t<task>\t<command>" for every task of every
 # task_providers entry whose manifest is in <dir> ("-" when a provider has no
-# stack). {pm} resolves through resolve_package_manager, npm when unresolved.
+# stack). {pm} is the nearest lockfile's manager for the provider's stack
+# (kit_nearest_pm_lockfile), npm when there is none.
 kit_tasks() {
   kit_stacks_load
-  local dir="${1:-.}" i file run pm_run task pm="" pm_resolved=0
+  local dir="${1:-.}" i file run pm_run task pm eco phys=""
   local -a pm_runs
+  # Per provider stack, nearest lockfile first: a poetry service under a
+  # pnpm root runs poe through poetry, and a subproject's own lockfile beats
+  # the root's.
+  local -A pm_by_eco=()
   for ((i = 0; i < ${#KIT_TP_NAMES[@]}; i++)); do
     file="$(_kit_provider_manifest "$i" "$dir")"
     [[ -n "$file" ]] || continue
 
-    if ((! pm_resolved)); then
-      pm="$(resolve_package_manager "$dir")"
-      pm_resolved=1
+    eco="${KIT_TP_STACKS[i]}"
+    if [[ -z "${pm_by_eco[$eco]+set}" ]]; then
+      [[ -n "$phys" ]] || phys="$(cd -P "$dir" 2>/dev/null && pwd)"
+      pm_by_eco[$eco]=""
+      if [[ "$eco" != - && -n "$phys" ]]; then
+        pm_by_eco[$eco]="$(kit_nearest_pm_lockfile "$phys" "$eco")"
+        pm_by_eco[$eco]="${pm_by_eco[$eco]%%:*}"
+      fi
     fi
+    pm="${pm_by_eco[$eco]}"
     run="${KIT_TP_RUNS[i]}"
     if [[ "${KIT_TP_RUNS_BY_PM[i]}" != - ]]; then
       IFS=';' read -ra pm_runs <<<"${KIT_TP_RUNS_BY_PM[i]}"

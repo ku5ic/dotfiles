@@ -37,7 +37,8 @@ if ! curl -sS -o /dev/null --max-time 5 "$url" 2>/dev/null; then
   scripts=$'\n'"$(json_keys "$root/package.json" .scripts)"$'\n'
   for candidate in storybook dev; do
     if [[ "$scripts" == *$'\n'"$candidate"$'\n'* ]]; then
-      pm="$(resolve_package_manager "$root" || true)"
+      pm="$(kit_nearest_pm_lockfile "$root" js)"
+      pm="${pm%%:*}"
       echo "Start it with: ${pm:-npm} run $candidate"
       break
     fi

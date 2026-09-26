@@ -150,6 +150,30 @@ run_checks() {
   [[ "$output" == *"PASS python: test (test)"* ]]
 }
 
+@test "py: a poetry service under a pnpm root runs poe through poetry" {
+  printf '{"name":"root","private":true}\n' >"$PROJECT_DIR/package.json"
+  touch "$PROJECT_DIR/pnpm-lock.yaml"
+  mkdir -p "$PROJECT_DIR/svc"
+  printf '[tool.poe.tasks]\nlint = "ruff check"\n' >"$PROJECT_DIR/svc/pyproject.toml"
+  touch "$PROJECT_DIR/svc/poetry.lock"
+  stub_bin poetry 0
+  run run_checks
+  [[ "$output" == *"PASS python: lint (lint) [svc]"* ]]
+  [[ "$(cat "$STUB_DIR/poetry.calls")" == *"run poe lint" ]]
+}
+
+@test "js: a subproject's own lockfile beats the root's" {
+  printf '{"name":"root","private":true}\n' >"$PROJECT_DIR/package.json"
+  touch "$PROJECT_DIR/pnpm-lock.yaml"
+  mkdir -p "$PROJECT_DIR/web"
+  printf '{"name":"web","scripts":{"test":"vitest"}}\n' >"$PROJECT_DIR/web/package.json"
+  touch "$PROJECT_DIR/web/yarn.lock"
+  stub_bin yarn 0
+  run run_checks
+  [[ "$output" == *"PASS js: test (test) [web]"* ]]
+  [[ "$(cat "$STUB_DIR/yarn.calls")" == *"run test" ]]
+}
+
 @test "py: poe task runs through poetry in a poetry project" {
   printf '[tool.poe.tasks]\ntest = "pytest"\n' >"$PROJECT_DIR/pyproject.toml"
   touch "$PROJECT_DIR/poetry.lock"
