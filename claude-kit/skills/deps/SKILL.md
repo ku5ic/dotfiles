@@ -2,6 +2,11 @@
 description: Merge open Dependabot PRs and reconcile GitHub security alerts
 argument-hint: "<optional: ecosystem filter, PR number, or --fix-transitive>"
 disable-model-invocation: true
+allowed-tools:
+  - Bash(git status *)
+  - Bash(gh auth status *)
+  - Bash(gh repo view *)
+  - Bash(gh pr list *)
 ---
 
 General core, best-effort tail. Package-manager agnostic.
