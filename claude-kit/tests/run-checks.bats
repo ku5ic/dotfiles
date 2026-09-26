@@ -251,6 +251,19 @@ run_checks() {
   [[ "$output" == *"PASS rust: test"* ]]
 }
 
+@test "opentofu: fmt runs, validate skips until init made .terraform/" {
+  touch "$PROJECT_DIR/.terraform.lock.hcl"
+  stub_bin tofu 0
+  run run_checks
+  [[ "$output" == *"PASS opentofu: fmt"* ]]
+  [[ "$output" == *"SKIP opentofu: validate (no .terraform/ yet)"* ]]
+  grep -q " fmt -check -recursive$" "$STUB_DIR/tofu.calls"
+
+  mkdir "$PROJECT_DIR/.terraform"
+  run run_checks
+  [[ "$output" == *"PASS opentofu: validate"* ]]
+}
+
 # Monorepo: every subproject, at any depth.
 
 @test "monorepo: subdir package.json is discovered and labeled" {

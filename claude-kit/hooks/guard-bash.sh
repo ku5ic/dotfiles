@@ -467,12 +467,13 @@ _check_segment() {
       block "kubectl delete" "kubectl-delete"
     fi
     ;;
-  terraform)
-    if [[ "$seg" =~ terraform[[:space:]]+([^[:space:]]+[[:space:]]+)*destroy([[:space:]]|$) ]]; then
-      block "terraform destroy" "terraform-destroy"
+  terraform | tofu)
+    # OpenTofu shares Terraform's CLI; the same slugs cover both.
+    if [[ "$seg" =~ ^${lead}[[:space:]]+([^[:space:]]+[[:space:]]+)*destroy([[:space:]]|$) ]]; then
+      block "$lead destroy" "terraform-destroy"
     fi
-    if [[ "$seg" =~ terraform[[:space:]]+([^[:space:]]+[[:space:]]+)*apply[[:space:]].*(-auto-approve|--auto-approve)([[:space:]]|$) ]]; then
-      block "terraform apply -auto-approve skips the plan review step" "terraform-auto-approve"
+    if [[ "$seg" =~ ^${lead}[[:space:]]+([^[:space:]]+[[:space:]]+)*apply[[:space:]].*(-auto-approve|--auto-approve)([[:space:]]|$) ]]; then
+      block "$lead apply -auto-approve skips the plan review step" "terraform-auto-approve"
     fi
     ;;
   docker)

@@ -762,6 +762,19 @@ make_repo() {
   [ -z "$output" ]
 }
 
+@test "tofu: destroy and apply -auto-approve block like terraform, plan passes" {
+  local cmd
+  for cmd in 'tofu destroy' 'tofu -chdir=infra destroy -auto-approve' 'tofu apply -auto-approve'; do
+    run run_guard "$cmd"
+    [ "$status" -eq 2 ] || {
+      echo "not blocked: $cmd"
+      return 1
+    }
+  done
+  run run_guard 'tofu plan'
+  [ "$status" -eq 0 ]
+}
+
 # Hard rule: curl and wget downloads land only in scratch.
 
 @test "download blocks: every target outside scratch" {
