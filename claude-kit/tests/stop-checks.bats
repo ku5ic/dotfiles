@@ -7,11 +7,11 @@
 #
 # Run with: bats tests/
 
+load helper
+
 setup() {
   HOOK="$BATS_TEST_DIRNAME/../hooks/stop-checks.sh"
-  FAKE_HOME="$BATS_TEST_TMPDIR/home"
-  unset CLAUDE_CONFIG_DIR
-  export CLAUDE_PLUGIN_ROOT="$FAKE_HOME/.claude"
+  kit_test_home --plugin-root
   REPO="$BATS_TEST_TMPDIR/repo"
   TRANSCRIPT="$BATS_TEST_TMPDIR/transcript.jsonl"
   mkdir -p "$FAKE_HOME/.claude/bin" "$REPO"

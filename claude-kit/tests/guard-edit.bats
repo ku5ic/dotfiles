@@ -6,6 +6,8 @@
 #
 # Run with: bats tests/
 
+load helper
+
 setup() {
   HOOK="$BATS_TEST_DIRNAME/../hooks/guard-edit.sh"
 }
@@ -13,7 +15,7 @@ setup() {
 # Builds an Edit/Write/MultiEdit payload from a path string and pipes it to
 # the hook. Uses jq -R so the path can contain any character.
 run_guard_edit() {
-  printf '%s' "$1" | jq -R '{tool_input: {file_path: .}}' | "$HOOK"
+  hook_payload Edit "$1" | "$HOOK"
 }
 
 # positive cases (must allow)
@@ -134,12 +136,11 @@ run_guard_edit() {
 
 # Fake HOME whose overlay link points at a file in a fake dotfiles tree.
 setup_overlay() {
-  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  kit_test_home
   OVERLAY_SRC="$BATS_TEST_TMPDIR/dotfiles/claude/claude-kit.local.yml"
-  mkdir -p "$FAKE_HOME/.claude" "${OVERLAY_SRC%/*}"
+  mkdir -p "${OVERLAY_SRC%/*}"
   touch "$OVERLAY_SRC"
   ln -s "$OVERLAY_SRC" "$FAKE_HOME/.claude/claude-kit.local.yml"
-  unset CLAUDE_CONFIG_DIR
 }
 
 @test "ask: Write to the overlay through its ~/.claude link" {

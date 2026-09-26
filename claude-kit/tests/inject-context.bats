@@ -12,12 +12,12 @@
 #
 # Run with: bats tests/
 
+load helper
+
 setup() {
   HOOK="$BATS_TEST_DIRNAME/../hooks/inject-context.sh"
   LIB="$BATS_TEST_DIRNAME/../bin/_lib.sh"
-  FAKE_HOME="$BATS_TEST_TMPDIR/home"
-  unset CLAUDE_CONFIG_DIR
-  export CLAUDE_PLUGIN_ROOT="$FAKE_HOME/.claude"
+  kit_test_home --plugin-root
   FAKE_ROOT="$BATS_TEST_TMPDIR/project"
   mkdir -p "$FAKE_HOME/.claude/bin" "$FAKE_HOME/.claude/logs" "$FAKE_HOME/.claude/scratch" "$FAKE_ROOT"
   # Real git init: a non-git root breaks inject-context.sh entirely (see the

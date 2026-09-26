@@ -8,10 +8,11 @@
 #
 # Run with: bats tests/
 
+load helper
+
 setup() {
   SCRIPT="$BATS_TEST_DIRNAME/../bin/scratch-rotate.sh"
-  FAKE_HOME="$BATS_TEST_TMPDIR/home"
-  unset CLAUDE_CONFIG_DIR
+  kit_test_home
   SCRATCH="$FAKE_HOME/.claude/scratch"
   REGISTRY="$FAKE_HOME/.claude/logs/scratch-registry.txt"
   mkdir -p "$SCRATCH"

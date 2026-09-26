@@ -9,13 +9,12 @@
 #
 # Run with: bats tests/
 
+load helper
+
 setup() {
   HOOK="$BATS_TEST_DIRNAME/../hooks/guard-skills.sh"
   REAL_STACKS_YML="$BATS_TEST_DIRNAME/../kit.yml"
-  FAKE_HOME="$BATS_TEST_TMPDIR/home"
-  unset CLAUDE_CONFIG_DIR
-  export CLAUDE_PLUGIN_ROOT="$FAKE_HOME/.claude"
-  mkdir -p "$FAKE_HOME/.claude/logs"
+  kit_test_home --plugin-root
 }
 
 write_kit_yml() {
@@ -28,10 +27,7 @@ write_skills_log() {
 
 # run_guard_skills <path> [session_id] [tool_name]
 run_guard_skills() {
-  local path="$1" session="${2:-s1}" tool_name="${3:-Edit}"
-  jq -n --arg path "$path" --arg sess "$session" --arg tn "$tool_name" \
-    '{tool_input: {file_path: $path}, session_id: $sess, tool_name: $tn}' |
-    HOME="$FAKE_HOME" "$HOOK"
+  hook_payload "${3:-Edit}" "$1" "${2:-s1}" | HOME="$FAKE_HOME" "$HOOK"
 }
 
 @test "every skill_file_map entry in the real kit.yml blocks until its skill is loaded" {

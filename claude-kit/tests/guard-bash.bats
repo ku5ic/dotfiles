@@ -6,6 +6,8 @@
 #
 # Run with: bats tests/
 
+load helper
+
 setup() {
   HOOK="$BATS_TEST_DIRNAME/../hooks/guard-bash.sh"
 }
@@ -14,12 +16,12 @@ setup() {
 # the hook. Uses jq -R so the command can contain any character without
 # shell-escaping concerns.
 run_guard() {
-  printf '%s' "$1" | jq -R '{tool_input: {command: .}}' | "$HOOK"
+  hook_payload Bash "$1" | "$HOOK"
 }
 
 # $1 = payload cwd, $2 = command. For checks that read repo state.
 run_guard_in() {
-  jq -cn --arg d "$1" --arg c "$2" '{tool_input: {command: $c}, cwd: $d}' | "$HOOK"
+  hook_payload Bash "$2" "" "$1" | "$HOOK"
 }
 
 # Throwaway repo whose current branch is $1.
@@ -965,7 +967,7 @@ setup_overlay() {
 
 @test "a block is logged to guards.jsonl with its rule slug" {
   setup_overlay
-  jq -cn '{tool_input: {command: "find . -delete"}, session_id: "s9"}' | "$HOOK" || true
+  hook_payload Bash "find . -delete" s9 | "$HOOK" || true
   run jq -c '{hook, event, rule, session_id}' "$HOME/.claude/logs/guards.jsonl"
   [ "$output" = '{"hook":"guard-bash.sh","event":"block","rule":"find-delete","session_id":"s9"}' ]
 }
