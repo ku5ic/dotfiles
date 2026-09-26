@@ -20,8 +20,6 @@ block() {
   exit 2
 }
 
-PROTECTED_BRANCHES=(main master develop production release)
-
 # Forces the interactive permission prompt for cases settings.json prefix
 # patterns can't express (flagged/unflagged forms sharing one prefix) -
 # unlike block(), hands the decision back to the user instead of denying.
@@ -51,7 +49,14 @@ if [[ "$norm" =~ \>[[:space:]]*/dev/(sd|nvme|disk|rdisk) ]]; then
   block "write to raw disk device" "device-write"
 fi
 
-if [[ "$norm" =~ \>+[[:space:]]*(\$HOME|\$\{HOME\}|~|$HOME)/\.(zshrc|zprofile|bashrc|bash_profile|profile)([[:space:]]|$) ]]; then
+# rc_files from kit.yml as a regex alternation, dots escaped.
+kit_stacks_load
+_rc_alt=""
+for _rc in "${KIT_RC_FILES[@]}"; do
+  _rc="${_rc#\~/}"
+  _rc_alt+="${_rc_alt:+|}${_rc//./\\.}"
+done
+if [[ -n "$_rc_alt" && "$norm" =~ \>+[[:space:]]*(\$HOME|\$\{HOME\}|~|$HOME)/($_rc_alt)([[:space:]]|$) ]]; then
   block "direct write to a shell rc file. Use the dotfiles repo." "rc-redirect"
 fi
 
@@ -100,47 +105,6 @@ _nearest_pm_lockfile() {
   done
 }
 
-# Returns 0 (true) when $1 names a sensitive credential/key file. Normalizes
-# ~ and $HOME first. Patterns must match bin/doctor.sh's parity grep across
-# guard-edit.sh, guard-bash.sh, and settings.json.
-_is_sensitive_arg() {
-  local arg="$1"
-  arg="${arg/#\~/$HOME}"
-  arg="${arg/#\$HOME/$HOME}"
-  arg="${arg/#\$\{HOME\}/$HOME}"
-  local base="${arg##*/}"
-  case "$base" in
-  .env | .env.*) return 0 ;;
-  *.pem | *.key | *.p12 | *.pfx) return 0 ;;
-  id_rsa | id_ed25519 | id_ecdsa) return 0 ;;
-  esac
-  case "$arg" in
-  "$HOME/.ssh/"*) return 0 ;;
-  "$HOME/.gnupg/"*) return 0 ;;
-  "$HOME/Library/Keychains/"*) return 0 ;;
-  "$HOME/.aws/credentials" | "$HOME/.aws/config") return 0 ;;
-  "$HOME/.docker/config.json") return 0 ;;
-  "$HOME/.config/gh/hosts.yml") return 0 ;;
-  "$HOME/.netrc" | "$HOME/.pgpass" | "$HOME/.npmrc") return 0 ;;
-  "$HOME/.pypirc") return 0 ;;
-  "$HOME/.cargo/credentials") return 0 ;;
-  "$HOME/.gem/credentials") return 0 ;;
-  esac
-  return 1
-}
-
-# Mirrors the path set in the full-string rc-file redirect guard above.
-_is_rc_file() {
-  local arg="$1"
-  arg="${arg/#\~/$HOME}"
-  arg="${arg/#\$HOME/$HOME}"
-  arg="${arg/#\$\{HOME\}/$HOME}"
-  case "$arg" in
-  "$HOME/.zshrc" | "$HOME/.zprofile" | "$HOME/.bashrc" | "$HOME/.bash_profile" | "$HOME/.profile") return 0 ;;
-  esac
-  return 1
-}
-
 # Returns 0 (true) when $1 is a relative write target that would land loose in
 # the repo instead of scratch (rules/tooling.md). Unresolvable
 # targets - variables, subshells, quoted strings - return 1: $(scratch-dir.sh)
@@ -162,7 +126,8 @@ _is_protected_branch() {
   local ref="${1#refs/heads/}" branch
   [[ "$ref" == refs/remotes/*/* ]] && ref="${ref#refs/remotes/*/}"
   ref="${ref#origin/}"
-  for branch in "${PROTECTED_BRANCHES[@]}"; do
+  kit_stacks_load
+  for branch in "${KIT_PROTECTED_BRANCHES[@]}"; do
     [[ "$ref" == "$branch" ]] && return 0
   done
   return 1
@@ -693,7 +658,7 @@ _check_segment() {
       --) break ;;
       -*) ;;
       *)
-        if _is_sensitive_arg "$_sarg"; then
+        if kit_is_sensitive_path "$_sarg"; then
           block "reading a sensitive file is not permitted" "sensitive-read"
         fi
         ;;
@@ -710,7 +675,7 @@ _check_segment() {
       *)
         if ((_seen_pat == 0)); then
           _seen_pat=1
-        elif _is_sensitive_arg "$_sarg"; then
+        elif kit_is_sensitive_path "$_sarg"; then
           block "reading a sensitive file is not permitted" "sensitive-read"
         fi
         ;;
@@ -736,7 +701,7 @@ _check_segment() {
     ;;
   sed)
     # Catches sed -i on rc files; the full-string guard above only catches
-    # > ~/.zshrc, not sed -i.
+    # a > redirect into one, not sed -i.
     local _has_i=0 _sarg
     for _sarg in ${seg#"$lead"}; do
       case "$_sarg" in
@@ -750,7 +715,7 @@ _check_segment() {
         --) break ;;
         -*) ;;
         *)
-          if _is_rc_file "$_sarg"; then
+          if kit_is_rc_file "$_sarg"; then
             block "in-place edit of a shell rc file. Use the dotfiles repo." "rc-inplace-edit"
           fi
           if _is_overlay_arg "$_sarg"; then
@@ -769,7 +734,7 @@ _check_segment() {
       --) break ;;
       -*) ;;
       *)
-        if _is_rc_file "$_sarg"; then
+        if kit_is_rc_file "$_sarg"; then
           block "in-place edit of a shell rc file. Use the dotfiles repo." "rc-inplace-edit"
         fi
         if _is_overlay_arg "$_sarg"; then

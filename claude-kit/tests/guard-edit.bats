@@ -108,6 +108,28 @@ run_guard_edit() {
   [ "$status" -eq 2 ]
 }
 
+# Guarded lockfiles come from kit.yml's package_managers and extra_lockfiles.
+
+@test "block: bun.lock (a package_managers lockfile the old list missed)" {
+  run run_guard_edit '/tmp/project/bun.lock'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: Pipfile.lock" {
+  run run_guard_edit '/tmp/project/Pipfile.lock'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: Cargo.lock (extra_lockfiles)" {
+  run run_guard_edit '/tmp/project/Cargo.lock'
+  [ "$status" -eq 2 ]
+}
+
+@test "allow: requirements.txt is hand-edited" {
+  run run_guard_edit '/tmp/project/requirements.txt'
+  [ "$status" -eq 0 ]
+}
+
 # The kit overlay: a write gets a prompt through either path to it.
 
 # Fake HOME whose overlay link points at a file in a fake dotfiles tree.

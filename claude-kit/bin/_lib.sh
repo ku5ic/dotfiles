@@ -207,7 +207,7 @@ longest_prose_run() {
 # STACK_DETECT_FILES: union of every file that influences stack detection -
 # sentinels, every path referenced in extras rules (file:, in:, any_of[].file,
 # any_of[].in[]), and every package_managers lockfile, so adding tsconfig.json
-# or conftest.py, or switching a project from package-lock.json to
+# or conftest.py, or switching a project from npm's lockfile to
 # pnpm-lock.yaml, triggers re-detection. Without the lockfiles a switched
 # project kept advertising its old [pm] tag in <repo-context> while
 # resolve_package_manager (which stats lockfiles live) had already moved on.
@@ -216,22 +216,35 @@ longest_prose_run() {
 # STACK_PM_LOCKFILES / STACK_PM_MANAGERS / STACK_PM_ECOSYSTEMS: positional
 # triples from .package_managers, walked by resolve_package_manager and by
 # guard-bash.sh's per-ecosystem PM mismatch guard.
+# KIT_GUARDED_LOCKFILES: package_managers lockfiles not marked hand_edited,
+# plus extra_lockfiles; guard-edit.sh blocks direct edits to them.
+# KIT_PROTECTED_BRANCHES, KIT_RC_FILES, KIT_SENSITIVE_PATHS, KIT_LOG_MAX_LINES:
+# the guard lists of the same names in kit.yml.
 _stacks_lists_cache="$KIT_CACHE_DIR/stacks-lists.bash"
 
 # Bump on every change to the queries below or to the cache's shape. The
 # mtime check only sees kit.yml, so without this an existing cache
 # outlives a rewritten derivation and keeps serving the old lists.
-_stacks_lists_format=3
+_stacks_lists_format=4
 
-# Each emitted row is "<list-tag>\t<value>" so one yq call fills all five.
-_build_stacks_lists() {
-  local kind value
+_reset_stacks_lists() {
   STACK_SENTINELS_FULL=()
   STACK_SENTINELS_PROJECT_ROOT=()
   STACK_DETECT_FILES=()
   STACK_PM_LOCKFILES=()
   STACK_PM_MANAGERS=()
   STACK_PM_ECOSYSTEMS=()
+  KIT_GUARDED_LOCKFILES=()
+  KIT_PROTECTED_BRANCHES=()
+  KIT_RC_FILES=()
+  KIT_SENSITIVE_PATHS=()
+  KIT_LOG_MAX_LINES=10000
+}
+
+# Each emitted row is "<list-tag>\t<value>" so one yq call fills every list.
+_build_stacks_lists() {
+  local kind value
+  _reset_stacks_lists
 
   while IFS=$'\t' read -r kind value; do
     [[ -z "$value" || "$value" == "null" ]] && continue
@@ -242,6 +255,11 @@ _build_stacks_lists() {
     LOCKFILE) STACK_PM_LOCKFILES+=("$value") ;;
     MANAGER) STACK_PM_MANAGERS+=("$value") ;;
     ECOSYSTEM) STACK_PM_ECOSYSTEMS+=("$value") ;;
+    GUARDLOCK) KIT_GUARDED_LOCKFILES+=("$value") ;;
+    PROTECTED) KIT_PROTECTED_BRANCHES+=("$value") ;;
+    RC) KIT_RC_FILES+=("$value") ;;
+    SENSITIVE) KIT_SENSITIVE_PATHS+=("$value") ;;
+    LOGMAX) KIT_LOG_MAX_LINES="$value" ;;
     esac
   done < <(
     yq -r '
@@ -256,7 +274,13 @@ _build_stacks_lists() {
         (.package_managers[] | ["DETECT", .lockfile]),
         (.package_managers[] | ["LOCKFILE", .lockfile]),
         (.package_managers[] | ["MANAGER", .manager]),
-        (.package_managers[] | ["ECOSYSTEM", .ecosystem // "none"])
+        (.package_managers[] | ["ECOSYSTEM", .ecosystem // "none"]),
+        (.package_managers[] | select(.hand_edited != true) | ["GUARDLOCK", .lockfile]),
+        (.extra_lockfiles // [] | .[] | ["GUARDLOCK", .]),
+        (.protected_branches // [] | .[] | ["PROTECTED", .]),
+        (.rc_files // [] | .[] | ["RC", .]),
+        (.sensitive_paths // [] | .[] | ["SENSITIVE", .]),
+        (.log_max_lines // 10000 | ["LOGMAX", .])
       ] | .[] | join("\t")
     ' "$KIT_YML" 2>/dev/null
   )
@@ -282,23 +306,19 @@ kit_stacks_load() {
   ((_kit_stacks_loaded)) && return 0
   _kit_stacks_loaded=1
 
-  if ! command -v yq >/dev/null 2>&1; then
-    echo "_lib.sh: yq not found; stack detection disabled" >&2
-    STACK_SENTINELS_FULL=()
-    STACK_SENTINELS_PROJECT_ROOT=()
-    STACK_DETECT_FILES=()
-    STACK_PM_LOCKFILES=()
-    STACK_PM_MANAGERS=()
-    STACK_PM_ECOSYSTEMS=()
-    return 0
-  fi
-
+  # A fresh cache needs no yq, so the guard lists survive yq going missing.
   _stacks_lists_cached_format=""
   if [[ -s "$_stacks_lists_cache" && "$_stacks_lists_cache" -nt "$KIT_YML" ]]; then
     # shellcheck disable=SC1090
     source "$_stacks_lists_cache"
   fi
   [[ "$_stacks_lists_cached_format" == "$_stacks_lists_format" ]] && return 0
+
+  if ! command -v yq >/dev/null 2>&1; then
+    echo "_lib.sh: yq not found; stack detection and kit.yml guard lists disabled" >&2
+    _reset_stacks_lists
+    return 0
+  fi
 
   _build_stacks_lists
   _stacks_lists_cached_format="$_stacks_lists_format"
@@ -313,13 +333,61 @@ kit_stacks_load() {
   # otherwise scope every array to it and hand the caller empty lists.
   if declare -p STACK_SENTINELS_FULL STACK_SENTINELS_PROJECT_ROOT \
     STACK_DETECT_FILES STACK_PM_LOCKFILES STACK_PM_MANAGERS STACK_PM_ECOSYSTEMS \
-    _stacks_lists_cached_format |
+    KIT_GUARDED_LOCKFILES KIT_PROTECTED_BRANCHES KIT_RC_FILES KIT_SENSITIVE_PATHS \
+    KIT_LOG_MAX_LINES _stacks_lists_cached_format |
     sed -E -e 's/^declare -- /declare -g /' -e 's/^declare -([aA])/declare -g\1/' \
       >"$tmp" 2>/dev/null; then
     mv "$tmp" "$_stacks_lists_cache" 2>/dev/null || rm -f "$tmp"
   else
     rm -f "$tmp"
   fi
+}
+
+# True when path $1 (a leading ~, $HOME or ${HOME} allowed) is a credential
+# or key file per kit.yml's sensitive_paths.
+kit_is_sensitive_path() {
+  kit_stacks_load
+  local path="$1" entry home_path
+  path="${path/#\~/$HOME}"
+  path="${path/#\$HOME/$HOME}"
+  path="${path/#\$\{HOME\}/$HOME}"
+  for entry in "${KIT_SENSITIVE_PATHS[@]}"; do
+    if [[ "$entry" == \~/* ]]; then
+      home_path="$HOME/${entry#\~/}"
+      if [[ "$home_path" == */ ]]; then
+        [[ "$path" == "$home_path"* ]] && return 0
+      else
+        [[ "$path" == "$home_path" ]] && return 0
+      fi
+    else
+      # shellcheck disable=SC2053  # a basename glob on purpose
+      [[ "${path##*/}" == $entry ]] && return 0
+    fi
+  done
+  return 1
+}
+
+# True when path $1 (same expansions) is a shell rc file per rc_files.
+kit_is_rc_file() {
+  kit_stacks_load
+  local path="$1" entry
+  path="${path/#\~/$HOME}"
+  path="${path/#\$HOME/$HOME}"
+  path="${path/#\$\{HOME\}/$HOME}"
+  for entry in "${KIT_RC_FILES[@]}"; do
+    [[ "$path" == "$HOME/${entry#\~/}" ]] && return 0
+  done
+  return 1
+}
+
+# True when the basename of $1 is a tool-generated lockfile.
+kit_is_guarded_lockfile() {
+  kit_stacks_load
+  local entry
+  for entry in "${KIT_GUARDED_LOCKFILES[@]}"; do
+    [[ "${1##*/}" == "$entry" ]] && return 0
+  done
+  return 1
 }
 
 # resolve_package_manager <dir>

@@ -22,19 +22,15 @@ run_guard_edit() {
     exit 2
   }
 
-  case "$(basename "$path")" in
-  package-lock.json | pnpm-lock.yaml | yarn.lock | bun.lockb | Gemfile.lock | Cargo.lock | composer.lock | poetry.lock | uv.lock | pdm.lock | requirements.txt.lock)
+  if kit_is_guarded_lockfile "$path"; then
     block "lockfile edit. Use the package manager." "lockfile-edit"
-    ;;
-  esac
+  fi
 
   [[ "$path" =~ /\.git/ ]] && block "edit inside .git/" "git-dir-edit"
 
-  case "$path" in
-  "$HOME/.zshrc" | "$HOME/.zprofile" | "$HOME/.bashrc" | "$HOME/.bash_profile" | "$HOME/.profile")
+  if kit_is_rc_file "$path"; then
     block "direct edit to a shell rc file. Use the dotfiles repo." "rc-edit"
-    ;;
-  esac
+  fi
 
   # Credential and key paths are not repeated here: settings.json's deny
   # rules fire before any hook runs (verified 2026-09-12 by writing to a

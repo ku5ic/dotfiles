@@ -70,7 +70,8 @@ printf '%s' "$payload" | jq -c \
      tool_name: (.tool_name // null)
    }' >>"$log_file"
 
-max_lines=10000
+kit_stacks_load
+max_lines="$KIT_LOG_MAX_LINES"
 if (($(wc -l <"$log_file") > max_lines)); then
   tmp=$(mktemp)
   trap 'rm -f "$tmp"' EXIT

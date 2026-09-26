@@ -29,7 +29,8 @@ scratch_dir="$KIT_SCRATCH_HOME"
 skills_log="$KIT_LOG_DIR/skills.jsonl"
 registry="$KIT_LOG_DIR/scratch-registry.txt"
 log_file="$KIT_LOG_DIR/scratch-rotate.log"
-max_lines=10000
+kit_stacks_load
+max_lines="$KIT_LOG_MAX_LINES"
 
 dry_run=false
 days=30

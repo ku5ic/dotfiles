@@ -38,6 +38,10 @@ run_dispatch() {
 }
 
 @test "guard-edit's check fires first and blocks a lockfile edit" {
+  # The guarded lockfile list comes from kit.yml.
+  cat >"$FAKE_HOME/.claude/kit.yml" <<'YAML'
+extra_lockfiles: [package-lock.json]
+YAML
   run run_dispatch '/tmp/project/package-lock.json' 'harmless content'
   [ "$status" -eq 2 ]
   [[ "$output" == *"Blocked by guard-edit.sh"* ]]
@@ -70,6 +74,7 @@ YAML
 
 @test "ordering: a lockfile edit that would also trip the skills-gate surfaces only guard-edit's message" {
   cat >"$FAKE_HOME/.claude/kit.yml" <<'YAML'
+extra_lockfiles: [yarn.lock]
 skill_file_map:
   - on: basename
     globs: ["*.lock"]

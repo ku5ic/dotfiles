@@ -5,10 +5,10 @@
 # Checks:
 #   1. Symlinks: each top-level claude/ entry is symlinked to the dotfiles
 #      source. Verifies link existence and target path.
-#   2. Credential pattern parity: guard-bash.sh and settings.json both list
-#      every credential pattern. settings.json deny rules cover Read/Edit;
-#      guard-bash.sh covers what permissions cannot express (cat, cp of a
-#      key file).
+#   2. Credential pattern parity: settings.json's deny rules mention every
+#      kit.yml sensitive_paths entry. The deny rules cover Read/Edit;
+#      guard-bash.sh reads the same list for what permissions cannot express
+#      (cat, cp of a key file).
 #   3. Agent-context / inject-context derivation parity: both consumers share
 #      the yq derivation queries via bin/_lib.sh instead of holding private
 #      copies.
@@ -41,8 +41,8 @@
 #       not validated at all; the CLI exposes no way to enumerate a server's
 #       tools.
 #
-# Adding a credential pattern: add it to the `patterns` array below AND to
-# hooks/guard-bash.sh's _is_sensitive_arg block AND settings.json's deny array.
+# Adding a credential pattern: add it to kit.yml's sensitive_paths AND to
+# settings.json's deny array.
 #
 # Exit codes: 0 = all checks passed, 1 = one or more checks failed.
 
@@ -102,55 +102,32 @@ fi
 echo
 echo "== credential pattern parity =="
 
-GUARD_BASH="$SOURCE_ROOT/hooks/guard-bash.sh"
 SETTINGS="$PERSONAL_ROOT/settings.json"
 
-# Canonical credential patterns. Each must appear verbatim in both files.
-# Path-tail forms are used so settings.json's `~/...` and guard-bash.sh's
-# `$HOME/...` both contain the substring.
-# Adding a pattern: add it here AND to guard-bash.sh (_is_sensitive_arg)
-# and settings.json deny rules.
-patterns=(
-  "*.pem"
-  "*.key"
-  "*.pfx"
-  "*.p12"
-  "id_rsa"
-  "id_ed25519"
-  "id_ecdsa"
-  ".env"
-  ".env.*"
-  ".ssh/"
-  ".gnupg/"
-  ".aws/credentials"
-  ".aws/config"
-  ".docker/config.json"
-  ".config/gh/hosts.yml"
-  ".netrc"
-  ".pgpass"
-  ".npmrc"
-  "Library/Keychains/"
-  ".pypirc"
-  ".cargo/credentials"
-  ".gem/credentials"
-)
-
-parity_failed=0
-for pat in "${patterns[@]}"; do
-  if ! grep -qF "$pat" "$GUARD_BASH"; then
-    echo "missing-pattern  guard-bash.sh: '$pat'"
-    parity_failed=1
-  fi
-  if ! grep -qF "$pat" "$SETTINGS"; then
-    echo "missing-pattern  settings.json: '$pat'"
-    parity_failed=1
-  fi
-done
-
-if ((parity_failed)); then
-  exit_code=1
+# kit.yml's "~/..." entries are compared by their path tail, which is what
+# settings.json's "~/..." rules contain too.
+if ! command -v yq >/dev/null 2>&1; then
+  echo "skip           yq not found; skipping credential pattern parity"
 else
-  echo "ok             ${#patterns[@]} patterns mirrored across guard-bash.sh and settings.json"
+  mapfile -t patterns < <(yq '.sensitive_paths // [] | .[]' "$SOURCE_ROOT/kit.yml" 2>/dev/null)
+  parity_failed=0
+  if ((${#patterns[@]} == 0)); then
+    echo "empty          kit.yml has no sensitive_paths"
+    parity_failed=1
+  fi
+  for pat in "${patterns[@]}"; do
+    pat="${pat#\~/}"
+    if ! grep -qF "$pat" "$SETTINGS"; then
+      echo "missing-pattern  settings.json: '$pat'"
+      parity_failed=1
+    fi
+  done
+
+  if ((parity_failed)); then
+    exit_code=1
+  else
+    echo "ok             ${#patterns[@]} kit.yml sensitive_paths mirrored in settings.json"
+  fi
 fi
 
 echo
