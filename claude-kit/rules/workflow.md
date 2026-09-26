@@ -40,7 +40,7 @@ Procedures are skills under the kit's `skills/<name>/SKILL.md`, invoked as `/<na
 | --------------- | -------------------------------------------------------------------- |
 | `/audit <kind>` | Targeted audits: a11y, debt, doc-drift, perf, verify.                |
 | `/write <kind>` | Outward-facing text: commit, pr, release-notes, devnote, and others. |
-| `/meta-*`       | Authoring and reflection.                                            |
+| `/meta <kind>`  | Authoring and reflection: prompt, refresh, retro.                    |
 | `/deps`         | Dependabot PRs and security alerts.                                  |
 
 Every one is user-only (`disable-model-invocation: true`). They run when typed, never on model initiative. The canonical inventory is `/skills` output, not any UI label.

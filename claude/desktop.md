@@ -203,7 +203,7 @@ My kit is `~/.dotfiles/claude-kit/`, a plugin symlinked into `~/.claude/`. Perso
 | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
 | `/audit <kind>`                                        | a11y, debt, doc-drift, perf, verify                                                      |
 | `/write <kind>`                                        | commit, devnote, explainer, pr, release-notes, review-comment, review-reply, stakeholder |
-| `/meta-*`                                              | prompt, refresh, retro                                                                   |
+| `/meta`                                                | prompt, refresh, retro                                                                   |
 | `/deps`                                                | Dependabot PRs and security alerts                                                       |
 | `investigate`                                          | read-only investigation, model-invocable                                                 |
 | `*-patterns`, `wcag-audit`, `engineering-fundamentals` | stack reference skills, loaded by file type                                              |

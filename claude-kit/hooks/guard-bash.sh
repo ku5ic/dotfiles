@@ -708,7 +708,7 @@ done < <(printf '%s\n' "$norm" | sed -E 's/[[:space:]]*(&&|\|\|)[[:space:]]*/\n/
 # Plugins can't ship allow rules, so the hook allows them itself; settings
 # deny and ask rules still win over a hook allow. run-checks.sh stays out:
 # it runs project-defined scripts.
-KIT_READONLY_SCRIPTS=(scratch-dir.sh plans-dir.sh git-base.sh git-diff-from-base.sh git-log-from-base.sh project-name.sh project-root.sh detect-stack.sh skills-report.sh)
+KIT_READONLY_SCRIPTS=(scratch-dir.sh plans-dir.sh git-base.sh project-name.sh project-root.sh detect-stack.sh skills-report.sh)
 
 # A lone kit script call: no chaining, pipes, redirects, or substitutions
 # that could smuggle in a second command.

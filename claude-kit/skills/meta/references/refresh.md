@@ -1,12 +1,10 @@
----
-description: Check reference skills against the current language or framework release and update their guidance, keeping a capped history of prior versions
-argument-hint: "<skill name(s)>, --all, or blank to pick from the stale list"
-disable-model-invocation: true
----
+# /meta refresh
+
+Check reference skills against the current language or framework release and update their guidance, keeping a capped history of prior versions. Arguments: `<skill name(s)>, --all, or blank to pick from the stale list`.
 
 ## What this maintains
 
-Reference skills are every `skills/*/SKILL.md` except the procedure skills `audit`, `write`, `deps`, `investigate`, `report-format`, and `meta-*`. Each carries a `## Version notes` section that this skill owns:
+Reference skills are every `skills/*/SKILL.md` except the procedure skills `audit`, `write`, `deps`, `investigate`, `report-format`, and `meta`. Each carries a `## Version notes` section that this skill owns:
 
 ```
 ## Version notes

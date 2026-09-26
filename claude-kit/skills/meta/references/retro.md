@@ -1,10 +1,6 @@
----
-description: Structured retrospective for an incident, sprint, or completed feature
-argument-hint: "<context: incident summary, sprint label, or feature name>"
-model: haiku
-disable-model-invocation: true
-context: fork
----
+# /meta retro
+
+Structured retrospective for an incident, sprint, or completed feature. Arguments: `<context: incident summary, sprint label, or feature name>`.
 
 ## Procedure
 

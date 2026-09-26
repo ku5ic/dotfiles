@@ -21,8 +21,8 @@ Generate a pull request description from the current diff. Arguments: `<optional
    If one exists, read it: its sections replace the default Structure below - this is mandatory, not a preference, even for a one-line diff. Never substitute the default Structure when a project template exists. If none exists, fall back to the default Structure.
 
 3. Resolve the base: !`git-base.sh`. Falls through upstream / origin HEAD / main / master / develop / trunk. If $ARGUMENTS is a valid single-word git ref (no spaces, not a sentence), use it as the explicit base instead by running `git-base.sh "$ARGUMENTS"` via Bash.
-4. Pull the diff: !`git-diff-from-base.sh`
-5. Pull the log (last 20): !`git-log-from-base.sh`
+4. Pull the diff: !`git-base.sh --diff`
+5. Pull the log (last 20): !`git-base.sh --log -20`
 6. Read any referenced issue number in recent commit messages, but do not fetch external data.
 
 ## Output

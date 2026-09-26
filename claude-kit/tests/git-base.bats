@@ -71,3 +71,48 @@ make_clone() {
   [ "$status" -eq 1 ]
   [ -z "$output" ]
 }
+
+# --diff and --log: the old git-diff-from-base.sh and git-log-from-base.sh.
+
+# A local repo: main with one commit, feat with two more, one a merge-free
+# change to a.txt.
+make_branch() {
+  git init -q -b main "$BATS_TEST_TMPDIR/local"
+  cd "$BATS_TEST_TMPDIR/local"
+  git commit -q --allow-empty -m init
+  git switch -q -c feat
+  echo one >a.txt
+  git add a.txt
+  git commit -q -m "add a"
+  git commit -q --allow-empty -m "empty"
+}
+
+@test "--log lists this branch's commits against the base" {
+  make_branch
+  run "$SCRIPT" --log
+  [ "$status" -eq 0 ]
+  [ "$(printf '%s\n' "$output" | cut -d' ' -f2-)" = "empty
+add a" ]
+}
+
+@test "--log passes flags through to git log" {
+  make_branch
+  run "$SCRIPT" --log -1
+  [ "$(printf '%s\n' "$output" | cut -d' ' -f2-)" = "empty" ]
+}
+
+@test "--diff prints the three-dot diff against the base" {
+  make_branch
+  run "$SCRIPT" --diff --stat
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"a.txt | 1 +"* ]]
+}
+
+@test "a branch named log is still usable as the base" {
+  make_branch
+  git branch -q log main
+  run "$SCRIPT" --log log
+  [ "$(printf '%s\n' "$output" | wc -l | tr -d ' ')" = "2" ]
+  run "$SCRIPT" log
+  [ "$output" = "log" ]
+}

@@ -8,7 +8,7 @@ Current branch: !`git branch --show-current`
 
 Detected base: !`git-base.sh`
 
-Commits on this branch but not on the base: !`git-log-from-base.sh "--no-merges"`
+Commits on this branch but not on the base: !`git-base.sh --log --no-merges`
 
 ## Procedure
 

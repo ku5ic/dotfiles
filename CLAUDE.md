@@ -32,6 +32,6 @@ See `config/nvim/CLAUDE.md` for the entry point, plugin file layout, augroups, a
 
 Branch naming via `branch_name.sh`: `<type>/<ISSUE-ID>/<slug>` or `<type>/<slug>` (no issue id). Types: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `build`, `ci`, `chore`, `style`, `release`, `poc`, `spike`, `wip`, `draft`, `temp`, `drill`, `sandbox`, `personal`, `exp`, `try`. Use `--checkout` flag to create and switch in one step. Tab-completion is registered via `completions/_branch_name.sh`.
 
-`claude-kit/bin/git-diff-from-base.sh` diffs the current branch against its base, resolved by `git-base.sh` (upstream, then `origin/HEAD`, then main/master/develop/trunk) or a base passed as the first argument. Both are on `$PATH` via `~/.claude/bin`, so they are callable by bare name.
+`claude-kit/bin/git-base.sh` prints the current branch's base (upstream, then `origin/HEAD`, then main/master/develop/trunk, or a base passed as an argument); `--diff` and `--log` print the diff and log against it. It is on `$PATH` via `~/.claude/bin`, so it is callable by bare name.
 
 Machine-local shell overrides go in `~/.zshrc.local` (sourced at the end of `.zshrc`, not tracked in this repo).
