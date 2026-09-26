@@ -74,7 +74,7 @@ if ! check_prereqs; then
   echo "missing        $KIT_PREREQ_MISSING"
   exit 1
 fi
-echo "ok             bash 4.2+, jq, and mikefarah yq present"
+echo "ok             bash 4.4+, jq, and mikefarah yq present"
 echo
 
 # CI runners have no ~/.claude install, so symlink targets never resolve correctly.

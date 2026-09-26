@@ -6,7 +6,7 @@
 #   - the stack lists derived from kit.yml load on first use, through
 #     kit_stacks_load, so hooks that never read them never pay for yq.
 #
-# Requires: bash 4.2+, jq, and yq (mikefarah's, not the Python one)
+# Requires: bash 4.4+, jq, and yq (mikefarah's, not the Python one)
 
 # Idempotency guard: guard-dispatch.sh sources this, then sources
 # guard-edit.sh and guard-skills.sh, which each source it again for
@@ -24,8 +24,8 @@ _kit_lib_dir="$(cd "${BASH_SOURCE[0]%/*}" 2>/dev/null && pwd)"
 # "; "-separated list naming each missing piece and its install command.
 check_prereqs() {
   KIT_PREREQ_MISSING=""
-  if [ "${BASH_VERSINFO[0]}" -lt 4 ] || { [ "${BASH_VERSINFO[0]}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -lt 2 ]; }; then
-    KIT_PREREQ_MISSING="${KIT_PREREQ_MISSING}; bash 4.2+ (found ${BASH_VERSION}; brew install bash, and put it first on PATH)"
+  if [ "${BASH_VERSINFO[0]}" -lt 4 ] || { [ "${BASH_VERSINFO[0]}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -lt 4 ]; }; then
+    KIT_PREREQ_MISSING="${KIT_PREREQ_MISSING}; bash 4.4+ (found ${BASH_VERSION}; brew install bash, and put it first on PATH)"
   fi
   if ! command -v jq >/dev/null 2>&1; then
     KIT_PREREQ_MISSING="${KIT_PREREQ_MISSING}; jq (brew install jq)"
@@ -73,13 +73,15 @@ check_install() {
   [ -z "$KIT_PREREQ_MISSING" ]
 }
 
-# The bash version gate. On anything older than 4.2, nothing below this runs.
-# A bin script stops with the reason. A hook (it sets HOOK_NAME before
-# sourcing) gets a kit_hook_init that exits 0, so it fails open quietly and
-# inject-context.sh's warning names the cause.
-if [ "${BASH_VERSINFO[0]}" -lt 4 ] || { [ "${BASH_VERSINFO[0]}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -lt 2 ]; }; then
+# The bash version gate. On anything older than 4.4, nothing below this runs:
+# before 4.4, set -u treats "${empty[@]}" as unbound, so a hook would error
+# (exit 1, not a block) on its first empty list. A bin script stops with the
+# reason. A hook (it sets HOOK_NAME before sourcing) gets a kit_hook_init
+# that exits 0, so it fails open quietly and inject-context.sh's warning
+# names the cause.
+if [ "${BASH_VERSINFO[0]}" -lt 4 ] || { [ "${BASH_VERSINFO[0]}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -lt 4 ]; }; then
   if [ -z "${HOOK_NAME:-}" ]; then
-    echo "${0##*/}: needs bash 4.2+ (found $BASH_VERSION); brew install bash, and put it first on PATH" >&2
+    echo "${0##*/}: needs bash 4.4+ (found $BASH_VERSION); brew install bash, and put it first on PATH" >&2
     exit 1
   fi
   kit_hook_init() { exit 0; }

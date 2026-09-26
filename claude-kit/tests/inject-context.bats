@@ -255,11 +255,11 @@ YAML
   [[ "$output" == *"the kit rules linked"* ]]
 }
 
-@test "prereqs: bash older than 4.2 gets a warning" {
+@test "prereqs: bash older than 4.4 gets a warning" {
   [[ -x /bin/bash ]] && [[ "$(/bin/bash -c 'echo ${BASH_VERSINFO[0]}')" -lt 4 ]] || skip "no bash 3.x at /bin/bash"
   run env HOME="$FAKE_HOME" /bin/bash "$HOOK" </dev/null
   [ "$status" -eq 0 ]
-  [[ "$output" == *"bash 4.2+"* ]]
+  [[ "$output" == *"bash 4.4+"* ]]
 }
 
 # <tooling>: run forms from kit.yml's task_providers and toolchain_checks.

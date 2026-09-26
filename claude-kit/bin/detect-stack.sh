@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Requires bash 4.2+.
+# Requires bash 4.4+.
 # Emits a compact stack report for the current project or a nearby ancestor.
 # Output is terse on purpose. Each line is meant to be scanned by Claude in
 # under a few hundred tokens of context.
