@@ -56,7 +56,7 @@ Performance audit focused on statically detectable issues. Arguments: `<file, di
 
 ## Output file
 
-Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/perf-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the `rules/markdown-report.md` format. Write to the path `scratch-dir.sh perf <target-slug>` prints. Print the path.
 
 ## Rules
 

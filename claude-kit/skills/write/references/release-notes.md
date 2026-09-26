@@ -24,7 +24,7 @@ Commits on this branch but not on the base: !`git-log-from-base.sh "--no-merges"
 
 ## Output file
 
-Write to `$(scratch-dir.sh)/release-notes-<branch-or-range-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write to the path `scratch-dir.sh release-notes <branch-or-range-slug>` prints. Print the path.
 
 Structure:
 

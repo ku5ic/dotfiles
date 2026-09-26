@@ -18,7 +18,7 @@ Re-check findings from a prior audit report against the current repo, classifyin
 
 ## Output
 
-Write to `$(scratch-dir.sh)/verify-<original-slug>-<YYYYMMDD-HHMM>.md`, where `<original-slug>` is the original report's own target slug, or its full kind-and-timestamp stem if it has none. Never modify the original report -- this command is append-only across files, so a bad verify run cannot corrupt an audit.
+Write to the path `scratch-dir.sh verify <original-slug>` prints, where `<original-slug>` is the original report's own target slug, or its full kind-and-timestamp stem if it has none. Never modify the original report -- this command is append-only across files, so a bad verify run cannot corrupt an audit.
 
 ```
 # Verify: <original report filename>

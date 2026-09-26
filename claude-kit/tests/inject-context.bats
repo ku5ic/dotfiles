@@ -308,3 +308,13 @@ tooling_block() {
   [ "$status" -eq 0 ]
   [[ "$output" != *"<tooling>"* ]]
 }
+
+@test "repo-context names the scratch dir without creating it" {
+  write_cache "root: $FAKE_ROOT" "js: yes"
+  run run_inject_context "s1"
+  [ "$status" -eq 0 ]
+  local root
+  root="$(cd -P "$FAKE_ROOT" && pwd)"
+  [[ "$output" == *"scratch: $root/.claude/scratch"* ]]
+  [ ! -e "$FAKE_ROOT/.claude/scratch" ]
+}

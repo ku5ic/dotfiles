@@ -27,7 +27,7 @@ Generate a pull request description from the current diff. Arguments: `<optional
 
 ## Output
 
-Write the PR description to `$(scratch-dir.sh)/pr-<branch-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write the PR description to the path `scratch-dir.sh pr <branch-slug>` prints. Print the path.
 
 ### If step 2 found a project PR template
 

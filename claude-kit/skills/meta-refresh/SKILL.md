@@ -42,7 +42,7 @@ Retention: at most 3 version entries, newest first. A pattern that changed moves
    - Enforce the caps from "What this maintains". Prune oldest first.
    - Add the Version notes entry naming the source URL or library id from step 3.
    - Do not touch guidance the research did not contradict. Do not delete a reference file. Do not reword for style.
-6. Report. Write `$(scratch-dir.sh)/refresh-<YYYYMMDD-HHMM>.md` in the `rules/markdown-report.md` format:
+6. Report. Write the path `scratch-dir.sh refresh` prints, in the `rules/markdown-report.md` format:
    - Summary: skills checked, per-classification counts.
    - One finding per `guidance changed` skill: severity `warning`, what changed, files edited, source.
    - One finding per `version bump`: severity `info`.

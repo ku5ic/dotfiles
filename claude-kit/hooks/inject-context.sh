@@ -71,6 +71,8 @@ if [[ -s "$cache_file" ]]; then
   echo "branch (at session start): $(git -C "$project_root" branch --show-current 2>/dev/null || echo unknown)"
   dirty="$(git -C "$project_root" status --porcelain 2>/dev/null | wc -l | tr -d ' ')" || dirty="unknown"
   echo "dirty-files (at session start): $dirty"
+  # --no-create: a session that never writes a report leaves no scratch dir.
+  echo "scratch: $(cd "$project_root" && kit_dir scratch --no-create)"
   echo "</repo-context>"
 fi
 

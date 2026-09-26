@@ -28,7 +28,7 @@ if [[ -n "$scratch" ]]; then
 path: $scratch
 Write every file you produce here - reports, plans, previews, logs, downloads, test artifacts, POC scripts.
 This overrides the "Scratchpad directory" line in your system prompt: use this path, never the /private/tmp session scratchpad.
-Name structured artifacts \`<kind>-<scope-slug>-<YYYYMMDD-HHMM>.md\`, taking the timestamp from \`date +%Y%m%d-%H%M\` rather than guessing it.
+Name structured artifacts with \`scratch-dir.sh <kind> <scope-slug>\`, which prints the full path with a real timestamp.
 </scratch>
 EOF
 fi

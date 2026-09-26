@@ -24,6 +24,25 @@ setup() {
   [ -d "$REPO/.claude/scratch" ]
 }
 
+@test "scratch-dir.sh <kind> <slug> prints a timestamped report path" {
+  cd "$REPO"
+  run "$BIN/scratch-dir.sh" perf checkout-page
+  [ "$status" -eq 0 ]
+  [[ "$output" =~ ^$REPO/\.claude/scratch/perf-checkout-page-[0-9]{8}-[0-9]{4}\.md$ ]]
+}
+
+@test "scratch-dir.sh <kind> alone leaves the slug out" {
+  cd "$REPO"
+  run "$BIN/scratch-dir.sh" deps
+  [[ "$output" =~ /deps-[0-9]{8}-[0-9]{4}\.md$ ]]
+}
+
+@test "scratch-dir.sh makes the slug filename-safe" {
+  cd "$REPO"
+  run "$BIN/scratch-dir.sh" review "feat/login page"
+  [[ "$output" =~ /review-feat-login-page-[0-9]{8}-[0-9]{4}\.md$ ]]
+}
+
 @test "scratch-dir.sh registers the project tier once" {
   cd "$REPO"
   "$BIN/scratch-dir.sh" >/dev/null

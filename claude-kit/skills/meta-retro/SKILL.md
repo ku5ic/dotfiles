@@ -19,7 +19,7 @@ context: fork
 
 ## Output file
 
-Write to `$(scratch-dir.sh)/retro-<type>-<slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write to the path `scratch-dir.sh retro <type>-<slug>` prints. Print the path.
 
 ## Incident template
 

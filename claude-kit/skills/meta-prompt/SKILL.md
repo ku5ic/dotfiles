@@ -32,7 +32,7 @@ context: fork
 
 ## Output file
 
-Write to `$(scratch-dir.sh)/prompt-<slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Write to the path `scratch-dir.sh prompt <slug>` prints. Print the path.
 
 Structure:
 

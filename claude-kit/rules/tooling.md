@@ -81,12 +81,7 @@ Never default to `.`, a bare filename, or whatever directory the tool picks. A s
 
 ### Naming
 
-Structured artifacts (reports, reviews, audits):
-
-```
-$(scratch-dir.sh)/<kind>-<scope-slug>-<YYYYMMDD-HHMM>.md
-$(scratch-dir.sh)/<kind>-<YYYYMMDD-HHMM>.md        # no scope slug
-```
+Structured artifacts (reports, reviews, audits) go to the path `scratch-dir.sh <kind> [slug]` prints: `<kind>-<slug>-<YYYYMMDD-HHMM>.md` in the scratch directory.
 
 Test artifacts and POC files need no fixed shape - name them sensibly, but keep them under the resolved directory.
 

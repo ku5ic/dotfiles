@@ -43,6 +43,6 @@ Surface technical debt and architectural risks with severity and remediation pat
 
 ## Output file
 
-Use the `rules/markdown-report.md` format. Write to `$(scratch-dir.sh)/debt-<target-slug>-<YYYYMMDD-HHMM>.md`. Print the path.
+Use the `rules/markdown-report.md` format. Write to the path `scratch-dir.sh debt <target-slug>` prints. Print the path.
 
 Sort findings by severity, then by effort (smallest first within each severity) so the quick wins are visible at the top.
