@@ -8,8 +8,10 @@
 set -euo pipefail
 trap 'exit 0' ERR
 
-# shellcheck source=_lib.sh
-source "${BASH_SOURCE[0]%/*}/_lib.sh"
+# Not _lib.sh: its bash 4.4 gate exits for non-hook callers, and `env bash`
+# can resolve to macOS bash 3.2 here. Same derivation as the lib's KIT_HOME.
+KIT_HOME="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+KIT_CACHE_DIR="$KIT_HOME/cache"
 
 # Seconds the git-status cache is reused. 1 matches statusLine.refreshInterval
 # in settings.json, so the git segment can't be more than one render stale.
