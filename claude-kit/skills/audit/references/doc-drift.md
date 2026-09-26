@@ -15,8 +15,9 @@ $ARGUMENTS should point to the code surface to check. Required.
    - `docs/` folder, but only files whose name or first heading mentions the target area
    - JSDoc, docstrings, and inline comments in the target files
    - `CHANGELOG.md` only if the task involves a version boundary
-4. Skip: `node_modules/**`, `.next/**`, `coverage/**`, `out/**`, `.turbo/**`, `.cache/**`, `vendor/**`, `target/**`, `dist/**`, `build/**`, `storybook-static/**`, `.pnpm-store/**`, `LICENSE.md`.
-5. Compare.
+4. If `<root>/.claude/rules/conventions/*.md` exists, check every `path:line` citation in it, whatever $ARGUMENTS names. Read the cited line with a few lines of context and confirm it still shows the convention its bullet states. Moved within the file: `warning`, with the new line. Gone, or now showing the opposite: `failure` against the rule file's line, since the rule now misleads.
+5. Skip: `node_modules/**`, `.next/**`, `coverage/**`, `out/**`, `.turbo/**`, `.cache/**`, `vendor/**`, `target/**`, `dist/**`, `build/**`, `storybook-static/**`, `.pnpm-store/**`, `LICENSE.md`.
+6. Compare.
 
 ## What counts as drift
 

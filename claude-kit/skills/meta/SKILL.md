@@ -1,6 +1,6 @@
 ---
-description: Authoring and reflection - sharpen a prompt, refresh reference skills against current releases, draft a new pattern skill pack, or run a retrospective
-argument-hint: <prompt|refresh|skill|retro> [kind arguments]
+description: Authoring and reflection - sharpen a prompt, refresh reference skills against current releases, draft a new pattern skill pack, write a repo's conventions as cited rules, or run a retrospective
+argument-hint: <prompt|refresh|skill|conventions|retro> [kind arguments]
 disable-model-invocation: true
 ---
 
@@ -8,12 +8,13 @@ disable-model-invocation: true
 
 The first word of the arguments is the kind; everything after it is the kind's arguments.
 
-| Kind      | Procedure                                          |
-| --------- | -------------------------------------------------- |
-| `prompt`  | [references/prompt.md](references/prompt.md)       |
-| `refresh` | [references/refresh.md](references/refresh.md)     |
-| `skill`   | [references/skill.md](references/skill.md)         |
-| `retro`   | [references/retro.md](references/retro.md)         |
+| Kind          | Procedure                                              |
+| ------------- | ------------------------------------------------------ |
+| `prompt`      | [references/prompt.md](references/prompt.md)           |
+| `refresh`     | [references/refresh.md](references/refresh.md)         |
+| `skill`       | [references/skill.md](references/skill.md)             |
+| `conventions` | [references/conventions.md](references/conventions.md) |
+| `retro`       | [references/retro.md](references/retro.md)             |
 
 1. Missing or unknown kind: ask via AskUserQuestion with the kinds above as options.
 2. Read the kind's reference file and follow it as the procedure.
