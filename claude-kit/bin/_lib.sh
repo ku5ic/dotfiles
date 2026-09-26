@@ -164,10 +164,58 @@ extract_command() {
   printf '%s' "$payload" | jq -r '.tool_input.command // empty'
 }
 
-# $1 = human-readable reason, $2 = optional rule slug. Hooks override this
-# to add context (e.g. the offending command or path).
+# log_event <log> <event> [key value]...
+# Appends one line to $KIT_LOG_DIR/<log>.jsonl: ts, hook, event, the
+# payload's session_id, then each key/value pair, an empty value as null.
+# Never fails its caller: a log that can't be written is skipped.
+log_event() {
+  local log="$1" event="$2" session_id=""
+  shift 2
+  local -a pairs=()
+  while (($# >= 2)); do
+    pairs+=(--arg "$1" "$2")
+    shift 2
+  done
+  command -v jq >/dev/null 2>&1 || return 0
+  session_id="$(printf '%s' "${payload:-}" | jq -r '.session_id // ""' 2>/dev/null || true)"
+  mkdir -p "$KIT_LOG_DIR" 2>/dev/null || return 0
+  jq -cn \
+    --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+    --arg hook "${HOOK_NAME:-}" \
+    --arg event "$event" \
+    --arg session_id "$session_id" \
+    "${pairs[@]}" \
+    '$ARGS.named | map_values(if . == "" then null else . end)' \
+    >>"$KIT_LOG_DIR/$log.jsonl" 2>/dev/null || true
+}
+
+# True when rule slug $1 is listed in kit.yml's disabled_rules.
+kit_rule_disabled() {
+  kit_stacks_load
+  local rule
+  for rule in "${KIT_DISABLED_RULES[@]}"; do
+    [[ "$rule" == "$1" ]] && return 0
+  done
+  return 1
+}
+
+# block <reason> <rule-slug> [context]
+# Blocks the tool call (exit 2, reason on stderr) and logs the rule to
+# guards.jsonl. A rule listed in disabled_rules is logged as disabled and
+# returns instead, so the caller carries on as if it hadn't matched.
+# context defaults to $KIT_BLOCK_CONTEXT, which a hook sets once, such as
+# "Command: <cmd>".
 block() {
-  echo "Blocked by ${HOOK_NAME:-hook}: $1" >&2
+  local reason="$1" rule="${2:-}" context="${3:-${KIT_BLOCK_CONTEXT:-}}"
+  if [[ -n "$rule" ]] && kit_rule_disabled "$rule"; then
+    log_event guards disabled rule "$rule"
+    return 0
+  fi
+  log_event guards block rule "$rule"
+  echo "Blocked by ${HOOK_NAME:-hook}: $reason" >&2
+  if [[ -n "$context" ]]; then
+    echo "$context" >&2
+  fi
   exit 2
 }
 
@@ -218,14 +266,14 @@ longest_prose_run() {
 # guard-bash.sh's per-ecosystem PM mismatch guard.
 # KIT_GUARDED_LOCKFILES: package_managers lockfiles not marked hand_edited,
 # plus extra_lockfiles; guard-edit.sh blocks direct edits to them.
-# KIT_PROTECTED_BRANCHES, KIT_RC_FILES, KIT_SENSITIVE_PATHS, KIT_LOG_MAX_LINES:
-# the guard lists of the same names in kit.yml.
+# KIT_PROTECTED_BRANCHES, KIT_RC_FILES, KIT_SENSITIVE_PATHS, KIT_LOG_MAX_LINES,
+# KIT_DISABLED_RULES: the guard lists of the same names in kit.yml.
 _stacks_lists_cache="$KIT_CACHE_DIR/stacks-lists.bash"
 
 # Bump on every change to the queries below or to the cache's shape. The
 # mtime check only sees kit.yml, so without this an existing cache
 # outlives a rewritten derivation and keeps serving the old lists.
-_stacks_lists_format=4
+_stacks_lists_format=5
 
 _reset_stacks_lists() {
   STACK_SENTINELS_FULL=()
@@ -238,6 +286,7 @@ _reset_stacks_lists() {
   KIT_PROTECTED_BRANCHES=()
   KIT_RC_FILES=()
   KIT_SENSITIVE_PATHS=()
+  KIT_DISABLED_RULES=()
   KIT_LOG_MAX_LINES=10000
 }
 
@@ -259,6 +308,7 @@ _build_stacks_lists() {
     PROTECTED) KIT_PROTECTED_BRANCHES+=("$value") ;;
     RC) KIT_RC_FILES+=("$value") ;;
     SENSITIVE) KIT_SENSITIVE_PATHS+=("$value") ;;
+    DISABLED) KIT_DISABLED_RULES+=("$value") ;;
     LOGMAX) KIT_LOG_MAX_LINES="$value" ;;
     esac
   done < <(
@@ -280,6 +330,7 @@ _build_stacks_lists() {
         (.protected_branches // [] | .[] | ["PROTECTED", .]),
         (.rc_files // [] | .[] | ["RC", .]),
         (.sensitive_paths // [] | .[] | ["SENSITIVE", .]),
+        (.disabled_rules // [] | .[] | ["DISABLED", .]),
         (.log_max_lines // 10000 | ["LOGMAX", .])
       ] | .[] | join("\t")
     ' "$KIT_YML" 2>/dev/null
@@ -334,7 +385,7 @@ kit_stacks_load() {
   if declare -p STACK_SENTINELS_FULL STACK_SENTINELS_PROJECT_ROOT \
     STACK_DETECT_FILES STACK_PM_LOCKFILES STACK_PM_MANAGERS STACK_PM_ECOSYSTEMS \
     KIT_GUARDED_LOCKFILES KIT_PROTECTED_BRANCHES KIT_RC_FILES KIT_SENSITIVE_PATHS \
-    KIT_LOG_MAX_LINES _stacks_lists_cached_format |
+    KIT_DISABLED_RULES KIT_LOG_MAX_LINES _stacks_lists_cached_format |
     sed -E -e 's/^declare -- /declare -g /' -e 's/^declare -([aA])/declare -g\1/' \
       >"$tmp" 2>/dev/null; then
     mv "$tmp" "$_stacks_lists_cache" 2>/dev/null || rm -f "$tmp"

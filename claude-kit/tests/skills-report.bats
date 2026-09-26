@@ -138,3 +138,20 @@ YAML
   run run_report
   [[ "$output" == *"s3: bash-patterns"* ]]
 }
+
+@test "guards section counts each rule, its disabled hits, and the last time" {
+  local ts
+  ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  write_log "{\"ts\":\"$ts\",\"event\":\"PostToolUse\",\"session_id\":\"s1\",\"skill_file\":\"bash-patterns\",\"tool_name\":\"Skill\"}"
+  printf '%s\n' \
+    "{\"ts\":\"2026-01-01T00:00:00Z\",\"hook\":\"guard-bash.sh\",\"event\":\"block\",\"rule\":\"rm-recursive\"}" \
+    "{\"ts\":\"$ts\",\"hook\":\"guard-bash.sh\",\"event\":\"block\",\"rule\":\"find-delete\"}" \
+    "{\"ts\":\"$ts\",\"hook\":\"guard-bash.sh\",\"event\":\"disabled\",\"rule\":\"find-delete\"}" \
+    >"$FAKE_HOME/.claude/logs/guards.jsonl"
+
+  run run_report 30
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"2  find-delete  (disabled=1 last=$ts)"* ]]
+  # Outside the 30-day window.
+  [[ "$output" != *"rm-recursive"* ]]
+}

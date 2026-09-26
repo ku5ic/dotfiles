@@ -383,14 +383,15 @@ echo
 echo "== skills-log field parity =="
 
 LOG_SKILLS="$SOURCE_ROOT/hooks/log-skills.sh"
+LIB="$SOURCE_ROOT/bin/_lib.sh"
 SKILLS_REPORT="$SOURCE_ROOT/bin/skills-report.sh"
 field_parity_failed=0
 
-# Field subset of skills.jsonl (emitted by log-skills.sh and
-# inject-context.sh's synthetic required-skill/suggested-skill entries) that
-# skills-report.sh actually consumes for classification. Not the full emitted
-# set -- hook/cwd/command_args/command_source are emitted but never read by
-# the report, so a rename there carries no drift risk worth checking.
+# Field subset of skills.jsonl that skills-report.sh consumes for
+# classification. bin/_lib.sh's log_event emits ts/event/session_id for
+# every row; log-skills.sh passes the rest. Not the full emitted set --
+# hook/cwd are emitted but never read by the report, so a rename there
+# carries no drift risk worth checking.
 # skills-report.sh must reference each field below verbatim in its jq
 # filters, or a future rename in the emitter silently breaks the report
 # instead of erroring.
@@ -402,8 +403,8 @@ skills_log_fields=(
 # like "ts" also matches inside "tests"/"Reports"/"counts", which would pass
 # this check even after the real field reference was renamed away.
 for field in "${skills_log_fields[@]}"; do
-  if [[ -f "$LOG_SKILLS" ]] && ! grep -qE "\\b${field}\\b" "$LOG_SKILLS"; then
-    echo "missing-field  log-skills.sh no longer emits '$field' -- update the canonical list"
+  if ! cat "$LIB" "$LOG_SKILLS" 2>/dev/null | grep -qE "\\b${field}\\b"; then
+    echo "missing-field  neither _lib.sh's log_event nor log-skills.sh emits '$field' -- update the canonical list"
     field_parity_failed=1
   fi
   if [[ -f "$SKILLS_REPORT" ]] && ! grep -qE "\\b${field}\\b" "$SKILLS_REPORT"; then
@@ -415,7 +416,7 @@ done
 if ((field_parity_failed)); then
   exit_code=1
 else
-  echo "ok             ${#skills_log_fields[@]} skills.jsonl fields referenced in both log-skills.sh and skills-report.sh"
+  echo "ok             ${#skills_log_fields[@]} skills.jsonl fields emitted and read by skills-report.sh"
 fi
 
 echo

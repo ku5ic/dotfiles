@@ -14,11 +14,7 @@ require_jq
 cmd="$(extract_command)"
 [[ -z "$cmd" ]] && exit 0
 
-block() {
-  echo "Blocked by ${HOOK_NAME}: $1" >&2
-  echo "Command: $cmd" >&2
-  exit 2
-}
+KIT_BLOCK_CONTEXT="Command: $cmd"
 
 # Forces the interactive permission prompt for cases settings.json prefix
 # patterns can't express (flagged/unflagged forms sharing one prefix) -

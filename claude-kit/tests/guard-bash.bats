@@ -932,3 +932,32 @@ setup_overlay() {
   [ "$status" -eq 0 ]
   [ -z "$output" ]
 }
+
+# Guard telemetry and per-rule opt-out
+
+@test "a block is logged to guards.jsonl with its rule slug" {
+  setup_overlay
+  jq -cn '{tool_input: {command: "find . -delete"}, session_id: "s9"}' | "$HOOK" || true
+  run jq -c '{hook, event, rule, session_id}' "$HOME/.claude/logs/guards.jsonl"
+  [ "$output" = '{"hook":"guard-bash.sh","event":"block","rule":"find-delete","session_id":"s9"}' ]
+}
+
+@test "disabled_rules in the overlay lets the rule through and logs it as disabled" {
+  setup_overlay
+  printf 'disabled_rules: [find-delete]\n' >"$OVERLAY_SRC"
+
+  run run_guard 'find . -delete'
+  [ "$status" -eq 0 ]
+  run jq -r '.event + " " + .rule' "$HOME/.claude/logs/guards.jsonl"
+  [ "$output" = "disabled find-delete" ]
+}
+
+@test "disabling one rule leaves the others blocking" {
+  setup_overlay
+  printf 'disabled_rules: [find-delete]\n' >"$OVERLAY_SRC"
+
+  run run_guard 'find . -delete && rm -rf ~'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"rm with recursive force"* ]]
+  [[ "$output" == *"Command: find . -delete && rm -rf ~"* ]]
+}

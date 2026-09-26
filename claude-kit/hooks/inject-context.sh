@@ -92,21 +92,10 @@ emit_required_skills() {
 
   render_required_skills_block "$yml"
 
-  if command -v jq >/dev/null 2>&1; then
-    local log_dir ts sk
-    log_dir="$KIT_LOG_DIR"
-    mkdir -p "$log_dir"
-    ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-    for sk in "${required[@]}"; do
-      jq -cn \
-        --arg ts "$ts" \
-        --arg sess "$session_id" \
-        --arg cwd "$cwd" \
-        --arg skill "$sk" \
-        '{ts:$ts,hook:"inject-context.sh",event:"required-skill",session_id:$sess,cwd:$cwd,expansion_type:null,command_name:null,command_args:null,command_source:null,skill_file:$skill,tool_name:null}' \
-        >>"$log_dir/skills.jsonl"
-    done
-  fi
+  local sk
+  for sk in "${required[@]}"; do
+    log_event skills required-skill cwd "$cwd" skill_file "$sk"
+  done
 }
 
 # Skills already in global_skills are excluded (required, not suggested).
@@ -129,21 +118,9 @@ emit_suggested_skills() {
   render_suggested_skills_block "$yml" "$cache"
 
   local sk
-  if command -v jq >/dev/null 2>&1; then
-    local log_dir ts
-    log_dir="$KIT_LOG_DIR"
-    mkdir -p "$log_dir"
-    ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-    for sk in "${suggested[@]}"; do
-      jq -cn \
-        --arg ts "$ts" \
-        --arg sess "$session_id" \
-        --arg cwd "$cwd" \
-        --arg skill "$sk" \
-        '{ts:$ts,hook:"inject-context.sh",event:"suggested-skill",session_id:$sess,cwd:$cwd,expansion_type:null,command_name:null,command_args:null,command_source:null,skill_file:$skill,tool_name:null}' \
-        >>"$log_dir/skills.jsonl"
-    done
-  fi
+  for sk in "${suggested[@]}"; do
+    log_event skills suggested-skill cwd "$cwd" skill_file "$sk"
+  done
 }
 
 # Emits a <tooling> block computed live (not from the stack cache) for JS/TS

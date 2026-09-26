@@ -29,12 +29,16 @@ mapfile -t _fields < <(
     (.hook_event_name // ""),
     (.expansion_type // ""),
     (.tool_name // ""),
-    (.tool_input.file_path // "")'
+    (.tool_input.file_path // ""),
+    (.command_name // ""),
+    (.tool_input.skill // .tool_input.file_path // "")'
 )
 event="${_fields[0]:-}"
 expansion_type="${_fields[1]:-}"
 tool_name="${_fields[2]:-}"
 file_path="${_fields[3]:-}"
+command_name="${_fields[4]:-}"
+skill_file="${_fields[5]:-}"
 
 case "$event" in
 UserPromptExpansion)
@@ -52,31 +56,11 @@ PostToolUse)
   ;;
 esac
 
-log_dir="$KIT_LOG_DIR"
-mkdir -p "$log_dir"
-log_file="$log_dir/skills.jsonl"
-
-ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-
-printf '%s' "$payload" | jq -c \
-  --arg ts "$ts" \
-  '{
-     ts: $ts,
-     event: (.hook_event_name // null),
-     session_id: (.session_id // null),
-     expansion_type: (.expansion_type // null),
-     command_name: (.command_name // null),
-     skill_file: (.tool_input.skill // .tool_input.file_path // null),
-     tool_name: (.tool_name // null)
-   }' >>"$log_file"
-
-kit_stacks_load
-max_lines="$KIT_LOG_MAX_LINES"
-if (($(wc -l <"$log_file") > max_lines)); then
-  tmp=$(mktemp)
-  trap 'rm -f "$tmp"' EXIT
-  tail -n "$max_lines" "$log_file" >"$tmp"
-  mv "$tmp" "$log_file"
-fi
+# scratch-rotate.sh trims the log to log_max_lines.
+log_event skills "$event" \
+  expansion_type "$expansion_type" \
+  command_name "$command_name" \
+  skill_file "$skill_file" \
+  tool_name "$tool_name"
 
 exit 0

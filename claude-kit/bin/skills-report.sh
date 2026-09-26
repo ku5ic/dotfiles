@@ -21,6 +21,8 @@
 #      session -- only measurable for entries after inject-context.sh started
 #      emitting suggested-skill markers; earlier sessions have no marker and
 #      are silently excluded here, not counted as followed
+#   6. Guard rules that blocked (or would have, when disabled) per
+#      guards.jsonl: count, disabled count, last seen
 #
 # log-skills.sh logs one PostToolUse+Skill entry per Skill-tool invocation;
 # that entry is the Skill-tool activation count.
@@ -193,3 +195,24 @@ else
   printf '%s\n' "$unfollowed"
 fi
 echo "(sessions before suggested-skill logging landed have no marker and are excluded above, not counted as followed)"
+
+echo
+echo "== 6: guard rules fired in the window (guards.jsonl) =="
+guards_log="$KIT_LOG_DIR/guards.jsonl"
+guards=""
+if [[ -s "$guards_log" ]]; then
+  guards="$(jq -R -c 'select(length > 0) | try fromjson catch empty' "$guards_log" | jq -rs --arg cutoff "$cutoff" '
+    [.[] | select(.ts >= $cutoff)]
+    | group_by(.rule)
+    | map({rule: (.[0].rule // "(no slug)"), count: length,
+           disabled: ([.[] | select(.event == "disabled")] | length),
+           last: (map(.ts) | max)})
+    | sort_by(-.count)
+    | .[] | "\(.count)  \(.rule)  (disabled=\(.disabled) last=\(.last))"
+  ')"
+fi
+if [[ -z "$guards" ]]; then
+  echo "(none in the window)"
+else
+  printf '%s\n' "$guards"
+fi

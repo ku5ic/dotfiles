@@ -15,12 +15,7 @@ run_guard_edit() {
   local HOOK_NAME="guard-edit.sh"
   path="$(extract_path)"
   [[ -z "$path" ]] && return 0
-
-  block() {
-    echo "Blocked by ${HOOK_NAME}: $1" >&2
-    echo "Path: $path" >&2
-    exit 2
-  }
+  local KIT_BLOCK_CONTEXT="Path: $path"
 
   if kit_is_guarded_lockfile "$path"; then
     block "lockfile edit. Use the package manager." "lockfile-edit"

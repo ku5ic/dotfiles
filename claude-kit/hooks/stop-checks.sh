@@ -40,7 +40,7 @@ edited="$(jq -rs '
 
 if ! output="$("$KIT_ROOT/bin/run-checks.sh" 2>&1)"; then
   block "checks failed; fix them or report and stop.
-$(printf '%s\n' "$output" | grep -E '^FAIL|^checks:' || true)"
+$(printf '%s\n' "$output" | grep -E '^FAIL|^checks:' || true)" "checks-failed"
 fi
 
 # SKIP lines carry their own reason, e.g. "SKIP js: lint (no lint script)".
