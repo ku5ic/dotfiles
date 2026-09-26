@@ -808,6 +808,8 @@ make_repo() {
   local cmd
   for cmd in \
     'curl -O https://x.example/a.js' \
+    'curl -sLO https://x.example/a.js' \
+    'curl -sofile.js https://x.example/a.js' \
     'curl -fsSL https://x.example/README.md -o README.md' \
     'curl --output=README.md https://x.example/r' \
     'curl https://x.example/r > out.txt' \
@@ -838,6 +840,9 @@ make_repo() {
     "curl -s https://x.example/r | rg '<div>'" \
     'curl -s https://x.example/r | jq . > "$(scratch-dir.sh)/r.json"' \
     'curl -s "https://x.example/r?a=1>2"' \
+    'curl -XPOST https://x.example/api' \
+    'curl -sXOPTIONS https://x.example/api' \
+    'curl -H "X-Only: 1" https://x.example/api' \
     'curl -s https://x.example/r 2>/dev/null' \
     'curl -o "$(scratch-dir.sh)/a.js" https://x.example/a.js' \
     'curl -O --output-dir "$(scratch-dir.sh)" https://x.example/a.js' \

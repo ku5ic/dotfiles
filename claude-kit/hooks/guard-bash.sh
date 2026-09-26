@@ -675,9 +675,25 @@ _check_segment() {
         ;;
       --*) ;;
       -*)
-        [[ "$_word" == *O* || "$_word" == *J* ]] && _remote=1
-        # Only a trailing -o consumes the next word as its value.
-        [[ "$_word" == *o ]] && _want_target=1
+        # A short cluster: O and J are flags, o takes the rest of the word or
+        # the next one, and any other value-taking option (-XPOST, -Hx) ends
+        # the scan, since the rest of the word is its value.
+        local _j _flag
+        for ((_j = 1; _j < ${#_word}; _j++)); do
+          _flag="${_word:_j:1}"
+          case "$_flag" in
+          O | J) _remote=1 ;;
+          o)
+            if ((_j == ${#_word} - 1)); then
+              _want_target=1
+            else
+              _targets+=("${_word:_j+1}")
+            fi
+            break
+            ;;
+          [AbcCdDeEFHKmPQrtTuUwxXyYz]) break ;;
+          esac
+        done
         ;;
       esac
     done
