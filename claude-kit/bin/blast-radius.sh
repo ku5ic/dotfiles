@@ -183,6 +183,9 @@ case "$rel" in
   done < <(kit_subprojects "$root")
 
   spec_re="(from|import|require[[:space:]]*\\(|import[[:space:]]*\\()[[:space:]]*['\"]([^'\"]+)['\"]"
+  # An index is also reached by a bare '.', '..', or './' that names nothing.
+  index_needles=()
+  if ((is_index)); then index_needles=(".'" '."' "/'" '/"'); fi
   while IFS= read -r hit; do
     file="${hit%%:*}"
     rest="${hit#*:}"
@@ -215,7 +218,7 @@ case "$rel" in
       esac
     done
   done < <(candidate_lines "(from|import|require)[[:space:]]*\\(?[[:space:]]*['\"]" \
-    "${stem##*/}" "${index_dir##*/}" "${ws_names[@]}" -- "${JS_FILES[@]}")
+    "${stem##*/}" "${index_dir##*/}" "${ws_names[@]}" "${index_needles[@]}" -- "${JS_FILES[@]}")
 
   if [[ -n "$(grep_files "(^|[^A-Za-z0-9_\$.])(import|require)[[:space:]]*\\([[:space:]]*[^\"'[:space:])]" "${JS_FILES[@]}")" ]]; then
     dynamic=1

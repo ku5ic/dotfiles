@@ -58,6 +58,15 @@ src/lib/format.test.ts:1 test" ]
   [[ "$output" == *"src/main.ts:1 source"* ]]
 }
 
+@test "an index file is reached by a bare '..' or './' from below or beside it" {
+  make_repo "$BATS_TEST_TMPDIR/idx2"
+  write src/foo/index.ts 'export const a = 1;'
+  write src/foo/sub/b.ts "import { a } from '..';"
+  write src/foo/c.ts 'import { a } from "./";'
+  run "$SCRIPT" src/foo/index.ts
+  [[ "$output" == *"consumers: 2 (source 2, test 0)"* ]]
+}
+
 @test "a non-literal import() is flagged" {
   make_ts_fixture
   write src/lazy.ts 'const m = await import(path);'
