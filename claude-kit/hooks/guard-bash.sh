@@ -100,6 +100,8 @@ _is_scratch_target() {
   local p="$1"
   p="${p#[\"\']}"
   p="${p%[\"\']}"
+  # Before any accept: "$(scratch-dir.sh)/../x" climbs out of scratch.
+  [[ "$p" != *..* ]] || return 1
   # shellcheck disable=SC2016  # matching the literal command substitution
   case "$p" in
   - | /dev/null | '&'[0-9] | '$(scratch-dir.sh)' | '$(scratch-dir.sh)/'* | '`scratch-dir.sh`' | '`scratch-dir.sh`/'*) return 0 ;;
@@ -247,7 +249,7 @@ _git_current_branch() {
 }
 
 _check_git_push() {
-  local arg want_value=0 opts_done=0 have_remote=0
+  local arg want_value=0 opts_done=0 have_remote=0 tags_only=0
   local -a refspecs=()
   for arg in "${_git_args[@]}"; do
     if ((want_value)); then
@@ -262,6 +264,8 @@ _check_git_push() {
         ;;
       --force) block "git push --force. Use --force-with-lease if you must." "git-force-push" ;;
       --mirror) block "git push --mirror overwrites every remote ref, protected branches included" "git-force-push" ;;
+      # Pushes tags, not the current branch.
+      --tags) tags_only=1 ;;
       --repo | --push-option | --receive-pack | --exec)
         want_value=1
         continue
@@ -290,7 +294,7 @@ _check_git_push() {
       block "push to a protected branch; use a feature branch" "git-push-protected"
     fi
   done
-  if ((${#refspecs[@]} == 0)) && _is_protected_branch "$(_git_current_branch)"; then
+  if ((${#refspecs[@]} == 0 && ! tags_only)) && _is_protected_branch "$(_git_current_branch)"; then
     block "push to a protected branch; use a feature branch" "git-push-protected"
   fi
   force_ask "git push publishes commits to a remote; confirm the destination"
@@ -404,13 +408,39 @@ _check_segment() {
   while [[ "$seg" =~ $_assign_re ]]; do
     seg="${seg#"${BASH_REMATCH[0]}"}"
   done
-  case "${seg%% *}" in
-  command | env | builtin | exec | nohup | nice)
-    if [[ "$seg" == *' '* ]]; then
+  # A wrapper and its own options go: nice -n 10 rm, env -i rm, command -p
+  # rm, timeout -s KILL 5 rm. Options that take a separate value drop it too;
+  # timeout also drops its duration.
+  local _wrap _wopt
+  while :; do
+    _wrap="${seg%% *}"
+    case "$_wrap" in
+    command | env | builtin | exec | nohup | nice | timeout | stdbuf | ionice | chrt) ;;
+    *) break ;;
+    esac
+    [[ "$seg" == *' '* ]] || break
+    seg="${seg#* }"
+    while [[ "$seg" == -* ]]; do
+      _wopt="${seg%% *}"
+      [[ "$seg" == *' '* ]] || break 2
+      seg="${seg#* }"
+      [[ "$_wopt" == -- ]] && break
+      case "$_wrap:$_wopt" in
+      nice:-n | env:-u | env:-C | exec:-a | timeout:-s | timeout:-k | ionice:-c | ionice:-n | chrt:-p)
+        [[ "$seg" == *' '* ]] && seg="${seg#* }"
+        ;;
+      esac
+    done
+    if [[ "$_wrap" == timeout && "$seg" == [0-9]* && "$seg" == *' '* ]]; then
       seg="${seg#* }"
     fi
-    ;;
-  esac
+    if [[ "$_wrap" == chrt && "$seg" == [0-9]* && "$seg" == *' '* ]]; then
+      seg="${seg#* }"
+    fi
+    while [[ "$seg" =~ $_assign_re ]]; do
+      seg="${seg#"${BASH_REMATCH[0]}"}"
+    done
+  done
   seg="${seg#\\}"
   while [[ "$seg" =~ $_assign_re ]]; do
     seg="${seg#"${BASH_REMATCH[0]}"}"
@@ -440,8 +470,11 @@ _check_segment() {
     _orest="$_shell_rest"
     _olead="${_shell_words[0]:-}"
     case "${_olead##*/}" in
-    cat | bat | head | tail | less | more | yq | jq | rg | grep | diff | wc | ls | stat | file | \
-      realpath | readlink | test | '[' | echo | printf | sed | sd | git) continue ;;
+    cat | bat | head | tail | less | more | jq | rg | grep | diff | wc | ls | stat | file | \
+      realpath | readlink | test | '[' | echo | printf | sed | sd) continue ;;
+    # Readers unless told to write: yq -i, git checkout/restore -- <file>.
+    yq) [[ " ${_shell_words[*]} " == *' -i'* || " ${_shell_words[*]} " == *' --inplace'* ]] || continue ;;
+    git) [[ " ${_shell_words[*]} " =~ \ (checkout|restore|apply|mv|rm|stash|reset)\  ]] || continue ;;
     esac
     for _ow in "${_shell_words[@]:1}"; do
       if _is_overlay_arg "$_ow" || { [[ "$_ow" == *=* ]] && _is_overlay_arg "${_ow#*=}"; }; then
@@ -910,10 +943,59 @@ _git_base_flags_safe() {
 # A shell named as a command word on a heredoc's line: bash <<EOF, | sh.
 _shell_word_re='(^|[[:space:]|;&(])(sh|bash|zsh|dash|ksh)([[:space:]]|$)'
 
+# _hd_header <s> <i>: parses the heredoc operator << at index i of s. Sets
+# _hd_delim (quotes and backslashes removed), _hd_dash (1 for <<-), and
+# _hd_next (the index just past the delimiter word).
+_hd_header() {
+  local s="$1" j=$(($2 + 2)) quote rest delim
+  _hd_dash=0
+  if [[ "${s:j:1}" == - ]]; then
+    _hd_dash=1
+    j=$((j + 1))
+  fi
+  while [[ "${s:j:1}" == [[:blank:]] ]]; do j=$((j + 1)); done
+  quote="${s:j:1}"
+  if [[ "$quote" == "'" || "$quote" == '"' ]]; then
+    rest="${s:j+1}"
+    delim="${rest%%"$quote"*}"
+    j=$((j + ${#delim} + 2))
+  else
+    rest="${s:j}"
+    delim="${rest%%[[:space:];&|<>()]*}"
+    j=$((j + ${#delim}))
+  fi
+  _hd_delim="${delim//\\/}"
+  _hd_next=$j
+}
+
+# _hd_body <s> <pos> <delim> <dash>: reads heredoc lines from index pos up to
+# the terminator line. Sets _hd_text (the body), _hd_closed (1 when the
+# terminator was found), and _hd_pos (the index after it). <<- strips leading
+# tabs, and norm has already turned tabs into spaces, so both are stripped.
+_hd_body() {
+  local s="$1" nl=$'\n' rest text cmp
+  _hd_pos=$2 _hd_text="" _hd_closed=0
+  while ((_hd_pos < ${#s})); do
+    rest="${s:_hd_pos}"
+    text="${rest%%"$nl"*}"
+    _hd_pos=$((_hd_pos + ${#text} + 1))
+    cmp="$text"
+    [[ "$4" == 1 ]] && cmp="${cmp#"${cmp%%[![:blank:]]*}"}"
+    if [[ "$cmp" == "$3" ]]; then
+      _hd_closed=1
+      return 0
+    fi
+    _hd_text+="$text$nl"
+  done
+}
+
 # Sets _sub_end_idx to the index of the ) closing a $( whose body starts at
-# index $2 of $1, or -1 when it never closes. Quotes and nested parens count.
+# index $2 of $1, or -1 when it never closes. Quotes, nested parens,
+# comments, and heredoc bodies count the way the shell counts them: an
+# apostrophe in `$(cat <<'EOF' ... It's ... EOF)` is data, not a quote.
 _sub_end() {
-  local s="$1" i c q="" depth=1
+  local s="$1" i c q="" depth=1 prev=" " k
+  local -a delims=() dashes=()
   for ((i = $2; i < ${#s}; i++)); do
     c="${s:i:1}"
     if [[ "$q" == "'" ]]; then
@@ -924,6 +1006,22 @@ _sub_end() {
       [[ "$c" == "$q" ]] && q=""
     elif [[ "$c" == "'" || "$c" == '"' || "$c" == '`' ]]; then
       q="$c"
+    elif [[ "$c" == '#' && "$prev" == [[:space:]\(] ]]; then
+      while ((i + 1 < ${#s})) && [[ "${s:i+1:1}" != $'\n' ]]; do i=$((i + 1)); done
+    elif [[ "${s:i:3}" == '<<<' ]]; then
+      i=$((i + 2))
+    elif [[ "${s:i:2}" == '<<' ]]; then
+      _hd_header "$s" "$i"
+      delims+=("$_hd_delim")
+      dashes+=("$_hd_dash")
+      i=$((_hd_next - 1))
+    elif [[ "$c" == $'\n' ]] && ((${#delims[@]})); then
+      _hd_pos=$((i + 1))
+      for ((k = 0; k < ${#delims[@]}; k++)); do
+        _hd_body "$s" "$_hd_pos" "${delims[k]}" "${dashes[k]}"
+      done
+      i=$((_hd_pos - 1))
+      delims=() dashes=()
     elif [[ "$c" == '(' ]]; then
       depth=$((depth + 1))
     elif [[ "$c" == ')' ]]; then
@@ -933,6 +1031,7 @@ _sub_end() {
         return 0
       fi
     fi
+    prev="$c"
   done
   _sub_end_idx=-1
 }
@@ -948,7 +1047,7 @@ _sub_end() {
 # - A heredoc body is data and skipped, unless its line mentions a shell
 #   (bash <<EOF, cat <<EOF | sh): then the body is commands, split and printed.
 _split_segments() {
-  local s="$1" c next prev="" q="" seg="" line="" i j body delim quote pos rest text cmp closed
+  local s="$1" c next prev="" q="" seg="" line="" i j body pos rest text
   local bt='`' nl=$'\n'
   local -a hd_delims=() hd_dashes=()
   for ((i = 0; i < ${#s}; i++)); do
@@ -1038,50 +1137,24 @@ _split_segments() {
       line+='<<<'
       i=$((i + 2))
     elif [[ "$c$next" == '<<' ]]; then
-      j=$((i + 2))
-      hd_dashes+=("$([[ "${s:j:1}" == - ]] && echo 1 || echo 0)")
-      [[ "${s:j:1}" == - ]] && j=$((j + 1))
-      while [[ "${s:j:1}" == [[:blank:]] ]]; do j=$((j + 1)); done
-      quote="${s:j:1}"
-      if [[ "$quote" == "'" || "$quote" == '"' ]]; then
-        rest="${s:j+1}"
-        delim="${rest%%"$quote"*}"
-        j=$((j + ${#delim} + 2))
-      else
-        rest="${s:j}"
-        delim="${rest%%[[:space:];&|<>()]*}"
-        j=$((j + ${#delim}))
-      fi
-      hd_delims+=("${delim//\\/}")
-      seg+="${s:i:j-i}"
-      line+="${s:i:j-i}"
-      i=$((j - 1))
+      _hd_header "$s" "$i"
+      hd_delims+=("$_hd_delim")
+      hd_dashes+=("$_hd_dash")
+      seg+="${s:i:_hd_next-i}"
+      line+="${s:i:_hd_next-i}"
+      i=$((_hd_next - 1))
     elif [[ "$c" == ';' || "$c" == $'\n' ]]; then
       printf '%s\0' "$seg"
       seg=""
       if [[ "$c" == $'\n' ]]; then
         pos=$((i + 1))
         for ((j = 0; j < ${#hd_delims[@]}; j++)); do
-          body=""
-          closed=0
-          while ((pos < ${#s})); do
-            rest="${s:pos}"
-            text="${rest%%"$nl"*}"
-            pos=$((pos + ${#text} + 1))
-            cmp="$text"
-            # <<- strips leading tabs; norm has already turned tabs into
-            # spaces, so strip both.
-            [[ "${hd_dashes[j]}" == 1 ]] && cmp="${cmp#"${cmp%%[![:blank:]]*}"}"
-            if [[ "$cmp" == "${hd_delims[j]}" ]]; then
-              closed=1
-              break
-            fi
-            body+="$text$nl"
-          done
+          _hd_body "$s" "$pos" "${hd_delims[j]}" "${hd_dashes[j]}"
+          pos=$_hd_pos
           # Fail closed: a body that never meets its terminator, or one fed
           # to a shell, is checked as commands.
-          if ((! closed)) || [[ "$line" =~ $_shell_word_re ]]; then
-            _split_segments "$body"
+          if ((! _hd_closed)) || [[ "$line" =~ $_shell_word_re ]]; then
+            _split_segments "$_hd_text"
           fi
         done
         ((${#hd_delims[@]} == 0)) || i=$((pos - 1))

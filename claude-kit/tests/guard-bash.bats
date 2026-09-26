@@ -487,6 +487,14 @@ make_repo() {
   [[ "$output" == *"push to a protected branch"* ]]
 }
 
+@test "ask: git push --tags from main pushes tags, not the branch" {
+  run run_guard_in "$(make_repo main)" 'git push --tags'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
+  run run_guard_in "$(make_repo main)" 'git push --follow-tags'
+  [ "$status" -eq 2 ]
+}
+
 @test "block: git push HEAD while on main" {
   run run_guard_in "$(make_repo main)" 'git push origin HEAD'
   [ "$status" -eq 2 ]

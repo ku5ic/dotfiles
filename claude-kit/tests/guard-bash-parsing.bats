@@ -143,6 +143,34 @@ probe() {
   probe pass 'cat ~/.claude/claude-kit.local.yml'
   probe pass 'yq . ~/.claude/claude-kit.local.yml'
   probe pass 'rg disabled ~/.claude/claude-kit.local.yml'
+  # The commit-message heredoc inside $( ): quotes and parens in it are data.
+  probe block $'git commit -m "$(cat <<\'EOF\'\nIt\'s fine\nEOF\n)" && rm -rf ~'
+  probe block $'git commit -m "$(cat <<\'EOF\'\nfix: x (y\nEOF\n)" && rm -rf ~'
+  probe pass $'git commit -m "$(cat <<\'EOF\'\nIt\'s fine (really)\nEOF\n)"'
+  probe block $'x=$(cat <<EOF\n# it\'s a comment\nEOF\n); rm -rf ~'
+  probe block $'x=$(echo a # it\'s\n); rm -rf ~'
+  # Overlay: yq -i and git checkout write it; plain reads don't ask.
+  probe ask "yq -i '.disabled_rules += [\"rm-recursive\"]' ~/.claude/claude-kit.local.yml"
+  probe ask 'git checkout HEAD -- ~/.claude/claude-kit.local.yml'
+  probe ask 'perl -pi -e s/a/b/ ~/.claude/claude-kit.local.yml'
+  probe pass 'git log -- ~/.claude/claude-kit.local.yml'
+  # Downloads: .. never escapes scratch, even behind $(scratch-dir.sh).
+  probe block 'curl -o "$(scratch-dir.sh)/../../x" https://x.example/a'
+  probe block 'wget -P "$(scratch-dir.sh)/.." https://x.example/a'
+  # Wrappers with their own options.
+  probe block 'nice -n 10 rm -rf ~'
+  probe block 'nice -10 rm -rf ~'
+  probe block 'command -p rm -rf ~'
+  probe block 'env -i rm -rf ~'
+  probe block 'env -u PATH rm -rf ~'
+  probe block 'env FOO=1 rm -rf ~'
+  probe block 'env -i FOO=1 nice -n 5 rm -rf ~'
+  probe block 'timeout 5 rm -rf ~'
+  probe block 'timeout -s KILL 5 rm -rf ~'
+  probe block 'stdbuf -o0 rm -rf ~'
+  probe block 'exec -a x rm -rf ~'
+  probe pass 'env'
+  probe pass 'command -v rm'
   # git-base.sh: an explicit ask, so a settings allow rule can't approve it.
   probe allow 'git-base.sh --diff'
   probe ask 'git-base.sh --diff --output=/tmp/x'
