@@ -143,12 +143,43 @@ _is_protected_branch() {
   return 1
 }
 
+# Splits $1 into shell words in _shell_words: whitespace outside quotes
+# separates, quotes group and are removed, a backslash escapes outside single
+# quotes. No expansion, so "$(x)" stays literal text.
+_shell_split() {
+  local s="$1" c q="" word="" has=0 i
+  _shell_words=()
+  for ((i = 0; i < ${#s}; i++)); do
+    c="${s:i:1}"
+    if [[ "$q" == "'" ]]; then
+      if [[ "$c" == "'" ]]; then q=""; else word+="$c"; fi
+    elif [[ "$c" == "\\" && $((i + 1)) -lt ${#s} ]]; then
+      i=$((i + 1))
+      word+="${s:i:1}"
+      has=1
+    elif [[ -n "$q" ]]; then
+      if [[ "$c" == '"' ]]; then q=""; else word+="$c"; fi
+    elif [[ "$c" == "'" || "$c" == '"' ]]; then
+      q="$c"
+      has=1
+    elif [[ "$c" == [[:space:]] ]]; then
+      if ((has)); then _shell_words+=("$word"); fi
+      word="" has=0
+    else
+      word+="$c"
+      has=1
+    fi
+  done
+  if ((has)); then _shell_words+=("$word"); fi
+}
+
 # Splits a git segment past git's global options. Sets _git_sub (the
 # subcommand), _git_args (its arguments), and _git_dir (the -C value, empty
-# when absent). Words split on whitespace only; quotes aren't parsed.
+# when absent). A quoted message or value stays one argument.
 _git_parse() {
   local -a words
-  read -ra words <<<"$1"
+  _shell_split "$1"
+  words=("${_shell_words[@]}")
   _git_sub="" _git_dir="" _git_args=()
   local i=1 n=${#words[@]}
   while ((i < n)); do
@@ -248,6 +279,8 @@ _check_git_commit() {
     fi
     case "$arg" in
     --) break ;;
+    --message | --file | --author | --date | --template | --trailer | --cleanup | \
+      --reuse-message | --reedit-message | --fixup | --squash | --pathspec-from-file) want_value=1 ;;
     --*) ;;
     -*)
       for ((i = 1; i < ${#arg}; i++)); do
