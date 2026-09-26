@@ -108,6 +108,24 @@ add a" ]
   [[ "$output" == *"a.txt | 1 +"* ]]
 }
 
+@test "--log -n 5 takes 5 as the flag's value, not the base" {
+  make_branch
+  run "$SCRIPT" --log -n 1
+  [ "$status" -eq 0 ]
+  [ "$(printf '%s\n' "$output" | cut -d' ' -f2-)" = "empty" ]
+}
+
+@test "--diff base -- path limits the diff to the path, after the range" {
+  make_branch
+  echo two >b.txt
+  git add b.txt
+  git commit -q -m "add b"
+  run "$SCRIPT" --diff main --stat -- a.txt
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"a.txt"* ]]
+  [[ "$output" != *"b.txt"* ]]
+}
+
 @test "a branch named log is still usable as the base" {
   make_branch
   git branch -q log main

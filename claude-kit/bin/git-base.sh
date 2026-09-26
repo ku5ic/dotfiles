@@ -14,7 +14,9 @@
 #                                       base after this branch forked don't show
 #                                       up reversed - GitHub's PR diff semantics
 #   git-base.sh --log [base] [-flags]   git log --oneline <base>..HEAD
-# Flags are words starting with "-" (e.g. --no-merges) and pass through to git.
+#   ... -- <path>...                    limit --diff or --log to those paths
+# Flags (e.g. --no-merges, -n 5) pass through to git; the base is the first
+# word that resolves as a ref.
 # The mode is a flag, not a word, so a branch named diff or log still works as
 # the base.
 #
@@ -34,13 +36,23 @@ case "${1:-}" in
   ;;
 esac
 
+# The base is the first word that resolves as a ref; any other word is a
+# flag's value (-n 5) and goes to git with the flags. After --, words are
+# pathspecs, placed after the range where git expects them.
 explicit=""
 extra=()
+paths=()
+in_paths=0
 for arg in "$@"; do
-  case "$arg" in
-  -*) extra+=("$arg") ;;
-  *) explicit="$arg" ;;
-  esac
+  if ((in_paths)); then
+    paths+=("$arg")
+  elif [[ "$arg" == -- ]]; then
+    in_paths=1
+  elif [[ "$arg" != -* && -z "$explicit" ]] && git rev-parse --verify --quiet "$arg" >/dev/null; then
+    explicit="$arg"
+  else
+    extra+=("$arg")
+  fi
 done
 
 resolve_base() {
@@ -79,6 +91,6 @@ base="$(resolve_base)" || exit 1
 
 case "$mode" in
 base) echo "$base" ;;
-diff) git diff "${extra[@]}" "${base}...HEAD" ;;
-log) git log --oneline "${extra[@]}" "${base}..HEAD" ;;
+diff) git diff "${extra[@]}" "${base}...HEAD" -- "${paths[@]}" ;;
+log) git log --oneline "${extra[@]}" "${base}..HEAD" -- "${paths[@]}" ;;
 esac
