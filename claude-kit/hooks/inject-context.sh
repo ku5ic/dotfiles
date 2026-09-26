@@ -5,6 +5,37 @@
 HOOK_NAME="inject-context.sh"
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
+
+# Every guard fails open (exit 0) without these, so say so at session start.
+# Runs before bin/_lib.sh, which needs bash 4.2+: bash 3.2 syntax only, and
+# the JSON is built with printf because jq may be the thing missing.
+check_prereqs() {
+  local missing="" kit_rules entry linked=0
+  if [ "${BASH_VERSINFO[0]}" -lt 4 ] || { [ "${BASH_VERSINFO[0]}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -lt 2 ]; }; then
+    missing="${missing} bash 4.2+ (found ${BASH_VERSION}; brew install bash, and put it first on PATH);"
+  fi
+  if ! command -v jq >/dev/null 2>&1; then
+    missing="${missing} jq (brew install jq);"
+  fi
+  if ! yq --version 2>/dev/null | grep -q mikefarah; then
+    missing="${missing} mikefarah yq (brew install yq);"
+  fi
+  kit_rules="$(cd -P "$(dirname "$0")/../rules" 2>/dev/null && pwd || true)"
+  for entry in "$HOME"/.claude/rules/*; do
+    if [ -d "$entry" ] && [ "$(cd -P "$entry" 2>/dev/null && pwd)" = "$kit_rules" ]; then
+      linked=1
+    fi
+  done
+  if [ "$linked" -eq 0 ]; then
+    missing="${missing} the kit rules linked under ~/.claude/rules (run bootstrap.sh);"
+  fi
+  if [ -n "$missing" ]; then
+    printf '{"systemMessage":"claude-kit guards fail open until this is fixed. Missing:%s"}\n' "${missing%;}"
+    exit 0
+  fi
+}
+check_prereqs
+
 # shellcheck source=../bin/_lib.sh
 source "$(dirname "$0")/../bin/_lib.sh"
 

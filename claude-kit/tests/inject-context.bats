@@ -22,6 +22,10 @@ setup() {
   # Real git init: a non-git root breaks inject-context.sh entirely (see the
   # dedicated RISK test below), which would otherwise block every other test.
   git -C "$FAKE_ROOT" init -q
+  # check_prereqs wants the kit rules linked; without this every test would
+  # get the warning JSON instead of the context.
+  mkdir -p "$FAKE_HOME/.claude/rules"
+  ln -s "$BATS_TEST_DIRNAME/../rules" "$FAKE_HOME/.claude/rules/kit"
 
   set_project_name "testproject"
   set_project_root "$FAKE_ROOT"
@@ -162,4 +166,66 @@ YAML
   [[ "$output" == *"<required-skills>"* ]]
   [[ "$output" == *"fix-sizing"* ]]
   [[ "$output" == *"dirty-files (at session start): unknown"* ]]
+}
+
+# check_prereqs: guards fail open without these, so the hook warns instead.
+
+# PATH holding only what check_prereqs touches before it exits, plus $@.
+restricted_path() {
+  local dir="$BATS_TEST_TMPDIR/restricted-bin" tool
+  mkdir -p "$dir"
+  for tool in dirname grep "$@"; do
+    ln -sf "$(command -v "$tool")" "$dir/$tool"
+  done
+  printf '%s' "$dir"
+}
+
+@test "prereqs: a non-mikefarah yq on PATH gets a warning" {
+  local fake="$BATS_TEST_TMPDIR/fake-yq"
+  mkdir -p "$fake"
+  printf '#!/bin/sh\necho "yq 3.4.3"\n' >"$fake/yq"
+  chmod +x "$fake/yq"
+
+  run bash -c "echo '{}' | HOME='$FAKE_HOME' PATH='$fake:$PATH' '$HOOK'"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"systemMessage"'* ]]
+  [[ "$output" == *"mikefarah yq"* ]]
+  [[ "$output" != *"<repo-context>"* ]]
+}
+
+@test "prereqs: missing jq prints valid JSON naming jq" {
+  local bash_bin
+  bash_bin="$(command -v bash)"
+  run env HOME="$FAKE_HOME" PATH="$(restricted_path yq)" "$bash_bin" "$HOOK" </dev/null
+  [ "$status" -eq 0 ]
+  printf '%s' "$output" | jq -e '.systemMessage | test("jq \\(brew install jq\\)")'
+}
+
+@test "prereqs: kit rules not linked under ~/.claude/rules gets a warning" {
+  rm "$FAKE_HOME/.claude/rules/kit"
+
+  run run_inject_context "s1"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"run bootstrap.sh"* ]]
+}
+
+@test "prereqs: kit rules linked under another name count" {
+  mv "$FAKE_HOME/.claude/rules/kit" "$FAKE_HOME/.claude/rules/claude-kit"
+  write_stacks_yml <<'YAML'
+global_skills:
+  - fix-sizing
+YAML
+  write_cache "root: $FAKE_ROOT" "js: yes"
+
+  run run_inject_context "s1"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"systemMessage"* ]]
+  [[ "$output" == *"<required-skills>"* ]]
+}
+
+@test "prereqs: bash older than 4.2 gets a warning" {
+  [[ -x /bin/bash ]] && [[ "$(/bin/bash -c 'echo ${BASH_VERSINFO[0]}')" -lt 4 ]] || skip "no bash 3.x at /bin/bash"
+  run env HOME="$FAKE_HOME" /bin/bash "$HOOK" </dev/null
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"bash 4.2+"* ]]
 }
