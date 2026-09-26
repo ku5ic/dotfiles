@@ -318,6 +318,8 @@ _check_git_commit() {
           ((i == ${#arg} - 1)) && want_value=1
           break
           ;;
+        # Optional values, only ever attached: -uno, -S<keyid>.
+        u | S) break ;;
         esac
       done
       ;;

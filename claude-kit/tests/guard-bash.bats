@@ -599,7 +599,8 @@ make_repo() {
 @test "allow: -n inside a quoted message or option value isn't --no-verify" {
   local cmd
   for cmd in 'git commit -m "handle the -n flag"' "git commit -m 'wip -n'" \
-    'git commit -m "wip" --author "x -n <x@x>"' 'git commit --message "-n"'; do
+    'git commit -m "wip" --author "x -n <x@x>"' 'git commit --message "-n"' \
+    'git commit -uno -m msg' 'git commit -SABCn1 -m msg'; do
     run run_guard "$cmd"
     [ "$status" -eq 0 ] || {
       echo "blocked: $cmd"
