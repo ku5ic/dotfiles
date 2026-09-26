@@ -34,7 +34,7 @@ make_repo() {
 js: yes (typescript,next,react) [pnpm]" ]
 }
 
-@test "uv Django repo reports python with django and no manager tag" {
+@test "uv Django repo reports python with django and the uv tag" {
   local root
   root="$(make_repo "$BATS_TEST_TMPDIR/django")"
   printf '[project]\nname = "x"\ndependencies = ["django>=5.0"]\n' >"$root/pyproject.toml"
@@ -44,7 +44,7 @@ js: yes (typescript,next,react) [pnpm]" ]
   run "$SCRIPT"
   [ "$status" -eq 0 ]
   [ "$output" = "root: $root
-python: yes (django)" ]
+python: yes (django) [uv]" ]
 }
 
 @test "repo with no sentinel prints nothing" {
@@ -55,6 +55,37 @@ python: yes (django)" ]
   run "$SCRIPT"
   [ "$status" -eq 0 ]
   [ -z "$output" ]
+}
+
+@test "every subproject is detected, each stack with its own ecosystem's manager" {
+  local root
+  root="$(make_repo "$BATS_TEST_TMPDIR/mono")"
+  printf '{"name":"root","private":true}\n' >"$root/package.json"
+  printf 'packages:\n  - "packages/*"\n' >"$root/pnpm-workspace.yaml"
+  touch "$root/pnpm-lock.yaml"
+  mkdir -p "$root/packages/a" "$root/services/api"
+  printf '{"name":"a","dependencies":{"react":"19.0.0"}}\n' >"$root/packages/a/package.json"
+  printf '[project]\nname = "api"\n' >"$root/services/api/pyproject.toml"
+  touch "$root/services/api/uv.lock"
+  git -C "$root" add -A
+
+  cd "$root"
+  run "$SCRIPT"
+  [ "$status" -eq 0 ]
+  [ "$output" = "root: $root
+js: yes (react) [pnpm] at ., packages/a
+python: yes [uv] at services/api
+monorepo: yes (pnpm-workspaces)" ]
+}
+
+@test "the stack-line parser still reads extras from the new format" {
+  printf '%s\n' "root: /x" "js: yes (react) [pnpm] at ., packages/a" "python: yes [uv] at services/api" >"$BATS_TEST_TMPDIR/cache"
+  # shellcheck source=../bin/_lib.sh
+  source "$BATS_TEST_DIRNAME/../bin/_lib.sh"
+  run stacks_signals_from_cache "$BATS_TEST_TMPDIR/cache"
+  [ "$output" = "js
+js+react
+python" ]
 }
 
 # The user overlay at ~/.claude/claude-kit.local.yml merges over kit.yml.

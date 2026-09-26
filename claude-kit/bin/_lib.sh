@@ -260,8 +260,8 @@ longest_prose_run() {
 # pnpm-lock.yaml, triggers re-detection. Without the lockfiles a switched
 # project kept advertising its old [pm] tag in <repo-context> while
 # resolve_package_manager (which stats lockfiles live) had already moved on.
-# Known limit: only $project_root/<file> is checked, not search_dirs subdirs;
-# this matches the sentinel walk scope and is intentional.
+# Known limit: only $project_root/<file> is checked, not subprojects, so an
+# edit inside a subproject waits for a root file change to re-detect.
 # STACK_PM_LOCKFILES / STACK_PM_MANAGERS / STACK_PM_ECOSYSTEMS: positional
 # triples from .package_managers, walked by resolve_package_manager and by
 # guard-bash.sh's per-ecosystem PM mismatch guard.
@@ -609,6 +609,32 @@ _kit_extract() {
   make_targets | just_recipes) "$1" "$2" ;;
   *) echo "_lib.sh: unknown extractor in kit.yml: $1" >&2 ;;
   esac
+}
+
+# kit_nearest_pm_lockfile <dir> <ecosystem>
+# Prints "manager:lockfile" for the nearest lockfile of <ecosystem>, walking
+# from <dir> up to its git toplevel (only <dir> outside a repo). Nothing when
+# that ecosystem has no lockfile on the way: greenfield. Unlike
+# resolve_package_manager, a pnpm root never answers for a uv service below it.
+# <dir> must be physical to meet the toplevel; callers resolve it.
+kit_nearest_pm_lockfile() {
+  kit_stacks_load
+  local dir="$1" eco="$2" top i
+  top="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
+  while :; do
+    for ((i = 0; i < ${#STACK_PM_LOCKFILES[@]}; i++)); do
+      [[ "${STACK_PM_ECOSYSTEMS[i]:-}" == "$eco" ]] || continue
+      if [[ -f "$dir/${STACK_PM_LOCKFILES[i]}" ]]; then
+        printf '%s:%s\n' "${STACK_PM_MANAGERS[i]}" "${STACK_PM_LOCKFILES[i]}"
+        return 0
+      fi
+    done
+    if [[ -z "$top" || "$dir" == "$top" || "$dir" == / ]]; then
+      return 0
+    fi
+    dir="${dir%/*}"
+    [[ -n "$dir" ]] || dir=/
+  done
 }
 
 # True when dir $1 holds a sentinel of stack $2.

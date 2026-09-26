@@ -4,9 +4,17 @@
 # Output is terse on purpose. Each line is meant to be scanned by Claude in
 # under a few hundred tokens of context.
 #
-# All stack knowledge (sentinels, search_dirs, extras detection rules, skills)
-# lives in kit.yml at the kit root ($KIT_ROOT, see _lib.sh). To add a new stack or extend an existing one, edit
-# that file only. No edits to this script are required.
+# Detection runs in every subproject kit_subprojects returns (the root,
+# tracked anchor-sentinel directories, workspace members). One line per stack:
+#   <stack>: yes (<extras>) [<package manager>] at <subproject>, ...
+# The "at" part is left off when the stack is only at the root. The package
+# manager is the nearest lockfile of the stack's own ecosystem, so a uv
+# service under a pnpm root reports [uv].
+#
+# All stack knowledge (sentinels, extras detection rules, skills) lives in
+# kit.yml at the kit root ($KIT_ROOT, see _lib.sh). To add a new stack or
+# extend an existing one, edit that file only. No edits to this script are
+# required.
 #
 # Requires: yq (mikefarah, installed via Brewfile)
 
@@ -14,6 +22,7 @@ set -euo pipefail
 
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
+kit_stacks_load
 
 STACKS_YML="$KIT_YML"
 ROOT="$("$KIT_ROOT/bin/project-root.sh")"
@@ -21,40 +30,15 @@ cd "$ROOT"
 
 # Load stack names in document order
 mapfile -t STACK_NAMES < <(yq '.stacks | keys | .[]' "$STACKS_YML")
+mapfile -t SUBPROJECTS < <(kit_subprojects "$ROOT")
 
-default_search_dirs=(. frontend client web app backend server api)
-
-# Returns the directory under ROOT where the stack was found, or empty.
-find_stack_dir() {
-  local stack="$1"
-  local dirs raw_dirs
-  # mikefarah yq outputs "null" (exit 0) when a key is absent, not a non-zero
-  # exit. Check for empty or literal "null" and fall back to defaults.
-  raw_dirs="$(yq ".stacks.${stack}.search_dirs[]" "$STACKS_YML" 2>/dev/null || true)"
-  if [[ -z "$raw_dirs" || "$raw_dirs" == "null" ]]; then
-    dirs=("${default_search_dirs[@]}")
-  else
-    mapfile -t dirs <<<"$raw_dirs"
-  fi
-  local sentinels
-  mapfile -t sentinels < <(yq ".stacks.${stack}.sentinels[].name" "$STACKS_YML")
-  for dir in "${dirs[@]}"; do
-    for sentinel in "${sentinels[@]}"; do
-      if [[ -f "$dir/$sentinel" ]]; then
-        echo "$dir"
-        return 0
-      fi
-    done
+# True when kit.yml's package_managers has ecosystem $1.
+has_ecosystem() {
+  local eco
+  for eco in "${STACK_PM_ECOSYSTEMS[@]}"; do
+    [[ "$eco" == "$1" ]] && return 0
   done
-}
-
-emit_stack() {
-  local name="$1" loc="$2" parts="$3" suffix="$4"
-  local line="$name: yes"
-  [[ "$loc" != "." ]] && line+=" at $loc/"
-  [[ -n "$parts" ]] && line+=" ($parts)"
-  [[ -n "$suffix" ]] && line+=" $suffix"
-  echo "$line"
+  return 1
 }
 
 # Evaluates a single extras entry detection rule against $loc.
@@ -132,51 +116,66 @@ eval_extra() {
   fi
 }
 
-# Early exit: skip repos with no stack sentinels at all.
-# Uses find_stack_dir (which walks search_dirs) rather than a flat $ROOT/
-# prefix check -- sentinel files may live in subdirectories.
-has_stack=0
-for stack in "${STACK_NAMES[@]}"; do
-  if [[ -n "$(find_stack_dir "$stack")" ]]; then
-    has_stack=1
-    break
-  fi
-done
-((has_stack)) || exit 0
-
-echo "root: $ROOT"
-
+lines=()
 js_loc=""
 
 for stack in "${STACK_NAMES[@]}"; do
-  loc="$(find_stack_dir "$stack")"
-  [[ -z "$loc" ]] && continue
-
-  # Evaluate extras for this stack
-  extra_count="$(yq ".stacks.${stack}.extras | length" "$STACKS_YML" 2>/dev/null || echo 0)"
+  locs=()
   extras_parts=()
-  for ((i = 0; i < extra_count; i++)); do
-    matched="$(eval_extra "$stack" "$loc" "$i")"
-    [[ -n "$matched" ]] && extras_parts+=("$matched")
+  pm=""
+  extra_count=""
+
+  for sub in "${SUBPROJECTS[@]}"; do
+    dir="$ROOT"
+    [[ "$sub" == . ]] || dir="$ROOT/$sub"
+    kit_dir_has_stack "$dir" "$stack" || continue
+    locs+=("$sub")
+
+    # Extras: the union across locations, in first-seen order.
+    [[ -n "$extra_count" ]] || extra_count="$(yq ".stacks.${stack}.extras | length" "$STACKS_YML" 2>/dev/null || echo 0)"
+    for ((i = 0; i < extra_count; i++)); do
+      matched="$(eval_extra "$stack" "$sub" "$i")"
+      [[ -n "$matched" ]] || continue
+      [[ " ${extras_parts[*]:-} " == *" $matched "* ]] || extras_parts+=("$matched")
+    done
+
+    if [[ -z "$pm" ]] && has_ecosystem "$stack"; then
+      pm="$(kit_nearest_pm_lockfile "$dir" "$stack")"
+      pm="${pm%%:*}"
+    fi
   done
+  ((${#locs[@]} > 0)) || continue
 
-  # Package manager suffix (js only)
-  suffix=""
-  if [[ "$stack" == "js" ]]; then
-    pm="$(resolve_package_manager "$loc")"
-    suffix="[${pm:-npm}]"
-    js_loc="$loc"
+  line="$stack: yes"
+  if ((${#extras_parts[@]} > 0)); then
+    line+=" ($(
+      IFS=,
+      echo "${extras_parts[*]}"
+    ))"
   fi
-
-  local_IFS="${IFS:-}"
-  IFS=', '
-  parts_str="${extras_parts[*]:-}"
-  IFS="$local_IFS"
-
-  emit_stack "$stack" "$loc" "$parts_str" "$suffix"
+  if [[ "$stack" == js ]]; then
+    line+=" [${pm:-npm}]"
+    js_loc="${locs[0]}"
+  elif [[ -n "$pm" ]]; then
+    line+=" [$pm]"
+  fi
+  if [[ "${locs[*]}" != . ]]; then
+    locs_str="$(
+      IFS=,
+      echo "${locs[*]}"
+    )"
+    line+=" at ${locs_str//,/, }"
+  fi
+  lines+=("$line")
 done
 
-# Node version. Prefer the JS stack's location, fall back to project root.
+# Early exit: no stack in any subproject.
+((${#lines[@]} > 0)) || exit 0
+
+echo "root: $ROOT"
+printf '%s\n' "${lines[@]}"
+
+# Node version. Prefer the JS stack's first location, fall back to the root.
 if [[ -n "$js_loc" ]]; then
   if [[ -f "$js_loc/.nvmrc" ]]; then
     echo "node: $(tr -d 'v\n' <"$js_loc/.nvmrc")"

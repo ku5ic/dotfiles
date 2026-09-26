@@ -2,7 +2,7 @@
 #
 # Single source of truth for stack detection. Consumed by:
 #   bin/_lib.sh          -> STACK_SENTINELS_FULL, STACK_SENTINELS_PROJECT_ROOT
-#   bin/detect-stack.sh  -> stack names, sentinels, search_dirs, extras detection
+#   bin/detect-stack.sh  -> stack names, sentinels, extras detection
 #   hooks/inject-context.sh -> required skills (from global_skills) + suggested skills (via detect-stack.sh cache)
 #
 # Replaces: bin/_lib.sh hand-written arrays, detect-stack.sh declare -A blocks,
@@ -44,7 +44,8 @@
 #
 # SENTINEL FIELDS
 # ---------------
-# name: <filename>    the sentinel file (searched in search_dirs)
+# name: <filename>    the sentinel file, looked for in every subproject
+#                     (kit_subprojects in bin/_lib.sh)
 # anchor: true        include in the fast ancestor walk (project-root.sh)
 #                     keep this list minimal; every entry slows the walk
 
@@ -290,7 +291,6 @@ stacks:
     sentinels:
       - name: package.json
         anchor: true
-    search_dirs: [., frontend, client, web, app, backend, server, api]
     skills: [javascript-patterns]
     extras:
       - name: typescript

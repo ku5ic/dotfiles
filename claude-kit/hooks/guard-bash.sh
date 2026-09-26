@@ -78,29 +78,6 @@ _resolve_dir() {
 # Directory a segment runs in: the payload cwd, moved by earlier cd segments.
 _seg_cwd="$(_resolve_dir / "${_cwd:-$PWD}")"
 
-# Prints "manager:lockfile" for the nearest lockfile of ecosystem $2, walking
-# from dir $1 up to its git toplevel (only $1 outside a repo). Nothing when
-# that ecosystem has no lockfile on the way: greenfield. Walks the cached
-# package_managers table from bin/_lib.sh, never yq.
-_nearest_pm_lockfile() {
-  kit_stacks_load
-  local dir="$1" eco="$2" top i
-  top="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
-  while :; do
-    for ((i = 0; i < ${#STACK_PM_LOCKFILES[@]}; i++)); do
-      [[ "${STACK_PM_ECOSYSTEMS[i]:-}" == "$eco" ]] || continue
-      if [[ -f "$dir/${STACK_PM_LOCKFILES[i]}" ]]; then
-        printf '%s:%s\n' "${STACK_PM_MANAGERS[i]}" "${STACK_PM_LOCKFILES[i]}"
-        return 0
-      fi
-    done
-    if [[ -z "$top" || "$dir" == "$top" || "$dir" == / ]]; then
-      return 0
-    fi
-    dir="$(dirname "$dir")"
-  done
-}
-
 # Returns 0 (true) when $1 is a relative write target that would land loose in
 # the repo instead of scratch (rules/tooling.md). Unresolvable
 # targets - variables, subshells, quoted strings - return 1: $(scratch-dir.sh)
@@ -547,7 +524,7 @@ _check_segment() {
     done
     # Greenfield (no lockfile in this ecosystem) is always allowed.
     local _pm_info
-    _pm_info="$(_nearest_pm_lockfile "$_pm_dir" "$_eco")"
+    _pm_info="$(kit_nearest_pm_lockfile "$_pm_dir" "$_eco")"
     [[ -z "$_pm_info" ]] && return 0
     local _expected="${_pm_info%%:*}"
     local _lf_found="${_pm_info#*:}"
