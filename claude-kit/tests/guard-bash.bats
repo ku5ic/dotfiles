@@ -759,3 +759,50 @@ make_repo() {
   [ "$status" -eq 0 ]
   [ -z "$output" ]
 }
+
+# Side-effect-free kit scripts get an explicit allow decision
+
+@test "auto-allow: scratch-dir.sh" {
+  run run_guard 'scratch-dir.sh'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"allow"'* ]]
+}
+
+@test "auto-allow: git-base.sh with an argument" {
+  run run_guard 'git-base.sh main'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"allow"'* ]]
+}
+
+@test "ask: kit script with a redirect asks instead of allowing" {
+  run run_guard 'scratch-dir.sh > f'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
+}
+
+@test "no decision: run-checks.sh is not auto-allowed" {
+  run run_guard 'run-checks.sh'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "no decision: a name that only starts with a kit script" {
+  run run_guard 'git-base.sh.evil'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "no decision: a pathful kit script call" {
+  run run_guard '/tmp/scratch-dir.sh'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "no decision: kit script followed by another command" {
+  local c
+  for c in 'scratch-dir.sh; rm x' 'scratch-dir.sh | cat' 'scratch-dir.sh & rm x' 'scratch-dir.sh $(rm x)' 'scratch-dir.sh `rm x`' $'scratch-dir.sh\nrm x'; do
+    run run_guard "$c"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+  done
+}

@@ -705,14 +705,38 @@ while IFS= read -r _seg; do
   _check_segment "$_seg"
 done < <(printf '%s\n' "$norm" | sed -E 's/[[:space:]]*(&&|\|\|)[[:space:]]*/\n/g' | tr ';' '\n')
 
-if [[ -n "$pending_decision" ]]; then
-  jq -cn --arg reason "$pending_decision" '{
+# Kit scripts that only read state or create the scratch/plans directories.
+# Plugins can't ship allow rules, so the hook allows them itself; settings
+# deny and ask rules still win over a hook allow. run-checks.sh stays out:
+# it runs project-defined scripts.
+KIT_READONLY_SCRIPTS=(scratch-dir.sh plans-dir.sh git-base.sh git-diff-from-base.sh git-log-from-base.sh project-name.sh project-root.sh detect-stack.sh skills-report.sh)
+
+# A lone kit script call: no chaining, pipes, redirects, or substitutions
+# that could smuggle in a second command.
+_is_kit_readonly_call() {
+  local metachars=$';&|<>`\n' script
+  # shellcheck disable=SC2016  # matching a literal "$(" is the point here
+  [[ "$cmd" == *[$metachars]* || "$cmd" == *'$('* ]] && return 1
+  for script in "${KIT_READONLY_SCRIPTS[@]}"; do
+    [[ "${norm%% *}" == "$script" ]] && return 0
+  done
+  return 1
+}
+
+_emit_decision() {
+  jq -cn --arg decision "$1" --arg reason "$2" '{
     hookSpecificOutput: {
       hookEventName: "PreToolUse",
-      permissionDecision: "ask",
+      permissionDecision: $decision,
       permissionDecisionReason: $reason
     }
   }'
+}
+
+if [[ -n "$pending_decision" ]]; then
+  _emit_decision ask "$pending_decision"
+elif _is_kit_readonly_call; then
+  _emit_decision allow "side-effect-free claude-kit script"
 fi
 
 exit 0
