@@ -794,6 +794,10 @@ _check_segment() {
       block "interpreter -c wrapping bypasses the permission allow list; run the command directly as a Bash tool call" "interpreter-c-wrap"
     fi
     ;;
+  eval)
+    # Same bypass as -c: the string runs without being checked as a command.
+    block "eval runs a command string that bypasses the permission allow list; run the command directly as a Bash tool call" "interpreter-c-wrap"
+    ;;
   sed)
     # Catches sed -i on rc files; the full-string guard above only catches
     # a > redirect into one, not sed -i.
@@ -830,9 +834,58 @@ _check_segment() {
   esac
 }
 
-while IFS= read -r _seg; do
+# Prints the commands of $1, NUL-separated. Separators are &&, ||, ;, a
+# newline, and a lone & (backgrounding), but only outside quotes and $( ):
+# splitting inside a quoted URL's ?a=1&b=2 would move curl's later flags into
+# a segment nothing checks. >&, &>, and |& aren't separators; | stays in the
+# segment, since some checks read a whole pipeline.
+_split_segments() {
+  local s="$1" c next prev="" q="" seg="" depth=0 i
+  for ((i = 0; i < ${#s}; i++)); do
+    c="${s:i:1}"
+    next="${s:i+1:1}"
+    if [[ -n "$q" ]]; then
+      seg+="$c"
+      if [[ "$c" == "\\" && "$q" != "'" ]]; then
+        seg+="$next"
+        i=$((i + 1))
+      elif [[ "$c" == "$q" ]]; then
+        q=""
+      fi
+    elif [[ "$c" == "\\" ]]; then
+      seg+="$c$next"
+      i=$((i + 1))
+    elif [[ "$c" == "'" || "$c" == '"' || "$c" == '`' ]]; then
+      q="$c"
+      seg+="$c"
+    elif [[ "$c" == '$' && "$next" == '(' ]]; then
+      depth=$((depth + 1))
+      seg+="\$("
+      i=$((i + 1))
+    elif ((depth > 0)); then
+      [[ "$c" == ')' ]] && depth=$((depth - 1))
+      seg+="$c"
+    elif [[ "$c" == ';' || "$c" == $'\n' ]]; then
+      printf '%s\0' "$seg"
+      seg=""
+    elif [[ "$c$next" == '&&' || "$c$next" == '||' ]]; then
+      printf '%s\0' "$seg"
+      seg=""
+      i=$((i + 1))
+    elif [[ "$c" == '&' && "$prev" != '>' && "$prev" != '|' && "$next" != '>' ]]; then
+      printf '%s\0' "$seg"
+      seg=""
+    else
+      seg+="$c"
+    fi
+    prev="$c"
+  done
+  printf '%s\0' "$seg"
+}
+
+while IFS= read -r -d '' _seg; do
   _check_segment "$_seg"
-done < <(printf '%s\n' "$norm" | sed -E 's/[[:space:]]*(&&|\|\|)[[:space:]]*/\n/g' | tr ';' '\n')
+done < <(_split_segments "$norm")
 
 # Kit scripts that only read state or create the scratch/plans directories.
 # Plugins can't ship allow rules, so the hook allows them itself; settings

@@ -1081,6 +1081,61 @@ setup_overlay() {
   [ "$status" -eq 2 ]
 }
 
+@test "block: a quoted sensitive path still counts" {
+  local cmd
+  for cmd in 'cat "$HOME/.ssh/id_rsa"' "cat '.env'" 'head "${HOME}/.aws/credentials"'; do
+    run run_guard "$cmd"
+    [ "$status" -eq 2 ] || {
+      echo "not blocked: $cmd"
+      return 1
+    }
+  done
+}
+
+@test "block: a dangerous command after a lone & (backgrounding)" {
+  local cmd
+  for cmd in 'sleep 1 & rm -rf ~' 'true&x&rm -rf ~' 'true;rm -rf ~'; do
+    run run_guard "$cmd"
+    [ "$status" -eq 2 ] || {
+      echo "not blocked: $cmd"
+      return 1
+    }
+  done
+}
+
+@test "block: a quoted URL's & doesn't split curl away from its -O or -o" {
+  local cmd
+  for cmd in 'curl "https://x.test/f?a=1&b=2" -O' "curl 'https://x.test/f?a=1&b=2' -o out.bin" \
+    'wget "https://x.test/f?a=1&b=2" -O page.html'; do
+    run run_guard "$cmd"
+    [ "$status" -eq 2 ] || {
+      echo "not blocked: $cmd"
+      return 1
+    }
+  done
+}
+
+@test "allow: && or ; inside a quoted message isn't a command separator" {
+  run run_guard 'git commit -m "fix a && b; rm -rf ~ is not run"'
+  [ "$status" -eq 0 ]
+}
+
+@test "block: eval runs an unchecked command string" {
+  run run_guard 'eval "rm -rf ~"'
+  [ "$status" -eq 2 ]
+}
+
+@test "allow: >&, &>, and |& aren't command separators" {
+  local cmd
+  for cmd in 'ls 2>&1' 'ls &>/dev/null' 'ls |& head'; do
+    run run_guard "$cmd"
+    [ "$status" -eq 0 ] || {
+      echo "blocked: $cmd"
+      return 1
+    }
+  done
+}
+
 @test "allow: rg with .env only as the search pattern" {
   run run_guard 'rg .env src/'
   [ "$status" -eq 0 ]

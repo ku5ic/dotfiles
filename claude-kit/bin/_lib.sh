@@ -616,6 +616,9 @@ kit_stacks_load() {
 kit_is_sensitive_path() {
   kit_stacks_load
   local path="$1" entry home_path
+  # A shell word may still carry its quotes: cat "$HOME/.ssh/id_rsa".
+  path="${path#[\"\']}"
+  path="${path%[\"\']}"
   path="${path/#\~/$HOME}"
   path="${path/#\$HOME/$HOME}"
   path="${path/#\$\{HOME\}/$HOME}"
