@@ -8,3 +8,12 @@ stacks:
       - name: Brewfile
         anchor: true
     skills: [bash-patterns]
+
+# Runs from the Stop hook. run-checks.sh splits cmd into words without glob
+# expansion, so find does the matching. bats stays in CI: the suite outlasts
+# the hook's 300s timeout.
+toolchain_checks:
+  - stack: dotfiles
+    name: shellcheck
+    bin: [shellcheck]
+    cmd: "find claude-kit/bin claude-kit/hooks claude-kit/install-rules.sh -name *.sh -exec {bin} -x -P SCRIPTDIR {} +"
