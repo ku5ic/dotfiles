@@ -34,7 +34,7 @@ run_guard_skills() {
 
   # Full skill_file_map in one yq call, cached to disk while kit.yml is
   # unchanged. Each line: on<TAB>globs-space-separated<TAB>skills-space-separated
-  map_cache="$KIT_CACHE_DIR/skill-map"
+  map_cache="$KIT_CACHE_DIR/skill-map.$KIT_YML_TAG"
   if [[ -s "$map_cache" && "$map_cache" -nt "$stacks_yml" ]]; then
     mapfile -t map_entries <"$map_cache"
   else

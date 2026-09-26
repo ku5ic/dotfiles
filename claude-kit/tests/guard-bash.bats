@@ -1070,6 +1070,18 @@ setup_overlay() {
   [ "$output" = "disabled find-delete" ]
 }
 
+@test "deleting the overlay re-enables its disabled rules" {
+  setup_overlay
+  printf 'disabled_rules: [find-delete]\n' >"$OVERLAY_SRC"
+  run run_guard 'find . -delete'
+  [ "$status" -eq 0 ]
+
+  # kit.yml is older than the caches the overlay run just wrote.
+  rm "$HOME/.claude/claude-kit.local.yml"
+  run run_guard 'find . -delete'
+  [ "$status" -eq 2 ]
+}
+
 @test "disabling one rule leaves the others blocking" {
   setup_overlay
   printf 'disabled_rules: [find-delete]\n' >"$OVERLAY_SRC"

@@ -269,7 +269,8 @@ YAML
   [ "$status" -eq 2 ]
 }
 
-# kit.yml -> skill_file_map cache ($HOME/.claude/cache/skill-map)
+# kit.yml -> skill_file_map cache ($HOME/.claude/cache/skill-map.base, or
+# .merged with an overlay)
 
 @test "the skill-map cache is created after the first invocation" {
   write_kit_yml <<'YAML'
@@ -281,8 +282,8 @@ YAML
   : >"$FAKE_HOME/.claude/logs/skills.jsonl"
   run run_guard_skills "/tmp/project/foo.sh" "s1"
   [ "$status" -eq 2 ]
-  [ -s "$FAKE_HOME/.claude/cache/skill-map" ]
-  [[ "$(cat "$FAKE_HOME/.claude/cache/skill-map")" == *"bash-patterns"* ]]
+  [ -s "$FAKE_HOME/.claude/cache/skill-map.base" ]
+  [[ "$(cat "$FAKE_HOME/.claude/cache/skill-map.base")" == *"bash-patterns"* ]]
 }
 
 @test "a stale skill-map cache (older than kit.yml) is not reused" {
@@ -321,7 +322,7 @@ YAML
   : >"$FAKE_HOME/.claude/logs/skills.jsonl"
   run run_guard_skills "/tmp/project/foo.sh" "s1"
   [ "$status" -eq 2 ]
-  cache_file="$FAKE_HOME/.claude/cache/skill-map"
+  cache_file="$FAKE_HOME/.claude/cache/skill-map.base"
   [ -s "$cache_file" ]
 
   # Corrupt the on-disk kit.yml so a fresh parse would produce a

@@ -117,6 +117,11 @@ _kit_resolve_yml() {
   fi
 }
 _kit_resolve_yml
+# Caches derived from KIT_YML carry this tag in their path. Deleting the
+# overlay switches KIT_YML back to the older kit.yml, and an mtime check alone
+# would keep serving the overlay's lists, disabled rules included.
+KIT_YML_TAG="merged"
+[[ "$KIT_YML" == "$KIT_YML_BASE" ]] && KIT_YML_TAG="base"
 
 # Physical path of $1: follows a symlink at the file itself, then resolves
 # its directory. Works for paths that don't exist yet.
@@ -357,7 +362,7 @@ longest_prose_run() {
 # KIT_ORCH_*: positional columns of orchestrators (task_paths space-joined).
 # KIT_TOOLS: tools.
 # KIT_FMT_*: positional columns of formatters; KIT_DISABLED_FORMATTERS.
-_stacks_lists_cache="$KIT_CACHE_DIR/stacks-lists.bash"
+_stacks_lists_cache="$KIT_CACHE_DIR/stacks-lists.$KIT_YML_TAG.bash"
 
 # Bump on every change to the queries below or to the cache's shape. The
 # mtime check only sees kit.yml, so without this an existing cache
@@ -948,10 +953,11 @@ kit_subprojects() {
 # elsewhere on disk cannot collide.
 stack_cache_file() {
   local project_name="$1" project_root="$2"
-  printf '%s/%s-%s.txt\n' \
+  printf '%s/%s-%s.%s.txt\n' \
     "$KIT_CACHE_DIR/stack" \
     "$project_name" \
-    "$(printf '%s' "$project_root" | shasum -a 256 | cut -c1-8)"
+    "$(printf '%s' "$project_root" | shasum -a 256 | cut -c1-8)" \
+    "$KIT_YML_TAG"
 }
 
 # refresh_stack_cache_if_stale <project_root> <cache_file>
