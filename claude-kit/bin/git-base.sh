@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Prints the base branch or ref for the current git checkout. Detection order:
-#   1. Explicit base argument, if it resolves to a valid ref
+#   1. Explicit base argument (one that doesn't resolve exits 1, in every mode)
 #   2. Upstream tracking branch (@{upstream}), unless it's just this branch's own
 #      push destination (e.g. `git push -u origin <same-branch-name>`) rather than
 #      a distinct merge target - that case is skipped in favor of step 3/4, since
@@ -36,23 +36,32 @@ case "${1:-}" in
   ;;
 esac
 
-# The base is the first word that resolves as a ref; any other word is a
-# flag's value (-n 5) and goes to git with the flags. After --, words are
+# The base is the first word that resolves as a ref. A word right after a
+# flag is that flag's value (-n 5) and goes to git with the flags. Any other
+# word is a base that doesn't resolve: an error in every mode, not a silent
+# fallback that would diff against the wrong branch. After --, words are
 # pathspecs, placed after the range where git expects them.
 explicit=""
 extra=()
 paths=()
 in_paths=0
+prev=""
 for arg in "$@"; do
   if ((in_paths)); then
     paths+=("$arg")
   elif [[ "$arg" == -- ]]; then
     in_paths=1
-  elif [[ "$arg" != -* && -z "$explicit" ]] && git rev-parse --verify --quiet "$arg" >/dev/null; then
-    explicit="$arg"
-  else
+  elif [[ "$arg" == -* ]]; then
     extra+=("$arg")
+  elif [[ -z "$explicit" ]] && git rev-parse --verify --quiet "$arg" >/dev/null; then
+    explicit="$arg"
+  elif [[ "$prev" == -* && "$prev" != *=* ]]; then
+    extra+=("$arg")
+  else
+    echo "git-base.sh: '$arg' is not a ref" >&2
+    exit 1
   fi
+  prev="$arg"
 done
 
 resolve_base() {

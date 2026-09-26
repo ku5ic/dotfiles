@@ -126,6 +126,19 @@ add a" ]
   [[ "$output" != *"b.txt"* ]]
 }
 
+@test "a base that doesn't resolve exits 1 in every mode" {
+  make_branch
+  local mode
+  for mode in "" --diff --log; do
+    run "$SCRIPT" $mode notaref
+    [ "$status" -eq 1 ] || {
+      echo "mode '$mode' exited $status"
+      return 1
+    }
+    [[ "$output" == *"'notaref' is not a ref"* ]]
+  done
+}
+
 @test "a branch named log is still usable as the base" {
   make_branch
   git branch -q log main
