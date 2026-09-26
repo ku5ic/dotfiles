@@ -6,12 +6,12 @@
 # A stub `claude` on PATH keeps setup_mcps from touching the real CLI config:
 # its `mcp get` succeeds, so every MCP reports ok and nothing is added.
 
-ENTRIES=(settings.json CLAUDE.md hooks skills agents rules bin kit.yml)
+ENTRIES=(settings.json CLAUDE.md hooks skills agents rules bin kit.yml claude-kit.local.yml)
 
 setup() {
   DOT="$BATS_TEST_TMPDIR/dotfiles"
   mkdir -p "$DOT/claude-kit/bin" "$DOT/claude-kit/hooks" "$DOT/claude-kit/skills" "$DOT/claude-kit/agents" "$DOT/claude/rules"
-  touch "$DOT/claude-kit/kit.yml" "$DOT/claude/settings.json" "$DOT/claude/CLAUDE.md"
+  touch "$DOT/claude-kit/kit.yml" "$DOT/claude/settings.json" "$DOT/claude/CLAUDE.md" "$DOT/claude/claude-kit.local.yml"
   cp "$BATS_TEST_DIRNAME/../bin/bootstrap.sh" "$BATS_TEST_DIRNAME/../bin/_lib.sh" "$DOT/claude-kit/bin/"
   DOT="$(cd -P "$DOT" && pwd)"
   SCRIPT="$DOT/claude-kit/bin/bootstrap.sh"
@@ -29,7 +29,7 @@ setup() {
 
 expected_src() {
   case "$1" in
-  settings.json | CLAUDE.md | rules) echo "$DOT/claude/$1" ;;
+  settings.json | CLAUDE.md | rules | claude-kit.local.yml) echo "$DOT/claude/$1" ;;
   *) echo "$DOT/claude-kit/$1" ;;
   esac
 }

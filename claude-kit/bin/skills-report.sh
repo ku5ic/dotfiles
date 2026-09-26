@@ -36,7 +36,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 
 days="${1:-30}"
 log_file="$KIT_LOG_DIR/skills.jsonl"
-stacks_yml="$_STACKS_YML"
+stacks_yml="$KIT_YML"
 
 if ! command -v jq >/dev/null 2>&1; then
   echo "skills-report: jq not found, cannot generate report"

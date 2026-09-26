@@ -108,3 +108,36 @@ run_guard_edit() {
   [ "$status" -eq 2 ]
 }
 
+# The kit overlay: a write gets a prompt through either path to it.
+
+# Fake HOME whose overlay link points at a file in a fake dotfiles tree.
+setup_overlay() {
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  OVERLAY_SRC="$BATS_TEST_TMPDIR/dotfiles/claude/claude-kit.local.yml"
+  mkdir -p "$FAKE_HOME/.claude" "${OVERLAY_SRC%/*}"
+  touch "$OVERLAY_SRC"
+  ln -s "$OVERLAY_SRC" "$FAKE_HOME/.claude/claude-kit.local.yml"
+  unset CLAUDE_CONFIG_DIR
+}
+
+@test "ask: Write to the overlay through its ~/.claude link" {
+  setup_overlay
+  HOME="$FAKE_HOME" run run_guard_edit "$FAKE_HOME/.claude/claude-kit.local.yml"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
+}
+
+@test "ask: Write to the overlay's source file in the dotfiles tree" {
+  setup_overlay
+  HOME="$FAKE_HOME" run run_guard_edit "$OVERLAY_SRC"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
+}
+
+@test "allow: a same-named file that is not the overlay" {
+  setup_overlay
+  HOME="$FAKE_HOME" run run_guard_edit "$BATS_TEST_TMPDIR/elsewhere/claude-kit.local.yml"
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+

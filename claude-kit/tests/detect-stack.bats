@@ -56,3 +56,72 @@ python: yes (django)" ]
   [ "$status" -eq 0 ]
   [ -z "$output" ]
 }
+
+# The user overlay at ~/.claude/claude-kit.local.yml merges over kit.yml.
+
+write_overlay() {
+  mkdir -p "$HOME/.claude"
+  cat >"$HOME/.claude/claude-kit.local.yml"
+}
+
+@test "a stack added by the overlay is detected" {
+  local root
+  root="$(make_repo "$BATS_TEST_TMPDIR/custom")"
+  touch "$root/custom.marker"
+  write_overlay <<'YAML'
+stacks:
+  custom:
+    sentinels:
+      - name: custom.marker
+    skills: []
+YAML
+
+  cd "$root"
+  run "$SCRIPT"
+  [ "$status" -eq 0 ]
+  [ "$output" = "root: $root
+custom: yes" ]
+}
+
+@test "the overlay's arrays append to kit.yml's instead of replacing them" {
+  local root
+  root="$(make_repo "$BATS_TEST_TMPDIR/next")"
+  printf '{"dependencies":{"react":"19.0.0"}}\n' >"$root/package.json"
+  touch "$root/extra.marker"
+  write_overlay <<'YAML'
+stacks:
+  js:
+    extras:
+      - name: marked
+        file: extra.marker
+YAML
+
+  cd "$root"
+  run "$SCRIPT"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"js: yes (react,marked) [npm]"* ]]
+}
+
+@test "editing the overlay invalidates the merged copy" {
+  local root
+  root="$(make_repo "$BATS_TEST_TMPDIR/custom")"
+  touch "$root/custom.marker"
+  write_overlay <<'YAML'
+stacks: {}
+YAML
+  cd "$root"
+  run "$SCRIPT"
+  [ -z "$output" ]
+
+  write_overlay <<'YAML'
+stacks:
+  custom:
+    sentinels:
+      - name: custom.marker
+    skills: []
+YAML
+  # A future mtime: the rewrite can land in the same second as the merge.
+  touch -t 209901010000 "$HOME/.claude/claude-kit.local.yml"
+  run "$SCRIPT"
+  [[ "$output" == *"custom: yes"* ]]
+}

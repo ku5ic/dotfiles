@@ -294,8 +294,39 @@ _check_git_commit() {
 # subdir target (docs/report.md) is plausibly a deliverable, a bare one is not.
 # The char class drops >&2, >(...), and /dev/* before they reach the check.
 _redir_re='(^|[[:space:]])[0-9]?>>?[[:space:]]*([^[:space:]&|$"'"'"'();<>]+)'
+_OVERLAY_ASK="this writes the claude-kit overlay, which can switch the kit's own guards off; confirm the change"
+
+# True when shell word $1 (quoted, ~- or $HOME-prefixed, or relative to the
+# segment's cwd) names the kit overlay. The basename test keeps the path
+# resolution off every other argument.
+_is_overlay_arg() {
+  local arg="$1"
+  arg="${arg#[\"\']}"
+  arg="${arg%[\"\']}"
+  [[ "$arg" == claude-kit.local.yml || "$arg" == */claude-kit.local.yml ]] || return 1
+  arg="${arg/#\~/$HOME}"
+  arg="${arg/#\$HOME/$HOME}"
+  arg="${arg/#\$\{HOME\}/$HOME}"
+  [[ "$arg" == /* ]] || arg="$_seg_cwd/$arg"
+  kit_is_overlay_path "$arg"
+}
+
 _check_redirects() {
-  local rest="$1" target
+  local rest="$1" target word i
+  # Every redirect target, quoted or not: the regex below skips $-prefixed
+  # and quoted targets, which is fine for its own check but not this one.
+  local -a words
+  read -ra words <<<"$1"
+  for ((i = 0; i < ${#words[@]}; i++)); do
+    word="${words[i]}"
+    [[ "$word" == *'>'* ]] || continue
+    target="${word##*>}"
+    [[ -n "$target" ]] || target="${words[i + 1]:-}"
+    if _is_overlay_arg "$target"; then
+      force_ask "$_OVERLAY_ASK"
+    fi
+  done
+
   while [[ "$rest" =~ $_redir_re ]]; do
     target="${BASH_REMATCH[2]}"
     rest="${rest#*"${BASH_REMATCH[0]}"}"
@@ -722,6 +753,9 @@ _check_segment() {
           if _is_rc_file "$_sarg"; then
             block "in-place edit of a shell rc file. Use the dotfiles repo." "rc-inplace-edit"
           fi
+          if _is_overlay_arg "$_sarg"; then
+            force_ask "$_OVERLAY_ASK"
+          fi
           ;;
         esac
       done
@@ -737,6 +771,9 @@ _check_segment() {
       *)
         if _is_rc_file "$_sarg"; then
           block "in-place edit of a shell rc file. Use the dotfiles repo." "rc-inplace-edit"
+        fi
+        if _is_overlay_arg "$_sarg"; then
+          force_ask "$_OVERLAY_ASK"
         fi
         ;;
       esac
@@ -767,20 +804,10 @@ _is_kit_readonly_call() {
   return 1
 }
 
-_emit_decision() {
-  jq -cn --arg decision "$1" --arg reason "$2" '{
-    hookSpecificOutput: {
-      hookEventName: "PreToolUse",
-      permissionDecision: $decision,
-      permissionDecisionReason: $reason
-    }
-  }'
-}
-
 if [[ -n "$pending_decision" ]]; then
-  _emit_decision ask "$pending_decision"
+  emit_decision ask "$pending_decision"
 elif _is_kit_readonly_call; then
-  _emit_decision allow "side-effect-free claude-kit script"
+  emit_decision allow "side-effect-free claude-kit script"
 fi
 
 exit 0

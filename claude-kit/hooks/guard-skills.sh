@@ -22,7 +22,7 @@ run_guard_skills() {
   session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty')"
   [[ -z "$session_id" ]] && return 0
 
-  stacks_yml="$KIT_ROOT/kit.yml"
+  stacks_yml="$KIT_YML"
   command -v yq >/dev/null 2>&1 || return 0
   [[ -f "$stacks_yml" ]] || return 0
 

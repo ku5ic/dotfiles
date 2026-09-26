@@ -1,0 +1,10 @@
+# Personal overlay for claude-kit's kit.yml, linked to
+# ~/.claude/claude-kit.local.yml by bootstrap.sh. Merged over kit.yml: maps
+# merge and arrays append, so this can add to the kit but never remove.
+
+stacks:
+  dotfiles:
+    sentinels:
+      - name: Brewfile
+        anchor: true
+    skills: [bash-patterns]

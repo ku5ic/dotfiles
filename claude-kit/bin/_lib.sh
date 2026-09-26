@@ -14,15 +14,14 @@
 [[ -n "${_KIT_LIB_SOURCED:-}" ]] && return 0
 _KIT_LIB_SOURCED=1
 
-# Kit root: the plugin root when installed as a plugin, else the parent of
-# this bin dir (~/.claude via symlinks). Tests point it at a fake tree.
 # This lib's own bin dir, for calling sibling scripts. Not $KIT_ROOT/bin:
 # tests point CLAUDE_PLUGIN_ROOT at a fake tree with no scripts in it.
 # Builtins only (no dirname): the statusline sources this under whatever
 # PATH it gets, and every hook pays for each subprocess.
 _KIT_BIN_DIR="$(cd "${BASH_SOURCE[0]%/*}" && pwd)"
+# Kit root: the plugin root when installed as a plugin, else the parent of
+# this bin dir (~/.claude via symlinks). Tests point it at a fake tree.
 KIT_ROOT="${CLAUDE_PLUGIN_ROOT:-${_KIT_BIN_DIR%/*}}"
-_STACKS_YML="$KIT_ROOT/kit.yml"
 
 # Claude Code's config dir, relocatable with CLAUDE_CONFIG_DIR. Every path
 # the kit writes under it derives from here.
@@ -31,6 +30,69 @@ KIT_LOG_DIR="$KIT_HOME/logs"
 KIT_CACHE_DIR="$KIT_HOME/cache"
 KIT_SCRATCH_HOME="$KIT_HOME/scratch"
 KIT_PLANS_HOME="$KIT_HOME/plans"
+
+# kit.yml plus the user's overlay. Maps merge and arrays append, so an overlay
+# can add stacks and protections but never remove one. KIT_YML is what every
+# consumer reads: the merged copy when an overlay exists, else kit.yml. The
+# merged copy is regenerated whenever either input is newer, so caches keyed
+# on KIT_YML's mtime go stale with either file.
+KIT_YML_BASE="$KIT_ROOT/kit.yml"
+KIT_OVERLAY="$KIT_HOME/claude-kit.local.yml"
+_kit_resolve_yml() {
+  KIT_YML="$KIT_YML_BASE"
+  [[ -f "$KIT_OVERLAY" ]] || return 0
+  local merged="$KIT_CACHE_DIR/kit.merged.yml"
+  if [[ -s "$merged" && "$merged" -nt "$KIT_YML_BASE" && "$merged" -nt "$KIT_OVERLAY" ]]; then
+    KIT_YML="$merged"
+    return 0
+  fi
+  command -v yq >/dev/null 2>&1 || return 0
+  mkdir -p "$KIT_CACHE_DIR" 2>/dev/null || return 0
+  local tmp
+  tmp="$(mktemp "$KIT_CACHE_DIR/.kit.merged.XXXXXX" 2>/dev/null)" || return 0
+  # shellcheck disable=SC2016  # $i is a yq variable, not a shell one
+  if yq eval-all '. as $i ireduce ({}; . *+ $i)' "$KIT_YML_BASE" "$KIT_OVERLAY" >"$tmp" 2>/dev/null &&
+    [[ -s "$tmp" ]] && mv "$tmp" "$merged" 2>/dev/null; then
+    KIT_YML="$merged"
+  else
+    rm -f "$tmp"
+    echo "_lib.sh: could not merge $KIT_OVERLAY; using kit.yml alone" >&2
+  fi
+}
+_kit_resolve_yml
+
+# Physical path of $1: follows a symlink at the file itself, then resolves
+# its directory. Works for paths that don't exist yet.
+kit_physical_path() {
+  local path="$1" target dir
+  while [[ -L "$path" ]]; do
+    target="$(readlink "$path")"
+    [[ "$target" == /* ]] || target="${path%/*}/$target"
+    path="$target"
+  done
+  if dir="$(cd -P "${path%/*}" 2>/dev/null && pwd)"; then
+    printf '%s/%s\n' "$dir" "${path##*/}"
+  else
+    printf '%s\n' "$path"
+  fi
+}
+
+# True when $1 is the overlay, reached through any path or symlink. Writes
+# to it get a prompt: it can switch the kit's own protections off.
+kit_is_overlay_path() {
+  [[ "$(kit_physical_path "$1")" == "$(kit_physical_path "$KIT_OVERLAY")" ]]
+}
+
+# Prints a PreToolUse permission decision (allow or ask) with its reason.
+emit_decision() {
+  jq -cn --arg decision "$1" --arg reason "$2" '{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: $decision,
+      permissionDecisionReason: $reason
+    }
+  }'
+}
 
 # kit_dir scratch|plans [--no-create]
 # Prints <project-root>/.claude/<kind> inside a recognized project (a git
@@ -196,7 +258,7 @@ _build_stacks_lists() {
         (.package_managers[] | ["MANAGER", .manager]),
         (.package_managers[] | ["ECOSYSTEM", .ecosystem // "none"])
       ] | .[] | join("\t")
-    ' "$_STACKS_YML" 2>/dev/null
+    ' "$KIT_YML" 2>/dev/null
   )
 
   # DETECT lists the same sentinel once per stack that declares it; the
@@ -232,7 +294,7 @@ kit_stacks_load() {
   fi
 
   _stacks_lists_cached_format=""
-  if [[ -s "$_stacks_lists_cache" && "$_stacks_lists_cache" -nt "$_STACKS_YML" ]]; then
+  if [[ -s "$_stacks_lists_cache" && "$_stacks_lists_cache" -nt "$KIT_YML" ]]; then
     # shellcheck disable=SC1090
     source "$_stacks_lists_cache"
   fi
@@ -317,11 +379,11 @@ refresh_stack_cache_if_stale() {
   local project_root="$1" cache_file="$2"
   mkdir -p "$(dirname "$cache_file")"
 
-  # -L on both stat forms: $_STACKS_YML is the ~/.claude symlink into the
+  # -L on both stat forms: $KIT_YML can be the ~/.claude symlink into the
   # dotfiles repo, and an undereferenced stat reports the link's own mtime,
   # which never changes when the file behind it is edited.
   local newest_sentinel=0 f m
-  for f in "${STACK_DETECT_FILES[@]/#/$project_root/}" "$_STACKS_YML"; do
+  for f in "${STACK_DETECT_FILES[@]/#/$project_root/}" "$KIT_YML"; do
     [[ -f "$f" ]] || continue
     m="$(stat -L -c '%Y' "$f" 2>/dev/null || stat -L -f '%m' "$f" 2>/dev/null || echo 0)"
     ((m > newest_sentinel)) && newest_sentinel="$m"

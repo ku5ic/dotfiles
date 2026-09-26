@@ -878,3 +878,57 @@ make_mono() {
   run run_guard_in "$(make_repo empty)" 'npm install'
   [ "$status" -eq 0 ]
 }
+
+# Shell writes to the kit overlay get a prompt
+
+# Fake HOME whose overlay link points into a fake dotfiles tree.
+setup_overlay() {
+  export HOME="$BATS_TEST_TMPDIR/home"
+  unset CLAUDE_CONFIG_DIR
+  OVERLAY_SRC="$BATS_TEST_TMPDIR/dotfiles/claude/claude-kit.local.yml"
+  mkdir -p "$HOME/.claude" "${OVERLAY_SRC%/*}"
+  touch "$OVERLAY_SRC"
+  ln -s "$OVERLAY_SRC" "$HOME/.claude/claude-kit.local.yml"
+}
+
+@test "ask: redirect into the overlay through ~" {
+  setup_overlay
+  run run_guard 'echo x >> ~/.claude/claude-kit.local.yml'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"claude-kit overlay"* ]]
+}
+
+@test "ask: quoted \$HOME redirect into the overlay" {
+  setup_overlay
+  run run_guard 'echo x > "$HOME/.claude/claude-kit.local.yml"'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"claude-kit overlay"* ]]
+}
+
+@test "ask: sed -i on the overlay's source file" {
+  setup_overlay
+  run run_guard "sed -i '' s/a/b/ $OVERLAY_SRC"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"claude-kit overlay"* ]]
+}
+
+@test "ask: sd on the overlay through a relative path" {
+  setup_overlay
+  run run_guard_in "$HOME/.claude" 'sd a b claude-kit.local.yml'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"claude-kit overlay"* ]]
+}
+
+@test "no decision: reading the overlay" {
+  setup_overlay
+  run run_guard 'yq . ~/.claude/claude-kit.local.yml'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "no decision: sed without -i on the overlay" {
+  setup_overlay
+  run run_guard "sed s/a/b/ $OVERLAY_SRC"
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}

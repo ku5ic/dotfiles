@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Idempotent symlink installer for the Claude config layout.
 # Maps ~/.dotfiles/claude-kit/{hooks,skills,agents,bin,kit.yml} and the
-# personal ~/.dotfiles/claude/{settings.json,CLAUDE.md,rules} onto
+# personal ~/.dotfiles/claude/{settings.json,CLAUDE.md,rules,claude-kit.local.yml} onto
 # ~/.claude/<same>. Dotfiles-specific: other adopters install claude-kit as a
 # plugin instead (see claude-kit/README.md). Refuses to clobber non-symlinks unless --force, and
 # never auto-removes a non-symlink directory (would destroy user data).
@@ -21,7 +21,7 @@ TARGET_ROOT="$KIT_HOME"
 
 root_for() {
   case "$1" in
-  settings.json | CLAUDE.md | rules) echo "$PERSONAL_ROOT" ;;
+  settings.json | CLAUDE.md | rules | claude-kit.local.yml) echo "$PERSONAL_ROOT" ;;
   *) echo "$SOURCE_ROOT" ;;
   esac
 }
@@ -48,7 +48,7 @@ EOF
   esac
 done
 
-ENTRIES=(settings.json CLAUDE.md hooks skills agents rules bin kit.yml)
+ENTRIES=(settings.json CLAUDE.md hooks skills agents rules bin kit.yml claude-kit.local.yml)
 
 mkdir -p "$TARGET_ROOT"
 

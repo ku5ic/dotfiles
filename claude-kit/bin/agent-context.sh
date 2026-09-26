@@ -56,7 +56,7 @@ if [[ -s "$cache_file" ]]; then
   echo "</repo-context>"
 fi
 
-yml="$KIT_ROOT/kit.yml"
+yml="$KIT_YML"
 if [[ -f "$yml" ]] && command -v yq >/dev/null 2>&1; then
   render_required_skills_block "$yml"
   render_suggested_skills_block "$yml" "$cache_file"

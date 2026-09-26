@@ -81,7 +81,7 @@ fi
 # still deserves them - the earlier `project_name` exit above already
 # filters out non-project contexts).
 emit_required_skills() {
-  local yml="$KIT_ROOT/kit.yml"
+  local yml="$KIT_YML"
 
   [[ -f "$yml" ]] || return 0
   command -v yq >/dev/null 2>&1 || return 0
@@ -116,7 +116,7 @@ emit_required_skills() {
 # actual invocation.
 emit_suggested_skills() {
   local cache="$1"
-  local yml="$KIT_ROOT/kit.yml"
+  local yml="$KIT_YML"
 
   [[ -s "$cache" ]] || return 0
   [[ -f "$yml" ]] || return 0

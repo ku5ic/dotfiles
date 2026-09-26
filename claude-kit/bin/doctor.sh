@@ -56,11 +56,11 @@ PERSONAL_ROOT="$(cd "$SOURCE_ROOT/../claude" && pwd)"
 source "$SCRIPT_DIR/_lib.sh"
 TARGET_ROOT="$KIT_HOME"
 
-ENTRIES=(settings.json CLAUDE.md hooks skills agents rules bin kit.yml)
+ENTRIES=(settings.json CLAUDE.md hooks skills agents rules bin kit.yml claude-kit.local.yml)
 
 root_for() {
   case "$1" in
-  settings.json | CLAUDE.md | rules) echo "$PERSONAL_ROOT" ;;
+  settings.json | CLAUDE.md | rules | claude-kit.local.yml) echo "$PERSONAL_ROOT" ;;
   *) echo "$SOURCE_ROOT" ;;
   esac
 }

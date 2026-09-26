@@ -298,12 +298,6 @@ stacks:
       - name: compose.yaml
     skills: [docker-patterns]
 
-  dotfiles:
-    sentinels:
-      - name: Brewfile
-        anchor: true
-    skills: [bash-patterns]
-
   monorepo:
     sentinels:
       - name: pnpm-workspace.yaml

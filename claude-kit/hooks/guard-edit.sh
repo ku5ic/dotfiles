@@ -46,6 +46,10 @@ run_guard_edit() {
     echo "guard-edit: editing CI workflow $path" >&2
   fi
 
+  if kit_is_overlay_path "$path"; then
+    emit_decision ask "this is the claude-kit overlay, which can switch the kit's own guards off; confirm the change"
+  fi
+
   return 0
 }
 

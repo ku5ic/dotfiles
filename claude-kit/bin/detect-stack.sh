@@ -15,7 +15,7 @@ set -euo pipefail
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
 
-STACKS_YML="$KIT_ROOT/kit.yml"
+STACKS_YML="$KIT_YML"
 ROOT="$("$KIT_ROOT/bin/project-root.sh")"
 cd "$ROOT"
 
