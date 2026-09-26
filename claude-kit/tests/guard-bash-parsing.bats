@@ -112,6 +112,37 @@ probe() {
   probe block "r''m -rf ~"
   probe block '\rm -rf ~'
   probe block '/usr/bin/git push --force origin main'
+  # Unwrapping ( ) and { } keeps ${HOME} and $(...) arguments whole.
+  probe block 'rm -rf ${HOME}'
+  probe block 'rm -rf "${HOME}"'
+  probe block 'rm -rf $HOME'
+  probe block 'rm -rf ~/'
+  probe block '(rm -rf ${HOME})'
+  probe block '{ rm -rf ${HOME}; }'
+  probe block 'chmod -R +x ${HOME}'
+  probe block 'chmod -R 777 ~'
+  probe block 'rm -rf "$(echo ~)"; rm -rf ${HOME}'
+  # Overlay writes by any command, not only >, sed -i, and sd.
+  local O="$BATS_TEST_TMPDIR/home/.claude/claude-kit.local.yml"
+  export HOME="$BATS_TEST_TMPDIR/home"
+  mkdir -p "$HOME/.claude"
+  touch "$O"
+  probe ask 'tee -a ~/.claude/claude-kit.local.yml'
+  probe ask 'echo x | tee ~/.claude/claude-kit.local.yml'
+  probe ask 'cp /tmp/x ~/.claude/claude-kit.local.yml'
+  probe ask 'mv /tmp/x "$HOME/.claude/claude-kit.local.yml"'
+  probe block 'dd if=/tmp/x of=~/.claude/claude-kit.local.yml'
+  probe ask 'rsync /tmp/x ~/.claude/claude-kit.local.yml'
+  probe ask 'truncate -s 0 ~/.claude/claude-kit.local.yml'
+  probe ask 'cat /tmp/x | /usr/bin/tee ~/.claude/claude-kit.local.yml'
+  probe block 'chmod -R +x "${HOME}"'
+  probe block "rm -rf '~'"
+  probe block 'rm -rf "/"'
+  probe ask 'install -m 644 /tmp/x ~/.claude/claude-kit.local.yml'
+  probe ask 'ln -sf /tmp/x ~/.claude/claude-kit.local.yml'
+  probe pass 'cat ~/.claude/claude-kit.local.yml'
+  probe pass 'yq . ~/.claude/claude-kit.local.yml'
+  probe pass 'rg disabled ~/.claude/claude-kit.local.yml'
   # git-base.sh: an explicit ask, so a settings allow rule can't approve it.
   probe allow 'git-base.sh --diff'
   probe ask 'git-base.sh --diff --output=/tmp/x'

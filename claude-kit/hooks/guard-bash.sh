@@ -379,7 +379,18 @@ _check_segment() {
   while [[ "$seg" =~ $_group_re ]]; do
     seg="${seg#"${BASH_REMATCH[0]}"}"
   done
-  while [[ "$seg" == *[')}'] ]]; do
+  # A closing ) or } of the group goes too, but only an unbalanced ) and a }
+  # standing as its own word: ${HOME} and $(pwd) end the same way and are
+  # arguments.
+  local _opens _closes
+  while :; do
+    if [[ "$seg" == *')' ]]; then
+      _opens="${seg//[^(]/}"
+      _closes="${seg//[^)]/}"
+      ((${#_closes} > ${#_opens})) || break
+    elif [[ "$seg" != '}' && "$seg" != *[[:space:]]'}' ]]; then
+      break
+    fi
     seg="${seg%?}"
     seg="${seg%"${seg##*[![:space:]]}"}"
   done
@@ -420,6 +431,26 @@ _check_segment() {
   local -a _words
   read -ra _words <<<"${seg#"$lead"}"
 
+  # Any command in the pipeline naming the overlay gets a prompt unless it
+  # only reads it: tee, cp, mv, install, ln all write it, and disabled_rules
+  # there switches guards off. sed and sd have their own arms below.
+  local _ow _orest="$seg" _olead
+  while [[ -n "$_orest" ]]; do
+    _shell_split "$_orest"
+    _orest="$_shell_rest"
+    _olead="${_shell_words[0]:-}"
+    case "${_olead##*/}" in
+    cat | bat | head | tail | less | more | yq | jq | rg | grep | diff | wc | ls | stat | file | \
+      realpath | readlink | test | '[' | echo | printf | sed | sd | git) continue ;;
+    esac
+    for _ow in "${_shell_words[@]:1}"; do
+      if _is_overlay_arg "$_ow" || { [[ "$_ow" == *=* ]] && _is_overlay_arg "${_ow#*=}"; }; then
+        force_ask "$_OVERLAY_ASK"
+        break 2
+      fi
+    done
+  done
+
   case "$lead" in
   cd)
     # Tracked so a later segment's package manager checks the right lockfile.
@@ -434,9 +465,9 @@ _check_segment() {
   rm)
     # Whole tokens only: rm -rf *.log and rm -rf dist/* stay allowed.
     local _rword _rforce=0 _rbroad=0
-    local -a _rwords
-    read -ra _rwords <<<"${seg#rm}"
-    for _rword in "${_rwords[@]}"; do
+    # Quote-aware, so "${HOME}" and '~' count like their bare forms.
+    _shell_split "${seg#rm}"
+    for _rword in "${_shell_words[@]}"; do
       # shellcheck disable=SC2016,SC2088  # literal ~ and $HOME tokens are the point
       case "$_rword" in
       --recursive | --force) _rforce=1 ;;
@@ -457,8 +488,8 @@ _check_segment() {
       block "chmod 777" "chmod-777"
     fi
     if [[ "$seg" =~ chmod[[:space:]] ]] && [[ "$seg" =~ \+x ]]; then
-      if [[ "$seg" =~ [[:space:]](\.|\.\.|/)($|[[:space:]]) ]] ||
-        [[ "$seg" =~ [[:space:]](~|\$HOME|\$\{HOME\})($|[[:space:]]|/) ]]; then
+      if [[ "$seg" =~ [[:space:]][\"\']?(\.|\.\.|/)[\"\']?($|[[:space:]]) ]] ||
+        [[ "$seg" =~ [[:space:]][\"\']?(~|\$HOME|\$\{HOME\})[\"\']?($|[[:space:]]|/) ]]; then
         block "broad chmod +x against root, home, or cwd" "chmod-broad-x"
       fi
     fi
