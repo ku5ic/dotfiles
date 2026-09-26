@@ -235,6 +235,26 @@ YAML
   [[ "$output" == *"<required-skills>"* ]]
 }
 
+@test "prereqs: another copy of the kit's rules counts (plugin cache vs marketplace clone)" {
+  rm "$FAKE_HOME/.claude/rules/kit"
+  cp -R "$BATS_TEST_DIRNAME/../rules" "$BATS_TEST_TMPDIR/clone-rules"
+  ln -s "$BATS_TEST_TMPDIR/clone-rules" "$FAKE_HOME/.claude/rules/claude-kit"
+
+  run run_inject_context "s1"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"the kit rules linked"* ]]
+}
+
+@test "prereqs: a rules dir missing one of the kit's rule files doesn't count" {
+  rm "$FAKE_HOME/.claude/rules/kit"
+  cp -R "$BATS_TEST_DIRNAME/../rules" "$BATS_TEST_TMPDIR/partial-rules"
+  rm "$BATS_TEST_TMPDIR/partial-rules/workflow.md"
+  ln -s "$BATS_TEST_TMPDIR/partial-rules" "$FAKE_HOME/.claude/rules/claude-kit"
+
+  run run_inject_context "s1"
+  [[ "$output" == *"the kit rules linked"* ]]
+}
+
 @test "prereqs: bash older than 4.2 gets a warning" {
   [[ -x /bin/bash ]] && [[ "$(/bin/bash -c 'echo ${BASH_VERSINFO[0]}')" -lt 4 ]] || skip "no bash 3.x at /bin/bash"
   run env HOME="$FAKE_HOME" /bin/bash "$HOOK" </dev/null

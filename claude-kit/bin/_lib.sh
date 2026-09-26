@@ -37,6 +37,21 @@ check_prereqs() {
   [ -z "$KIT_PREREQ_MISSING" ]
 }
 
+# True when dir $1 is the kit's rules dir $2, or another copy of it holding
+# every rule file $2 has. A plugin's hooks run from the versioned plugin
+# cache while install-rules.sh links the marketplace clone, so the two paths
+# never match.
+_kit_rules_dir_matches() {
+  local rule
+  [ "$(cd -P "$1" 2>/dev/null && pwd)" = "$2" ] && return 0
+  [ -n "$2" ] || return 1
+  for rule in "$2"/*.md; do
+    [ -f "$rule" ] || return 1
+    [ -f "$1/${rule##*/}" ] || return 1
+  done
+  return 0
+}
+
 # check_install: the layout a session needs, the kit rules linked under
 # ~/.claude/rules and a readable kit.yml. Same contract as check_prereqs.
 check_install() {
@@ -44,7 +59,7 @@ check_install() {
   KIT_PREREQ_MISSING=""
   kit_rules="$(cd -P "$_kit_lib_dir/../rules" 2>/dev/null && pwd)"
   for entry in "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/rules/*; do
-    if [ -d "$entry" ] && [ "$(cd -P "$entry" 2>/dev/null && pwd)" = "$kit_rules" ]; then
+    if [ -d "$entry" ] && _kit_rules_dir_matches "$entry" "$kit_rules"; then
       linked=1
     fi
   done
