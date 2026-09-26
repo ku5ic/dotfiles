@@ -311,6 +311,21 @@ run_checks() {
   [[ "$(cat "$STUB_DIR/pnpm.calls")" == *"/packages/a run test" ]]
 }
 
+@test "--only checks just the named subprojects" {
+  printf '{"scripts":{"lint":"eslint ."}}\n' >"$PROJECT_DIR/package.json"
+  mkdir -p "$PROJECT_DIR/packages/a" "$PROJECT_DIR/services/api"
+  printf '{"scripts":{"test":"vitest"}}\n' >"$PROJECT_DIR/packages/a/package.json"
+  printf '[tool.pdm.scripts]\ntest = "pytest"\n' >"$PROJECT_DIR/services/api/pyproject.toml"
+  stub_bin npm 0
+  stub_bin pdm 0
+  git -C "$PROJECT_DIR" add -A
+  run bash -c "cd '$PROJECT_DIR' && '$RUN_CHECKS' --only services/api"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"PASS python: test (test) [services/api]"* ]]
+  [[ "$output" != *"packages/a"* ]]
+  [[ "$output" != *"js: lint"* ]]
+}
+
 # kit.yml overlay: a new provider is data, not code.
 
 @test "an overlay-defined composer provider runs its test script" {

@@ -16,7 +16,17 @@
 # [<subproject>]), then a final "checks: N passed, N failed, N skipped" line.
 # Exit status is the failure count. Each check is independent: failures are
 # reported, not aborted.
+#
+#   run-checks.sh                      every subproject
+#   run-checks.sh --only . services/api  only these (as kit_subprojects names
+#                                        them; "." is the root)
 set -uo pipefail
+
+only=()
+if [[ "${1:-}" == --only ]]; then
+  shift
+  only=("$@")
+fi
 
 root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$root" || exit 1
@@ -142,6 +152,9 @@ check_subproject() {
 }
 
 while IFS= read -r sub; do
+  if ((${#only[@]} > 0)) && [[ " ${only[*]} " != *" $sub "* ]]; then
+    continue
+  fi
   check_subproject "$sub"
 done < <(kit_subprojects "$root")
 
