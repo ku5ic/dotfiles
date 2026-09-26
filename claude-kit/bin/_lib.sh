@@ -831,6 +831,37 @@ kit_nearest_pm_lockfile() {
   done
 }
 
+# kit_toolchain_cmd <index> <dir>
+# Resolves toolchain_checks entry <index> for <dir>: sets KIT_TC_CMD with
+# {bin} filled in, or returns 1 with KIT_TC_SKIP saying why it can't run
+# (its when_dir is missing, or none of its bins is on PATH). run-checks.sh
+# and the <tooling> block both use it, so Claude is never told about a
+# check that the checks skip.
+# shellcheck disable=SC2034  # KIT_TC_SKIP is read by the callers
+kit_toolchain_cmd() {
+  local i="$1" dir="$2" bin found=""
+  local -a bins
+  KIT_TC_CMD="" KIT_TC_SKIP=""
+  if [[ "${KIT_TC_WHEN_DIRS[i]}" != - && ! -d "$dir/${KIT_TC_WHEN_DIRS[i]}" ]]; then
+    KIT_TC_SKIP="no ${KIT_TC_WHEN_DIRS[i]}/ yet"
+    return 1
+  fi
+  KIT_TC_CMD="${KIT_TC_CMDS[i]}"
+  [[ "${KIT_TC_BINS[i]}" != - ]] || return 0
+  read -ra bins <<<"${KIT_TC_BINS[i]}"
+  for bin in "${bins[@]}"; do
+    if command -v "$bin" >/dev/null 2>&1; then
+      found="$bin"
+      break
+    fi
+  done
+  if [[ -z "$found" ]]; then
+    KIT_TC_SKIP="none of ${KIT_TC_BINS[i]} on PATH"
+    return 1
+  fi
+  KIT_TC_CMD="${KIT_TC_CMD//\{bin\}/$found}"
+}
+
 # True when dir $1 holds a sentinel of stack $2.
 kit_dir_has_stack() {
   kit_stacks_load

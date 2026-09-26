@@ -161,32 +161,14 @@ check_subproject() {
     fi
   done
 
-  local bin tc_cmd found
-  local -a bins
   for ((i = 0; i < ${#KIT_TC_STACKS[@]}; i++)); do
     kit_dir_has_stack "$dir" "${KIT_TC_STACKS[i]}" || continue
     local label="${KIT_TC_STACKS[i]}: ${KIT_TC_NAMES[i]}$sfx"
-    if [[ "${KIT_TC_WHEN_DIRS[i]}" != - && ! -d "$dir/${KIT_TC_WHEN_DIRS[i]}" ]]; then
-      skip_msg "$label (no ${KIT_TC_WHEN_DIRS[i]}/ yet)"
+    if ! kit_toolchain_cmd "$i" "$dir"; then
+      skip_msg "$label ($KIT_TC_SKIP)"
       continue
     fi
-    tc_cmd="${KIT_TC_CMDS[i]}"
-    if [[ "${KIT_TC_BINS[i]}" != - ]]; then
-      found=""
-      read -ra bins <<<"${KIT_TC_BINS[i]}"
-      for bin in "${bins[@]}"; do
-        if command -v "$bin" >/dev/null 2>&1; then
-          found="$bin"
-          break
-        fi
-      done
-      if [[ -z "$found" ]]; then
-        skip_msg "$label (none of ${KIT_TC_BINS[i]} on PATH)"
-        continue
-      fi
-      tc_cmd="${tc_cmd//\{bin\}/$found}"
-    fi
-    read -ra parts <<<"$tc_cmd"
+    read -ra parts <<<"$KIT_TC_CMD"
     run "$label" "$dir" "${parts[@]}"
   done
 }

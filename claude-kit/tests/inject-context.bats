@@ -300,6 +300,23 @@ tooling_block() {
   cargo test" ]
 }
 
+@test "tooling: an OpenTofu project gets {bin} filled, and validate only after init" {
+  use_real_kit_yml
+  touch "$FAKE_ROOT/.terraform.lock.hcl"
+  git -C "$FAKE_ROOT" add -A
+  mkdir -p "$BATS_TEST_TMPDIR/stubs"
+  printf '#!/bin/sh\n' >"$BATS_TEST_TMPDIR/stubs/tofu"
+  chmod +x "$BATS_TEST_TMPDIR/stubs/tofu"
+
+  PATH="$BATS_TEST_TMPDIR/stubs:$PATH" run run_inject_context "s1"
+  [ "$(tooling_block | grep '^  ')" = "  tofu fmt -check -recursive" ]
+
+  mkdir "$FAKE_ROOT/.terraform"
+  PATH="$BATS_TEST_TMPDIR/stubs:$PATH" run run_inject_context "s2"
+  [ "$(tooling_block | grep '^  ')" = "  tofu fmt -check -recursive
+  tofu validate" ]
+}
+
 @test "tooling: workspace packages get their own section with the root's package manager" {
   use_real_kit_yml
   printf '{"name":"root","scripts":{"lint":"eslint ."}}\n' >"$FAKE_ROOT/package.json"

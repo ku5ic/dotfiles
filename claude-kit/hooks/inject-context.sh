@@ -129,8 +129,8 @@ emit_tooling_block() {
       fi
       mapfile -t lines < <(kit_tasks "$dir" | cut -f4)
       for ((i = 0; i < ${#KIT_TC_STACKS[@]}; i++)); do
-        if kit_dir_has_stack "$dir" "${KIT_TC_STACKS[i]}"; then
-          lines+=("${KIT_TC_CMDS[i]}")
+        if kit_dir_has_stack "$dir" "${KIT_TC_STACKS[i]}" && kit_toolchain_cmd "$i" "$dir"; then
+          lines+=("$KIT_TC_CMD")
         fi
       done
       ((${#lines[@]} > 0)) || continue
