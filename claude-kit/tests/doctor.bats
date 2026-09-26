@@ -32,7 +32,8 @@ setup() {
   [ "$status" -eq 0 ]
   local headers
   headers="$(printf '%s\n' "$output" | grep '^== ')"
-  [ "$headers" = "== symlinks == (skipped: running in CI)
+  [ "$headers" = "== prerequisites ==
+== symlinks == (skipped: running in CI)
 == credential pattern parity ==
 == agent-context / inject-context derivation parity ==
 == skill + agent frontmatter lint ==
@@ -44,4 +45,18 @@ setup() {
 == settings.json machine-local leak ==
 == mcp allow-list server parity ==
 == plugin hooks.json parity ==" ]
+}
+
+@test "missing jq is reported by the prerequisite check, and nothing else runs" {
+  # A PATH with bash and yq but no jq; each tool linked by itself, since
+  # Homebrew keeps jq in the same directory as bash.
+  local bin="$BATS_TEST_TMPDIR/nojq" tool
+  mkdir -p "$bin"
+  for tool in bash dirname grep yq; do
+    ln -s "$(command -v "$tool")" "$bin/$tool"
+  done
+  CI=true PATH="$bin" run "$bin/bash" "$SCRIPT"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"missing        jq (brew install jq)"* ]]
+  [[ "$output" != *"== symlinks"* ]]
 }

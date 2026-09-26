@@ -14,6 +14,63 @@
 [[ -n "${_KIT_LIB_SOURCED:-}" ]] && return 0
 _KIT_LIB_SOURCED=1
 
+# Prerequisites. Everything up to the bash version gate below must parse and
+# run under macOS /bin/bash 3.2: [ ] tests, no arrays, no bash 4 expansions.
+# Every guard fails open (exit 0) without these, so callers report them:
+# inject-context.sh at session start, doctor.sh on demand.
+_kit_lib_dir="$(cd "${BASH_SOURCE[0]%/*}" 2>/dev/null && pwd)"
+
+# check_prereqs: the tools. Returns 1 and sets KIT_PREREQ_MISSING, a
+# "; "-separated list naming each missing piece and its install command.
+check_prereqs() {
+  KIT_PREREQ_MISSING=""
+  if [ "${BASH_VERSINFO[0]}" -lt 4 ] || { [ "${BASH_VERSINFO[0]}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -lt 2 ]; }; then
+    KIT_PREREQ_MISSING="${KIT_PREREQ_MISSING}; bash 4.2+ (found ${BASH_VERSION}; brew install bash, and put it first on PATH)"
+  fi
+  if ! command -v jq >/dev/null 2>&1; then
+    KIT_PREREQ_MISSING="${KIT_PREREQ_MISSING}; jq (brew install jq)"
+  fi
+  if ! yq --version 2>/dev/null | grep -q mikefarah; then
+    KIT_PREREQ_MISSING="${KIT_PREREQ_MISSING}; mikefarah yq (brew install yq)"
+  fi
+  KIT_PREREQ_MISSING="${KIT_PREREQ_MISSING#; }"
+  [ -z "$KIT_PREREQ_MISSING" ]
+}
+
+# check_install: the layout a session needs, the kit rules linked under
+# ~/.claude/rules and a readable kit.yml. Same contract as check_prereqs.
+check_install() {
+  local kit_rules entry linked=0
+  KIT_PREREQ_MISSING=""
+  kit_rules="$(cd -P "$_kit_lib_dir/../rules" 2>/dev/null && pwd)"
+  for entry in "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/rules/*; do
+    if [ -d "$entry" ] && [ "$(cd -P "$entry" 2>/dev/null && pwd)" = "$kit_rules" ]; then
+      linked=1
+    fi
+  done
+  if [ "$linked" -eq 0 ]; then
+    KIT_PREREQ_MISSING="${KIT_PREREQ_MISSING}; the kit rules linked under ~/.claude/rules (run bootstrap.sh)"
+  fi
+  if [ ! -r "${CLAUDE_PLUGIN_ROOT:-$_kit_lib_dir/..}/kit.yml" ]; then
+    KIT_PREREQ_MISSING="${KIT_PREREQ_MISSING}; a readable kit.yml at the kit root (run bootstrap.sh)"
+  fi
+  KIT_PREREQ_MISSING="${KIT_PREREQ_MISSING#; }"
+  [ -z "$KIT_PREREQ_MISSING" ]
+}
+
+# The bash version gate. On anything older than 4.2, nothing below this runs.
+# A bin script stops with the reason. A hook (it sets HOOK_NAME before
+# sourcing) gets a kit_hook_init that exits 0, so it fails open quietly and
+# inject-context.sh's warning names the cause.
+if [ "${BASH_VERSINFO[0]}" -lt 4 ] || { [ "${BASH_VERSINFO[0]}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -lt 2 ]; }; then
+  if [ -z "${HOOK_NAME:-}" ]; then
+    echo "${0##*/}: needs bash 4.2+ (found $BASH_VERSION); brew install bash, and put it first on PATH" >&2
+    exit 1
+  fi
+  kit_hook_init() { exit 0; }
+  return 0
+fi
+
 # This lib's own bin dir, for calling sibling scripts. Not $KIT_ROOT/bin:
 # tests point CLAUDE_PLUGIN_ROOT at a fake tree with no scripts in it.
 # Builtins only (no dirname): the statusline sources this under whatever
