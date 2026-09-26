@@ -326,6 +326,81 @@ run_checks() {
   [[ "$output" != *"js: lint"* ]]
 }
 
+# Orchestrators: turbo or nx run JS checks once, for affected packages.
+
+# pnpm workspace with turbo.json declaring test and lint, a Python service,
+# and a recording orchestrator binary <name> in node_modules/.bin.
+make_orchestrated() {
+  local name="$1" config="$2"
+  printf '{"name":"root","private":true,"scripts":{"test":"turbo run test"}}\n' >"$PROJECT_DIR/package.json"
+  printf 'packages:\n  - "packages/*"\n' >"$PROJECT_DIR/pnpm-workspace.yaml"
+  touch "$PROJECT_DIR/pnpm-lock.yaml"
+  printf '%s\n' "$config" >"$PROJECT_DIR/$name.json"
+  mkdir -p "$PROJECT_DIR/packages/a" "$PROJECT_DIR/services/api" "$PROJECT_DIR/node_modules/.bin"
+  printf '{"name":"a","scripts":{"test":"vitest","lint":"eslint ."}}\n' >"$PROJECT_DIR/packages/a/package.json"
+  printf '[tool.pdm.scripts]\ntest = "pytest"\n' >"$PROJECT_DIR/services/api/pyproject.toml"
+  printf '#!/usr/bin/env bash\necho "$*" >>"%s"\n' "$STUB_DIR/$name.calls" >"$PROJECT_DIR/node_modules/.bin/$name"
+  chmod +x "$PROJECT_DIR/node_modules/.bin/$name"
+  printf 'node_modules\n' >"$PROJECT_DIR/.gitignore"
+  stub_bin pnpm 0
+  stub_bin pdm 0
+}
+
+run_checks_only() {
+  git -C "$PROJECT_DIR" add -A
+  (cd "$PROJECT_DIR" && "$RUN_CHECKS" --only "$@")
+}
+
+@test "turbo: an edit in packages/a runs turbo once per check, no per-package task" {
+  make_orchestrated turbo '{"tasks":{"test":{},"lint":{},"build":{}}}'
+  run run_checks_only packages/a
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"PASS js: test (turbo affected: test)"* ]]
+  [[ "$output" == *"PASS js: lint (turbo affected: lint)"* ]]
+  [ "$(cat "$STUB_DIR/turbo.calls")" = "run lint --filter=...[HEAD]
+run test --filter=...[HEAD]" ]
+  [ ! -e "$STUB_DIR/pnpm.calls" ]
+  [[ "$output" != *"(test) [packages/a]"* ]]
+  [[ "$output" != *"(lint) [packages/a]"* ]]
+}
+
+@test "turbo: a 1.x pipeline key is read too" {
+  make_orchestrated turbo '{"pipeline":{"test":{}}}'
+  run run_checks_only packages/a
+  [[ "$output" == *"PASS js: test (turbo affected: test)"* ]]
+}
+
+@test "turbo: checks turbo declares no task for still run per package" {
+  make_orchestrated turbo '{"tasks":{"test":{}}}'
+  run run_checks_only packages/a
+  [[ "$output" == *"PASS js: test (turbo affected: test)"* ]]
+  [[ "$output" == *"PASS js: lint (lint) [packages/a]"* ]]
+}
+
+@test "turbo: a Python-only scope never runs turbo" {
+  make_orchestrated turbo '{"tasks":{"test":{}}}'
+  run run_checks_only services/api
+  [[ "$output" == *"PASS python: test (test) [services/api]"* ]]
+  [ ! -e "$STUB_DIR/turbo.calls" ]
+}
+
+@test "turbo: without its binary in node_modules/.bin, packages run their own tasks" {
+  make_orchestrated turbo '{"tasks":{"test":{}}}'
+  rm "$PROJECT_DIR/node_modules/.bin/turbo"
+  run run_checks_only packages/a
+  [[ "$output" == *"PASS js: test (test) [packages/a]"* ]]
+  [[ "$output" != *"turbo affected"* ]]
+}
+
+@test "nx: targetDefaults run through nx affected --uncommitted" {
+  make_orchestrated nx '{"targetDefaults":{"test":{},"typecheck":{}}}'
+  run run_checks_only packages/a
+  [[ "$output" == *"PASS js: typecheck (nx affected: typecheck)"* ]]
+  [[ "$output" == *"PASS js: test (nx affected: test)"* ]]
+  [ "$(cat "$STUB_DIR/nx.calls")" = "affected -t typecheck --uncommitted
+affected -t test --uncommitted" ]
+}
+
 # kit.yml overlay: a new provider is data, not code.
 
 @test "an overlay-defined composer provider runs its test script" {

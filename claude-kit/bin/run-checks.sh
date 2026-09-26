@@ -75,6 +75,46 @@ matches_any() {
   return 1
 }
 
+# True when task name $2 counts as check index $1: it matches the check's
+# task globs and none of its exclude globs.
+task_matches_check() {
+  matches_any "${KIT_CHECK_TASKS[$1]}" "$2" || return 1
+  [[ "${KIT_CHECK_EXCLUDES[$1]}" == - ]] && return 0
+  ! matches_any "${KIT_CHECK_EXCLUDES[$1]}" "$2"
+}
+
+# Checks an orchestrator ran; their JS provider tasks are skipped per package.
+declare -A orchestrated=()
+
+# Runs each check the first usable orchestrator declares a task for, once, at
+# the root: its signal file is there and its binary (named after it) is in
+# the root's node_modules/.bin. None usable: providers cover JS as usual.
+run_orchestrator() {
+  local i c bin path task check cmd
+  local -a paths tasks parts
+  for ((i = 0; i < ${#KIT_ORCH_NAMES[@]}; i++)); do
+    [[ -f "$root/${KIT_ORCH_SIGNALS[i]}" ]] || continue
+    bin="$root/node_modules/.bin/${KIT_ORCH_NAMES[i]}"
+    [[ -x "$bin" ]] || continue
+    tasks=()
+    read -ra paths <<<"${KIT_ORCH_TASK_PATHS[i]}"
+    for path in "${paths[@]}"; do
+      mapfile -t -O "${#tasks[@]}" tasks < <(json_keys "$root/${KIT_ORCH_SIGNALS[i]}" "$path")
+    done
+    for ((c = 0; c < ${#KIT_CHECK_NAMES[@]}; c++)); do
+      check="${KIT_CHECK_NAMES[c]}"
+      for task in "${tasks[@]}"; do
+        task_matches_check "$c" "$task" || continue
+        orchestrated[$check]=1
+        cmd="${KIT_ORCH_RUNS[i]//\{bin\}/$bin}"
+        read -ra parts <<<"${cmd//\{task\}/$task}"
+        run "js: $check (${KIT_ORCH_NAMES[i]} affected: $task)" "$root" "${parts[@]}"
+      done
+    done
+    return 0
+  done
+}
+
 check_subproject() {
   local sub="$1" dir="$root" sfx="" i
   if [[ "$sub" != . ]]; then
@@ -108,15 +148,14 @@ check_subproject() {
     check="${KIT_CHECK_NAMES[i]}"
     matched=0
     for ((j = 0; j < ${#task_names[@]}; j++)); do
-      matches_any "${KIT_CHECK_TASKS[i]}" "${task_names[j]}" || continue
-      if [[ "${KIT_CHECK_EXCLUDES[i]}" != - ]] && matches_any "${KIT_CHECK_EXCLUDES[i]}" "${task_names[j]}"; then
-        continue
-      fi
+      task_matches_check "$i" "${task_names[j]}" || continue
+      [[ -n "${orchestrated[$check]:-}" && "${task_labels[j]}" == js ]] && continue
       matched=1
       read -ra parts <<<"${task_cmds[j]}"
       run "${task_labels[j]}: $check (${task_names[j]})$sfx" "$dir" "${parts[@]}"
     done
     if ((! matched)) && [[ -n "$skip_label" ]]; then
+      [[ -n "${orchestrated[$check]:-}" && "$skip_label" == js ]] && continue
       skip_msg "$skip_label: $check$sfx (no $check task)"
     fi
   done
@@ -150,6 +189,24 @@ check_subproject() {
     run "$label" "$dir" "${parts[@]}"
   done
 }
+
+# The orchestrator only when a JS subproject is in scope: a stop hook scoped
+# to a Python service has nothing for turbo or nx to do.
+wants_js=1
+if ((${#only[@]} > 0)); then
+  wants_js=0
+  for sub in "${only[@]}"; do
+    dir="$root"
+    [[ "$sub" == . ]] || dir="$root/$sub"
+    # A string test, not `| grep -q`: grep exiting early SIGPIPEs cut, and
+    # pipefail would turn the match into a failure.
+    if [[ $'\n'"$(kit_providers "$dir" | cut -f2)"$'\n' == *$'\n'js$'\n'* ]]; then
+      wants_js=1
+      break
+    fi
+  done
+fi
+((wants_js)) && run_orchestrator
 
 while IFS= read -r sub; do
   if ((${#only[@]} > 0)) && [[ " ${only[*]} " != *" $sub "* ]]; then

@@ -286,6 +286,24 @@ toolchain_checks:
 # directory a subproject (kit_subprojects).
 subproject_max_depth: 4
 
+# JS monorepo task runners that know package dependents and cache results.
+# When a signal file is at the repo root and {bin} resolves from the root's
+# node_modules/.bin (never npx), run-checks.sh runs each JS check matching one
+# of task_paths' task names once through the orchestrator, instead of per
+# package. Flags checked against the docs on 2026-09-26, no local install:
+# turbo 2.x (`--filter=...[ref]` is changed packages plus dependents; 1.x
+# named tasks `pipeline`) and nx.dev's current `nx affected` reference.
+# `--uncommitted` misses brand-new untracked files.
+orchestrators:
+  - name: turbo
+    signal: turbo.json
+    task_paths: [.tasks, .pipeline]
+    run: "{bin} run {task} --filter=...[HEAD]"
+  - name: nx
+    signal: nx.json
+    task_paths: [.targetDefaults]
+    run: "{bin} affected -t {task} --uncommitted"
+
 stacks:
   js:
     sentinels:
