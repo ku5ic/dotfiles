@@ -4,9 +4,7 @@ Surface technical debt and architectural risks with severity and remediation pat
 
 ## Procedure
 
-0. Resolve external context (`rules/workflow.md` section 4). Then dispatch the auditor agent (subagent_type: auditor, foreground) with steps 1 onward and the resolved arguments; it writes the report, you relay its summary.
-
-1. Stack is in the repo context your startup produced (`agent-context.sh`). Get the scratch directory via `scratch-dir.sh`.
+1. Stack is in the `<repo-context>` block from the `SubagentStart` hook. Get the scratch directory via `scratch-dir.sh`.
 2. Load the patterns skill for the detected stack (react-patterns, django-patterns, etc.) for the anti-pattern reference.
 3. Read the target.
    1. If $ARGUMENTS is a directory, run `tokei --sort code <path>` to get accurate line counts per language and per file.

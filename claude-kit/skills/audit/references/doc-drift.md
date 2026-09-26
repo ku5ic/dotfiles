@@ -8,8 +8,6 @@ $ARGUMENTS should point to the code surface to check. Required.
 
 ## Procedure
 
-Dispatch the auditor agent (subagent_type: auditor, foreground) with steps 1 onward; it writes the report, you relay its summary.
-
 1. Stack is in the injected `<repo-context>` block. Get the scratch directory: `!`scratch-dir.sh``.
 2. Read the code at $ARGUMENTS.
 3. Find relevant docs. Prefer targeted over exhaustive:
