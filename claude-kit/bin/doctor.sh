@@ -22,7 +22,7 @@
 #      the same skills.jsonl field names, so a rename in the emitter cannot
 #      silently break the report.
 #   7. Audit-verify field parity: audit/references/verify.md's per-finding parser
-#      references the same field names as rules/markdown-report.md's required
+#      references the same field names as the report-format skill's required
 #      per-finding shape.
 #   8. CLAUDE.md rules pointer parity: every rules/*.md reference in
 #      CLAUDE.md resolves to a real file, catching a stale pointer left
@@ -422,12 +422,12 @@ fi
 echo
 echo "== audit-verify field parity =="
 
-MARKDOWN_REPORT="$SOURCE_ROOT/rules/markdown-report.md"
+REPORT_FORMAT="$SOURCE_ROOT/skills/report-format/SKILL.md"
 AUDIT_VERIFY="$SOURCE_ROOT/skills/audit/references/verify.md"
 verify_parity_failed=0
 
 # audit-verify's step 3 parses these per-finding fields out of a
-# markdown-report-shaped input report. Adding a field to rules/markdown-report.md's
+# report-format-shaped input report. Adding a field to the report-format skill's
 # required shape without updating audit-verify's parser (or vice versa)
 # silently breaks the re-check.
 finding_fields=(Severity Location What "Why it matters" Fix Refs)
@@ -436,8 +436,8 @@ finding_fields=(Severity Location What "Why it matters" Fix Refs)
 # also match inside unrelated words, which would pass this check even after
 # the real field name was renamed away.
 for field in "${finding_fields[@]}"; do
-  if [[ -f "$MARKDOWN_REPORT" ]] && ! grep -qE "\\b${field}\\b" "$MARKDOWN_REPORT"; then
-    echo "missing-field  rules/markdown-report.md no longer documents '$field'"
+  if ! grep -qE "\\b${field}\\b" "$REPORT_FORMAT" 2>/dev/null; then
+    echo "missing-field  skills/report-format/SKILL.md no longer documents '$field'"
     verify_parity_failed=1
   fi
   if [[ -f "$AUDIT_VERIFY" ]] && ! grep -qE "\\b${field}\\b" "$AUDIT_VERIFY"; then
@@ -449,7 +449,7 @@ done
 if ((verify_parity_failed)); then
   exit_code=1
 else
-  echo "ok             ${#finding_fields[@]} per-finding fields referenced in both rules/markdown-report.md and audit/references/verify.md"
+  echo "ok             ${#finding_fields[@]} per-finding fields referenced in both skills/report-format/SKILL.md and audit/references/verify.md"
 fi
 
 echo

@@ -142,7 +142,7 @@ After any manifest edit:
 
 ## Phase 6: report
 
-Use the `rules/markdown-report.md` format. Write to the path `scratch-dir.sh deps` prints. Print the path.
+Load the report-format skill and use its format. Write to the path `scratch-dir.sh deps` prints. Print the path.
 
 Per PR/alert, report these fields:
 
@@ -192,4 +192,4 @@ A failed-checks PR (Phase 4) is not a full stop - record it as held and continue
 
 ## Output
 
-Report: the path `scratch-dir.sh deps` prints, in `rules/markdown-report.md` format, per-PR/alert fields defined in Phase 6, ending with a "Still open, needs you" list.
+Report: the path `scratch-dir.sh deps` prints, in the report-format skill's format, per-PR/alert fields defined in Phase 6, ending with a "Still open, needs you" list.

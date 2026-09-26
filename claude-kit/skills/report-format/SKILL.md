@@ -1,6 +1,7 @@
 ---
-paths:
-  - "**/scratch/**/*.md"
+name: report-format
+description: Load before writing an audit, review, or dependency report.
+user-invocable: false
 ---
 
 # Markdown report format

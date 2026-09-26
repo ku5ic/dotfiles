@@ -56,7 +56,7 @@ Performance audit focused on statically detectable issues. Arguments: `<file, di
 
 ## Output file
 
-Use the `rules/markdown-report.md` format. Write to the path `scratch-dir.sh perf <target-slug>` prints. Print the path.
+Load the report-format skill and use its format. Write to the path `scratch-dir.sh perf <target-slug>` prints. Print the path.
 
 ## Rules
 

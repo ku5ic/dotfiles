@@ -47,7 +47,7 @@ Dispatch the auditor agent (subagent_type: auditor, foreground) with steps 1 onw
 
 ## Output file
 
-Use the `rules/markdown-report.md` format. Write to the path `scratch-dir.sh doc-drift <target-slug>` prints. Print the path.
+Load the report-format skill and use its format. Write to the path `scratch-dir.sh doc-drift <target-slug>` prints. Print the path.
 
 ## Scope rules
 
