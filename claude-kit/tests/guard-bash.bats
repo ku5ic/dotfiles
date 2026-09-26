@@ -835,6 +835,29 @@ make_repo() {
   [[ "$output" == *'"permissionDecision":"allow"'* ]]
 }
 
+@test "auto-allow: git-base.sh with the flags the kit's skills pass" {
+  local cmd
+  for cmd in 'git-base.sh --diff' 'git-base.sh --log -20' 'git-base.sh --diff --name-only' 'git-base.sh --log --no-merges main'; do
+    run run_guard "$cmd"
+    [[ "$output" == *'"permissionDecision":"allow"'* ]] || {
+      echo "not allowed: $cmd"
+      return 1
+    }
+  done
+}
+
+@test "no auto-allow: git-base.sh with a git flag that writes or runs things" {
+  local cmd
+  for cmd in 'git-base.sh --diff --output=/tmp/x' 'git-base.sh --diff --ext-diff' 'git-base.sh --log -p --output /tmp/x'; do
+    run run_guard "$cmd"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *'"allow"'* ]] || {
+      echo "allowed: $cmd"
+      return 1
+    }
+  done
+}
+
 @test "auto-allow: blast-radius.sh with a file and symbol" {
   run run_guard 'blast-radius.sh src/lib/format.ts formatDate'
   [ "$status" -eq 0 ]

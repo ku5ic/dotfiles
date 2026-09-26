@@ -763,9 +763,27 @@ _is_kit_readonly_call() {
   # shellcheck disable=SC2016  # matching a literal "$(" is the point here
   [[ "$cmd" == *[$metachars]* || "$cmd" == *'$('* ]] && return 1
   for script in "${KIT_READONLY_SCRIPTS[@]}"; do
-    [[ "${norm%% *}" == "$script" ]] && return 0
+    [[ "${norm%% *}" == "$script" ]] || continue
+    [[ "$script" == git-base.sh ]] && ! _git_base_flags_safe && return 1
+    return 0
   done
   return 1
+}
+
+# git-base.sh hands its "-" words to git diff/log, and some write files
+# (--output=<file>) or run programs (--ext-diff). Only the flags the kit's
+# own skills pass are allowed without a prompt.
+_git_base_flags_safe() {
+  local word
+  local -a words
+  read -ra words <<<"${norm#git-base.sh}"
+  for word in "${words[@]}"; do
+    case "$word" in
+    -[0-9]* | --diff | --log | --stat | --name-only | --name-status | --no-merges | --oneline | --shortstat) ;;
+    -*) return 1 ;;
+    esac
+  done
+  return 0
 }
 
 if [[ -n "$pending_decision" ]]; then
