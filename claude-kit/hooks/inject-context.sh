@@ -123,110 +123,47 @@ emit_suggested_skills() {
   done
 }
 
-# Emits a <tooling> block computed live (not from the stack cache) for JS/TS
-# and Python projects. Root-and-workspace-level only; search_dirs
-# subdirectories aren't walked (same scope as the sentinel walk).
+# Emits a <tooling> block computed live (not from the stack cache): for each
+# subproject, the run form of every task kit.yml's task_providers find and of
+# every toolchain check its stacks get. The same lists run-checks.sh reads, so
+# Claude is never told about a task the checks skip, or the reverse.
 emit_tooling_block() {
   local root="$1"
-
-  local has_js=0 has_python=0
-  [[ -f "$root/package.json" ]] && has_js=1
-  if [[ -f "$root/pyproject.toml" || -f "$root/requirements.txt" || -f "$root/Pipfile" ]]; then
-    has_python=1
-  fi
-  if ! ((has_js)) && ! ((has_python)); then
-    return 0
-  fi
-
-  local pm
-  pm="$(resolve_package_manager "$root" 2>/dev/null || true)"
 
   local body
   body="$(
     set +e
+    local pm sub dir header shown=0 max=20 i
+    local -a lines
+    kit_stacks_load
+    pm="$(resolve_package_manager "$root" 2>/dev/null)"
+    [[ -n "$pm" ]] && echo "package-manager: $pm"
 
-    if ((has_js)) && command -v jq >/dev/null 2>&1; then
-      [[ -n "$pm" ]] && echo "package-manager: $pm"
-
-      if jq -e 'has("scripts") and (.scripts | length > 0)' "$root/package.json" >/dev/null 2>&1; then
-        echo "scripts (package.json):"
-        jq -r '.scripts | to_entries[] | "  \(.key): \(.value[0:120])\(if (.value | length) > 120 then "..." else "" end)"' "$root/package.json" 2>/dev/null
+    while IFS= read -r sub; do
+      lines=()
+      dir="$root"
+      header="tasks:"
+      if [[ "$sub" != . ]]; then
+        dir="$root/$sub"
+        header="tasks [$sub]:"
       fi
-
-      local is_ws=0
-      if jq -e 'has("workspaces")' "$root/package.json" >/dev/null 2>&1 || [[ -f "$root/pnpm-workspace.yaml" ]]; then
-        is_ws=1
-      fi
-
-      if ((is_ws)); then
-        local -a ws_pats=()
-        if jq -e '.workspaces | arrays' "$root/package.json" >/dev/null 2>&1; then
-          mapfile -t ws_pats < <(jq -r '.workspaces[]' "$root/package.json" 2>/dev/null)
-        elif jq -e '.workspaces.packages | arrays' "$root/package.json" >/dev/null 2>&1; then
-          mapfile -t ws_pats < <(jq -r '.workspaces.packages[]' "$root/package.json" 2>/dev/null)
+      mapfile -t lines < <(kit_tasks "$dir" | cut -f4)
+      for ((i = 0; i < ${#KIT_TC_STACKS[@]}; i++)); do
+        if kit_dir_has_stack "$dir" "${KIT_TC_STACKS[i]}"; then
+          lines+=("${KIT_TC_CMDS[i]}")
         fi
-        if command -v yq >/dev/null 2>&1 && [[ -f "$root/pnpm-workspace.yaml" ]]; then
-          local -a _pp
-          mapfile -t _pp < <(yq '.packages[]' "$root/pnpm-workspace.yaml" 2>/dev/null)
-          ws_pats+=("${_pp[@]}")
+      done
+      ((${#lines[@]} > 0)) || continue
+      if [[ "$sub" != . ]]; then
+        if ((shown >= max)); then
+          echo "(subprojects capped at $max; run-checks.sh covers all)"
+          break
         fi
-        if [[ ${#ws_pats[@]} -gt 0 ]]; then
-          (
-            cd "$root" 2>/dev/null || exit 0
-            shopt -s nullglob globstar 2>/dev/null || true
-            local _pat _dir _sc _ws_shown=0 _ws_max=20
-            for _pat in "${ws_pats[@]}"; do
-              # shellcheck disable=SC2231
-              for _dir in $_pat; do
-                [[ -d "$_dir" && -f "$_dir/package.json" ]] || continue
-                _sc="$(jq '.scripts | length' "$_dir/package.json" 2>/dev/null || echo 0)"
-                [[ "${_sc:-0}" -gt 0 ]] || continue
-                if [[ $_ws_shown -ge $_ws_max ]]; then
-                  echo "  (workspace packages capped at $_ws_max; run-checks.sh covers all)"
-                  break 2
-                fi
-                echo "scripts ($_dir/package.json):"
-                jq -r '.scripts | to_entries[] | "  \(.key): \(.value[0:120])\(if (.value | length) > 120 then "..." else "" end)"' "$_dir/package.json" 2>/dev/null
-                _ws_shown=$((_ws_shown + 1))
-              done
-            done
-          ) 2>/dev/null
-        fi
+        shown=$((shown + 1))
       fi
-    fi
-
-    if ((has_python)) && ! ((has_js)) && [[ -n "$pm" ]]; then
-      echo "package-manager: $pm"
-      case "$pm" in
-      uv) echo "run-form: uv run <command>" ;;
-      poetry) echo "run-form: poetry run <command>" ;;
-      pipenv) echo "run-form: pipenv run <command>" ;;
-      esac
-    fi
-
-    if ((has_python)) && [[ -f "$root/Makefile" ]]; then
-      local _mkt
-      _mkt="$(grep -E '^[a-zA-Z][a-zA-Z0-9_-]*[[:space:]]*:' "$root/Makefile" 2>/dev/null | cut -d: -f1 | tr -d '[:space:]' | sort -u || true)"
-      if [[ -n "$_mkt" ]]; then
-        echo "makefile-targets:"
-        printf '%s\n' "$_mkt" | sed 's/^/  /'
-      fi
-    fi
-
-    if ((has_python)); then
-      local _jf=""
-      [[ -f "$root/justfile" ]] && _jf="$root/justfile"
-      [[ -f "$root/Justfile" ]] && _jf="$root/Justfile"
-      if [[ -n "$_jf" ]]; then
-        local _jft
-        _jft="$(grep -E '^[a-zA-Z_][a-zA-Z0-9_-]*' "$_jf" 2>/dev/null | grep -v '^#' | cut -d: -f1 | sed 's/[[:space:]].*//' | sort -u || true)"
-        if [[ -n "$_jft" ]]; then
-          echo "justfile-targets:"
-          printf '%s\n' "$_jft" | sed 's/^/  /'
-        fi
-      fi
-    fi
-
+      echo "$header"
+      printf '  %s\n' "${lines[@]}"
+    done < <(kit_subprojects "$root")
     true
   )"
 

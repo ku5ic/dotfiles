@@ -241,3 +241,70 @@ YAML
   [ "$status" -eq 0 ]
   [[ "$output" == *"bash 4.2+"* ]]
 }
+
+# <tooling>: run forms from kit.yml's task_providers and toolchain_checks.
+
+# The real kit.yml, so the production provider tables are exercised.
+use_real_kit_yml() {
+  cp "$BATS_TEST_DIRNAME/../kit.yml" "$FAKE_HOME/.claude/kit.yml"
+}
+
+# The <tooling> block alone, from the first line to the closing tag.
+tooling_block() {
+  printf '%s\n' "$output" | sed -n '/^<tooling>$/,/^<\/tooling>$/p'
+}
+
+@test "tooling: a Python project's justfile recipes are listed as just <recipe>" {
+  use_real_kit_yml
+  printf '[project]\nname = "x"\n' >"$FAKE_ROOT/pyproject.toml"
+  printf 'test:\n  pytest\nlint:\n  ruff check\n' >"$FAKE_ROOT/justfile"
+  git -C "$FAKE_ROOT" add -A
+
+  run run_inject_context "s1"
+  [ "$status" -eq 0 ]
+  [[ "$(tooling_block)" == *"tasks:
+  just test
+  just lint"* ]]
+}
+
+@test "tooling: a Rust project lists only its toolchain checks" {
+  use_real_kit_yml
+  printf '[package]\nname = "x"\n' >"$FAKE_ROOT/Cargo.toml"
+  git -C "$FAKE_ROOT" add -A
+
+  run run_inject_context "s1"
+  [ "$status" -eq 0 ]
+  [ "$(tooling_block | sed -n '/^tasks:$/,/^$/p')" = "tasks:
+  cargo check
+  cargo clippy -- -D warnings
+  cargo fmt --check
+  cargo test" ]
+}
+
+@test "tooling: workspace packages get their own section with the root's package manager" {
+  use_real_kit_yml
+  printf '{"name":"root","scripts":{"lint":"eslint ."}}\n' >"$FAKE_ROOT/package.json"
+  printf 'packages:\n  - "packages/*"\n' >"$FAKE_ROOT/pnpm-workspace.yaml"
+  touch "$FAKE_ROOT/pnpm-lock.yaml"
+  mkdir -p "$FAKE_ROOT/packages/a"
+  printf '{"name":"a","scripts":{"test":"vitest"}}\n' >"$FAKE_ROOT/packages/a/package.json"
+  git -C "$FAKE_ROOT" add -A
+
+  run run_inject_context "s1"
+  [ "$status" -eq 0 ]
+  local block
+  block="$(tooling_block)"
+  [[ "$block" == *"package-manager: pnpm"* ]]
+  [[ "$block" == *"tasks:
+  pnpm run lint"* ]]
+  [[ "$block" == *"tasks [packages/a]:
+  pnpm run test"* ]]
+  [[ "$block" == *"guidance: "* ]]
+}
+
+@test "tooling: a project with no providers or toolchain gets no block" {
+  use_real_kit_yml
+  run run_inject_context "s1"
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"<tooling>"* ]]
+}
