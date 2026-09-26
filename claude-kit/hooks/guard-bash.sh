@@ -21,18 +21,16 @@ block() {
   exit 2
 }
 
+PROTECTED_BRANCHES=(main master develop production release)
+
 # Forces the interactive permission prompt for cases settings.json prefix
 # patterns can't express (flagged/unflagged forms sharing one prefix) -
 # unlike block(), hands the decision back to the user instead of denying.
+# Only records the first reason: the ask is emitted after every segment has
+# been checked, so a block in a later segment still wins.
+pending_decision=""
 force_ask() {
-  jq -cn --arg reason "$1" '{
-    hookSpecificOutput: {
-      hookEventName: "PreToolUse",
-      permissionDecision: "ask",
-      permissionDecisionReason: $reason
-    }
-  }'
-  exit 0
+  [[ -n "$pending_decision" ]] || pending_decision="$1"
 }
 
 _cwd="$(printf '%s' "$payload" | jq -r '.cwd // ""' 2>/dev/null || true)"
@@ -152,6 +150,139 @@ _is_loose_write_target() {
   return 0
 }
 
+# Returns 0 when ref $1 names a protected branch, ignoring refs/heads/,
+# refs/remotes/<remote>/, and origin/ prefixes.
+_is_protected_branch() {
+  local ref="${1#refs/heads/}" branch
+  [[ "$ref" == refs/remotes/*/* ]] && ref="${ref#refs/remotes/*/}"
+  ref="${ref#origin/}"
+  for branch in "${PROTECTED_BRANCHES[@]}"; do
+    [[ "$ref" == "$branch" ]] && return 0
+  done
+  return 1
+}
+
+# Splits a git segment past git's global options. Sets _git_sub (the
+# subcommand), _git_args (its arguments), and _git_dir (the -C value, empty
+# when absent). Words split on whitespace only; quotes aren't parsed.
+_git_parse() {
+  local -a words
+  read -ra words <<<"$1"
+  _git_sub="" _git_dir="" _git_args=()
+  local i=1 n=${#words[@]}
+  while ((i < n)); do
+    case "${words[i]}" in
+    -C)
+      _git_dir="${words[i + 1]:-}"
+      i=$((i + 2))
+      ;;
+    -c | --git-dir | --work-tree | --namespace | --config-env | --super-prefix) i=$((i + 2)) ;;
+    -*) i=$((i + 1)) ;;
+    *) break ;;
+    esac
+  done
+  ((i < n)) || return 0
+  _git_sub="${words[i]}"
+  _git_args=("${words[@]:i+1}")
+}
+
+_git_has_arg() {
+  local arg
+  for arg in "${_git_args[@]}"; do
+    [[ "$arg" == "$1" ]] && return 0
+  done
+  return 1
+}
+
+# Current branch of the repo the segment targets: -C resolved against the
+# payload cwd. Empty outside a repo or on a detached HEAD.
+_git_current_branch() {
+  local dir="${_git_dir/#\~/$HOME}"
+  case "$dir" in
+  '') dir="${_cwd:-$PWD}" ;;
+  /*) ;;
+  *) dir="${_cwd:-$PWD}/$dir" ;;
+  esac
+  git -C "$dir" branch --show-current 2>/dev/null || true
+}
+
+_check_git_push() {
+  local arg want_value=0 opts_done=0 have_remote=0
+  local -a refspecs=()
+  for arg in "${_git_args[@]}"; do
+    if ((want_value)); then
+      want_value=0
+      continue
+    fi
+    if ((! opts_done)); then
+      case "$arg" in
+      --)
+        opts_done=1
+        continue
+        ;;
+      --force) block "git push --force. Use --force-with-lease if you must." "git-force-push" ;;
+      --mirror) block "git push --mirror overwrites every remote ref, protected branches included" "git-force-push" ;;
+      --repo | --push-option | --receive-pack | --exec)
+        want_value=1
+        continue
+        ;;
+      --*) continue ;;
+      -*)
+        [[ "$arg" == *f* ]] && block "git push -f. Use --force-with-lease if you must." "git-force-push"
+        [[ "$arg" == *o ]] && want_value=1
+        continue
+        ;;
+      esac
+    fi
+    if ((! have_remote)); then
+      have_remote=1
+      continue
+    fi
+    refspecs+=("$arg")
+  done
+
+  local ref dst
+  for ref in "${refspecs[@]}"; do
+    [[ "$ref" == +* ]] && block "force push via a +refspec. Use --force-with-lease if you must." "git-force-push"
+    dst="${ref##*:}"
+    [[ "$dst" == HEAD ]] && dst="$(_git_current_branch)"
+    if _is_protected_branch "$dst"; then
+      block "push to a protected branch; use a feature branch" "git-push-protected"
+    fi
+  done
+  if ((${#refspecs[@]} == 0)) && _is_protected_branch "$(_git_current_branch)"; then
+    block "push to a protected branch; use a feature branch" "git-push-protected"
+  fi
+  force_ask "git push publishes commits to a remote; confirm the destination"
+}
+
+# -n is --no-verify for commit. Scans short clusters up to the first option
+# that takes a value (-m, -F, -C, -c, -t): in -mn the n is the message.
+_check_git_commit() {
+  local arg i want_value=0
+  for arg in "${_git_args[@]}"; do
+    if ((want_value)); then
+      want_value=0
+      continue
+    fi
+    case "$arg" in
+    --) break ;;
+    --*) ;;
+    -*)
+      for ((i = 1; i < ${#arg}; i++)); do
+        case "${arg:i:1}" in
+        n) block "git commit -n bypasses pre-commit hooks, same as --no-verify" "git-no-verify" ;;
+        m | F | C | c | t)
+          ((i == ${#arg} - 1)) && want_value=1
+          break
+          ;;
+        esac
+      done
+      ;;
+    esac
+  done
+}
+
 # Per-segment checks: split on &&, ||, ;, newlines - not | so pipe chains
 # like curl|bash stay intact for the full-string check above. Each segment
 # is only checked when its leading token is a known dangerous command, so
@@ -186,30 +317,33 @@ _check_segment() {
     fi
     ;;
   git)
-    if [[ "$seg" =~ git[[:space:]]+push[[:space:]].*(--force[^-]|--force$|-f([[:space:]]|$)) ]]; then
-      if [[ ! "$seg" =~ --force-with-lease ]]; then
-        block "git push --force. Use --force-with-lease if you must." "git-force-push"
+    _git_parse "$seg"
+    local _garg
+    case "$_git_sub" in
+    commit | push | merge | rebase)
+      if _git_has_arg --no-verify; then
+        block "use of --no-verify bypasses pre-commit and pre-push hooks" "git-no-verify"
       fi
-    fi
-    if [[ "$seg" =~ git[[:space:]]+push[[:space:]].*(main|master|develop|production|release) ]]; then
-      if [[ "$seg" =~ (--force[^-]|--force$|[[:space:]]-f([[:space:]]|$)) ]]; then
-        block "force push to a protected branch" "git-force-push-protected"
+      ;;
+    esac
+    case "$_git_sub" in
+    push) _check_git_push ;;
+    commit) _check_git_commit ;;
+    reset)
+      if _git_has_arg --hard; then
+        for _garg in "${_git_args[@]}"; do
+          if _is_protected_branch "$_garg"; then
+            block "git reset --hard on protected branch" "git-reset-hard"
+          fi
+        done
       fi
-    fi
-    # Branch token bounded by whitespace/start/end: matches the actual ref,
-    # not a substring in a longer name (feat/production-config, fix/mainline).
-    if [[ "$seg" =~ git[[:space:]]+push[[:space:]] ]] && [[ "$seg" =~ (^|[[:space:]])(origin/)?(main|master|develop|production|release)([[:space:]]|$) ]]; then
-      block "push to a protected branch; use a feature branch" "git-push-protected"
-    fi
-    if [[ "$seg" =~ git[[:space:]]+reset[[:space:]]+--hard[[:space:]]+(origin/)?(main|master|develop|production) ]]; then
-      block "git reset --hard on protected branch" "git-reset-hard"
-    fi
-    if [[ "$seg" =~ git[[:space:]]+(commit|push|merge|rebase)[[:space:]].*--no-verify ]]; then
-      block "use of --no-verify bypasses pre-commit and pre-push hooks" "git-no-verify"
-    fi
-    if [[ "$seg" =~ git[[:space:]]+config[[:space:]]+--global ]]; then
-      block "git config --global from a project session" "git-config-global"
-    fi
+      ;;
+    config)
+      if _git_has_arg --global; then
+        block "git config --global from a project session" "git-config-global"
+      fi
+      ;;
+    esac
     # Tree-wide pathspecs only: bare dot, double-dash-dot, :/, or bare star.
     # --staged without --worktree is allowed (unstaging isn't destructive).
     if [[ "$seg" =~ [[:space:]](restore|checkout)[[:space:]] ]]; then
@@ -534,6 +668,16 @@ if [[ "$norm" =~ $_redir_re ]]; then
       force_ask "'> ${_redir_target}' writes into the current directory; rules/tooling.md wants > \"\$(scratch-dir.sh)/${_redir_target##*/}\". Confirm only if this file belongs in the project tree."
     fi
   fi
+fi
+
+if [[ -n "$pending_decision" ]]; then
+  jq -cn --arg reason "$pending_decision" '{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "ask",
+      permissionDecisionReason: $reason
+    }
+  }'
 fi
 
 exit 0

@@ -17,6 +17,18 @@ run_guard() {
   printf '%s' "$1" | jq -R '{tool_input: {command: .}}' | "$HOOK"
 }
 
+# $1 = payload cwd, $2 = command. For checks that read repo state.
+run_guard_in() {
+  jq -cn --arg d "$1" --arg c "$2" '{tool_input: {command: $c}, cwd: $d}' | "$HOOK"
+}
+
+# Throwaway repo whose current branch is $1.
+make_repo() {
+  local dir="$BATS_TEST_TMPDIR/repo-$1"
+  git init -q -b "$1" "$dir"
+  printf '%s' "$dir"
+}
+
 # positive cases (must allow)
 
 @test "allow: plain ls" {
@@ -84,14 +96,16 @@ run_guard() {
   [ "$status" -eq 0 ]
 }
 
-@test "allow: git push to feature branch" {
+@test "ask: git push to feature branch" {
   run run_guard 'git push origin feat/thing'
   [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
 }
 
-@test "allow: git push --force-with-lease" {
+@test "ask: git push --force-with-lease" {
   run run_guard 'git push --force-with-lease origin feat/thing'
   [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
 }
 
 @test "allow: aws s3 ls" {
@@ -441,28 +455,158 @@ run_guard() {
   [ "$status" -eq 2 ]
 }
 
-@test "allow: git push to a branch that embeds a protected name as a prefix (feat/production-config)" {
+@test "ask: git push to a branch that embeds a protected name as a prefix (feat/production-config)" {
   run run_guard 'git push origin feat/production-config'
   [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
 }
 
-@test "allow: git push to a branch that embeds a protected name as a substring (fix/mainline)" {
+@test "ask: git push to a branch that embeds a protected name as a substring (fix/mainline)" {
   run run_guard 'git push origin fix/mainline'
   [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
 }
 
-@test "allow: git push to a branch name with a protected name as a prefix and trailing suffix (release-2024)" {
+@test "ask: git push to a branch name with a protected name as a prefix and trailing suffix (release-2024)" {
   run run_guard 'git push origin release-2024'
   [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
 }
 
-@test "allow: git push to an ordinary feature branch" {
-  run run_guard 'git push origin feat/thing'
+@test "ask: bare git push from a feature branch" {
+  run run_guard_in "$(make_repo feat)" 'git push'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
+}
+
+@test "block: bare git push from main" {
+  run run_guard_in "$(make_repo main)" 'git push'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"push to a protected branch"* ]]
+}
+
+@test "block: git push HEAD while on main" {
+  run run_guard_in "$(make_repo main)" 'git push origin HEAD'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git -C <repo on main> push with no refspec" {
+  local repo
+  repo="$(make_repo main)"
+  run run_guard_in "$BATS_TEST_TMPDIR" "git -C ${repo##*/} push"
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git -C . push origin main (global option before subcommand)" {
+  run run_guard 'git -C . push origin main'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git push origin HEAD:main (refspec destination)" {
+  run run_guard 'git push origin HEAD:main'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git push origin +main (force refspec)" {
+  run run_guard 'git push origin +main'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git push origin +feat (force refspec to any branch)" {
+  run run_guard 'git push origin +feat'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git push origin :main (delete refspec)" {
+  run run_guard 'git push origin :main'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git push --delete origin main" {
+  run run_guard 'git push --delete origin main'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git push --mirror" {
+  run run_guard 'git push --mirror'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git -c k=v push --force" {
+  run run_guard 'git -c k=v push --force'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git push -uf (force inside a short-option cluster)" {
+  run run_guard 'git push -uf origin feat'
+  [ "$status" -eq 2 ]
+}
+
+@test "ask: git push -o value is not read as the remote" {
+  run run_guard 'git push -o ci.skip origin feat'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
+}
+
+@test "block: git push -o value does not hide a protected destination" {
+  run run_guard 'git push -o ci.skip origin main'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: ask in an earlier segment does not skip a later block" {
+  run run_guard 'git push origin feat; rm -rf ~'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: pnpm install ask does not skip a later block" {
+  run run_guard 'pnpm install && rm -rf ~'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git commit -n" {
+  run run_guard 'git commit -n -m x'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"--no-verify"* ]]
+}
+
+@test "block: git commit -anm x (n before m in a cluster)" {
+  run run_guard 'git commit -anm x'
+  [ "$status" -eq 2 ]
+}
+
+@test "allow: git commit -mn (n is the message)" {
+  run run_guard 'git commit -mn'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "allow: git commit -m -n (n is the message)" {
+  run run_guard 'git commit -m -n'
   [ "$status" -eq 0 ]
 }
 
-@test "allow: bare git push with no branch token in the command" {
-  run run_guard 'git push'
+@test "block: git -C . commit --no-verify" {
+  run run_guard 'git -C . commit --no-verify -m x'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: git reset --hard release" {
+  run run_guard 'git reset --hard release'
+  [ "$status" -eq 2 ]
+}
+
+@test "allow: git reset --hard HEAD~1" {
+  run run_guard 'git reset --hard HEAD~1'
+  [ "$status" -eq 0 ]
+}
+
+@test "block: git -C . config --global" {
+  run run_guard 'git -C . config --global user.name x'
+  [ "$status" -eq 2 ]
+}
+
+@test "allow: git config --local" {
+  run run_guard 'git config --local user.name x'
   [ "$status" -eq 0 ]
 }
 
