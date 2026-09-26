@@ -38,8 +38,12 @@ alias psu='ps aux | sort -nrk 3,3 | head'  # Shows top CPU-consuming processes (
 
 # Networking
 alias ping='ping -c 5'         # Pings a host 5 times by default
-alias wget='wget -c'           # Enables download resume for `wget` (if `wget` is installed, as it's not default in macOS)
-alias curl='curl -O'           # Saves files with the same name as the URL
+# Not under Claude Code (CLAUDECODE=1): an alias expands after its guard hook
+# checks the command, so `curl -O` would drop downloads into the repo unseen.
+if [[ -z "$CLAUDECODE" ]]; then
+  alias wget='wget -c'         # Enables download resume for `wget` (if `wget` is installed, as it's not default in macOS)
+  alias curl='curl -O'         # Saves files with the same name as the URL
+fi
 
 # File Management Aliases
 # alias rm='rm -i'               # Prompt before deletion

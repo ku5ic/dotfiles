@@ -203,9 +203,9 @@ My kit is `~/.dotfiles/claude-kit/`, a plugin symlinked into `~/.claude/`. Perso
 | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
 | `/audit <kind>`                                        | a11y, debt, doc-drift, perf, verify                                                      |
 | `/write <kind>`                                        | commit, devnote, explainer, pr, release-notes, review-comment, review-reply, stakeholder |
-| `/meta-*`                                              | prompt, refresh, retro                                                                   |
+| `/meta`                                                | prompt, refresh, skill, conventions, retro                                               |
 | `/deps`                                                | Dependabot PRs and security alerts                                                       |
-| `explore-patterns`                                     | read-only investigation, model-invocable                                                 |
+| `investigate`                                          | read-only investigation, model-invocable                                                 |
 | `*-patterns`, `wcag-audit`, `engineering-fundamentals` | stack reference skills, loaded by file type                                              |
 
 The procedural skills are `disable-model-invocation: true`: they run when typed, never on model initiative. Plan, implement, and verify use the built-ins: `/plan`, approving the plan, the `Stop` hook running `run-checks.sh`, and `/code-review`.
