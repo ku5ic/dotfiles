@@ -283,6 +283,22 @@ _check_git_commit() {
   done
 }
 
+# Redirected output to a bare filename or ./name lands in cwd - the repo root,
+# in a project session. Narrower than _is_loose_write_target on purpose: a
+# subdir target (docs/report.md) is plausibly a deliverable, a bare one is not.
+# The char class drops >&2, >(...), and /dev/* before they reach the check.
+_redir_re='(^|[[:space:]])[0-9]?>>?[[:space:]]*([^[:space:]&|$"'"'"'();<>]+)'
+_check_redirects() {
+  local rest="$1" target
+  while [[ "$rest" =~ $_redir_re ]]; do
+    target="${BASH_REMATCH[2]}"
+    rest="${rest#*"${BASH_REMATCH[0]}"}"
+    if [[ "$target" != */* || "$target" == ./* ]] && _is_loose_write_target "$target"; then
+      force_ask "'> ${target}' writes into the current directory; rules/tooling.md wants > \"\$(scratch-dir.sh)/${target##*/}\". Confirm only if this file belongs in the project tree."
+    fi
+  done
+}
+
 # Per-segment checks: split on &&, ||, ;, newlines - not | so pipe chains
 # like curl|bash stay intact for the full-string check above. Each segment
 # is only checked when its leading token is a known dangerous command, so
@@ -294,11 +310,44 @@ _check_segment() {
   seg="${seg%"${seg##*[![:space:]]}"}"
   [[ -z "$seg" ]] && return 0
 
+  _check_redirects "$seg"
+
+  # See through what only changes how the command runs: VAR=value
+  # assignments and one command/env/builtin wrapper or backslash escape.
+  local _assign_re='^[A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]+'
+  while [[ "$seg" =~ $_assign_re ]]; do
+    seg="${seg#"${BASH_REMATCH[0]}"}"
+  done
+  case "${seg%% *}" in
+  command | env | builtin)
+    if [[ "$seg" == *' '* ]]; then
+      seg="${seg#* }"
+    fi
+    ;;
+  esac
+  seg="${seg#\\}"
+  while [[ "$seg" =~ $_assign_re ]]; do
+    seg="${seg#"${BASH_REMATCH[0]}"}"
+  done
+
   local lead="${seg%% *}"
 
   case "$lead" in
   rm)
-    if [[ "$seg" =~ rm[[:space:]]+(-[a-zA-Z]*[rRfF][a-zA-Z]*[[:space:]]+)+(/|/\*|~|~/|\$HOME|\$\{HOME\}|\.|\.\.)($|[[:space:]]) ]]; then
+    # Whole tokens only: rm -rf *.log and rm -rf dist/* stay allowed.
+    local _rarg _rforce=0 _rbroad=0
+    local -a _rwords
+    read -ra _rwords <<<"${seg#rm}"
+    for _rarg in "${_rwords[@]}"; do
+      # shellcheck disable=SC2016,SC2088  # literal ~ and $HOME tokens are the point
+      case "$_rarg" in
+      --recursive | --force) _rforce=1 ;;
+      --*) ;;
+      -*[rRfF]*) _rforce=1 ;;
+      '/' | '/*' | '~' | '~/' | '~/*' | '$HOME' | '${HOME}' | '$HOME/' | '${HOME}/' | '$HOME/*' | '${HOME}/*' | '.' | '..' | './' | '../' | '*') _rbroad=1 ;;
+      esac
+    done
+    if ((_rforce && _rbroad)); then
       block "rm with recursive force against root, home, or cwd" "rm-recursive"
     fi
     ;;
@@ -655,20 +704,6 @@ _check_segment() {
 while IFS= read -r _seg; do
   _check_segment "$_seg"
 done < <(printf '%s\n' "$norm" | sed -E 's/[[:space:]]*(&&|\|\|)[[:space:]]*/\n/g' | tr ';' '\n')
-
-# Redirected output to a bare filename or ./name lands in cwd - the repo root,
-# in a project session. Narrower than _is_loose_write_target on purpose: a
-# subdir target (docs/report.md) is plausibly a deliverable, a bare one is not.
-# The char class drops >&2, >(...), and /dev/* before they reach the check.
-_redir_re='(^|[[:space:]])[0-9]?>>?[[:space:]]*([^[:space:]&|$"'"'"'();<>]+)'
-if [[ "$norm" =~ $_redir_re ]]; then
-  _redir_target="${BASH_REMATCH[2]}"
-  if [[ "$_redir_target" != */* || "$_redir_target" == ./* ]]; then
-    if _is_loose_write_target "$_redir_target"; then
-      force_ask "'> ${_redir_target}' writes into the current directory; rules/tooling.md wants > \"\$(scratch-dir.sh)/${_redir_target##*/}\". Confirm only if this file belongs in the project tree."
-    fi
-  fi
-fi
 
 if [[ -n "$pending_decision" ]]; then
   jq -cn --arg reason "$pending_decision" '{

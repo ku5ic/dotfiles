@@ -659,3 +659,103 @@ make_repo() {
   [ "$status" -eq 0 ]
   [ -z "$output" ]
 }
+
+# Wrappers and assignments don't hide the command from its checks
+
+@test "block: command rm -rf ~" {
+  run run_guard 'command rm -rf ~'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: env rm -rf ~" {
+  run run_guard 'env rm -rf ~'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: FOO=1 rm -rf ~" {
+  run run_guard 'FOO=1 rm -rf ~'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: env FOO=1 rm -rf ~ (assignment after the wrapper)" {
+  run run_guard 'env FOO=1 rm -rf ~'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: backslash-escaped rm -rf /" {
+  run run_guard '\rm -rf /'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: FOO=1 git push origin main" {
+  run run_guard 'FOO=1 git push origin main'
+  [ "$status" -eq 2 ]
+}
+
+# rm broad targets are whole tokens only
+
+@test "block: rm -rf *" {
+  run run_guard 'rm -rf *'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: rm -rf ./" {
+  run run_guard 'rm -rf ./'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: rm -rf ~/*" {
+  run run_guard 'rm -rf ~/*'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: rm -rf \$HOME/*" {
+  run run_guard 'rm -rf $HOME/*'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: rm --recursive --force ~" {
+  run run_guard 'rm --recursive --force ~'
+  [ "$status" -eq 2 ]
+}
+
+@test "allow: rm -rf *.log" {
+  run run_guard 'rm -rf *.log'
+  [ "$status" -eq 0 ]
+}
+
+@test "allow: rm -rf dist/*" {
+  run run_guard 'rm -rf dist/*'
+  [ "$status" -eq 0 ]
+}
+
+@test "allow: rm -rf ./build" {
+  run run_guard 'rm -rf ./build'
+  [ "$status" -eq 0 ]
+}
+
+# Redirects are checked in every segment
+
+@test "ask: bare redirect in a later segment" {
+  run run_guard 'echo a > /tmp/x; echo b > out.txt'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"ask"'* ]]
+  [[ "$output" == *"out.txt"* ]]
+}
+
+@test "ask: second bare redirect within one segment" {
+  run run_guard 'echo a > /tmp/x 2> err.log'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"err.log"* ]]
+}
+
+@test "block: redirect ask does not skip a later block" {
+  run run_guard 'echo x > out.txt; rm -rf ~'
+  [ "$status" -eq 2 ]
+}
+
+@test "allow: redirect to /dev/null and >&2 stay silent" {
+  run run_guard 'echo hi > /dev/null; echo a >&2'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
