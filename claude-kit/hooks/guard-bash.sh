@@ -209,11 +209,12 @@ _git_has_arg() {
 # Current branch of the repo the segment targets: -C resolved against the
 # payload cwd. Empty outside a repo or on a detached HEAD.
 _git_current_branch() {
+  # _seg_cwd, not the payload cwd: an earlier `cd repo &&` moves the push.
   local dir="${_git_dir/#\~/$HOME}"
   case "$dir" in
-  '') dir="${_cwd:-$PWD}" ;;
+  '') dir="$_seg_cwd" ;;
   /*) ;;
-  *) dir="${_cwd:-$PWD}/$dir" ;;
+  *) dir="$_seg_cwd/$dir" ;;
   esac
   git -C "$dir" branch --show-current 2>/dev/null || true
 }

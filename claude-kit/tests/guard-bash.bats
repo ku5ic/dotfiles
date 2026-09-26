@@ -499,6 +499,15 @@ make_repo() {
   [ "$status" -eq 2 ]
 }
 
+@test "block: cd into a repo on main, then a bare git push" {
+  local main_repo feat_repo
+  main_repo="$(make_repo main)"
+  feat_repo="$(make_repo feat)"
+  run run_guard_in "$feat_repo" "cd $main_repo && git push"
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"push to a protected branch"* ]]
+}
+
 @test "block: git -C . push origin main (global option before subcommand)" {
   run run_guard 'git -C . push origin main'
   [ "$status" -eq 2 ]
