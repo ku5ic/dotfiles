@@ -15,7 +15,7 @@
 #      the window
 #   4. Skills with activations in the window that appear nowhere in
 #      kit.yml (expected for audit, write, meta-*, deps, and
-#      explore-patterns procedure skills, which kit.yml never maps -- not a defect)
+#      investigate procedure skills, which kit.yml never maps -- not a defect)
 #   5. Sessions where a stack-suggested skill was surfaced (a
 #      "suggested-skill" log entry) but never activated in that same
 #      session -- only measurable for entries after inject-context.sh started
@@ -161,7 +161,7 @@ if command -v yq >/dev/null 2>&1 && [[ -f "$stacks_yml" ]]; then
 
   echo
   echo "== 4: activations for skills not referenced anywhere in kit.yml =="
-  echo "(expected for audit, write, meta-*, deps, and explore-patterns procedure skills -- kit.yml only maps pattern/reference skills to stacks, not this group)"
+  echo "(expected for audit, write, meta-*, deps, and investigate procedure skills -- kit.yml only maps pattern/reference skills to stacks, not this group)"
   unreferenced="$(jq -r --argjson referenced "$referenced_json" '
     ([.[] | select(.category=="slash_command" or .category=="skill_tool" or .category=="read_fallback") | .skill] | unique) as $active
     | ($active - $referenced) | sort | .[]

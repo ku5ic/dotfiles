@@ -4,7 +4,7 @@ Explain a bug, feature, module, or section of code to someone new to the codebas
 
 ## When to use this
 
-The subject is already understood well enough to explain - root cause from `explore-patterns`, a feature just built or reviewed, or a module/section of code someone needs oriented to - and the goal is understanding, not a change. Produces a citation-heavy walkthrough for a reader unfamiliar with the code. Use `/write devnote` instead for a short peer-to-peer note on a completed change. Use a direct edit or `/plan` instead when the goal is to change code, not explain it.
+The subject is already understood well enough to explain - root cause from `investigate`, a feature just built or reviewed, or a module/section of code someone needs oriented to - and the goal is understanding, not a change. Produces a citation-heavy walkthrough for a reader unfamiliar with the code. Use `/write devnote` instead for a short peer-to-peer note on a completed change. Use a direct edit or `/plan` instead when the goal is to change code, not explain it.
 
 ## Procedure
 
