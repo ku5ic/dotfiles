@@ -373,6 +373,16 @@ _check_segment() {
   local seg="$1"
   seg="${seg#"${seg%%[![:space:]]*}"}"
   seg="${seg%"${seg##*[![:space:]]}"}"
+  # Grouping, compound-command keywords, and a function definition's header
+  # hide the real first word: (rm -rf ~), { rm; }, ! rm, then rm, f() { rm.
+  local _group_re='^(\(+[[:space:]]*|[{!][[:space:]]+|(then|do|else|time)[[:space:]]+|function[[:space:]]+[^[:space:]({]+([[:space:]]*\(\))?[[:space:]]*\{?[[:space:]]*|[A-Za-z_][A-Za-z0-9_:.-]*[[:space:]]*\(\)[[:space:]]*\{?[[:space:]]*)'
+  while [[ "$seg" =~ $_group_re ]]; do
+    seg="${seg#"${BASH_REMATCH[0]}"}"
+  done
+  while [[ "$seg" == *[')}'] ]]; do
+    seg="${seg%?}"
+    seg="${seg%"${seg##*[![:space:]]}"}"
+  done
   [[ -z "$seg" ]] && return 0
 
   _check_redirects "$seg"
@@ -384,7 +394,7 @@ _check_segment() {
     seg="${seg#"${BASH_REMATCH[0]}"}"
   done
   case "${seg%% *}" in
-  command | env | builtin)
+  command | env | builtin | exec | nohup | nice)
     if [[ "$seg" == *' '* ]]; then
       seg="${seg#* }"
     fi
@@ -396,6 +406,15 @@ _check_segment() {
   done
 
   local lead="${seg%% *}"
+  # "rm", r''m, and /bin/rm all run rm: match on the name without quotes or
+  # directory, and put it back in seg so every arm below sees the plain name.
+  _shell_split "$lead"
+  local _lead_name="${_shell_words[0]:-$lead}"
+  _lead_name="${_lead_name##*/}"
+  if [[ -n "$_lead_name" && "$_lead_name" != "$lead" ]]; then
+    seg="$_lead_name${seg#"$lead"}"
+    lead="$_lead_name"
+  fi
   # The arguments as words, split by read so none is glob-expanded against the
   # hook's cwd. Arms that only want non-option arguments use kit_args instead.
   local -a _words
@@ -794,6 +813,13 @@ _check_segment() {
       block "interpreter -c wrapping bypasses the permission allow list; run the command directly as a Bash tool call" "interpreter-c-wrap"
     fi
     ;;
+  git-base.sh)
+    # An explicit ask: with no decision, a Bash(git-base.sh *) allow rule in
+    # settings would approve --output=<file> silently.
+    if ! _git_base_flags_safe "${seg#"$lead"}"; then
+      force_ask "git-base.sh passes this flag to git, which can write files or run programs; confirm it"
+    fi
+    ;;
   eval)
     # Same bypass as -c: the string runs without being checked as a command.
     block "eval runs a command string that bypasses the permission allow list; run the command directly as a Bash tool call" "interpreter-c-wrap"
@@ -832,6 +858,22 @@ _check_segment() {
     done < <(kit_args "${seg#"$lead"}")
     ;;
   esac
+}
+
+# git-base.sh hands its "-" words ($1) to git diff/log, and some write files
+# (--output=<file>) or run programs (--ext-diff). Only the flags the kit's
+# own skills pass go through without a prompt.
+_git_base_flags_safe() {
+  local word
+  local -a words
+  read -ra words <<<"$1"
+  for word in "${words[@]}"; do
+    case "$word" in
+    -[0-9]* | --diff | --log | --stat | --name-only | --name-status | --no-merges | --oneline | --shortstat) ;;
+    -*) return 1 ;;
+    esac
+  done
+  return 0
 }
 
 # A shell named as a command word on a heredoc's line: bash <<EOF, | sh.
@@ -875,8 +917,8 @@ _sub_end() {
 # - A heredoc body is data and skipped, unless its line mentions a shell
 #   (bash <<EOF, cat <<EOF | sh): then the body is commands, split and printed.
 _split_segments() {
-  local s="$1" c next prev="" q="" seg="" line="" i j body delim quote pos rest text cmp
-  local bt='`' nl=$'\n' tab=$'\t'
+  local s="$1" c next prev="" q="" seg="" line="" i j body delim quote pos rest text cmp closed
+  local bt='`' nl=$'\n'
   local -a hd_delims=() hd_dashes=()
   for ((i = 0; i < ${#s}; i++)); do
     c="${s:i:1}"
@@ -887,13 +929,34 @@ _split_segments() {
       [[ "$c" == "'" ]] && q=""
       continue
     fi
+    # $'...': single-quoted, but a backslash escapes, so \' doesn't close it.
+    if [[ "$q" == A ]]; then
+      if [[ "$c" == "\\" ]]; then
+        seg+="$c$next"
+        line+="$c$next"
+        i=$((i + 1))
+      else
+        seg+="$c"
+        line+="$c"
+        [[ "$c" == "'" ]] && q=""
+      fi
+      continue
+    fi
+    if [[ -z "$q" && "$c" == '$' && "$next" == "'" ]]; then
+      q=A
+      seg+="\$'"
+      line+="\$'"
+      i=$((i + 1))
+      continue
+    fi
     if [[ "$c" == "\\" ]]; then
       seg+="$c$next"
       line+="$c$next"
       i=$((i + 1))
       continue
     fi
-    if [[ "$c" == '$' && "$next" == '(' ]]; then
+    # $( ), and unquoted <( ) and >( ) process substitutions.
+    if [[ "$next" == '(' ]] && [[ "$c" == '$' || (-z "$q" && ("$c" == '<' || "$c" == '>')) ]]; then
       _sub_end "$s" $((i + 2))
       j=$_sub_end_idx
       ((j >= 0)) || j=${#s}
@@ -905,12 +968,23 @@ _split_segments() {
       continue
     fi
     if [[ "$c" == "$bt" ]]; then
-      rest="${s:i+1}"
-      body="${rest%%"$bt"*}"
+      # The body runs to the first unescaped backtick; an escaped one is a
+      # nested substitution, unescaped before the body is split.
+      body=""
+      for ((j = i + 1; j < ${#s}; j++)); do
+        if [[ "${s:j:1}" == "\\" && "${s:j+1:1}" == "$bt" ]]; then
+          body+="$bt"
+          j=$((j + 1))
+        elif [[ "${s:j:1}" == "$bt" ]]; then
+          break
+        else
+          body+="${s:j:1}"
+        fi
+      done
       _split_segments "$body"
-      seg+="$bt$body$bt"
-      line+="$bt$body$bt"
-      i=$((i + ${#body} + 1))
+      seg+="${s:i:j-i+1}"
+      line+="${s:i:j-i+1}"
+      i=$j
       continue
     fi
     if [[ "$q" == '"' ]]; then
@@ -927,7 +1001,12 @@ _split_segments() {
       rest="${s:i}"
       text="${rest%%"$nl"*}"
       i=$((i + ${#text} - 1))
-    elif [[ "$c$next" == '<<' && "${s:i+2:1}" != '<' ]]; then
+    elif [[ "${s:i:3}" == '<<<' ]]; then
+      # A here-string, not a heredoc: its word is a plain argument.
+      seg+='<<<'
+      line+='<<<'
+      i=$((i + 2))
+    elif [[ "$c$next" == '<<' ]]; then
       j=$((i + 2))
       hd_dashes+=("$([[ "${s:j:1}" == - ]] && echo 1 || echo 0)")
       [[ "${s:j:1}" == - ]] && j=$((j + 1))
@@ -953,16 +1032,24 @@ _split_segments() {
         pos=$((i + 1))
         for ((j = 0; j < ${#hd_delims[@]}; j++)); do
           body=""
+          closed=0
           while ((pos < ${#s})); do
             rest="${s:pos}"
             text="${rest%%"$nl"*}"
             pos=$((pos + ${#text} + 1))
             cmp="$text"
-            [[ "${hd_dashes[j]}" == 1 ]] && cmp="${cmp#"${cmp%%[!"$tab"]*}"}"
-            [[ "$cmp" == "${hd_delims[j]}" ]] && break
+            # <<- strips leading tabs; norm has already turned tabs into
+            # spaces, so strip both.
+            [[ "${hd_dashes[j]}" == 1 ]] && cmp="${cmp#"${cmp%%[![:blank:]]*}"}"
+            if [[ "$cmp" == "${hd_delims[j]}" ]]; then
+              closed=1
+              break
+            fi
             body+="$text$nl"
           done
-          if [[ "$line" =~ $_shell_word_re ]]; then
+          # Fail closed: a body that never meets its terminator, or one fed
+          # to a shell, is checked as commands.
+          if ((! closed)) || [[ "$line" =~ $_shell_word_re ]]; then
             _split_segments "$body"
           fi
         done
@@ -1005,26 +1092,10 @@ _is_kit_readonly_call() {
   [[ "$cmd" == *[$metachars]* || "$cmd" == *'$('* ]] && return 1
   for script in "${KIT_READONLY_SCRIPTS[@]}"; do
     [[ "${norm%% *}" == "$script" ]] || continue
-    [[ "$script" == git-base.sh ]] && ! _git_base_flags_safe && return 1
+    [[ "$script" == git-base.sh ]] && ! _git_base_flags_safe "${norm#git-base.sh}" && return 1
     return 0
   done
   return 1
-}
-
-# git-base.sh hands its "-" words to git diff/log, and some write files
-# (--output=<file>) or run programs (--ext-diff). Only the flags the kit's
-# own skills pass are allowed without a prompt.
-_git_base_flags_safe() {
-  local word
-  local -a words
-  read -ra words <<<"${norm#git-base.sh}"
-  for word in "${words[@]}"; do
-    case "$word" in
-    -[0-9]* | --diff | --log | --stat | --name-only | --name-status | --no-merges | --oneline | --shortstat) ;;
-    -*) return 1 ;;
-    esac
-  done
-  return 0
 }
 
 if [[ -n "$pending_decision" ]]; then
