@@ -108,6 +108,9 @@ skill_file_map:
   - on: basename
     globs: ["manage.py"]
     skills: [django-patterns]
+  - on: basename
+    globs: ["*.graphql", "*.gql"]
+    skills: [graphql-patterns]
 
 # Action-conditioned trigger phrases for every skill any stack/extra maps to.
 # Consumed by hooks/inject-context.sh to build the <suggested-skills> block.
@@ -123,6 +126,7 @@ skill_triggers:
   vue-patterns: "before building or restructuring Vue components, composables, or reactivity"
   nuxt-patterns: "before working on Nuxt routing, server routes, or module config"
   tailwind-patterns: "before utility-class styling or design-token work"
+  graphql-patterns: "before writing GraphQL operations or fragments, or changing the Apollo cache or codegen config"
   test-patterns: "before writing or restructuring tests, fixtures, or assertions"
   python-patterns: "before writing or restructuring Python modules, classes, or packaging"
   django-patterns: "before modeling, migrations, or view work in a Django app"
@@ -412,6 +416,12 @@ stacks:
       - name: tailwindcss
         dep: tailwindcss
         skills: [tailwind-patterns]
+      - name: graphql
+        any_of:
+          - file: codegen.ts
+          - grep: '"(graphql|@apollo/client|urql|graphql-request)"[[:space:]]*:'
+            in: [package.json]
+        skills: [graphql-patterns]
       - name: vitest
         dep: vitest
         skills: [test-patterns]
