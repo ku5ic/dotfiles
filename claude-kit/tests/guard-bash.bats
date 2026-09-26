@@ -762,6 +762,52 @@ make_repo() {
   [ -z "$output" ]
 }
 
+# Hard rule: curl and wget downloads land only in scratch.
+
+@test "download blocks: every target outside scratch" {
+  local cmd
+  for cmd in \
+    'curl -O https://x.example/a.js' \
+    'curl -fsSL https://x.example/README.md -o README.md' \
+    'curl --output=README.md https://x.example/r' \
+    'curl https://x.example/r > out.txt' \
+    'curl -s https://x.example/r >>log.txt' \
+    'curl -o /tmp/a.js https://x.example/a.js' \
+    'curl -o .claude/scratch/../../a.js https://x.example/a.js' \
+    'curl -o "$OUT" https://x.example/a.js' \
+    'curl -O --output-dir /tmp https://x.example/a.js' \
+    'wget https://x.example/a.js' \
+    'wget -O page.html https://x.example/' \
+    'wget -Opage.html https://x.example/' \
+    'wget -P downloads https://x.example/a.js'; do
+    run run_guard_in "$BATS_TEST_TMPDIR" "$cmd"
+    [ "$status" -eq 2 ] || {
+      echo "not blocked: $cmd"
+      return 1
+    }
+  done
+}
+
+@test "download passes: stdout, /dev/null, and scratch targets" {
+  local cmd
+  for cmd in \
+    'curl -fsSL https://x.example/r | rg foo' \
+    'curl -s https://x.example/r 2>/dev/null' \
+    'curl -o "$(scratch-dir.sh)/a.js" https://x.example/a.js' \
+    'curl -O --output-dir "$(scratch-dir.sh)" https://x.example/a.js' \
+    "curl -o $BATS_TEST_TMPDIR/.claude/scratch/a.js https://x.example/a.js" \
+    'curl -o .claude/scratch/a.js https://x.example/a.js' \
+    'curl -o ~/.claude/scratch/a.js https://x.example/a.js' \
+    'wget -O - https://x.example/r' \
+    'wget -P "$(scratch-dir.sh)" https://x.example/a.js'; do
+    run run_guard_in "$BATS_TEST_TMPDIR" "$cmd"
+    [ "$status" -eq 0 ] && [[ "$output" != *'"ask"'* ]] || {
+      echo "not passed: $cmd -> $status $output"
+      return 1
+    }
+  done
+}
+
 # Side-effect-free kit scripts get an explicit allow decision
 
 @test "auto-allow: scratch-dir.sh" {

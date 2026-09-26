@@ -93,6 +93,43 @@ _is_loose_write_target() {
   return 0
 }
 
+# Returns 0 when download target $1 is stdout, /dev/null, or inside a
+# .claude/scratch directory. A $(scratch-dir.sh) target counts; any other
+# unexpanded variable, and any "..", does not, since it can't be checked.
+_is_scratch_target() {
+  local p="$1"
+  p="${p#[\"\']}"
+  p="${p%[\"\']}"
+  # shellcheck disable=SC2016  # matching the literal command substitution
+  case "$p" in
+  - | /dev/null | '&'[0-9] | '$(scratch-dir.sh)' | '$(scratch-dir.sh)/'* | '`scratch-dir.sh`' | '`scratch-dir.sh`/'*) return 0 ;;
+  esac
+  p="${p/#\~/$HOME}"
+  p="${p/#\$HOME/$HOME}"
+  p="${p/#\$\{HOME\}/$HOME}"
+  [[ "$p" != *'$'* && "$p" != *'`'* && "$p" != *..* ]] || return 1
+  [[ "$p" == /* ]] || p="$_seg_cwd/$p"
+  [[ "$p" == */.claude/scratch || "$p" == */.claude/scratch/* ]]
+}
+
+# block_download <tool> <target>: the hard rule, downloads land in scratch.
+block_download() {
+  block "$1 would write '$2' outside scratch; downloads go only to scratch: $1 ${3:-} \"\$(scratch-dir.sh)/<name>\"" "download-to-repo"
+}
+
+# Every > target in words $@ that isn't scratch, printed one per line.
+_non_scratch_redirects() {
+  local i word target
+  local -a words=("$@")
+  for ((i = 0; i < ${#words[@]}; i++)); do
+    word="${words[i]}"
+    [[ "$word" == *'>'* ]] || continue
+    target="${word##*>}"
+    [[ -n "$target" ]] || target="${words[i + 1]:-}"
+    if ! _is_scratch_target "$target"; then printf '%s\n' "$target"; fi
+  done
+}
+
 # Returns 0 when ref $1 names a protected branch, ignoring refs/heads/,
 # refs/remotes/<remote>/, and origin/ prefixes.
 _is_protected_branch() {
@@ -556,20 +593,29 @@ _check_segment() {
     block "this repo uses ${_expected} (${_lf_found}); rerun as: ${_suggest}" "pm-mismatch"
     ;;
   curl)
-    # -O/-J let the server name the file and drop it in cwd; there is no case
-    # where that is intended. An explicit -o/--output-dir target still has to
-    # resolve outside the repo, so a relative one gets a prompt.
-    local _word _remote=0 _want_target=0 _target=""
+    # Hard rule: a download lands only in scratch. Every -o/--output file and
+    # --output-dir, and every > redirect, must be a scratch path. -O/-J name
+    # the file after the server and write to cwd, unless --output-dir says
+    # otherwise.
+    local _word _remote=0 _want_target=0 _outdir="" _target
+    local -a _targets=()
     for _word in "${_words[@]}"; do
       if ((_want_target)); then
-        _target="$_word"
+        _targets+=("$_word")
+        [[ "$_want_target" == 2 ]] && _outdir="$_word"
         _want_target=0
         continue
       fi
       case "$_word" in
       --) break ;;
       --remote-name | --remote-name-all | --remote-header-name) _remote=1 ;;
-      --output | --output-dir) _want_target=1 ;;
+      --output) _want_target=1 ;;
+      --output-dir) _want_target=2 ;;
+      --output=*) _targets+=("${_word#*=}") ;;
+      --output-dir=*)
+        _outdir="${_word#*=}"
+        _targets+=("$_outdir")
+        ;;
       --*) ;;
       -*)
         [[ "$_word" == *O* || "$_word" == *J* ]] && _remote=1
@@ -578,38 +624,31 @@ _check_segment() {
         ;;
       esac
     done
-    if ((_remote)); then
+    if ((_remote)) && [[ -z "$_outdir" ]]; then
       block "curl -O/-J writes a server-named file into the current directory; use: curl -o \"\$(scratch-dir.sh)/<name>\"" "download-to-repo"
     fi
-    if _is_loose_write_target "$_target"; then
-      force_ask "curl would write '${_target}' into the repo; rules/tooling.md wants \$(scratch-dir.sh)/<name>. Confirm only if this file belongs in the project tree."
-    fi
+    for _target in "${_targets[@]}"; do
+      _is_scratch_target "$_target" || block_download curl "$_target" -o
+    done
+    while IFS= read -r _target; do
+      block_download curl "$_target" -o
+    done < <(_non_scratch_redirects "${_words[@]}")
     ;;
   wget)
-    # wget's default is to write into cwd, so an output flag is mandatory.
-    # -O - is stdout; -P names a directory, -O a file. Both get path-checked.
-    local _word _want_doc=0 _want_dir=0 _doc="" _dir="" _has_out=0
+    # Hard rule: a download lands only in scratch. wget writes into cwd by
+    # default, so an output flag is mandatory; -O - is stdout.
+    local _word _want_doc=0 _want_dir=0 _has_out=0 _target
+    local -a _targets=()
     for _word in "${_words[@]}"; do
-      if ((_want_doc)); then
-        _doc="$_word"
-        _want_doc=0
-        _has_out=1
-        continue
-      fi
-      if ((_want_dir)); then
-        _dir="$_word"
-        _want_dir=0
-        _has_out=1
+      if ((_want_doc || _want_dir)); then
+        _targets+=("$_word")
+        _want_doc=0 _want_dir=0 _has_out=1
         continue
       fi
       case "$_word" in
       --) break ;;
-      --output-document=*)
-        _doc="${_word#*=}"
-        _has_out=1
-        ;;
-      --directory-prefix=*)
-        _dir="${_word#*=}"
+      --output-document=* | --directory-prefix=*)
+        _targets+=("${_word#*=}")
         _has_out=1
         ;;
       --output-document) _want_doc=1 ;;
@@ -617,16 +656,22 @@ _check_segment() {
       --*) ;;
       -O) _want_doc=1 ;;
       -P) _want_dir=1 ;;
+      -O?* | -P?*)
+        _targets+=("${_word#-?}")
+        _has_out=1
+        ;;
       -*) ;;
       esac
     done
     if ((_has_out == 0)); then
       block "wget writes into the current directory by default; use: wget -P \"\$(scratch-dir.sh)\" <url>" "download-to-repo"
     fi
-    local _wtarget="${_doc:-$_dir}"
-    if _is_loose_write_target "$_wtarget"; then
-      force_ask "wget would write '${_wtarget}' into the repo; rules/tooling.md wants \$(scratch-dir.sh). Confirm only if this file belongs in the project tree."
-    fi
+    for _target in "${_targets[@]}"; do
+      _is_scratch_target "$_target" || block_download wget "$_target" -O
+    done
+    while IFS= read -r _target; do
+      block_download wget "$_target" -O
+    done < <(_non_scratch_redirects "${_words[@]}")
     ;;
   cat | bat | head | tail | less | more | strings)
     local _path
