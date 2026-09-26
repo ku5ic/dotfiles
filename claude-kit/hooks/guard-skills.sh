@@ -3,7 +3,7 @@
 # types until the required patterns skill is loaded for this session - one
 # extra round trip per skill-set per session, by design. Reads are not
 # gated: reading a file is not writing it. Callable standalone or sourced by
-# guard-dispatch.sh for the Edit|Write|MultiEdit path.
+# guard-dispatch.sh, which also runs on Read.
 HOOK_NAME="guard-skills.sh"
 # shellcheck source=../bin/_lib.sh
 source "$(dirname "$0")/../bin/_lib.sh"
@@ -12,6 +12,12 @@ kit_hook_init
 run_guard_skills() {
   # See run_guard_edit.sh - same HOOK_NAME shadowing need.
   local HOOK_NAME="guard-skills.sh"
+  # guard-dispatch.sh also runs on Read, for guard-edit's credential check;
+  # this gate only ever meant writes.
+  case "$(printf '%s' "$payload" | jq -r '.tool_name // empty')" in
+  Edit | Write | MultiEdit) ;;
+  *) return 0 ;;
+  esac
   path="$(extract_path)"
   [[ -z "$path" ]] && return 0
 

@@ -187,3 +187,71 @@ run_dispatch_isolated() {
   [ "$status" -eq 2 ]
   [[ "$output" == *"bash-patterns"* ]]
 }
+
+# Read: guard-edit's credential check applies; the skills gate does not.
+
+# sensitive_paths plus a skill map that gates *.tsx and *.sh edits.
+setup_read_guards() {
+  cat >"$FAKE_HOME/.claude/kit.yml" <<'YAML'
+sensitive_paths: [".env", ".env.*", "~/.ssh/"]
+extra_lockfiles: [package-lock.json]
+skill_file_map:
+  - on: basename
+    globs: ["*.tsx", "*.sh"]
+    skills: [react-patterns]
+YAML
+  : >"$FAKE_HOME/.claude/logs/skills.jsonl"
+}
+
+@test "Read of .env is blocked" {
+  setup_read_guards
+  run run_dispatch '/tmp/project/.env' '' s1 Read
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"reading a credential or key file"* ]]
+}
+
+@test "Read of .env.local is blocked" {
+  setup_read_guards
+  run run_dispatch '/tmp/project/.env.local' '' s1 Read
+  [ "$status" -eq 2 ]
+}
+
+@test "Read under ~/.ssh is blocked" {
+  setup_read_guards
+  run run_dispatch "$FAKE_HOME/.ssh/id_ed25519" '' s1 Read
+  [ "$status" -eq 2 ]
+}
+
+@test "Write of .env is blocked" {
+  setup_read_guards
+  run run_dispatch '/tmp/project/.env' 'KEY=1' s1 Write
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"writing a credential or key file"* ]]
+}
+
+@test "Read of a .tsx passes with the skills gate on and no skills loaded" {
+  setup_read_guards
+  run run_dispatch '/tmp/project/App.tsx' '' s1 Read
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "the same .tsx is still gated for an Edit" {
+  setup_read_guards
+  run run_dispatch '/tmp/project/App.tsx' 'x' s1 Edit
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"react-patterns"* ]]
+}
+
+@test "Read of a lockfile passes; the lockfile check guards writes only" {
+  setup_read_guards
+  run run_dispatch '/tmp/project/package-lock.json' '' s1 Read
+  [ "$status" -eq 0 ]
+}
+
+@test "disabling sensitive-read lets the Read through" {
+  setup_read_guards
+  printf 'disabled_rules: [sensitive-read]\n' >"$FAKE_HOME/.claude/claude-kit.local.yml"
+  run run_dispatch '/tmp/project/.env' '' s1 Read
+  [ "$status" -eq 0 ]
+}
