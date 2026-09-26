@@ -776,6 +776,12 @@ make_repo() {
   [[ "$output" == *'"permissionDecision":"allow"'* ]]
 }
 
+@test "auto-allow: blast-radius.sh with a file and symbol" {
+  run run_guard 'blast-radius.sh src/lib/format.ts formatDate'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *'"permissionDecision":"allow"'* ]]
+}
+
 @test "ask: kit script with a redirect asks instead of allowing" {
   run run_guard 'scratch-dir.sh > f'
   [ "$status" -eq 0 ]
