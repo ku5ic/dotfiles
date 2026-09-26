@@ -28,11 +28,12 @@ if [[ "${1:-}" == --only ]]; then
   only=("$@")
 fi
 
-root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-cd "$root" || exit 1
-
+# Before the cd: a relative script path only resolves from the caller's cwd.
 # shellcheck source=_lib.sh
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
+
+root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$root" || exit 1
 kit_stacks_load
 
 pass=0

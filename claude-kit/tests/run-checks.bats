@@ -459,6 +459,21 @@ YAML
 
 # summary line
 
+@test "a relative script path from a subdirectory still finds the lib" {
+  printf 'module example.com/fixture\n\ngo 1.22\n' >"$PROJECT_DIR/go.mod"
+  mkdir -p "$PROJECT_DIR/sub"
+  stub_bin go 0
+  git -C "$PROJECT_DIR" add -A
+  # ../ up to /, then the script's absolute path: relative from sub/.
+  local sub up="" script
+  sub="$(cd "$PROJECT_DIR/sub" && pwd -P)"
+  script="$(cd "$BATS_TEST_DIRNAME/../bin" && pwd)/run-checks.sh"
+  up="$(printf '%s' "${sub//[!\/]/}" | sed 's|/|../|g')"
+  cd "$sub"
+  run "$up${script#/}"
+  [[ "$output" == *"PASS go: vet"* ]]
+}
+
 @test "summary line reports pass/fail/skip counts" {
   printf '{}' >"$PROJECT_DIR/package.json"
   run run_checks
