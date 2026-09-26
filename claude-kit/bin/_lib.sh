@@ -189,6 +189,30 @@ log_event() {
     >>"$KIT_LOG_DIR/$log.jsonl" 2>/dev/null || true
 }
 
+# kit_args <words>
+# Prints the non-option words of a command's argument string, one per line:
+# words starting with "-" are skipped until a "--", after which every word
+# counts. Split with read, so no word is ever glob-expanded against the
+# caller's cwd. Options that take a separate value word aren't known here;
+# callers needing those walk the words themselves.
+kit_args() {
+  local word opts_done=0
+  local -a words
+  read -ra words <<<"$1"
+  for word in "${words[@]}"; do
+    if ((! opts_done)); then
+      case "$word" in
+      --)
+        opts_done=1
+        continue
+        ;;
+      -*) continue ;;
+      esac
+    fi
+    printf '%s\n' "$word"
+  done
+}
+
 # True when rule slug $1 is listed in kit.yml's disabled_rules.
 kit_rule_disabled() {
   kit_stacks_load

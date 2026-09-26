@@ -171,6 +171,21 @@ services/api" ]
 a/b/c/d" ]
 }
 
+# kit_args
+
+@test "kit_args skips options and keeps everything after --" {
+  run kit_args '-n -- -weird-name file.txt'
+  [ "$output" = "-weird-name
+file.txt" ]
+}
+
+@test "kit_args never glob-expands a word against the cwd" {
+  cd "$F"
+  touch a.txt b.txt
+  run kit_args '-v *.txt'
+  [ "$output" = "*.txt" ]
+}
+
 @test "kit_subprojects reads go.work and Cargo workspace members" {
   git init -q -b main "$F"
   mkdir -p "$F/svc" "$F/tools" "$F/crates/x"

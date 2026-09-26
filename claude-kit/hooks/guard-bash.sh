@@ -306,6 +306,10 @@ _check_segment() {
   done
 
   local lead="${seg%% *}"
+  # The arguments as words, split by read so none is glob-expanded against the
+  # hook's cwd. Arms that only want non-option arguments use kit_args instead.
+  local -a _words
+  read -ra _words <<<"${seg#"$lead"}"
 
   case "$lead" in
   cd)
@@ -320,12 +324,12 @@ _check_segment() {
     ;;
   rm)
     # Whole tokens only: rm -rf *.log and rm -rf dist/* stay allowed.
-    local _rarg _rforce=0 _rbroad=0
+    local _rword _rforce=0 _rbroad=0
     local -a _rwords
     read -ra _rwords <<<"${seg#rm}"
-    for _rarg in "${_rwords[@]}"; do
+    for _rword in "${_rwords[@]}"; do
       # shellcheck disable=SC2016,SC2088  # literal ~ and $HOME tokens are the point
-      case "$_rarg" in
+      case "$_rword" in
       --recursive | --force) _rforce=1 ;;
       --*) ;;
       -*[rRfF]*) _rforce=1 ;;
@@ -352,7 +356,7 @@ _check_segment() {
     ;;
   git)
     _git_parse "$seg"
-    local _garg
+    local _ref
     case "$_git_sub" in
     commit | push | merge | rebase)
       if _git_has_arg --no-verify; then
@@ -365,11 +369,11 @@ _check_segment() {
     commit) _check_git_commit ;;
     reset)
       if _git_has_arg --hard; then
-        for _garg in "${_git_args[@]}"; do
-          if _is_protected_branch "$_garg"; then
+        while IFS= read -r _ref; do
+          if _is_protected_branch "$_ref"; then
             block "git reset --hard on protected branch" "git-reset-hard"
           fi
-        done
+        done < <(kit_args "${_git_args[*]}")
       fi
       ;;
     config)
@@ -555,22 +559,22 @@ _check_segment() {
     # -O/-J let the server name the file and drop it in cwd; there is no case
     # where that is intended. An explicit -o/--output-dir target still has to
     # resolve outside the repo, so a relative one gets a prompt.
-    local _carg _remote=0 _want_target=0 _target=""
-    for _carg in ${seg#"$lead"}; do
+    local _word _remote=0 _want_target=0 _target=""
+    for _word in "${_words[@]}"; do
       if ((_want_target)); then
-        _target="$_carg"
+        _target="$_word"
         _want_target=0
         continue
       fi
-      case "$_carg" in
+      case "$_word" in
       --) break ;;
       --remote-name | --remote-name-all | --remote-header-name) _remote=1 ;;
       --output | --output-dir) _want_target=1 ;;
       --*) ;;
       -*)
-        [[ "$_carg" == *O* || "$_carg" == *J* ]] && _remote=1
+        [[ "$_word" == *O* || "$_word" == *J* ]] && _remote=1
         # Only a trailing -o consumes the next word as its value.
-        [[ "$_carg" == *o ]] && _want_target=1
+        [[ "$_word" == *o ]] && _want_target=1
         ;;
       esac
     done
@@ -584,28 +588,28 @@ _check_segment() {
   wget)
     # wget's default is to write into cwd, so an output flag is mandatory.
     # -O - is stdout; -P names a directory, -O a file. Both get path-checked.
-    local _warg _want_doc=0 _want_dir=0 _doc="" _dir="" _has_out=0
-    for _warg in ${seg#"$lead"}; do
+    local _word _want_doc=0 _want_dir=0 _doc="" _dir="" _has_out=0
+    for _word in "${_words[@]}"; do
       if ((_want_doc)); then
-        _doc="$_warg"
+        _doc="$_word"
         _want_doc=0
         _has_out=1
         continue
       fi
       if ((_want_dir)); then
-        _dir="$_warg"
+        _dir="$_word"
         _want_dir=0
         _has_out=1
         continue
       fi
-      case "$_warg" in
+      case "$_word" in
       --) break ;;
       --output-document=*)
-        _doc="${_warg#*=}"
+        _doc="${_word#*=}"
         _has_out=1
         ;;
       --directory-prefix=*)
-        _dir="${_warg#*=}"
+        _dir="${_word#*=}"
         _has_out=1
         ;;
       --output-document) _want_doc=1 ;;
@@ -625,46 +629,34 @@ _check_segment() {
     fi
     ;;
   cat | bat | head | tail | less | more | strings)
-    local _sarg
-    for _sarg in ${seg#"$lead"}; do
-      case "$_sarg" in
-      --) break ;;
-      -*) ;;
-      *)
-        if kit_is_sensitive_path "$_sarg"; then
-          block "reading a sensitive file is not permitted" "sensitive-read"
-        fi
-        ;;
-      esac
-    done
+    local _path
+    while IFS= read -r _path; do
+      if kit_is_sensitive_path "$_path"; then
+        block "reading a sensitive file is not permitted" "sensitive-read"
+      fi
+    done < <(kit_args "${seg#"$lead"}")
     ;;
   grep | rg)
     # The first non-option argument is the search pattern, not a path; skip it.
-    local _sarg _seen_pat=0
-    for _sarg in ${seg#"$lead"}; do
-      case "$_sarg" in
-      --) break ;;
-      -*) ;;
-      *)
-        if ((_seen_pat == 0)); then
-          _seen_pat=1
-        elif kit_is_sensitive_path "$_sarg"; then
-          block "reading a sensitive file is not permitted" "sensitive-read"
-        fi
-        ;;
-      esac
-    done
+    local _path _seen_pat=0
+    while IFS= read -r _path; do
+      if ((_seen_pat == 0)); then
+        _seen_pat=1
+      elif kit_is_sensitive_path "$_path"; then
+        block "reading a sensitive file is not permitted" "sensitive-read"
+      fi
+    done < <(kit_args "${seg#"$lead"}")
     ;;
   sh | bash | zsh | dash)
     # -c wrapping runs an arbitrary command string that never surfaces as its
     # own Bash tool call, bypassing the permission allow list. Scan
     # short-option clusters only; long options like --login can't carry -c.
-    local _iarg _interp_c=0
-    for _iarg in ${seg#"$lead"}; do
-      case "$_iarg" in
+    local _word _interp_c=0
+    for _word in "${_words[@]}"; do
+      case "$_word" in
       --) break ;;
       --*) ;;
-      -*) [[ "$_iarg" == *c* ]] && _interp_c=1 ;;
+      -*) [[ "$_word" == *c* ]] && _interp_c=1 ;;
       *) break ;;
       esac
     done
@@ -675,47 +667,35 @@ _check_segment() {
   sed)
     # Catches sed -i on rc files; the full-string guard above only catches
     # a > redirect into one, not sed -i.
-    local _has_i=0 _sarg
-    for _sarg in ${seg#"$lead"}; do
-      case "$_sarg" in
+    local _word _path _has_i=0
+    for _word in "${_words[@]}"; do
+      case "$_word" in
       --) break ;;
-      -*) [[ "$_sarg" == *i* ]] && _has_i=1 ;;
+      -*) [[ "$_word" == *i* ]] && _has_i=1 ;;
       esac
     done
     if ((_has_i)); then
-      for _sarg in ${seg#"$lead"}; do
-        case "$_sarg" in
-        --) break ;;
-        -*) ;;
-        *)
-          if kit_is_rc_file "$_sarg"; then
-            block "in-place edit of a shell rc file. Use the dotfiles repo." "rc-inplace-edit"
-          fi
-          if _is_overlay_arg "$_sarg"; then
-            force_ask "$_OVERLAY_ASK"
-          fi
-          ;;
-        esac
-      done
+      while IFS= read -r _path; do
+        if kit_is_rc_file "$_path"; then
+          block "in-place edit of a shell rc file. Use the dotfiles repo." "rc-inplace-edit"
+        fi
+        if _is_overlay_arg "$_path"; then
+          force_ask "$_OVERLAY_ASK"
+        fi
+      done < <(kit_args "${seg#"$lead"}")
     fi
     ;;
   sd)
     # Always in-place when given a file argument; no flag check needed.
-    local _sarg
-    for _sarg in ${seg#"$lead"}; do
-      case "$_sarg" in
-      --) break ;;
-      -*) ;;
-      *)
-        if kit_is_rc_file "$_sarg"; then
-          block "in-place edit of a shell rc file. Use the dotfiles repo." "rc-inplace-edit"
-        fi
-        if _is_overlay_arg "$_sarg"; then
-          force_ask "$_OVERLAY_ASK"
-        fi
-        ;;
-      esac
-    done
+    local _path
+    while IFS= read -r _path; do
+      if kit_is_rc_file "$_path"; then
+        block "in-place edit of a shell rc file. Use the dotfiles repo." "rc-inplace-edit"
+      fi
+      if _is_overlay_arg "$_path"; then
+        force_ask "$_OVERLAY_ASK"
+      fi
+    done < <(kit_args "${seg#"$lead"}")
     ;;
   esac
 }

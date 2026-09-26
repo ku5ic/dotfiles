@@ -245,6 +245,7 @@ YAML
 }
 
 @test "an uncached skill still fails open when the skills log is unreadable" {
+  ((EUID != 0)) || skip "root reads a chmod 000 file, so the log is never unreadable"
   write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename

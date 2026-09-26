@@ -933,6 +933,34 @@ setup_overlay() {
   [ -z "$output" ]
 }
 
+# Sensitive reads through shell commands (kit.yml sensitive_paths)
+
+@test "block: cat ~/.aws/credentials" {
+  run run_guard 'cat ~/.aws/credentials'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"reading a sensitive file"* ]]
+}
+
+@test "block: a sensitive path after -- still counts" {
+  run run_guard 'cat -- ~/.ssh/id_rsa'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: grep reading .env as a file" {
+  run run_guard 'grep API_KEY .env'
+  [ "$status" -eq 2 ]
+}
+
+@test "allow: rg with .env only as the search pattern" {
+  run run_guard 'rg .env src/'
+  [ "$status" -eq 0 ]
+}
+
+@test "allow: head of an ordinary file" {
+  run run_guard 'head -20 README.md'
+  [ "$status" -eq 0 ]
+}
+
 # Guard telemetry and per-rule opt-out
 
 @test "a block is logged to guards.jsonl with its rule slug" {
