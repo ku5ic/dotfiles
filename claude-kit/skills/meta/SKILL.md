@@ -1,6 +1,6 @@
 ---
-description: Authoring and reflection - sharpen a prompt, refresh reference skills against current releases, or run a retrospective
-argument-hint: <prompt|refresh|retro> [kind arguments]
+description: Authoring and reflection - sharpen a prompt, refresh reference skills against current releases, draft a new pattern skill pack, or run a retrospective
+argument-hint: <prompt|refresh|skill|retro> [kind arguments]
 disable-model-invocation: true
 ---
 
@@ -12,6 +12,7 @@ The first word of the arguments is the kind; everything after it is the kind's a
 | --------- | -------------------------------------------------- |
 | `prompt`  | [references/prompt.md](references/prompt.md)       |
 | `refresh` | [references/refresh.md](references/refresh.md)     |
+| `skill`   | [references/skill.md](references/skill.md)         |
 | `retro`   | [references/retro.md](references/retro.md)         |
 
 1. Missing or unknown kind: ask via AskUserQuestion with the kinds above as options.
