@@ -112,6 +112,9 @@ skill_file_map:
     globs: ["*.graphql", "*.gql"]
     skills: [graphql-patterns]
   - on: basename
+    globs: ["*.stories.*"]
+    skills: [storybook-patterns]
+  - on: basename
     globs: ["*.tf", "*.tfvars"]
     skills: [opentofu-patterns]
 
@@ -130,6 +133,7 @@ skill_triggers:
   nuxt-patterns: "before working on Nuxt routing, server routes, or module config"
   tailwind-patterns: "before utility-class styling or design-token work"
   graphql-patterns: "before writing GraphQL operations or fragments, or changing the Apollo cache or codegen config"
+  storybook-patterns: "before writing or changing stories, play functions, or Storybook config"
   test-patterns: "before writing or restructuring tests, fixtures, or assertions"
   python-patterns: "before writing or restructuring Python modules, classes, or packaging"
   django-patterns: "before modeling, migrations, or view work in a Django app"
@@ -429,6 +433,14 @@ stacks:
           - grep: '"(graphql|@apollo/client|urql|graphql-request)"[[:space:]]*:'
             in: [package.json]
         skills: [graphql-patterns]
+      # The grep also matches a "storybook" script; either way Storybook is in use.
+      - name: storybook
+        any_of:
+          - file: .storybook/main.ts
+          - file: .storybook/main.js
+          - grep: '"storybook"[[:space:]]*:'
+            in: [package.json]
+        skills: [storybook-patterns]
       - name: vitest
         dep: vitest
         skills: [test-patterns]
