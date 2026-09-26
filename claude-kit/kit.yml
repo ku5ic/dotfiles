@@ -212,6 +212,79 @@ log_max_lines: 10000
 # the overlay: a disabled rule is still logged, as "disabled".
 disabled_rules: []
 
+# Task runners and where their task names live. Consumed through the cached
+# arrays in bin/_lib.sh (kit_tasks); nothing here reaches eval.
+#   manifests: file names checked in order; the first that exists is read
+#   extractor: one of json_keys, json_array, toml_keys, toml_array,
+#              yaml_array, make_targets, just_recipes, regex_lines
+#   arg:       the extractor's argument: a dotted path, or an ERE whose last
+#              capture group is the task name (regex_lines)
+#   run:       command template; {task} is the task, {pm} the package manager
+#              resolved for the directory (npm when none)
+#   run_by_pm: run templates that replace run under a given package manager
+task_providers:
+  - name: package-scripts
+    stack: js
+    manifests: [package.json]
+    extractor: json_keys
+    arg: .scripts
+    run: "{pm} run {task}"
+  - name: make
+    manifests: [Makefile, makefile, GNUmakefile]
+    extractor: make_targets
+    run: "make {task}"
+  - name: just
+    manifests: [justfile, Justfile, .justfile]
+    extractor: just_recipes
+    run: "just {task}"
+  - name: pdm
+    stack: python
+    manifests: [pyproject.toml]
+    extractor: toml_keys
+    arg: .tool.pdm.scripts
+    run: "pdm run {task}"
+  - name: poe
+    stack: python
+    manifests: [pyproject.toml]
+    extractor: toml_keys
+    arg: .tool.poe.tasks
+    run: "poe {task}"
+    run_by_pm: {poetry: "poetry run poe {task}"}
+  - name: rake
+    stack: ruby
+    manifests: [Rakefile]
+    extractor: regex_lines
+    arg: '^[[:space:]]*task[[:space:]]+:?"?([A-Za-z0-9_:]+)'
+    run: "bundle exec rake {task}"
+
+# Canonical checks and the task names that count as each, as globs. A task
+# matching an exclude glob never counts.
+checks:
+  - name: typecheck
+    tasks: [typecheck, type-check]
+  - name: lint
+    tasks: [lint, eslint, stylelint, "lint:*", "eslint:*", "stylelint:*"]
+    exclude: ["*:fix"]
+  - name: format-check
+    tasks: ["format:check", "fmt:check", format-check]
+  - name: test
+    tasks: [test]
+
+# Checks a stack's own toolchain provides, run where that stack is detected.
+#   bin:      candidate binaries; the first found fills {bin}
+#   when_dir: a directory that must exist first, else the check is skipped
+toolchain_checks:
+  - {stack: rust, name: check, cmd: "cargo check"}
+  - {stack: rust, name: clippy, cmd: "cargo clippy -- -D warnings"}
+  - {stack: rust, name: fmt, cmd: "cargo fmt --check"}
+  - {stack: rust, name: test, cmd: "cargo test"}
+  - {stack: go, name: vet, cmd: "go vet ./..."}
+  - {stack: go, name: test, cmd: "go test ./..."}
+
+# How deep below the repo root a tracked anchor sentinel still makes its
+# directory a subproject (kit_subprojects).
+subproject_max_depth: 4
+
 stacks:
   js:
     sentinels:

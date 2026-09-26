@@ -268,12 +268,16 @@ longest_prose_run() {
 # plus extra_lockfiles; guard-edit.sh blocks direct edits to them.
 # KIT_PROTECTED_BRANCHES, KIT_RC_FILES, KIT_SENSITIVE_PATHS, KIT_LOG_MAX_LINES,
 # KIT_DISABLED_RULES: the guard lists of the same names in kit.yml.
+# KIT_TP_*, KIT_CHECK_*, KIT_TC_*: positional columns of task_providers,
+# checks, and toolchain_checks. "-" marks an empty column, since the row
+# reader drops empty values and would shift every later row.
+# KIT_SUBPROJECT_MAX_DEPTH: subproject_max_depth.
 _stacks_lists_cache="$KIT_CACHE_DIR/stacks-lists.bash"
 
 # Bump on every change to the queries below or to the cache's shape. The
 # mtime check only sees kit.yml, so without this an existing cache
 # outlives a rewritten derivation and keeps serving the old lists.
-_stacks_lists_format=5
+_stacks_lists_format=6
 
 _reset_stacks_lists() {
   STACK_SENTINELS_FULL=()
@@ -288,6 +292,22 @@ _reset_stacks_lists() {
   KIT_SENSITIVE_PATHS=()
   KIT_DISABLED_RULES=()
   KIT_LOG_MAX_LINES=10000
+  KIT_TP_NAMES=()
+  KIT_TP_STACKS=()
+  KIT_TP_MANIFESTS=()
+  KIT_TP_EXTRACTORS=()
+  KIT_TP_ARGS=()
+  KIT_TP_RUNS=()
+  KIT_TP_RUNS_BY_PM=()
+  KIT_CHECK_NAMES=()
+  KIT_CHECK_TASKS=()
+  KIT_CHECK_EXCLUDES=()
+  KIT_TC_STACKS=()
+  KIT_TC_NAMES=()
+  KIT_TC_CMDS=()
+  KIT_TC_BINS=()
+  KIT_TC_WHEN_DIRS=()
+  KIT_SUBPROJECT_MAX_DEPTH=4
 }
 
 # Each emitted row is "<list-tag>\t<value>" so one yq call fills every list.
@@ -309,6 +329,22 @@ _build_stacks_lists() {
     RC) KIT_RC_FILES+=("$value") ;;
     SENSITIVE) KIT_SENSITIVE_PATHS+=("$value") ;;
     DISABLED) KIT_DISABLED_RULES+=("$value") ;;
+    TP_NAME) KIT_TP_NAMES+=("$value") ;;
+    TP_STACK) KIT_TP_STACKS+=("$value") ;;
+    TP_MANIFESTS) KIT_TP_MANIFESTS+=("$value") ;;
+    TP_EXTRACTOR) KIT_TP_EXTRACTORS+=("$value") ;;
+    TP_ARG) KIT_TP_ARGS+=("$value") ;;
+    TP_RUN) KIT_TP_RUNS+=("$value") ;;
+    TP_RUNPM) KIT_TP_RUNS_BY_PM+=("$value") ;;
+    CHECK_NAME) KIT_CHECK_NAMES+=("$value") ;;
+    CHECK_TASKS) KIT_CHECK_TASKS+=("$value") ;;
+    CHECK_EXCLUDE) KIT_CHECK_EXCLUDES+=("$value") ;;
+    TC_STACK) KIT_TC_STACKS+=("$value") ;;
+    TC_NAME) KIT_TC_NAMES+=("$value") ;;
+    TC_CMD) KIT_TC_CMDS+=("$value") ;;
+    TC_BIN) KIT_TC_BINS+=("$value") ;;
+    TC_WHEN_DIR) KIT_TC_WHEN_DIRS+=("$value") ;;
+    SUBDEPTH) KIT_SUBPROJECT_MAX_DEPTH="$value" ;;
     LOGMAX) KIT_LOG_MAX_LINES="$value" ;;
     esac
   done < <(
@@ -331,7 +367,29 @@ _build_stacks_lists() {
         (.rc_files // [] | .[] | ["RC", .]),
         (.sensitive_paths // [] | .[] | ["SENSITIVE", .]),
         (.disabled_rules // [] | .[] | ["DISABLED", .]),
-        (.log_max_lines // 10000 | ["LOGMAX", .])
+        (.log_max_lines // 10000 | ["LOGMAX", .]),
+        (.subproject_max_depth // 4 | ["SUBDEPTH", .]),
+        (.task_providers // [] | .[] | (
+          ["TP_NAME", .name],
+          ["TP_STACK", (.stack // "-")],
+          ["TP_MANIFESTS", ((.manifests // []) | join(" ") | select(. != "") // "-")],
+          ["TP_EXTRACTOR", .extractor],
+          ["TP_ARG", (.arg // "-")],
+          ["TP_RUN", .run],
+          ["TP_RUNPM", ((.run_by_pm // {}) | to_entries | map(.key + "=" + .value) | join(";") | select(. != "") // "-")]
+        )),
+        (.checks // [] | .[] | (
+          ["CHECK_NAME", .name],
+          ["CHECK_TASKS", ((.tasks // []) | join(" "))],
+          ["CHECK_EXCLUDE", ((.exclude // []) | join(" ") | select(. != "") // "-")]
+        )),
+        (.toolchain_checks // [] | .[] | (
+          ["TC_STACK", .stack],
+          ["TC_NAME", .name],
+          ["TC_CMD", .cmd],
+          ["TC_BIN", ((.bin // []) | join(" ") | select(. != "") // "-")],
+          ["TC_WHEN_DIR", (.when_dir // "-")]
+        ))
       ] | .[] | join("\t")
     ' "$KIT_YML" 2>/dev/null
   )
@@ -385,7 +443,11 @@ kit_stacks_load() {
   if declare -p STACK_SENTINELS_FULL STACK_SENTINELS_PROJECT_ROOT \
     STACK_DETECT_FILES STACK_PM_LOCKFILES STACK_PM_MANAGERS STACK_PM_ECOSYSTEMS \
     KIT_GUARDED_LOCKFILES KIT_PROTECTED_BRANCHES KIT_RC_FILES KIT_SENSITIVE_PATHS \
-    KIT_DISABLED_RULES KIT_LOG_MAX_LINES _stacks_lists_cached_format |
+    KIT_DISABLED_RULES KIT_LOG_MAX_LINES KIT_SUBPROJECT_MAX_DEPTH \
+    KIT_TP_NAMES KIT_TP_STACKS KIT_TP_MANIFESTS KIT_TP_EXTRACTORS KIT_TP_ARGS \
+    KIT_TP_RUNS KIT_TP_RUNS_BY_PM KIT_CHECK_NAMES KIT_CHECK_TASKS KIT_CHECK_EXCLUDES \
+    KIT_TC_STACKS KIT_TC_NAMES KIT_TC_CMDS KIT_TC_BINS KIT_TC_WHEN_DIRS \
+    _stacks_lists_cached_format |
     sed -E -e 's/^declare -- /declare -g /' -e 's/^declare -([aA])/declare -g\1/' \
       >"$tmp" 2>/dev/null; then
     mv "$tmp" "$_stacks_lists_cache" 2>/dev/null || rm -f "$tmp"
@@ -464,6 +526,181 @@ resolve_package_manager() {
       return 0
     fi
   done
+}
+
+# Extractors: each reads one file, prints one item per line, and prints
+# nothing when the file or the path in it is missing. A dotted path
+# (".scripts", ".tool.poe.tasks") becomes a jq getpath() array, so config
+# never becomes filter code.
+# shellcheck disable=SC2016  # $p is a jq variable
+_KIT_GETPATH='getpath($p | ltrimstr(".") | split(".") | map(select(. != "")))'
+
+# Keys, or string items, at dotted path $1 of the JSON on stdin.
+_kit_stdin_keys() {
+  jq -r --arg p "$1" "$_KIT_GETPATH"' | if type == "object" then keys_unsorted[] else empty end' 2>/dev/null || true
+}
+_kit_stdin_array() {
+  jq -r --arg p "$1" "$_KIT_GETPATH"' | if type == "array" then .[] | strings else empty end' 2>/dev/null || true
+}
+
+# json_keys <file> <path>: keys of the object at <path>, in file order.
+# json_array <file> <path>: string items of the array at <path>.
+# toml_keys, toml_array, yaml_array: the same, reading TOML or YAML via yq.
+json_keys() {
+  [[ -f "$1" ]] || return 0
+  _kit_stdin_keys "$2" <"$1"
+}
+json_array() {
+  [[ -f "$1" ]] || return 0
+  _kit_stdin_array "$2" <"$1"
+}
+toml_keys() {
+  [[ -f "$1" ]] || return 0
+  yq -p toml -o json '.' "$1" 2>/dev/null | _kit_stdin_keys "$2"
+}
+toml_array() {
+  [[ -f "$1" ]] || return 0
+  yq -p toml -o json '.' "$1" 2>/dev/null | _kit_stdin_array "$2"
+}
+yaml_array() {
+  [[ -f "$1" ]] || return 0
+  yq -o json '.' "$1" 2>/dev/null | _kit_stdin_array "$2"
+}
+
+# make_targets <file>: explicit targets, in file order. Skips special
+# (.PHONY), pattern (%), and variable-assignment (:=) lines.
+make_targets() {
+  [[ -f "$1" ]] || return 0
+  grep -E '^[A-Za-z0-9][A-Za-z0-9_.-]*[[:space:]]*:([^=]|$)' "$1" 2>/dev/null |
+    sed -E 's/[[:space:]]*:.*//' | awk '!seen[$0]++' || true
+}
+
+# just_recipes <file>: recipe names, from `just --summary` when just is
+# installed, else from recipe header lines.
+just_recipes() {
+  [[ -f "$1" ]] || return 0
+  if command -v just >/dev/null 2>&1; then
+    just --justfile "$1" --summary 2>/dev/null | tr ' ' '\n' | awk 'NF' || true
+    return 0
+  fi
+  grep -E '^@?[A-Za-z_][A-Za-z0-9_-]*([[:space:]][^:=]*)?:([^=]|$)' "$1" 2>/dev/null |
+    sed -E 's/^@?([A-Za-z0-9_-]+).*/\1/' | awk '!seen[$0]++' || true
+}
+
+# regex_lines <file> <ERE>: for each matching line, the last capture group.
+regex_lines() {
+  [[ -f "$1" ]] || return 0
+  local line
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ "$line" =~ $2 ]] || continue
+    printf '%s\n' "${BASH_REMATCH[${#BASH_REMATCH[@]} - 1]}"
+  done <"$1"
+}
+
+# Runs extractor $1 on file $2 with arg $3. Only names in this list run.
+_kit_extract() {
+  case "$1" in
+  json_keys | json_array | toml_keys | toml_array | yaml_array | regex_lines) "$1" "$2" "$3" ;;
+  make_targets | just_recipes) "$1" "$2" ;;
+  *) echo "_lib.sh: unknown extractor in kit.yml: $1" >&2 ;;
+  esac
+}
+
+# kit_tasks [dir]
+# Prints "<provider>\t<stack>\t<task>\t<command>" for every task of every
+# task_providers entry whose manifest is in <dir> ("-" when a provider has no
+# stack). {pm} resolves through resolve_package_manager, npm when unresolved.
+kit_tasks() {
+  kit_stacks_load
+  local dir="${1:-.}" i manifest file run pm_run task pm="" pm_resolved=0
+  local -a manifests pm_runs
+  for ((i = 0; i < ${#KIT_TP_NAMES[@]}; i++)); do
+    file=""
+    read -ra manifests <<<"${KIT_TP_MANIFESTS[i]}"
+    for manifest in "${manifests[@]}"; do
+      if [[ -f "$dir/$manifest" ]]; then
+        file="$dir/$manifest"
+        break
+      fi
+    done
+    [[ -n "$file" ]] || continue
+
+    if ((! pm_resolved)); then
+      pm="$(resolve_package_manager "$dir")"
+      pm_resolved=1
+    fi
+    run="${KIT_TP_RUNS[i]}"
+    if [[ "${KIT_TP_RUNS_BY_PM[i]}" != - ]]; then
+      IFS=';' read -ra pm_runs <<<"${KIT_TP_RUNS_BY_PM[i]}"
+      for pm_run in "${pm_runs[@]}"; do
+        if [[ "${pm_run%%=*}" == "$pm" ]]; then
+          run="${pm_run#*=}"
+        fi
+      done
+    fi
+    run="${run//\{pm\}/${pm:-npm}}"
+
+    while IFS= read -r task; do
+      [[ -n "$task" ]] || continue
+      printf '%s\t%s\t%s\t%s\n' "${KIT_TP_NAMES[i]}" "${KIT_TP_STACKS[i]}" "$task" "${run//\{task\}/$task}"
+    done < <(_kit_extract "${KIT_TP_EXTRACTORS[i]}" "$file" "${KIT_TP_ARGS[i]}")
+  done
+}
+
+# kit_subprojects [root]
+# Prints "." (the root), then every subproject directory relative to it,
+# sorted: each directory holding a tracked anchor sentinel at most
+# subproject_max_depth levels down, and each member its workspace manifests
+# name (package.json workspaces, pnpm-workspace.yaml, Cargo, go.work, uv).
+# Tracked files only, so node_modules and virtualenvs never count. Root
+# defaults to the git toplevel, else $PWD.
+kit_subprojects() {
+  kit_stacks_load
+  local root="${1:-}"
+  [[ -n "$root" ]] || root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+  local -a pathspecs=()
+  local sentinel
+  for sentinel in "${STACK_SENTINELS_PROJECT_ROOT[@]}"; do
+    pathspecs+=(":(glob)**/$sentinel")
+  done
+
+  printf '.\n'
+  {
+    if ((${#pathspecs[@]} > 0)); then
+      local path dir slashes
+      git -C "$root" ls-files -- "${pathspecs[@]}" 2>/dev/null | while IFS= read -r path; do
+        [[ "$path" == */* ]] || continue
+        dir="${path%/*}"
+        slashes="${dir//[^\/]/}"
+        if ((${#slashes} + 1 <= KIT_SUBPROJECT_MAX_DEPTH)); then
+          printf '%s\n' "$dir"
+        fi
+      done
+    fi
+    {
+      json_array "$root/package.json" .workspaces
+      json_array "$root/package.json" .workspaces.packages
+      yaml_array "$root/pnpm-workspace.yaml" .packages
+      toml_array "$root/Cargo.toml" .workspace.members
+      toml_array "$root/pyproject.toml" .tool.uv.workspace.members
+      regex_lines "$root/go.work" '^[[:space:]]*(use[[:space:]]+)?\(?[[:space:]]*(\.[^[:space:]()]*)'
+    } | while IFS= read -r pattern; do
+      # Negated entries only narrow a pnpm glob; nothing to add.
+      [[ "$pattern" == '!'* ]] && continue
+      pattern="${pattern#./}"
+      (
+        cd "$root" 2>/dev/null || exit 0
+        shopt -s globstar nullglob
+        # Unquoted on purpose: the workspace pattern is a glob to expand.
+        # shellcheck disable=SC2086
+        for dir in $pattern; do
+          if [[ -d "$dir" ]]; then
+            printf '%s\n' "${dir%/}"
+          fi
+        done
+      )
+    done
+  } | sed -e 's|^\./||' -e 's|/$||' | awk 'NF && $0 != "." && !seen[$0]++' | sort
 }
 
 # Shared stack-cache and skill-derivation logic. Consumed by:
