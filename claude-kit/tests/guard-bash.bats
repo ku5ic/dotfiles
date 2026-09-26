@@ -1120,6 +1120,49 @@ setup_overlay() {
   [ "$status" -eq 0 ]
 }
 
+@test "block: an apostrophe in a heredoc body doesn't hide the lines after it" {
+  run run_guard $'cat <<EOF > "$(scratch-dir.sh)/n.txt"\nit\'s done\nEOF\ngit push --force origin main'
+  [ "$status" -eq 2 ]
+}
+
+@test "block: commands inside \$( ) and backticks are checked, quoted or not" {
+  local cmd
+  for cmd in 'echo $(true && git push --force origin main)' \
+    'git status && echo "$(git push --force origin main)"' 'echo `git push --force origin main`'; do
+    run run_guard "$cmd"
+    [ "$status" -eq 2 ] || {
+      echo "not blocked: $cmd"
+      return 1
+    }
+  done
+}
+
+@test "allow: a heredoc body is data, not commands" {
+  run run_guard $'git commit -F - <<\'EOF\'\nfix(x): map a -> b\nEOF'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+  run run_guard $'cat <<-EOF > "$(scratch-dir.sh)/x"\n\trm -rf ~ is text\n\tEOF'
+  [ "$status" -eq 0 ]
+}
+
+@test "block: a heredoc fed to a shell is checked as commands" {
+  local cmd
+  for cmd in $'bash <<EOF\nrm -rf ~\nEOF' $'cat <<EOF | sh\nrm -rf ~\nEOF'; do
+    run run_guard "$cmd"
+    [ "$status" -eq 2 ] || {
+      echo "not blocked: $cmd"
+      return 1
+    }
+  done
+}
+
+@test "comments: an unquoted # ends the line, a quoted one doesn't" {
+  run run_guard 'echo hi # rm -rf ~ in a comment'
+  [ "$status" -eq 0 ]
+  run run_guard 'echo "a#b"; rm -rf ~'
+  [ "$status" -eq 2 ]
+}
+
 @test "block: eval runs an unchecked command string" {
   run run_guard 'eval "rm -rf ~"'
   [ "$status" -eq 2 ]

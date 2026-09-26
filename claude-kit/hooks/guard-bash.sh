@@ -834,49 +834,153 @@ _check_segment() {
   esac
 }
 
+# A shell named as a command word on a heredoc's line: bash <<EOF, | sh.
+_shell_word_re='(^|[[:space:]|;&(])(sh|bash|zsh|dash|ksh)([[:space:]]|$)'
+
+# Sets _sub_end_idx to the index of the ) closing a $( whose body starts at
+# index $2 of $1, or -1 when it never closes. Quotes and nested parens count.
+_sub_end() {
+  local s="$1" i c q="" depth=1
+  for ((i = $2; i < ${#s}; i++)); do
+    c="${s:i:1}"
+    if [[ "$q" == "'" ]]; then
+      [[ "$c" == "'" ]] && q=""
+    elif [[ "$c" == "\\" ]]; then
+      i=$((i + 1))
+    elif [[ -n "$q" ]]; then
+      [[ "$c" == "$q" ]] && q=""
+    elif [[ "$c" == "'" || "$c" == '"' || "$c" == '`' ]]; then
+      q="$c"
+    elif [[ "$c" == '(' ]]; then
+      depth=$((depth + 1))
+    elif [[ "$c" == ')' ]]; then
+      depth=$((depth - 1))
+      if ((depth == 0)); then
+        _sub_end_idx=$i
+        return 0
+      fi
+    fi
+  done
+  _sub_end_idx=-1
+}
+
 # Prints the commands of $1, NUL-separated. Separators are &&, ||, ;, a
-# newline, and a lone & (backgrounding), but only outside quotes and $( ):
-# splitting inside a quoted URL's ?a=1&b=2 would move curl's later flags into
-# a segment nothing checks. >&, &>, and |& aren't separators; | stays in the
-# segment, since some checks read a whole pipeline.
+# newline, and a lone & (backgrounding), but only outside quotes: splitting
+# inside a quoted URL's ?a=1&b=2 would move curl's later flags into a segment
+# nothing checks. >&, &>, and |& aren't separators; | stays in the segment,
+# since some checks read a whole pipeline.
+# - $( ) and backtick bodies, quoted or not, are split and printed too, so a
+#   command inside one is checked like any other.
+# - A # starting an unquoted word comments out the rest of the line.
+# - A heredoc body is data and skipped, unless its line mentions a shell
+#   (bash <<EOF, cat <<EOF | sh): then the body is commands, split and printed.
 _split_segments() {
-  local s="$1" c next prev="" q="" seg="" depth=0 i
+  local s="$1" c next prev="" q="" seg="" line="" i j body delim quote pos rest text cmp
+  local bt='`' nl=$'\n' tab=$'\t'
+  local -a hd_delims=() hd_dashes=()
   for ((i = 0; i < ${#s}; i++)); do
     c="${s:i:1}"
     next="${s:i+1:1}"
-    if [[ -n "$q" ]]; then
+    if [[ "$q" == "'" ]]; then
       seg+="$c"
-      if [[ "$c" == "\\" && "$q" != "'" ]]; then
-        seg+="$next"
-        i=$((i + 1))
-      elif [[ "$c" == "$q" ]]; then
-        q=""
-      fi
-    elif [[ "$c" == "\\" ]]; then
+      line+="$c"
+      [[ "$c" == "'" ]] && q=""
+      continue
+    fi
+    if [[ "$c" == "\\" ]]; then
       seg+="$c$next"
+      line+="$c$next"
       i=$((i + 1))
-    elif [[ "$c" == "'" || "$c" == '"' || "$c" == '`' ]]; then
+      continue
+    fi
+    if [[ "$c" == '$' && "$next" == '(' ]]; then
+      _sub_end "$s" $((i + 2))
+      j=$_sub_end_idx
+      ((j >= 0)) || j=${#s}
+      _split_segments "${s:i+2:j-i-2}"
+      seg+="${s:i:j-i+1}"
+      line+="${s:i:j-i+1}"
+      i=$j
+      prev=')'
+      continue
+    fi
+    if [[ "$c" == "$bt" ]]; then
+      rest="${s:i+1}"
+      body="${rest%%"$bt"*}"
+      _split_segments "$body"
+      seg+="$bt$body$bt"
+      line+="$bt$body$bt"
+      i=$((i + ${#body} + 1))
+      continue
+    fi
+    if [[ "$q" == '"' ]]; then
+      seg+="$c"
+      line+="$c"
+      [[ "$c" == '"' ]] && q=""
+      continue
+    fi
+    if [[ "$c" == "'" || "$c" == '"' ]]; then
       q="$c"
       seg+="$c"
-    elif [[ "$c" == '$' && "$next" == '(' ]]; then
-      depth=$((depth + 1))
-      seg+="\$("
-      i=$((i + 1))
-    elif ((depth > 0)); then
-      [[ "$c" == ')' ]] && depth=$((depth - 1))
-      seg+="$c"
+      line+="$c"
+    elif [[ "$c" == '#' && (-z "$seg" || "${seg: -1}" == [[:space:]]) ]]; then
+      rest="${s:i}"
+      text="${rest%%"$nl"*}"
+      i=$((i + ${#text} - 1))
+    elif [[ "$c$next" == '<<' && "${s:i+2:1}" != '<' ]]; then
+      j=$((i + 2))
+      hd_dashes+=("$([[ "${s:j:1}" == - ]] && echo 1 || echo 0)")
+      [[ "${s:j:1}" == - ]] && j=$((j + 1))
+      while [[ "${s:j:1}" == [[:blank:]] ]]; do j=$((j + 1)); done
+      quote="${s:j:1}"
+      if [[ "$quote" == "'" || "$quote" == '"' ]]; then
+        rest="${s:j+1}"
+        delim="${rest%%"$quote"*}"
+        j=$((j + ${#delim} + 2))
+      else
+        rest="${s:j}"
+        delim="${rest%%[[:space:];&|<>()]*}"
+        j=$((j + ${#delim}))
+      fi
+      hd_delims+=("${delim//\\/}")
+      seg+="${s:i:j-i}"
+      line+="${s:i:j-i}"
+      i=$((j - 1))
     elif [[ "$c" == ';' || "$c" == $'\n' ]]; then
       printf '%s\0' "$seg"
       seg=""
+      if [[ "$c" == $'\n' ]]; then
+        pos=$((i + 1))
+        for ((j = 0; j < ${#hd_delims[@]}; j++)); do
+          body=""
+          while ((pos < ${#s})); do
+            rest="${s:pos}"
+            text="${rest%%"$nl"*}"
+            pos=$((pos + ${#text} + 1))
+            cmp="$text"
+            [[ "${hd_dashes[j]}" == 1 ]] && cmp="${cmp#"${cmp%%[!"$tab"]*}"}"
+            [[ "$cmp" == "${hd_delims[j]}" ]] && break
+            body+="$text$nl"
+          done
+          if [[ "$line" =~ $_shell_word_re ]]; then
+            _split_segments "$body"
+          fi
+        done
+        ((${#hd_delims[@]} == 0)) || i=$((pos - 1))
+        hd_delims=() hd_dashes=() line=""
+      fi
     elif [[ "$c$next" == '&&' || "$c$next" == '||' ]]; then
       printf '%s\0' "$seg"
       seg=""
+      line+="$c$next"
       i=$((i + 1))
     elif [[ "$c" == '&' && "$prev" != '>' && "$prev" != '|' && "$next" != '>' ]]; then
       printf '%s\0' "$seg"
       seg=""
+      line+="$c"
     else
       seg+="$c"
+      line+="$c"
     fi
     prev="$c"
   done
