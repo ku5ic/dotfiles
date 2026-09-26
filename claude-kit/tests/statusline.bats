@@ -11,6 +11,7 @@
 setup() {
   SCRIPT="$BATS_TEST_DIRNAME/../bin/statusline.sh"
   FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  unset CLAUDE_CONFIG_DIR
   REPO="$BATS_TEST_TMPDIR/repo"
   mkdir -p "$FAKE_HOME" "$REPO"
   git -C "$REPO" init -q -b main

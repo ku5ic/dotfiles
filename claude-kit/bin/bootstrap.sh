@@ -15,7 +15,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 SOURCE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd -P)"
 PERSONAL_ROOT="$(cd "$SOURCE_ROOT/../claude" && pwd -P)"
-TARGET_ROOT="$HOME/.claude"
+# shellcheck source=_lib.sh
+source "$SCRIPT_DIR/_lib.sh"
+TARGET_ROOT="$KIT_HOME"
 
 root_for() {
   case "$1" in

@@ -55,6 +55,18 @@ setup() {
   [ ! -e "$HOME/.claude/logs/scratch-registry.txt" ]
 }
 
+@test "CLAUDE_CONFIG_DIR relocates the fallback and the registry" {
+  export CLAUDE_CONFIG_DIR="$BATS_TEST_TMPDIR/config"
+  cd "$OUTSIDE"
+  run "$BIN/scratch-dir.sh"
+  [ "$output" = "$CLAUDE_CONFIG_DIR/scratch" ]
+
+  cd "$REPO"
+  "$BIN/scratch-dir.sh" >/dev/null
+  [ "$(cat "$CLAUDE_CONFIG_DIR/logs/scratch-registry.txt")" = "$REPO/.claude/scratch" ]
+  [ ! -e "$HOME/.claude/logs/scratch-registry.txt" ]
+}
+
 @test "plans-dir.sh outside a project falls back to home" {
   cd "$OUTSIDE"
   run "$BIN/plans-dir.sh"

@@ -20,7 +20,8 @@ check_prereqs() {
     missing="${missing} mikefarah yq (brew install yq);"
   fi
   kit_rules="$(cd -P "$(dirname "$0")/../rules" 2>/dev/null && pwd || true)"
-  for entry in "$HOME"/.claude/rules/*; do
+  # KIT_HOME's default, inlined: this runs before the lib is sourced.
+  for entry in "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/rules/*; do
     if [ -d "$entry" ] && [ "$(cd -P "$entry" 2>/dev/null && pwd)" = "$kit_rules" ]; then
       linked=1
     fi
@@ -89,7 +90,7 @@ emit_required_skills() {
 
   if command -v jq >/dev/null 2>&1; then
     local log_dir ts sk
-    log_dir="$HOME/.claude/logs"
+    log_dir="$KIT_LOG_DIR"
     mkdir -p "$log_dir"
     ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
     for sk in "${required[@]}"; do
@@ -126,7 +127,7 @@ emit_suggested_skills() {
   local sk
   if command -v jq >/dev/null 2>&1; then
     local log_dir ts
-    log_dir="$HOME/.claude/logs"
+    log_dir="$KIT_LOG_DIR"
     mkdir -p "$log_dir"
     ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
     for sk in "${suggested[@]}"; do

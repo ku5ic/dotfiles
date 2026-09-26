@@ -16,8 +16,57 @@ _KIT_LIB_SOURCED=1
 
 # Kit root: the plugin root when installed as a plugin, else the parent of
 # this bin dir (~/.claude via symlinks). Tests point it at a fake tree.
-KIT_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+# This lib's own bin dir, for calling sibling scripts. Not $KIT_ROOT/bin:
+# tests point CLAUDE_PLUGIN_ROOT at a fake tree with no scripts in it.
+# Builtins only (no dirname): the statusline sources this under whatever
+# PATH it gets, and every hook pays for each subprocess.
+_KIT_BIN_DIR="$(cd "${BASH_SOURCE[0]%/*}" && pwd)"
+KIT_ROOT="${CLAUDE_PLUGIN_ROOT:-${_KIT_BIN_DIR%/*}}"
 _STACKS_YML="$KIT_ROOT/_stacks.yml"
+
+# Claude Code's config dir, relocatable with CLAUDE_CONFIG_DIR. Every path
+# the kit writes under it derives from here.
+KIT_HOME="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+KIT_LOG_DIR="$KIT_HOME/logs"
+KIT_CACHE_DIR="$KIT_HOME/cache"
+KIT_SCRATCH_HOME="$KIT_HOME/scratch"
+KIT_PLANS_HOME="$KIT_HOME/plans"
+
+# kit_dir scratch|plans [--no-create]
+# Prints <project-root>/.claude/<kind> inside a recognized project (a git
+# worktree or a stack sentinel, per project-root.sh --check), else the
+# $KIT_HOME fallback. Without --no-create it creates the directory and, for
+# a project scratch dir, registers it in scratch-registry.txt so
+# scratch-rotate.sh's scheduled run, which has no project cwd, can prune it.
+kit_dir() {
+  local kind="$1" create=1 dir
+  [[ "${2:-}" == --no-create ]] && create=0
+  case "$kind" in
+  scratch | plans) ;;
+  *)
+    echo "kit_dir: unknown kind: $kind" >&2
+    return 2
+    ;;
+  esac
+
+  if "$_KIT_BIN_DIR/project-root.sh" --check; then
+    dir="$("$_KIT_BIN_DIR/project-root.sh")/.claude/$kind"
+    if ((create)) && [[ "$kind" == scratch ]]; then
+      local registry="$KIT_LOG_DIR/scratch-registry.txt"
+      mkdir -p "$KIT_LOG_DIR"
+      grep -qxF "$dir" "$registry" 2>/dev/null || echo "$dir" >>"$registry"
+    fi
+  elif [[ "$kind" == scratch ]]; then
+    dir="$KIT_SCRATCH_HOME"
+  else
+    dir="$KIT_PLANS_HOME"
+  fi
+
+  if ((create)); then
+    mkdir -p "$dir"
+  fi
+  printf '%s\n' "$dir"
+}
 
 # Strict mode plus a fail-open ERR trap (logs to stderr, exits 0) so a hook
 # bug never blocks a legitimate tool call. Each hook sets HOOK_NAME first.
@@ -105,7 +154,7 @@ longest_prose_run() {
 # STACK_PM_LOCKFILES / STACK_PM_MANAGERS / STACK_PM_ECOSYSTEMS: positional
 # triples from .package_managers, walked by resolve_package_manager and by
 # guard-bash.sh's per-ecosystem PM mismatch guard.
-_stacks_lists_cache="$HOME/.claude/cache/stacks-lists.bash"
+_stacks_lists_cache="$KIT_CACHE_DIR/stacks-lists.bash"
 
 # Bump on every change to the queries below or to the cache's shape. The
 # mtime check only sees _stacks.yml, so without this an existing cache
@@ -248,7 +297,7 @@ resolve_package_manager() {
 stack_cache_file() {
   local project_name="$1" project_root="$2"
   printf '%s/%s-%s.txt\n' \
-    "$HOME/.claude/cache/stack" \
+    "$KIT_CACHE_DIR/stack" \
     "$project_name" \
     "$(printf '%s' "$project_root" | shasum -a 256 | cut -c1-8)"
 }

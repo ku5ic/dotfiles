@@ -17,6 +17,7 @@
 setup() {
   HOOK="$BATS_TEST_DIRNAME/../hooks/log-skills.sh"
   FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  unset CLAUDE_CONFIG_DIR
   mkdir -p "$FAKE_HOME/.claude/logs"
   LOG="$FAKE_HOME/.claude/logs/skills.jsonl"
 }

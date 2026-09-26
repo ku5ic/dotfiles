@@ -6,6 +6,7 @@ setup() {
   SCRIPT="$BATS_TEST_DIRNAME/../bin/git-base.sh"
   export HOME="$BATS_TEST_TMPDIR/home"
   mkdir -p "$HOME"
+  unset CLAUDE_CONFIG_DIR
   export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
 }
 

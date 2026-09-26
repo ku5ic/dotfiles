@@ -13,6 +13,7 @@ setup() {
   HOOK="$BATS_TEST_DIRNAME/../hooks/guard-skills.sh"
   REAL_STACKS_YML="$BATS_TEST_DIRNAME/../_stacks.yml"
   FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  unset CLAUDE_CONFIG_DIR
   export CLAUDE_PLUGIN_ROOT="$FAKE_HOME/.claude"
   mkdir -p "$FAKE_HOME/.claude/logs"
 }

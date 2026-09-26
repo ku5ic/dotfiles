@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 # Characterization tests for bin/bootstrap.sh against a fake dotfiles tree
-# and a fake HOME. The real script is copied into the fake tree because it
-# locates its sources relative to its own physical path.
+# and a fake HOME. The real script and the lib it sources are copied into the
+# fake tree because it locates its sources relative to its own physical path.
 #
 # A stub `claude` on PATH keeps setup_mcps from touching the real CLI config:
 # its `mcp get` succeeds, so every MCP reports ok and nothing is added.
@@ -12,11 +12,12 @@ setup() {
   DOT="$BATS_TEST_TMPDIR/dotfiles"
   mkdir -p "$DOT/claude-kit/bin" "$DOT/claude-kit/hooks" "$DOT/claude-kit/skills" "$DOT/claude-kit/agents" "$DOT/claude/rules"
   touch "$DOT/claude-kit/_stacks.yml" "$DOT/claude/settings.json" "$DOT/claude/CLAUDE.md"
-  cp "$BATS_TEST_DIRNAME/../bin/bootstrap.sh" "$DOT/claude-kit/bin/"
+  cp "$BATS_TEST_DIRNAME/../bin/bootstrap.sh" "$BATS_TEST_DIRNAME/../bin/_lib.sh" "$DOT/claude-kit/bin/"
   DOT="$(cd -P "$DOT" && pwd)"
   SCRIPT="$DOT/claude-kit/bin/bootstrap.sh"
 
   export HOME="$BATS_TEST_TMPDIR/home"
+  unset CLAUDE_PLUGIN_ROOT CLAUDE_CONFIG_DIR
   mkdir -p "$HOME"
 
   local stubs="$BATS_TEST_TMPDIR/stubs"

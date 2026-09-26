@@ -22,10 +22,13 @@
 
 set -euo pipefail
 
-scratch_dir="$HOME/.claude/scratch"
-skills_log="$HOME/.claude/logs/skills.jsonl"
-registry="$HOME/.claude/logs/scratch-registry.txt"
-log_file="$HOME/.claude/logs/scratch-rotate.log"
+# shellcheck source=_lib.sh
+source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
+
+scratch_dir="$KIT_SCRATCH_HOME"
+skills_log="$KIT_LOG_DIR/skills.jsonl"
+registry="$KIT_LOG_DIR/scratch-registry.txt"
+log_file="$KIT_LOG_DIR/scratch-rotate.log"
 max_lines=10000
 
 dry_run=false
@@ -93,7 +96,7 @@ if [[ -d "$scratch_dir" ]]; then
   echo "scratch-rotate: pruned $markers_removed session marker(s) older than 1d from $scratch_dir"
 fi
 
-skills_loaded_cache="$HOME/.claude/cache/skills-loaded"
+skills_loaded_cache="$KIT_CACHE_DIR/skills-loaded"
 if [[ -d "$skills_loaded_cache" ]]; then
   loaded_removed="$(prune "$skills_loaded_cache" 1)"
   echo "scratch-rotate: pruned $loaded_removed skill-loaded marker(s) older than 1d from $skills_loaded_cache"

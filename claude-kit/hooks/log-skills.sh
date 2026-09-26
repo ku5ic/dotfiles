@@ -52,7 +52,7 @@ PostToolUse)
   ;;
 esac
 
-log_dir="$HOME/.claude/logs"
+log_dir="$KIT_LOG_DIR"
 mkdir -p "$log_dir"
 log_file="$log_dir/skills.jsonl"
 

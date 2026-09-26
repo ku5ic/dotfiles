@@ -31,9 +31,12 @@
 
 set -euo pipefail
 
+# shellcheck source=_lib.sh
+source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
+
 days="${1:-30}"
-log_file="$HOME/.claude/logs/skills.jsonl"
-stacks_yml="${CLAUDE_PLUGIN_ROOT:-$(dirname "${BASH_SOURCE[0]}")/..}/_stacks.yml"
+log_file="$KIT_LOG_DIR/skills.jsonl"
+stacks_yml="$_STACKS_YML"
 
 if ! command -v jq >/dev/null 2>&1; then
   echo "skills-report: jq not found, cannot generate report"

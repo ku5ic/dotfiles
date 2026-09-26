@@ -52,7 +52,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 SOURCE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # Dotfiles layout: personal settings, CLAUDE.md, and rules live beside the kit.
 PERSONAL_ROOT="$(cd "$SOURCE_ROOT/../claude" && pwd)"
-TARGET_ROOT="$HOME/.claude"
+# shellcheck source=_lib.sh
+source "$SCRIPT_DIR/_lib.sh"
+TARGET_ROOT="$KIT_HOME"
 
 ENTRIES=(settings.json CLAUDE.md hooks skills agents rules bin _stacks.yml)
 

@@ -28,7 +28,7 @@ run_guard_skills() {
 
   # Full skill_file_map in one yq call, cached to disk while _stacks.yml is
   # unchanged. Each line: on<TAB>globs-space-separated<TAB>skills-space-separated
-  map_cache="$HOME/.claude/cache/skill-map"
+  map_cache="$KIT_CACHE_DIR/skill-map"
   if [[ -s "$map_cache" && "$map_cache" -nt "$stacks_yml" ]]; then
     mapfile -t map_entries <"$map_cache"
   else
@@ -76,7 +76,7 @@ run_guard_skills() {
 
   [[ ${#required_skills[@]} -eq 0 ]] && return 0
 
-  cache_dir="$HOME/.claude/cache/skills-loaded"
+  cache_dir="$KIT_CACHE_DIR/skills-loaded"
 
   declare -a to_check=()
   for sk in "${required_skills[@]}"; do
@@ -85,7 +85,7 @@ run_guard_skills() {
 
   [[ ${#to_check[@]} -eq 0 ]] && return 0
 
-  skills_log="$HOME/.claude/logs/skills.jsonl"
+  skills_log="$KIT_LOG_DIR/skills.jsonl"
   # Missing or unreadable log: fail open rather than block on uncertainty.
   [[ -r "$skills_log" ]] || return 0
 

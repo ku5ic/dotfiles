@@ -10,6 +10,7 @@
 setup() {
   HOOK="$BATS_TEST_DIRNAME/../hooks/stop-checks.sh"
   FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  unset CLAUDE_CONFIG_DIR
   export CLAUDE_PLUGIN_ROOT="$FAKE_HOME/.claude"
   REPO="$BATS_TEST_TMPDIR/repo"
   TRANSCRIPT="$BATS_TEST_TMPDIR/transcript.jsonl"

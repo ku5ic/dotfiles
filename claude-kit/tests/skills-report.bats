@@ -10,6 +10,7 @@
 setup() {
   SCRIPT="$BATS_TEST_DIRNAME/../bin/skills-report.sh"
   FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  unset CLAUDE_CONFIG_DIR
   export CLAUDE_PLUGIN_ROOT="$FAKE_HOME/.claude"
   mkdir -p "$FAKE_HOME/.claude/logs"
 }
