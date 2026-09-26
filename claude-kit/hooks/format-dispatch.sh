@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 HOOK_NAME="format-dispatch.sh"
-# shellcheck source=_lib.sh
-source "$(dirname "$0")/_lib.sh"
+# shellcheck source=../bin/_lib.sh
+source "$(dirname "$0")/../bin/_lib.sh"
+kit_hook_init
 
 read_payload
 require_jq

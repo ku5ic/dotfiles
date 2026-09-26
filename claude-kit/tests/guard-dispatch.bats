@@ -124,8 +124,10 @@ YAML
 # the same bypass). Both must leave guard-skills.sh running
 # against the untouched implementation.
 
+# bin/ comes along because every hook sources ../bin/_lib.sh.
 setup_isolated_hooks() {
   cp -r "$BATS_TEST_DIRNAME/../hooks" "$BATS_TEST_TMPDIR/hooks"
+  cp -r "$BATS_TEST_DIRNAME/../bin" "$BATS_TEST_TMPDIR/bin"
   chmod +x "$BATS_TEST_TMPDIR"/hooks/*.sh
 }
 

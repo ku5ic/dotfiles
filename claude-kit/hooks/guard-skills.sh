@@ -5,8 +5,9 @@
 # gated: reading a file is not writing it. Callable standalone or sourced by
 # guard-dispatch.sh for the Edit|Write|MultiEdit path.
 HOOK_NAME="guard-skills.sh"
-# shellcheck source=_lib.sh
-source "$(dirname "$0")/_lib.sh"
+# shellcheck source=../bin/_lib.sh
+source "$(dirname "$0")/../bin/_lib.sh"
+kit_hook_init
 
 run_guard_skills() {
   # See run_guard_edit.sh - same HOOK_NAME shadowing need.

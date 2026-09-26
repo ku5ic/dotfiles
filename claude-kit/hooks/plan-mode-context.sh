@@ -4,8 +4,9 @@
 # becomes context. Must stay fast: a timed-out hook's context is discarded.
 
 HOOK_NAME="plan-mode-context.sh"
-# shellcheck source=_lib.sh
-source "$(dirname "$0")/_lib.sh"
+# shellcheck source=../bin/_lib.sh
+source "$(dirname "$0")/../bin/_lib.sh"
+kit_hook_init
 
 read_payload
 require_jq

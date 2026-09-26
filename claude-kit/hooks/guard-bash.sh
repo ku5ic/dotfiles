@@ -4,10 +4,9 @@
 # reason shown to Claude); any other nonzero exit is a soft failure.
 
 HOOK_NAME="guard-bash.sh"
-# shellcheck source=_lib.sh
-source "$(dirname "$0")/_lib.sh"
 # shellcheck source=../bin/_lib.sh
 source "$(dirname "$0")/../bin/_lib.sh"
+kit_hook_init
 
 read_payload
 require_jq
@@ -83,6 +82,7 @@ _seg_cwd="$(_resolve_dir / "${_cwd:-$PWD}")"
 # that ecosystem has no lockfile on the way: greenfield. Walks the cached
 # package_managers table from bin/_lib.sh, never yq.
 _nearest_pm_lockfile() {
+  kit_stacks_load
   local dir="$1" eco="$2" top i
   top="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
   while :; do
@@ -528,6 +528,7 @@ _check_segment() {
     # Only lockfiles of the invoked manager's own ecosystem count, so uv in
     # a pnpm monorepo's Python service isn't told to use pnpm.
     local _eco="" _i
+    kit_stacks_load
     for ((_i = 0; _i < ${#STACK_PM_MANAGERS[@]}; _i++)); do
       if [[ "${STACK_PM_MANAGERS[_i]}" == "$_invoked" ]]; then
         _eco="${STACK_PM_ECOSYSTEMS[_i]:-}"

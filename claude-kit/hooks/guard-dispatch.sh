@@ -8,8 +8,9 @@
 # A call violating both checks surfaces only the first violation's message
 # instead of one per hook - the call is still correctly blocked either way.
 HOOK_NAME="guard-dispatch.sh"
-# shellcheck source=_lib.sh
-source "$(dirname "$0")/_lib.sh"
+# shellcheck source=../bin/_lib.sh
+source "$(dirname "$0")/../bin/_lib.sh"
+kit_hook_init
 
 read_payload
 require_jq

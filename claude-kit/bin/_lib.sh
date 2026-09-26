@@ -1,31 +1,86 @@
 #!/usr/bin/env bash
-# Single source of truth for stack sentinels. Sourced by:
-#   bin/detect-stack.sh
-#   bin/project-root.sh
-#   hooks/inject-context.sh
-#
-# Previously defined STACK_SENTINELS_FULL and STACK_SENTINELS_PROJECT_ROOT
-# as hand-written arrays. Both are now derived from _stacks.yml via yq so
-# adding a stack or sentinel here is the only edit required.
+# Shared library for every hook and bin script in the kit. Sourcing it only
+# defines things; nothing runs until a caller asks:
+#   - hooks call kit_hook_init for strict mode plus a fail-open ERR trap.
+#     Bin scripts don't, so they never inherit the fail-open trap.
+#   - the stack lists derived from _stacks.yml load on first use, through
+#     kit_stacks_load, so hooks that never read them never pay for yq.
 #
 # Requires: yq (mikefarah, installed via Brewfile)
+
+# Idempotency guard: guard-dispatch.sh sources this, then sources
+# guard-edit.sh and guard-skills.sh, which each source it again for
+# standalone use.
+[[ -n "${_KIT_LIB_SOURCED:-}" ]] && return 0
+_KIT_LIB_SOURCED=1
 
 # Kit root: the plugin root when installed as a plugin, else the parent of
 # this bin dir (~/.claude via symlinks). Tests point it at a fake tree.
 KIT_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 _STACKS_YML="$KIT_ROOT/_stacks.yml"
 
-if ! command -v yq >/dev/null 2>&1; then
-  echo "_lib.sh: yq not found; stack detection disabled" >&2
-  STACK_SENTINELS_FULL=()
-  STACK_SENTINELS_PROJECT_ROOT=()
-  STACK_DETECT_FILES=()
-  STACK_PM_LOCKFILES=()
-  STACK_PM_MANAGERS=()
-  STACK_PM_ECOSYSTEMS=()
-  resolve_package_manager() { return 0; }
-  return 0
-fi
+# Strict mode plus a fail-open ERR trap (logs to stderr, exits 0) so a hook
+# bug never blocks a legitimate tool call. Each hook sets HOOK_NAME first.
+kit_hook_init() {
+  set -euo pipefail
+  trap 'echo "${HOOK_NAME:-hook}: unexpected error, failing open" >&2; exit 0' ERR
+}
+
+# Reads stdin into the global $payload; each hook reads stdin exactly once.
+read_payload() {
+  payload="$(cat)"
+}
+
+# Fails open (allow) if jq is missing - without it a hook cannot safely
+# evaluate policy.
+require_jq() {
+  if ! command -v jq >/dev/null 2>&1; then
+    echo "${HOOK_NAME:-hook}: jq not found, skipping checks" >&2
+    exit 0
+  fi
+}
+
+extract_path() {
+  printf '%s' "$payload" | jq -r '
+    .tool_input.file_path
+    // .tool_input.path
+    // .tool_input.target_file
+    // empty
+  '
+}
+
+extract_command() {
+  printf '%s' "$payload" | jq -r '.tool_input.command // empty'
+}
+
+# $1 = human-readable reason, $2 = optional rule slug. Hooks override this
+# to add context (e.g. the offending command or path).
+block() {
+  echo "Blocked by ${HOOK_NAME:-hook}: $1" >&2
+  exit 2
+}
+
+# Longest run of consecutive non-blank, non-list/heading/blockquote/table
+# lines in $1, outside fenced code blocks and outside YAML frontmatter - a
+# deterministic stand-in for rules/output.md section 1 (no walls of text);
+# the rest of that rule needs judgment a hook can't make.
+#
+# Frontmatter is skipped because its delimiters and key: value lines match no
+# skip pattern: a 5-key block reads as a 7-line wall, so every agent and skill
+# definition would block on its own header.
+longest_prose_run() {
+  printf '%s\n' "$1" | awk '
+    NR == 1 && /^---[[:space:]]*$/ { infm = 1; next }
+    infm && /^---[[:space:]]*$/ { infm = 0; next }
+    infm { next }
+    /^```/ { infence = !infence; next }
+    infence { next }
+    NF == 0 { run = 0; next }
+    /^[[:space:]]*([0-9]+[.)]|[-*+][[:space:]]|#{1,6}[[:space:]]|>|\|)/ { run = 0; next }
+    { run++; if (run > best) best = run }
+    END { print best + 0 }
+  '
+}
 
 # Every derived list below comes from one yq pass, cached as sourceable
 # `declare -p` output for as long as _stacks.yml is unchanged. Sourcing this
@@ -108,36 +163,53 @@ _build_stacks_lists() {
   STACK_DETECT_FILES=("${uniq[@]}")
 }
 
-_stacks_lists_cached_format=""
-if [[ -s "$_stacks_lists_cache" && "$_stacks_lists_cache" -nt "$_STACKS_YML" ]]; then
-  # shellcheck disable=SC1090
-  source "$_stacks_lists_cache"
-fi
+# Fills the STACK_* arrays once per process, from the cache when it is fresh.
+# Every function below that reads one calls this first; so does any caller
+# reading an array directly.
+_kit_stacks_loaded=0
+kit_stacks_load() {
+  ((_kit_stacks_loaded)) && return 0
+  _kit_stacks_loaded=1
 
-if [[ "$_stacks_lists_cached_format" != "$_stacks_lists_format" ]]; then
+  if ! command -v yq >/dev/null 2>&1; then
+    echo "_lib.sh: yq not found; stack detection disabled" >&2
+    STACK_SENTINELS_FULL=()
+    STACK_SENTINELS_PROJECT_ROOT=()
+    STACK_DETECT_FILES=()
+    STACK_PM_LOCKFILES=()
+    STACK_PM_MANAGERS=()
+    STACK_PM_ECOSYSTEMS=()
+    return 0
+  fi
+
+  _stacks_lists_cached_format=""
+  if [[ -s "$_stacks_lists_cache" && "$_stacks_lists_cache" -nt "$_STACKS_YML" ]]; then
+    # shellcheck disable=SC1090
+    source "$_stacks_lists_cache"
+  fi
+  [[ "$_stacks_lists_cached_format" == "$_stacks_lists_format" ]] && return 0
+
   _build_stacks_lists
   _stacks_lists_cached_format="$_stacks_lists_format"
   # The temp file goes in the cache dir, not TMPDIR: mv is only atomic
   # within one filesystem, and a half-written cache is sourceable garbage.
-  if ((${#STACK_SENTINELS_FULL[@]} > 0)); then
-    mkdir -p "$(dirname "$_stacks_lists_cache")" 2>/dev/null || true
-    _stacks_tmp="$(mktemp "$(dirname "$_stacks_lists_cache")/.stacks-lists.XXXXXX" 2>/dev/null || true)"
-    if [[ -n "${_stacks_tmp:-}" ]]; then
-      # -g: sourcing this file from inside a function would otherwise scope
-      # every array to that function and hand the caller empty lists.
-      if declare -p STACK_SENTINELS_FULL STACK_SENTINELS_PROJECT_ROOT \
-        STACK_DETECT_FILES STACK_PM_LOCKFILES STACK_PM_MANAGERS STACK_PM_ECOSYSTEMS \
-        _stacks_lists_cached_format |
-        sed -E -e 's/^declare -- /declare -g /' -e 's/^declare -([aA])/declare -g\1/' \
-          >"$_stacks_tmp" 2>/dev/null; then
-        mv "$_stacks_tmp" "$_stacks_lists_cache" 2>/dev/null || rm -f "$_stacks_tmp"
-      else
-        rm -f "$_stacks_tmp"
-      fi
-      unset _stacks_tmp
-    fi
+  ((${#STACK_SENTINELS_FULL[@]} > 0)) || return 0
+  mkdir -p "$(dirname "$_stacks_lists_cache")" 2>/dev/null || true
+  local tmp
+  tmp="$(mktemp "$(dirname "$_stacks_lists_cache")/.stacks-lists.XXXXXX" 2>/dev/null || true)"
+  [[ -n "$tmp" ]] || return 0
+  # -g: the cache is sourced from inside this function, which would
+  # otherwise scope every array to it and hand the caller empty lists.
+  if declare -p STACK_SENTINELS_FULL STACK_SENTINELS_PROJECT_ROOT \
+    STACK_DETECT_FILES STACK_PM_LOCKFILES STACK_PM_MANAGERS STACK_PM_ECOSYSTEMS \
+    _stacks_lists_cached_format |
+    sed -E -e 's/^declare -- /declare -g /' -e 's/^declare -([aA])/declare -g\1/' \
+      >"$tmp" 2>/dev/null; then
+    mv "$tmp" "$_stacks_lists_cache" 2>/dev/null || rm -f "$tmp"
+  else
+    rm -f "$tmp"
   fi
-fi
+}
 
 # resolve_package_manager <dir>
 # Prints the package manager name for <dir> by walking the package_managers
@@ -146,6 +218,7 @@ fi
 # root. Prints nothing when no lockfile is found; callers should apply their
 # own default (e.g. npm) when empty output means "no preference".
 resolve_package_manager() {
+  kit_stacks_load
   local dir="${1:-.}"
   local toplevel
   toplevel="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
@@ -191,6 +264,7 @@ stack_cache_file() {
 # one of its own sentinel files happened to be touched, while the
 # stacks-lists and skill-map caches had already moved on.
 refresh_stack_cache_if_stale() {
+  kit_stacks_load
   local project_root="$1" cache_file="$2"
   mkdir -p "$(dirname "$cache_file")"
 

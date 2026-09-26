@@ -3,8 +3,9 @@
 # regardless of permission rules. Callable standalone or sourced by
 # guard-dispatch.sh, which reads the payload once for all three checks.
 HOOK_NAME="guard-edit.sh"
-# shellcheck source=_lib.sh
-source "$(dirname "$0")/_lib.sh"
+# shellcheck source=../bin/_lib.sh
+source "$(dirname "$0")/../bin/_lib.sh"
+kit_hook_init
 
 run_guard_edit() {
   # Shadows the file-scope HOOK_NAME via bash's dynamic scoping - without

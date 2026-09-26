@@ -5,8 +5,8 @@
 # $HOME-prefixed paths, so each test fakes $HOME with tiny stand-in scripts
 # for those two collaborators (echoing a fixed name/root) rather than
 # exercising the real sentinel walk -- this isolates inject-context.sh's own
-# logic, which is what this suite covers. The real hooks/_lib.sh and
-# bin/_lib.sh are still sourced (relative to the script's own location), so
+# logic, which is what this suite covers. The real bin/_lib.sh is still
+# sourced (relative to the script's own location), so
 # stack-cache and skill-derivation logic is real; only the two collaborator
 # scripts and the data files under $HOME are fixtures.
 #
@@ -146,7 +146,7 @@ YAML
 # Regression coverage for a fixed bug: inject-context.sh's dirty-file count
 # runs `git -C "$project_root" status --porcelain | wc -l | tr -d ' '`. Under
 # pipefail, a non-git project_root used to make that pipeline fail, and the
-# fail-open ERR trap in hooks/_lib.sh turned that into a silent early exit --
+# fail-open ERR trap from kit_hook_init turned that into a silent early exit --
 # no repo-context, no required/suggested skills, no marker touch. Fixed by
 # falling back to a "dirty-files: unknown" line instead of aborting.
 @test "a non-git project root degrades to dirty-files: unknown instead of failing open" {

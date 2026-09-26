@@ -3,12 +3,11 @@
 # clear. The harness itself guarantees this fires once per boundary (matcher:
 # startup|resume|compact|clear in settings.json) -- no self-dedup needed here.
 HOOK_NAME="inject-context.sh"
-# shellcheck source=_lib.sh
-source "$(dirname "$0")/_lib.sh"
 
 # Every guard fails open (exit 0) without these, so say so at session start.
-# Runs before bin/_lib.sh, which needs bash 4.2+: bash 3.2 syntax only, and
-# the JSON is built with printf because jq may be the thing missing.
+# Runs before bin/_lib.sh, which needs bash 4.2+, and so before strict mode:
+# bash 3.2 syntax only, and the JSON is built with printf because jq may be
+# the thing missing.
 check_prereqs() {
   local missing="" kit_rules entry linked=0
   if [ "${BASH_VERSINFO[0]}" -lt 4 ] || { [ "${BASH_VERSINFO[0]}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -lt 2 ]; }; then
@@ -38,6 +37,7 @@ check_prereqs
 
 # shellcheck source=../bin/_lib.sh
 source "$(dirname "$0")/../bin/_lib.sh"
+kit_hook_init
 
 payload=""
 read_payload
