@@ -274,8 +274,7 @@ tooling_block() {
 
   run run_inject_context "s1"
   [ "$status" -eq 0 ]
-  [ "$(tooling_block | sed -n '/^tasks:$/,/^$/p')" = "tasks:
-  cargo check
+  [ "$(tooling_block | grep '^  ')" = "  cargo check
   cargo clippy -- -D warnings
   cargo fmt --check
   cargo test" ]
@@ -302,8 +301,28 @@ tooling_block() {
   [[ "$block" == *"guidance: "* ]]
 }
 
-@test "tooling: a project with no providers or toolchain gets no block" {
+@test "tooling: a project with no providers or toolchain gets tools only, no tasks or guidance" {
   use_real_kit_yml
+  run run_inject_context "s1"
+  [ "$status" -eq 0 ]
+  local block
+  block="$(tooling_block)"
+  [[ "$block" != *"tasks:"* ]]
+  [[ "$block" != *"guidance:"* ]]
+  [[ "$block" == *"available: "* || "$block" == *"missing: "* ]]
+}
+
+@test "tooling: tools are split into available and missing by PATH" {
+  cat >"$FAKE_HOME/.claude/kit.yml" <<'YAML'
+tools: [jq, definitely-not-a-real-tool-xyz, git]
+YAML
+  run run_inject_context "s1"
+  [ "$status" -eq 0 ]
+  [[ "$(tooling_block)" == *"available: jq, git"* ]]
+  [[ "$(tooling_block)" == *"missing: definitely-not-a-real-tool-xyz"* ]]
+}
+
+@test "tooling: no tools and no tasks means no block" {
   run run_inject_context "s1"
   [ "$status" -eq 0 ]
   [[ "$output" != *"<tooling>"* ]]

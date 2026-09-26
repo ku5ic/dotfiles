@@ -6,7 +6,7 @@
 #   - the stack lists derived from kit.yml load on first use, through
 #     kit_stacks_load, so hooks that never read them never pay for yq.
 #
-# Requires: yq (mikefarah, installed via Brewfile)
+# Requires: bash 4.2+, jq, and yq (mikefarah's, not the Python one)
 
 # Idempotency guard: guard-dispatch.sh sources this, then sources
 # guard-edit.sh and guard-skills.sh, which each source it again for
@@ -274,12 +274,13 @@ longest_prose_run() {
 # reader drops empty values and would shift every later row.
 # KIT_SUBPROJECT_MAX_DEPTH: subproject_max_depth.
 # KIT_ORCH_*: positional columns of orchestrators (task_paths space-joined).
+# KIT_TOOLS: tools.
 _stacks_lists_cache="$KIT_CACHE_DIR/stacks-lists.bash"
 
 # Bump on every change to the queries below or to the cache's shape. The
 # mtime check only sees kit.yml, so without this an existing cache
 # outlives a rewritten derivation and keeps serving the old lists.
-_stacks_lists_format=8
+_stacks_lists_format=9
 
 _reset_stacks_lists() {
   STACK_SENTINELS_FULL=()
@@ -315,6 +316,7 @@ _reset_stacks_lists() {
   KIT_ORCH_SIGNALS=()
   KIT_ORCH_TASK_PATHS=()
   KIT_ORCH_RUNS=()
+  KIT_TOOLS=()
 }
 
 # Each emitted row is "<list-tag>\t<value>" so one yq call fills every list.
@@ -357,6 +359,7 @@ _build_stacks_lists() {
     ORCH_SIGNAL) KIT_ORCH_SIGNALS+=("$value") ;;
     ORCH_PATHS) KIT_ORCH_TASK_PATHS+=("$value") ;;
     ORCH_RUN) KIT_ORCH_RUNS+=("$value") ;;
+    TOOL) KIT_TOOLS+=("$value") ;;
     LOGMAX) KIT_LOG_MAX_LINES="$value" ;;
     esac
   done < <(
@@ -397,6 +400,7 @@ _build_stacks_lists() {
           ["CHECK_TASKS", ((.tasks // []) | join(" "))],
           ["CHECK_EXCLUDE", ((.exclude // []) | join(" ") | select(. != "") // "-")]
         )),
+        (.tools // [] | .[] | ["TOOL", .]),
         (.orchestrators // [] | .[] | (
           ["ORCH_NAME", .name],
           ["ORCH_SIGNAL", .signal],
@@ -467,7 +471,7 @@ kit_stacks_load() {
     KIT_TP_NAMES KIT_TP_STACKS KIT_TP_MANIFESTS KIT_TP_EXTRACTORS KIT_TP_ARGS \
     KIT_TP_RUNS KIT_TP_RUNS_BY_PM KIT_CHECK_NAMES KIT_CHECK_TASKS KIT_CHECK_EXCLUDES \
     KIT_TC_STACKS KIT_TC_NAMES KIT_TC_CMDS KIT_TC_BINS KIT_TC_WHEN_DIRS \
-    KIT_ORCH_NAMES KIT_ORCH_SIGNALS KIT_ORCH_TASK_PATHS KIT_ORCH_RUNS \
+    KIT_ORCH_NAMES KIT_ORCH_SIGNALS KIT_ORCH_TASK_PATHS KIT_ORCH_RUNS KIT_TOOLS \
     _stacks_lists_cached_format |
     sed -E -e 's/^declare -- /declare -g /' -e 's/^declare -([aA])/declare -g\1/' \
       >"$tmp" 2>/dev/null; then

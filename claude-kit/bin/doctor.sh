@@ -183,7 +183,7 @@ echo
 echo "== skill + agent frontmatter lint =="
 
 if ! command -v yq >/dev/null 2>&1; then
-  echo "skip           yq not found; install via Brewfile to enable frontmatter lint"
+  echo "skip           yq not found; install mikefarah's yq to enable frontmatter lint"
 else
   SKILLS_DIR="$SOURCE_ROOT/skills"
   AGENTS_DIR="$SOURCE_ROOT/agents"

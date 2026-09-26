@@ -169,13 +169,36 @@ emit_tooling_block() {
     true
   )"
 
-  [[ -z "$body" ]] && return 0
+  # kit.yml's tools, split by whether they're on PATH: what is installed is
+  # what PATH says, not what any package list claims.
+  local tool tools_body
+  local -a available=() missing=()
+  kit_stacks_load
+  for tool in "${KIT_TOOLS[@]}"; do
+    if command -v "$tool" >/dev/null 2>&1; then
+      available+=("$tool")
+    else
+      missing+=("$tool")
+    fi
+  done
+  tools_body="$(
+    IFS=,
+    ((${#available[@]} > 0)) && echo "available: ${available[*]}"
+    ((${#missing[@]} > 0)) && echo "missing: ${missing[*]}"
+    true
+  )"
+  tools_body="${tools_body//,/, }"
+
+  [[ -z "$body" && -z "$tools_body" ]] && return 0
 
   echo ""
   echo "<tooling>"
-  printf '%s\n' "$body"
-  echo ""
-  echo "guidance: Run scripts only through the package manager named above, prefer these scripts and run-checks.sh over direct tool invocation, and never substitute a different package manager."
+  [[ -n "$body" ]] && printf '%s\n' "$body"
+  [[ -n "$tools_body" ]] && printf '%s\n' "$tools_body"
+  if [[ -n "$body" ]]; then
+    echo ""
+    echo "guidance: Run scripts only through the package manager named above, prefer these scripts and run-checks.sh over direct tool invocation, and never substitute a different package manager."
+  fi
   echo "</tooling>"
 }
 

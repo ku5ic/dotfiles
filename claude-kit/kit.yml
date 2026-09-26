@@ -286,6 +286,11 @@ toolchain_checks:
 # directory a subproject (kit_subprojects).
 subproject_max_depth: 4
 
+# The CLIs rules/tooling.md steers toward. <tooling> reports which of them
+# are on PATH as available: and missing: lines, so a rule never sends Claude
+# to a binary this machine lacks.
+tools: [rg, sg, fd, tokei, gitleaks, trufflehog, hyperfine, jq, gron, yq, qsv, sd, sponge, git-absorb, actionlint]
+
 # JS monorepo task runners that know package dependents and cache results.
 # When a signal file is at the repo root and {bin} resolves from the root's
 # node_modules/.bin (never npx), run-checks.sh runs each JS check matching one

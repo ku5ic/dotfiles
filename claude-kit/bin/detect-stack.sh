@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Requires bash 4.0+. Personal dotfiles; bash 5.x is installed via Brewfile.
+# Requires bash 4.2+.
 # Emits a compact stack report for the current project or a nearby ancestor.
 # Output is terse on purpose. Each line is meant to be scanned by Claude in
 # under a few hundred tokens of context.
@@ -16,7 +16,7 @@
 # extend an existing one, edit that file only. No edits to this script are
 # required.
 #
-# Requires: yq (mikefarah, installed via Brewfile)
+# Requires: yq (mikefarah's, not the Python one)
 
 set -euo pipefail
 

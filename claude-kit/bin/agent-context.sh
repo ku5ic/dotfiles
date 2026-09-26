@@ -8,7 +8,7 @@
 # hook derives required and suggested skills. Shared derivation lives in
 # bin/_lib.sh.
 #
-# Requires: yq (mikefarah, installed via Brewfile)
+# Requires: yq (mikefarah's, not the Python one)
 
 set -euo pipefail
 
