@@ -353,7 +353,24 @@
   },
   "model": "opus[1m]",
   "skillOverrides": {
-    "auto-mode-setup": "off"
+    "auto-mode-setup": "off",
+    "fastapi-patterns": "off",
+    "bash-patterns": "name-only",
+    "django-patterns": "name-only",
+    "docker-patterns": "name-only",
+    "engineering-fundamentals": "name-only",
+    "graphql-patterns": "name-only",
+    "javascript-patterns": "name-only",
+    "next-app-router-patterns": "name-only",
+    "nuxt-patterns": "name-only",
+    "opentofu-patterns": "name-only",
+    "python-patterns": "name-only",
+    "react-patterns": "name-only",
+    "storybook-patterns": "name-only",
+    "tailwind-patterns": "name-only",
+    "test-patterns": "name-only",
+    "typescript-patterns": "name-only",
+    "vue-patterns": "name-only"
   },
   "hooks": {
     "PreToolUse": [
