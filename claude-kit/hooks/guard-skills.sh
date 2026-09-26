@@ -22,11 +22,11 @@ run_guard_skills() {
   session_id="$(printf '%s' "$payload" | jq -r '.session_id // empty')"
   [[ -z "$session_id" ]] && return 0
 
-  stacks_yml="$KIT_ROOT/_stacks.yml"
+  stacks_yml="$KIT_ROOT/kit.yml"
   command -v yq >/dev/null 2>&1 || return 0
   [[ -f "$stacks_yml" ]] || return 0
 
-  # Full skill_file_map in one yq call, cached to disk while _stacks.yml is
+  # Full skill_file_map in one yq call, cached to disk while kit.yml is
   # unchanged. Each line: on<TAB>globs-space-separated<TAB>skills-space-separated
   map_cache="$KIT_CACHE_DIR/skill-map"
   if [[ -s "$map_cache" && "$map_cache" -nt "$stacks_yml" ]]; then

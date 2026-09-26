@@ -4,7 +4,7 @@
 #
 # Emits the resolved scratch path, the same repo-context content as the hook
 # (stack lines from the detect-stack cache or a fresh run, branch, dirty
-# count) plus a skills-to-load list derived from _stacks.yml exactly as the
+# count) plus a skills-to-load list derived from kit.yml exactly as the
 # hook derives required and suggested skills. Shared derivation lives in
 # bin/_lib.sh.
 #
@@ -56,7 +56,7 @@ if [[ -s "$cache_file" ]]; then
   echo "</repo-context>"
 fi
 
-yml="$KIT_ROOT/_stacks.yml"
+yml="$KIT_ROOT/kit.yml"
 if [[ -f "$yml" ]] && command -v yq >/dev/null 2>&1; then
   render_required_skills_block "$yml"
   render_suggested_skills_block "$yml" "$cache_file"

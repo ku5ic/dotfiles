@@ -5,7 +5,7 @@
 # under a few hundred tokens of context.
 #
 # All stack knowledge (sentinels, search_dirs, extras detection rules, skills)
-# lives in _stacks.yml at the kit root ($KIT_ROOT, see _lib.sh). To add a new stack or extend an existing one, edit
+# lives in kit.yml at the kit root ($KIT_ROOT, see _lib.sh). To add a new stack or extend an existing one, edit
 # that file only. No edits to this script are required.
 #
 # Requires: yq (mikefarah, installed via Brewfile)
@@ -15,7 +15,7 @@ set -euo pipefail
 # shellcheck source=_lib.sh
 source "$(dirname "$0")/_lib.sh"
 
-STACKS_YML="$KIT_ROOT/_stacks.yml"
+STACKS_YML="$KIT_ROOT/kit.yml"
 ROOT="$("$KIT_ROOT/bin/project-root.sh")"
 cd "$ROOT"
 

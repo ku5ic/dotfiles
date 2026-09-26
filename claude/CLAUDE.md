@@ -17,13 +17,13 @@ The three that bind hardest:
 - `<required-skills>` block: invoke each named skill via the Skill tool before any other action. Blocking.
 - `<suggested-skills>` block: load the named skill when about to take that action.
 - `guard-skills` (opt-in, `CLAUDE_GUARD_SKILLS=1`) blocks the first edit of a mapped file type until its patterns skill is loaded for the session.
-- Source of truth for every mapping and trigger phrase: `_stacks.yml`.
+- Source of truth for every mapping and trigger phrase: `kit.yml`.
 
 ## Project boot protocol
 
 Once per session, on the first substantive action in a repo:
 
-1. Use the injected `<repo-context>` block for stack info. If it is absent and the project root has a stack sentinel (`anchor: true` in `_stacks.yml`), say so: the hook should have fired.
+1. Use the injected `<repo-context>` block for stack info. If it is absent and the project root has a stack sentinel (`anchor: true` in `kit.yml`), say so: the hook should have fired.
 2. Read the project root CLAUDE.md. Read README.md only if directly relevant to the task.
 3. Check branch and dirty state. Dirty tree plus a new-feature task: surface it and ask before proceeding.
 4. Use the injected `<tooling>` block for the test runner, type checker, linter, and formatter.

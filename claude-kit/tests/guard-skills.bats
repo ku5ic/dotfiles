@@ -1,25 +1,25 @@
 #!/usr/bin/env bats
 # Tests for ~/.dotfiles/claude-kit/hooks/guard-skills.sh.
 #
-# guard-skills.sh reads $HOME/.claude/_stacks.yml (skill_file_map) and
+# guard-skills.sh reads $HOME/.claude/kit.yml (skill_file_map) and
 # $HOME/.claude/logs/skills.jsonl (what has been loaded this session) on
 # every Edit/Write/MultiEdit. Each test fakes $HOME so real machine
 # state never leaks into the assertions; some tests copy the real repo's
-# _stacks.yml into the fake $HOME so the production map itself is exercised.
+# kit.yml into the fake $HOME so the production map itself is exercised.
 #
 # Run with: bats tests/
 
 setup() {
   HOOK="$BATS_TEST_DIRNAME/../hooks/guard-skills.sh"
-  REAL_STACKS_YML="$BATS_TEST_DIRNAME/../_stacks.yml"
+  REAL_STACKS_YML="$BATS_TEST_DIRNAME/../kit.yml"
   FAKE_HOME="$BATS_TEST_TMPDIR/home"
   unset CLAUDE_CONFIG_DIR
   export CLAUDE_PLUGIN_ROOT="$FAKE_HOME/.claude"
   mkdir -p "$FAKE_HOME/.claude/logs"
 }
 
-write_stacks_yml() {
-  cat >"$FAKE_HOME/.claude/_stacks.yml"
+write_kit_yml() {
+  cat >"$FAKE_HOME/.claude/kit.yml"
 }
 
 write_skills_log() {
@@ -34,8 +34,8 @@ run_guard_skills() {
     HOME="$FAKE_HOME" "$HOOK"
 }
 
-@test "every skill_file_map entry in the real _stacks.yml blocks until its skill is loaded" {
-  cp "$REAL_STACKS_YML" "$FAKE_HOME/.claude/_stacks.yml"
+@test "every skill_file_map entry in the real kit.yml blocks until its skill is loaded" {
+  cp "$REAL_STACKS_YML" "$FAKE_HOME/.claude/kit.yml"
   : >"$FAKE_HOME/.claude/logs/skills.jsonl"
 
   while IFS=$'\t' read -r globs skills; do
@@ -51,19 +51,19 @@ run_guard_skills() {
 }
 
 @test "declaration order: a .test.tsx file picks up test-patterns before typescript-patterns" {
-  cp "$REAL_STACKS_YML" "$FAKE_HOME/.claude/_stacks.yml"
+  cp "$REAL_STACKS_YML" "$FAKE_HOME/.claude/kit.yml"
   : >"$FAKE_HOME/.claude/logs/skills.jsonl"
   run run_guard_skills "/tmp/project/foo.test.tsx"
   [ "$status" -eq 2 ]
   # Position, not membership: test-patterns must appear earlier in the
-  # message than typescript-patterns, matching _stacks.yml's declared order.
+  # message than typescript-patterns, matching kit.yml's declared order.
   before_test="${output%%test-patterns*}"
   before_ts="${output%%typescript-patterns*}"
   [ "${#before_test}" -lt "${#before_ts}" ]
 }
 
 @test "cumulative matching: a .test.tsx file requires skills from every matching entry, not just one" {
-  cp "$REAL_STACKS_YML" "$FAKE_HOME/.claude/_stacks.yml"
+  cp "$REAL_STACKS_YML" "$FAKE_HOME/.claude/kit.yml"
   : >"$FAKE_HOME/.claude/logs/skills.jsonl"
   run run_guard_skills "/tmp/project/foo.test.tsx"
   [ "$status" -eq 2 ]
@@ -72,13 +72,13 @@ run_guard_skills() {
   [[ "$output" == *"react-patterns"* ]]
 }
 
-# _stacks.yml's skill_file_map no longer carries a catch-all globs: ["*"] row
+# kit.yml's skill_file_map no longer carries a catch-all globs: ["*"] row
 # (removed deliberately; fix-sizing/root-cause-diagnosis/context-gathering
 # moved to rules/*.md, unconditional and not per-file requirements), so this
 # exercises the composing mechanism itself via a synthetic map rather than
 # asserting on production data that no longer has a catch-all row.
 @test "a catch-all glob entry composes with a specific entry rather than displacing it" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*"]
@@ -95,9 +95,9 @@ YAML
 }
 
 @test "on: path entries match the full path, not just the basename" {
-  # Synthetic map: the real _stacks.yml has no on:path entries, but the
+  # Synthetic map: the real kit.yml has no on:path entries, but the
   # matching mode is still supported and needs coverage.
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: path
     globs: ["*/widgets/*/CONFIG.md"]
@@ -113,7 +113,7 @@ YAML
 }
 
 @test "blocks when the required skill has not been loaded this session" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -126,7 +126,7 @@ YAML
 }
 
 @test "allows when the required skill was loaded this session via the Skill tool" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -138,7 +138,7 @@ YAML
 }
 
 @test "allows when the required skill's SKILL.md was read this session (Read fallback)" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -150,7 +150,7 @@ YAML
 }
 
 @test "a session_id mismatch does not count as loaded" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -162,7 +162,7 @@ YAML
 }
 
 @test "Edit tool_name produces an edit-verb block message" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -183,7 +183,7 @@ YAML
 # UserPromptExpansion), so a bare "suggested-skill" or "required-skill"
 # marker can no longer satisfy a required-skill check on its own.
 @test "a suggested-skill marker alone does not satisfy the required-skill check" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.jsx"]
@@ -196,7 +196,7 @@ YAML
 }
 
 @test "a required-skill marker alone does not satisfy the required-skill check" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*"]
@@ -211,7 +211,7 @@ YAML
 # per-skill marker cache ($HOME/.claude/cache/skills-loaded/<session>-<skill>)
 
 @test "an allowed session/skill pair writes a marker file to the cache" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -224,7 +224,7 @@ YAML
 }
 
 @test "a cached marker allows a second call even when the skills log becomes unreadable" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -245,7 +245,7 @@ YAML
 }
 
 @test "an uncached skill still fails open when the skills log is unreadable" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -259,7 +259,7 @@ YAML
 }
 
 @test "a marker for one session does not satisfy a different session's check" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -272,10 +272,10 @@ YAML
   [ "$status" -eq 2 ]
 }
 
-# _stacks.yml -> skill_file_map cache ($HOME/.claude/cache/skill-map)
+# kit.yml -> skill_file_map cache ($HOME/.claude/cache/skill-map)
 
 @test "the skill-map cache is created after the first invocation" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -288,8 +288,8 @@ YAML
   [[ "$(cat "$FAKE_HOME/.claude/cache/skill-map")" == *"bash-patterns"* ]]
 }
 
-@test "a stale skill-map cache (older than _stacks.yml) is not reused" {
-  write_stacks_yml <<'YAML'
+@test "a stale skill-map cache (older than kit.yml) is not reused" {
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -300,9 +300,9 @@ YAML
   [ "$status" -eq 2 ]
   [[ "$output" == *"bash-patterns"* ]]
 
-  # Rewrite _stacks.yml with a different required skill and make it newer
+  # Rewrite kit.yml with a different required skill and make it newer
   # than the cache file just written above.
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -314,8 +314,8 @@ YAML
   [[ "$output" != *"bash-patterns"* ]]
 }
 
-@test "a fresh skill-map cache (newer than _stacks.yml) is reused instead of re-parsing" {
-  write_stacks_yml <<'YAML'
+@test "a fresh skill-map cache (newer than kit.yml) is reused instead of re-parsing" {
+  write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -327,11 +327,11 @@ YAML
   cache_file="$FAKE_HOME/.claude/cache/skill-map"
   [ -s "$cache_file" ]
 
-  # Corrupt the on-disk _stacks.yml so a fresh parse would produce a
+  # Corrupt the on-disk kit.yml so a fresh parse would produce a
   # different (or no) result, but leave its mtime older than the cache -
   # the cached map should still be what guard-skills.sh reads from.
-  printf 'not: [valid, yaml, skill_file_map' >"$FAKE_HOME/.claude/_stacks.yml"
-  touch -t 202001010000 "$FAKE_HOME/.claude/_stacks.yml"
+  printf 'not: [valid, yaml, skill_file_map' >"$FAKE_HOME/.claude/kit.yml"
+  touch -t 202001010000 "$FAKE_HOME/.claude/kit.yml"
   touch "$cache_file"
 
   run run_guard_skills "/tmp/project/bar.sh" "s1"

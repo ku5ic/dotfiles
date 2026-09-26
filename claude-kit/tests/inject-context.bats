@@ -27,6 +27,8 @@ setup() {
   # get the warning JSON instead of the context.
   mkdir -p "$FAKE_HOME/.claude/rules"
   ln -s "$BATS_TEST_DIRNAME/../rules" "$FAKE_HOME/.claude/rules/kit"
+  # Likewise a readable kit.yml; tests that need content overwrite it.
+  touch "$FAKE_HOME/.claude/kit.yml"
 
   set_project_name "testproject"
   set_project_root "$FAKE_ROOT"
@@ -53,8 +55,8 @@ EOF
   chmod +x "$FAKE_HOME/.claude/bin/project-root.sh"
 }
 
-write_stacks_yml() {
-  cat >"$FAKE_HOME/.claude/_stacks.yml"
+write_kit_yml() {
+  cat >"$FAKE_HOME/.claude/kit.yml"
 }
 
 write_cache() {
@@ -69,7 +71,7 @@ run_inject_context() {
 }
 
 @test "<required-skills> contains every global_skills entry" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 global_skills:
   - fix-sizing
   - context-gathering
@@ -86,7 +88,7 @@ YAML
 }
 
 @test "<suggested-skills> has one line per detected stack skill with its trigger phrase" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 global_skills:
   - fix-sizing
 skill_triggers:
@@ -110,7 +112,7 @@ YAML
 
 @test "a repo with no sentinel produces no injection" {
   set_project_name "unknown"
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 global_skills:
   - fix-sizing
 YAML
@@ -121,7 +123,7 @@ YAML
 }
 
 @test "a suggested skill logs a suggested-skill marker to skills.jsonl" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 global_skills: []
 skill_triggers:
   react-patterns: "before building or restructuring React components"
@@ -154,7 +156,7 @@ YAML
   non_git_root="$BATS_TEST_TMPDIR/non-git-project"
   mkdir -p "$non_git_root"
   set_project_root "$non_git_root"
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 global_skills:
   - fix-sizing
 YAML
@@ -210,9 +212,18 @@ restricted_path() {
   [[ "$output" == *"run bootstrap.sh"* ]]
 }
 
+@test "prereqs: a missing kit.yml gets a warning naming bootstrap.sh" {
+  rm "$FAKE_HOME/.claude/kit.yml"
+
+  run run_inject_context "s1"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"readable kit.yml"* ]]
+  [[ "$output" == *"run bootstrap.sh"* ]]
+}
+
 @test "prereqs: kit rules linked under another name count" {
   mv "$FAKE_HOME/.claude/rules/kit" "$FAKE_HOME/.claude/rules/claude-kit"
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 global_skills:
   - fix-sizing
 YAML

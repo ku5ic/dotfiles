@@ -8,7 +8,7 @@
 # set -e/errtrace/ERR trap so one check's fail-open never masks a different
 # check's genuine violation.
 #
-# Each test fakes $HOME so guard-skills.sh's _stacks.yml/skills.jsonl/cache
+# Each test fakes $HOME so guard-skills.sh's kit.yml/skills.jsonl/cache
 # reads never touch real machine state, same convention as guard-skills.bats.
 #
 # Run with: bats tests/
@@ -32,7 +32,7 @@ run_dispatch() {
     HOME="$FAKE_HOME" "$HOOK"
 }
 
-@test "clean write with no _stacks.yml and no risky path passes both checks" {
+@test "clean write with no kit.yml and no risky path passes both checks" {
   run run_dispatch '/tmp/project/notes.md' 'A normal sentence with nothing wrong.'
   [ "$status" -eq 0 ]
 }
@@ -44,7 +44,7 @@ run_dispatch() {
 }
 
 @test "guard-skills' check blocks when a required skill has not been loaded" {
-  cat >"$FAKE_HOME/.claude/_stacks.yml" <<'YAML'
+  cat >"$FAKE_HOME/.claude/kit.yml" <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -57,7 +57,7 @@ YAML
 }
 
 @test "guard-skills' check is skipped unless CLAUDE_GUARD_SKILLS=1" {
-  cat >"$FAKE_HOME/.claude/_stacks.yml" <<'YAML'
+  cat >"$FAKE_HOME/.claude/kit.yml" <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -69,7 +69,7 @@ YAML
 }
 
 @test "ordering: a lockfile edit that would also trip the skills-gate surfaces only guard-edit's message" {
-  cat >"$FAKE_HOME/.claude/_stacks.yml" <<'YAML'
+  cat >"$FAKE_HOME/.claude/kit.yml" <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.lock"]
@@ -85,7 +85,7 @@ YAML
 }
 
 @test "a required skill already loaded this session allows a clean write through both checks" {
-  cat >"$FAKE_HOME/.claude/_stacks.yml" <<'YAML'
+  cat >"$FAKE_HOME/.claude/kit.yml" <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]
@@ -148,7 +148,7 @@ inject_fault() {
 
 # A skills-gate that must block: *.sh requires bash-patterns, nothing loaded.
 setup_skills_gate() {
-  cat >"$FAKE_HOME/.claude/_stacks.yml" <<'YAML'
+  cat >"$FAKE_HOME/.claude/kit.yml" <<'YAML'
 skill_file_map:
   - on: basename
     globs: ["*.sh"]

@@ -20,7 +20,7 @@ ln -sfv ~/.dotfiles/config/nvim ~/.config/
 
 ## Structure
 
-Claude Code config is split in two, both symlinked into `~/.claude/` by `claude-kit/bin/bootstrap.sh`. `claude-kit/` is the shareable plugin (`agents/`, `hooks/`, `skills/`, `rules/`, `bin/`, `_stacks.yml`, bats tests in `tests/`); `claude/` is personal (`settings.json`, `CLAUDE.md`, `rules/voice.md`, and `rules/kit` linking to the kit rules). `~/.claude/bin` is on `$PATH` via `.zprofile`. `claude/desktop.md` holds the Claude desktop instructions, pasted in by hand; its section 11 names the rule files it mirrors. Neovim config lives in `config/nvim/`, see `config/nvim/CLAUDE.md`.
+Claude Code config is split in two, both symlinked into `~/.claude/` by `claude-kit/bin/bootstrap.sh`. `claude-kit/` is the shareable plugin (`agents/`, `hooks/`, `skills/`, `rules/`, `bin/`, `kit.yml`, bats tests in `tests/`); `claude/` is personal (`settings.json`, `CLAUDE.md`, `rules/voice.md`, and `rules/kit` linking to the kit rules). `~/.claude/bin` is on `$PATH` via `.zprofile`. `claude/desktop.md` holds the Claude desktop instructions, pasted in by hand; its section 11 names the rule files it mirrors. Neovim config lives in `config/nvim/`, see `config/nvim/CLAUDE.md`.
 
 ## Neovim Architecture
 

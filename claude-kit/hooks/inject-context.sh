@@ -29,6 +29,10 @@ check_prereqs() {
   if [ "$linked" -eq 0 ]; then
     missing="${missing} the kit rules linked under ~/.claude/rules (run bootstrap.sh);"
   fi
+  # KIT_ROOT's default, inlined for the same reason.
+  if [ ! -r "${CLAUDE_PLUGIN_ROOT:-$(dirname "$0")/..}/kit.yml" ]; then
+    missing="${missing} a readable kit.yml at the kit root (run bootstrap.sh);"
+  fi
   if [ -n "$missing" ]; then
     printf '{"systemMessage":"claude-kit guards fail open until this is fixed. Missing:%s"}\n' "${missing%;}"
     exit 0
@@ -77,7 +81,7 @@ fi
 # still deserves them - the earlier `project_name` exit above already
 # filters out non-project contexts).
 emit_required_skills() {
-  local yml="$KIT_ROOT/_stacks.yml"
+  local yml="$KIT_ROOT/kit.yml"
 
   [[ -f "$yml" ]] || return 0
   command -v yq >/dev/null 2>&1 || return 0
@@ -112,7 +116,7 @@ emit_required_skills() {
 # actual invocation.
 emit_suggested_skills() {
   local cache="$1"
-  local yml="$KIT_ROOT/_stacks.yml"
+  local yml="$KIT_ROOT/kit.yml"
 
   [[ -s "$cache" ]] || return 0
   [[ -f "$yml" ]] || return 0

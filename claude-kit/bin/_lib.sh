@@ -3,7 +3,7 @@
 # defines things; nothing runs until a caller asks:
 #   - hooks call kit_hook_init for strict mode plus a fail-open ERR trap.
 #     Bin scripts don't, so they never inherit the fail-open trap.
-#   - the stack lists derived from _stacks.yml load on first use, through
+#   - the stack lists derived from kit.yml load on first use, through
 #     kit_stacks_load, so hooks that never read them never pay for yq.
 #
 # Requires: yq (mikefarah, installed via Brewfile)
@@ -22,7 +22,7 @@ _KIT_LIB_SOURCED=1
 # PATH it gets, and every hook pays for each subprocess.
 _KIT_BIN_DIR="$(cd "${BASH_SOURCE[0]%/*}" && pwd)"
 KIT_ROOT="${CLAUDE_PLUGIN_ROOT:-${_KIT_BIN_DIR%/*}}"
-_STACKS_YML="$KIT_ROOT/_stacks.yml"
+_STACKS_YML="$KIT_ROOT/kit.yml"
 
 # Claude Code's config dir, relocatable with CLAUDE_CONFIG_DIR. Every path
 # the kit writes under it derives from here.
@@ -132,7 +132,7 @@ longest_prose_run() {
 }
 
 # Every derived list below comes from one yq pass, cached as sourceable
-# `declare -p` output for as long as _stacks.yml is unchanged. Sourcing this
+# `declare -p` output for as long as kit.yml is unchanged. Sourcing this
 # file used to spawn five yq processes (~59ms), paid by guard-bash.sh on
 # every Bash tool call and by project-root.sh on every bin script.
 #
@@ -157,7 +157,7 @@ longest_prose_run() {
 _stacks_lists_cache="$KIT_CACHE_DIR/stacks-lists.bash"
 
 # Bump on every change to the queries below or to the cache's shape. The
-# mtime check only sees _stacks.yml, so without this an existing cache
+# mtime check only sees kit.yml, so without this an existing cache
 # outlives a rewritten derivation and keeps serving the old lists.
 _stacks_lists_format=3
 
@@ -262,7 +262,7 @@ kit_stacks_load() {
 
 # resolve_package_manager <dir>
 # Prints the package manager name for <dir> by walking the package_managers
-# table in _stacks.yml (first lockfile match wins). Checks <dir> first, then
+# table in kit.yml (first lockfile match wins). Checks <dir> first, then
 # the git toplevel of <dir> to handle monorepos where lockfiles live at the
 # root. Prints nothing when no lockfile is found; callers should apply their
 # own default (e.g. npm) when empty output means "no preference".
@@ -307,7 +307,7 @@ stack_cache_file() {
 # file (STACK_DETECT_FILES) is newer than the cache, or the cache is
 # empty/missing. No output; callers read $cache_file afterward.
 #
-# _stacks.yml counts as detection-relevant: it defines what detect-stack.sh
+# kit.yml counts as detection-relevant: it defines what detect-stack.sh
 # looks for, so adding a stack, sentinel or extra must re-detect every
 # project. Without it a cached project kept serving the old detection until
 # one of its own sentinel files happened to be touched, while the
@@ -368,7 +368,7 @@ stacks_signals_from_cache() {
 }
 
 # global_skills_list <yml>
-# Prints _stacks.yml's global_skills, deduped, in first-seen order.
+# Prints kit.yml's global_skills, deduped, in first-seen order.
 global_skills_list() {
   local yml="$1"
   local -A seen=()
@@ -385,7 +385,7 @@ global_skills_list() {
 # suggested_skills_from_signals <yml>
 # Reads stack/extra signals from stdin (one per line, as produced by
 # stacks_signals_from_cache), prints the per-stack/extra skills mapped in
-# _stacks.yml, deduped, first-seen order, excluding global_skills (those are
+# kit.yml, deduped, first-seen order, excluding global_skills (those are
 # required, not suggested).
 suggested_skills_from_signals() {
   local yml="$1"

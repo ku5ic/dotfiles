@@ -2,7 +2,7 @@
 # Characterization tests for bin/detect-stack.sh: pins today's report on
 # three fixtures so later refactors change it only on purpose.
 #
-# Runs the real script against the real _stacks.yml; HOME is faked so the
+# Runs the real script against the real kit.yml; HOME is faked so the
 # stack-list cache lands in the test's tmpdir.
 
 setup() {

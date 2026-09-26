@@ -1,4 +1,4 @@
-# _stacks.yml
+# kit.yml
 #
 # Single source of truth for stack detection. Consumed by:
 #   bin/_lib.sh          -> STACK_SENTINELS_FULL, STACK_SENTINELS_PROJECT_ROOT

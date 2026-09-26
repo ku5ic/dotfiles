@@ -56,7 +56,7 @@ PERSONAL_ROOT="$(cd "$SOURCE_ROOT/../claude" && pwd)"
 source "$SCRIPT_DIR/_lib.sh"
 TARGET_ROOT="$KIT_HOME"
 
-ENTRIES=(settings.json CLAUDE.md hooks skills agents rules bin _stacks.yml)
+ENTRIES=(settings.json CLAUDE.md hooks skills agents rules bin kit.yml)
 
 root_for() {
   case "$1" in
@@ -346,7 +346,7 @@ echo "== skill map validation =="
 if ! command -v yq >/dev/null 2>&1; then
   echo "skip           yq not found; skipping skill map validation"
 else
-  STACKS_YML_SRC="$SOURCE_ROOT/_stacks.yml"
+  STACKS_YML_SRC="$SOURCE_ROOT/kit.yml"
   SKILLS_DIR="$SOURCE_ROOT/skills"
   sm_failed=0
 

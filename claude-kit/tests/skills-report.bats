@@ -2,7 +2,7 @@
 # Tests for bin/skills-report.sh.
 #
 # skills-report.sh reads $HOME/.claude/logs/skills.jsonl and
-# $HOME/.claude/_stacks.yml. Each test fakes $HOME to a fixture dir so real
+# $HOME/.claude/kit.yml. Each test fakes $HOME to a fixture dir so real
 # machine state never leaks into the assertions.
 #
 # Run with: bats tests/
@@ -19,8 +19,8 @@ write_log() {
   printf '%s\n' "$@" >"$FAKE_HOME/.claude/logs/skills.jsonl"
 }
 
-write_stacks_yml() {
-  cat >"$FAKE_HOME/.claude/_stacks.yml"
+write_kit_yml() {
+  cat >"$FAKE_HOME/.claude/kit.yml"
 }
 
 run_report() {
@@ -88,8 +88,8 @@ run_report() {
   [[ "$output" == *"(no real activations in the window)"* ]]
 }
 
-@test "zero-activation cross-reference against a fixture _stacks.yml" {
-  write_stacks_yml <<'YAML'
+@test "zero-activation cross-reference against a fixture kit.yml" {
+  write_kit_yml <<'YAML'
 global_skills:
   - fix-sizing
 skill_file_map:
@@ -113,15 +113,15 @@ YAML
 
   run run_report
   [ "$status" -eq 0 ]
-  [[ "$output" == *"== 3: _stacks.yml-referenced skills with zero activations in the window =="* ]]
+  [[ "$output" == *"== 3: kit.yml-referenced skills with zero activations in the window =="* ]]
   [[ "$output" == *"fix-sizing"* ]]
   [[ "$output" == *"unused-patterns"* ]]
-  [[ "$output" == *"== 4: activations for skills not referenced anywhere in _stacks.yml =="* ]]
+  [[ "$output" == *"== 4: activations for skills not referenced anywhere in kit.yml =="* ]]
   [[ "$output" == *"flow-plan"* ]]
 }
 
 @test "sessions with a suggested skill surfaced but never activated are reported" {
-  write_stacks_yml <<'YAML'
+  write_kit_yml <<'YAML'
 global_skills: []
 skill_file_map: []
 skill_triggers:
