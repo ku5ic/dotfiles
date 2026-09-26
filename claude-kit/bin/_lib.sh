@@ -299,12 +299,13 @@ longest_prose_run() {
 # KIT_SUBPROJECT_MAX_DEPTH: subproject_max_depth.
 # KIT_ORCH_*: positional columns of orchestrators (task_paths space-joined).
 # KIT_TOOLS: tools.
+# KIT_FMT_*: positional columns of formatters; KIT_DISABLED_FORMATTERS.
 _stacks_lists_cache="$KIT_CACHE_DIR/stacks-lists.bash"
 
 # Bump on every change to the queries below or to the cache's shape. The
 # mtime check only sees kit.yml, so without this an existing cache
 # outlives a rewritten derivation and keeps serving the old lists.
-_stacks_lists_format=9
+_stacks_lists_format=10
 
 _reset_stacks_lists() {
   STACK_SENTINELS_FULL=()
@@ -341,6 +342,14 @@ _reset_stacks_lists() {
   KIT_ORCH_TASK_PATHS=()
   KIT_ORCH_RUNS=()
   KIT_TOOLS=()
+  KIT_FMT_NAMES=()
+  KIT_FMT_EXTS=()
+  KIT_FMT_FILES=()
+  KIT_FMT_TOMLS=()
+  KIT_FMT_PRETTIER=()
+  KIT_FMT_BINS=()
+  KIT_FMT_CMDS=()
+  KIT_DISABLED_FORMATTERS=()
 }
 
 # Each emitted row is "<list-tag>\t<value>" so one yq call fills every list.
@@ -384,6 +393,14 @@ _build_stacks_lists() {
     ORCH_PATHS) KIT_ORCH_TASK_PATHS+=("$value") ;;
     ORCH_RUN) KIT_ORCH_RUNS+=("$value") ;;
     TOOL) KIT_TOOLS+=("$value") ;;
+    FMT_NAME) KIT_FMT_NAMES+=("$value") ;;
+    FMT_EXTS) KIT_FMT_EXTS+=("$value") ;;
+    FMT_FILES) KIT_FMT_FILES+=("$value") ;;
+    FMT_TOML) KIT_FMT_TOMLS+=("$value") ;;
+    FMT_PRETTIER) KIT_FMT_PRETTIER+=("$value") ;;
+    FMT_BIN) KIT_FMT_BINS+=("$value") ;;
+    FMT_CMD) KIT_FMT_CMDS+=("$value") ;;
+    FMT_DISABLED) KIT_DISABLED_FORMATTERS+=("$value") ;;
     LOGMAX) KIT_LOG_MAX_LINES="$value" ;;
     esac
   done < <(
@@ -425,6 +442,16 @@ _build_stacks_lists() {
           ["CHECK_EXCLUDE", ((.exclude // []) | join(" ") | select(. != "") // "-")]
         )),
         (.tools // [] | .[] | ["TOOL", .]),
+        (.formatters // [] | .[] | (
+          ["FMT_NAME", .name],
+          ["FMT_EXTS", ((.ext // []) | join(" "))],
+          ["FMT_FILES", ((.signal_files // []) | join(" ") | select(. != "") // "-")],
+          ["FMT_TOML", (.signal_toml // "-")],
+          ["FMT_PRETTIER", ((.signal_prettier // false) | tostring)],
+          ["FMT_BIN", .bin],
+          ["FMT_CMD", .cmd]
+        )),
+        (.disabled_formatters // [] | .[] | ["FMT_DISABLED", .]),
         (.orchestrators // [] | .[] | (
           ["ORCH_NAME", .name],
           ["ORCH_SIGNAL", .signal],
@@ -496,6 +523,8 @@ kit_stacks_load() {
     KIT_TP_RUNS KIT_TP_RUNS_BY_PM KIT_CHECK_NAMES KIT_CHECK_TASKS KIT_CHECK_EXCLUDES \
     KIT_TC_STACKS KIT_TC_NAMES KIT_TC_CMDS KIT_TC_BINS KIT_TC_WHEN_DIRS \
     KIT_ORCH_NAMES KIT_ORCH_SIGNALS KIT_ORCH_TASK_PATHS KIT_ORCH_RUNS KIT_TOOLS \
+    KIT_FMT_NAMES KIT_FMT_EXTS KIT_FMT_FILES KIT_FMT_TOMLS KIT_FMT_PRETTIER \
+    KIT_FMT_BINS KIT_FMT_CMDS KIT_DISABLED_FORMATTERS \
     _stacks_lists_cached_format |
     sed -E -e 's/^declare -- /declare -g /' -e 's/^declare -([aA])/declare -g\1/' \
       >"$tmp" 2>/dev/null; then
@@ -614,6 +643,33 @@ toml_array() {
 yaml_array() {
   [[ -f "$1" ]] || return 0
   yq -o json '.' "$1" 2>/dev/null | _kit_stdin_array "$2"
+}
+
+# toml_has <file> <path>: true when <path> exists in the TOML file, even as an
+# empty table (a bare [tool.ruff] means "use ruff with defaults").
+toml_has() {
+  [[ -f "$1" ]] || return 1
+  yq -p toml -o json '.' "$1" 2>/dev/null |
+    jq -e --arg p "$2" "$_KIT_GETPATH"' != null' >/dev/null 2>&1
+}
+
+# find_up <start> <stop> <name>...
+# Prints the first <start>/<name>, then its parent's, walking up to and
+# including <stop> and never above it. Nothing when none exists.
+find_up() {
+  local dir="$1" stop="$2" name
+  shift 2
+  while :; do
+    for name in "$@"; do
+      if [[ -e "$dir/$name" ]]; then
+        printf '%s\n' "$dir/$name"
+        return 0
+      fi
+    done
+    [[ "$dir" == "$stop" || "$dir" == / || "$dir" != "$stop"/* ]] && return 0
+    dir="${dir%/*}"
+    [[ -n "$dir" ]] || dir=/
+  done
 }
 
 # make_targets <file>: explicit targets, in file order. Skips special

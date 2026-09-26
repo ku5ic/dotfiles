@@ -14,6 +14,25 @@ setup() {
   mkdir -p "$F"
 }
 
+# The cache build: one yq pass fills every list, so an expression yq rejects
+# empties all of them at once, guard lists included. This pins that the real
+# kit.yml builds every one.
+
+@test "the real kit.yml builds every cached list" {
+  kit_stacks_load
+  local name
+  for name in STACK_SENTINELS_FULL STACK_SENTINEL_STACKS STACK_PM_LOCKFILES \
+    KIT_GUARDED_LOCKFILES KIT_PROTECTED_BRANCHES KIT_RC_FILES KIT_SENSITIVE_PATHS \
+    KIT_TP_NAMES KIT_CHECK_NAMES KIT_TC_STACKS KIT_ORCH_NAMES KIT_TOOLS KIT_FMT_NAMES; do
+    local -n list="$name"
+    ((${#list[@]} > 0)) || {
+      echo "empty: $name"
+      return 1
+    }
+    unset -n list
+  done
+}
+
 # extractors
 
 @test "json_keys lists an object's keys in file order" {
