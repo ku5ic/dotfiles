@@ -702,6 +702,20 @@ yaml_array() {
   yq -o json '.' "$1" 2>/dev/null | _kit_stdin_array "$2"
 }
 
+# json_value <file> <path>: the string or number at <path>.
+json_value() {
+  [[ -f "$1" ]] || return 0
+  jq -r --arg p "$2" "$_KIT_GETPATH"' | if type == "string" or type == "number" then . else empty end' "$1" 2>/dev/null || true
+}
+
+# toml_package_version <lockfile> <name>: the version of [[package]] <name>
+# in a uv.lock or poetry.lock.
+toml_package_version() {
+  [[ -f "$1" ]] || return 0
+  yq -p toml -o json '.' "$1" 2>/dev/null |
+    jq -r --arg n "$2" 'first(.package[]? | select((.name | ascii_downcase) == ($n | ascii_downcase)) | .version) // empty' 2>/dev/null || true
+}
+
 # toml_has <file> <path>: true when <path> exists in the TOML file, even as an
 # empty table (a bare [tool.ruff] means "use ruff with defaults").
 toml_has() {
@@ -762,7 +776,7 @@ regex_lines() {
 # Runs extractor $1 on file $2 with arg $3. Only names in this list run.
 _kit_extract() {
   case "$1" in
-  json_keys | json_array | toml_keys | toml_array | yaml_array | regex_lines) "$1" "$2" "$3" ;;
+  json_keys | json_array | json_value | toml_keys | toml_array | yaml_array | toml_package_version | regex_lines) "$1" "$2" "$3" ;;
   make_targets | just_recipes) "$1" "$2" ;;
   *) echo "_lib.sh: unknown extractor in kit.yml: $1" >&2 ;;
   esac
@@ -990,7 +1004,7 @@ stacks_signals_from_cache() {
   local line stack extras extra_token
   local -a extra_tokens
   while IFS= read -r line; do
-    [[ "$line" =~ ^root: ]] && continue
+    [[ "$line" =~ ^(root|versions)[:\ ] ]] && continue
     [[ -z "$line" ]] && continue
     stack="${line%%:*}"
     printf '%s\n' "$stack"

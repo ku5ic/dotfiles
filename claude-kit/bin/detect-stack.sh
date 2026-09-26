@@ -11,6 +11,10 @@
 # manager is the nearest lockfile of the stack's own ecosystem, so a uv
 # service under a pnpm root reports [uv].
 #
+# Then one line per subproject with any kit.yml `versions` found:
+#   versions [<subproject>]: <name> <version> (<label>), ...
+# The bracket part is left off for the root.
+#
 # All stack knowledge (sentinels, extras detection rules, skills) lives in
 # kit.yml at the kit root ($KIT_ROOT, see _lib.sh). To add a new stack or
 # extend an existing one, edit that file only. No edits to this script are
@@ -174,6 +178,47 @@ done
 
 echo "root: $ROOT"
 printf '%s\n' "${lines[@]}"
+
+# Key package versions, per subproject, from kit.yml versions/version_sources.
+# shellcheck disable=SC2016  # $s is a yq variable
+mapfile -t VERSION_NAMES < <(yq '.versions // {} | to_entries[] | .key as $s | .value[] | [$s, .] | @tsv' "$STACKS_YML")
+# shellcheck disable=SC2016
+mapfile -t VERSION_SOURCES < <(yq '.version_sources // {} | to_entries[] | .key as $s | .value[] |
+  [$s, .file, .extractor, .arg, .label, ((.up // false) | tostring)] | @tsv' "$STACKS_YML")
+for sub in "${SUBPROJECTS[@]}"; do
+  dir="$ROOT"
+  [[ "$sub" == . ]] || dir="$ROOT/$sub"
+  parts=()
+  for entry in "${VERSION_NAMES[@]}"; do
+    IFS=$'\t' read -r stack name <<<"$entry"
+    kit_dir_has_stack "$dir" "$stack" || continue
+    for source in "${VERSION_SOURCES[@]}"; do
+      IFS=$'\t' read -r src_stack file extractor arg label up <<<"$source"
+      [[ "$src_stack" == "$stack" ]] || continue
+      file="${file//\{name\}/$name}"
+      if [[ "$up" == true ]]; then
+        path="$(find_up "$dir" "$ROOT" "$file")"
+      else
+        path="$dir/$file"
+      fi
+      [[ -n "$path" && -f "$path" ]] || continue
+      value="$(
+        shopt -s nocasematch
+        _kit_extract "$extractor" "$path" "${arg//\{name\}/$name}" | awk 'NR == 1'
+      )"
+      if [[ -n "$value" ]]; then
+        parts+=("$name $value ($label)")
+        break
+      fi
+    done
+  done
+  if ((${#parts[@]} > 0)); then
+    prefix="versions"
+    [[ "$sub" == . ]] || prefix+=" [$sub]"
+    joined="$(printf '%s, ' "${parts[@]}")"
+    echo "$prefix: ${joined%, }"
+  fi
+done
 
 # Node version. Prefer the JS stack's first location, fall back to the root.
 if [[ -n "$js_loc" ]]; then

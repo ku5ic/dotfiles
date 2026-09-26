@@ -31,7 +31,8 @@ make_repo() {
   run "$SCRIPT"
   [ "$status" -eq 0 ]
   [ "$output" = "root: $root
-js: yes (typescript,next,react) [pnpm]" ]
+js: yes (typescript,next,react) [pnpm]
+versions: react 19.0.0 (declared), next 15.0.0 (declared), typescript 5.6.0 (declared)" ]
 }
 
 @test "uv Django repo reports python with django and the uv tag" {
@@ -75,11 +76,48 @@ python: yes (django) [uv]" ]
   [ "$output" = "root: $root
 js: yes (react) [pnpm] at ., packages/a
 python: yes [uv] at services/api
-monorepo: yes (pnpm-workspaces)" ]
+monorepo: yes (pnpm-workspaces)
+versions [packages/a]: react 19.0.0 (declared)" ]
+}
+
+@test "versions: installed per subproject, each on its own line" {
+  local root app
+  root="$(make_repo "$BATS_TEST_TMPDIR/apps")"
+  printf '{"name":"root","private":true}\n' >"$root/package.json"
+  printf 'packages:\n  - "apps/*"\n' >"$root/pnpm-workspace.yaml"
+  for app in admin:18.3.1 web:19.1.0; do
+    mkdir -p "$root/apps/${app%%:*}/node_modules/react"
+    printf '{"name":"%s","dependencies":{"react":"^%s"}}\n' "${app%%:*}" "${app#*:}" >"$root/apps/${app%%:*}/package.json"
+    printf '{"name":"react","version":"%s"}\n' "${app#*:}" >"$root/apps/${app%%:*}/node_modules/react/package.json"
+  done
+
+  cd "$root"
+  run "$SCRIPT"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"
+versions [apps/admin]: react 18.3.1 (installed)
+versions [apps/web]: react 19.1.0 (installed)"* ]]
+}
+
+@test "versions: a workspace-root uv.lock, else a requirements.txt pin" {
+  local root
+  root="$(make_repo "$BATS_TEST_TMPDIR/py")"
+  printf '[project]\nname = "x"\n' >"$root/pyproject.toml"
+  printf '[[package]]\nname = "django"\nversion = "5.1.2"\n\n[[package]]\nname = "pydantic"\nversion = "2.9.0"\n' >"$root/uv.lock"
+  mkdir -p "$root/services/api"
+  printf '[project]\nname = "api"\n' >"$root/services/api/pyproject.toml"
+  printf 'FastAPI==0.115.0\n' >"$root/services/api/requirements.txt"
+  git -C "$root" add -A
+
+  cd "$root"
+  run "$SCRIPT"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"versions: django 5.1.2 (locked), pydantic 2.9.0 (locked)
+versions [services/api]: django 5.1.2 (locked), fastapi 0.115.0 (pinned), pydantic 2.9.0 (locked)"* ]]
 }
 
 @test "the stack-line parser still reads extras from the new format" {
-  printf '%s\n' "root: /x" "js: yes (react) [pnpm] at ., packages/a" "python: yes [uv] at services/api" >"$BATS_TEST_TMPDIR/cache"
+  printf '%s\n' "root: /x" "js: yes (react) [pnpm] at ., packages/a" "python: yes [uv] at services/api" "versions [packages/a]: react 19.0.0 (declared)" >"$BATS_TEST_TMPDIR/cache"
   # shellcheck source=../bin/_lib.sh
   source "$BATS_TEST_DIRNAME/../bin/_lib.sh"
   run stacks_signals_from_cache "$BATS_TEST_TMPDIR/cache"
