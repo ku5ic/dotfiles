@@ -806,3 +806,75 @@ make_repo() {
     [ -z "$output" ]
   done
 }
+
+# Package-manager mismatch: compared within one ecosystem, nearest lockfile
+
+# pnpm root, uv service at services/api, bare JS package at packages/a.
+make_mono() {
+  local dir
+  dir="$(make_repo mono)"
+  printf '{"name":"root","private":true}\n' >"$dir/package.json"
+  touch "$dir/pnpm-lock.yaml"
+  mkdir -p "$dir/services/api" "$dir/packages/a"
+  touch "$dir/services/api/uv.lock"
+  printf '%s' "$dir"
+}
+
+@test "pm: uv sync at a pnpm root passes (no Python lockfile)" {
+  run run_guard_in "$(make_mono)" 'uv sync'
+  [ "$status" -eq 0 ]
+}
+
+@test "pm: cd into the uv service, then uv sync passes" {
+  run run_guard_in "$(make_mono)" 'cd services/api && uv sync'
+  [ "$status" -eq 0 ]
+}
+
+@test "pm: uv --directory services/api sync passes" {
+  run run_guard_in "$(make_mono)" 'uv --directory services/api sync'
+  [ "$status" -eq 0 ]
+}
+
+@test "pm: poetry in the uv service blocks and names uv" {
+  run run_guard_in "$(make_mono)" 'cd services/api && poetry install'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"uses uv (uv.lock)"* ]]
+}
+
+@test "pm: npm at the pnpm root blocks and suggests pnpm" {
+  run run_guard_in "$(make_mono)" 'npm install'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"rerun as: pnpm install"* ]]
+}
+
+@test "pm: npm in a workspace package finds the root pnpm lockfile" {
+  run run_guard_in "$(make_mono)" 'cd packages/a && npm install'
+  [ "$status" -eq 2 ]
+}
+
+@test "pm: npm --prefix into a workspace package finds the root pnpm lockfile" {
+  run run_guard_in "$(make_mono)" 'npm --prefix packages/a install'
+  [ "$status" -eq 2 ]
+}
+
+@test "pm: npx at a pnpm root suggests pnpm dlx" {
+  run run_guard_in "$(make_mono)" 'npx foo'
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"pnpm dlx foo"* ]]
+}
+
+@test "pm: pnpm install --frozen-lockfile at the pnpm root passes silently" {
+  run run_guard_in "$(make_mono)" 'pnpm install --frozen-lockfile'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "pm: --version is exempt" {
+  run run_guard_in "$(make_mono)" 'npm --version'
+  [ "$status" -eq 0 ]
+}
+
+@test "pm: no lockfile at all is greenfield" {
+  run run_guard_in "$(make_repo empty)" 'npm install'
+  [ "$status" -eq 0 ]
+}

@@ -22,6 +22,7 @@ if ! command -v yq >/dev/null 2>&1; then
   STACK_DETECT_FILES=()
   STACK_PM_LOCKFILES=()
   STACK_PM_MANAGERS=()
+  STACK_PM_ECOSYSTEMS=()
   resolve_package_manager() { return 0; }
   return 0
 fi
@@ -46,14 +47,15 @@ fi
 # resolve_package_manager (which stats lockfiles live) had already moved on.
 # Known limit: only $project_root/<file> is checked, not search_dirs subdirs;
 # this matches the sentinel walk scope and is intentional.
-# STACK_PM_LOCKFILES / STACK_PM_MANAGERS: positional pairs from
-# .package_managers, walked by resolve_package_manager.
+# STACK_PM_LOCKFILES / STACK_PM_MANAGERS / STACK_PM_ECOSYSTEMS: positional
+# triples from .package_managers, walked by resolve_package_manager and by
+# guard-bash.sh's per-ecosystem PM mismatch guard.
 _stacks_lists_cache="$HOME/.claude/cache/stacks-lists.bash"
 
 # Bump on every change to the queries below or to the cache's shape. The
 # mtime check only sees _stacks.yml, so without this an existing cache
 # outlives a rewritten derivation and keeps serving the old lists.
-_stacks_lists_format=2
+_stacks_lists_format=3
 
 # Each emitted row is "<list-tag>\t<value>" so one yq call fills all five.
 _build_stacks_lists() {
@@ -63,6 +65,7 @@ _build_stacks_lists() {
   STACK_DETECT_FILES=()
   STACK_PM_LOCKFILES=()
   STACK_PM_MANAGERS=()
+  STACK_PM_ECOSYSTEMS=()
 
   while IFS=$'\t' read -r kind value; do
     [[ -z "$value" || "$value" == "null" ]] && continue
@@ -72,6 +75,7 @@ _build_stacks_lists() {
     DETECT) STACK_DETECT_FILES+=("$value") ;;
     LOCKFILE) STACK_PM_LOCKFILES+=("$value") ;;
     MANAGER) STACK_PM_MANAGERS+=("$value") ;;
+    ECOSYSTEM) STACK_PM_ECOSYSTEMS+=("$value") ;;
     esac
   done < <(
     yq -r '
@@ -85,7 +89,8 @@ _build_stacks_lists() {
         (.stacks[].extras[]? | .any_of // [] | .[] | select(has("in")) | .in[] | ["DETECT", .]),
         (.package_managers[] | ["DETECT", .lockfile]),
         (.package_managers[] | ["LOCKFILE", .lockfile]),
-        (.package_managers[] | ["MANAGER", .manager])
+        (.package_managers[] | ["MANAGER", .manager]),
+        (.package_managers[] | ["ECOSYSTEM", .ecosystem // "none"])
       ] | .[] | join("\t")
     ' "$_STACKS_YML" 2>/dev/null
   )
@@ -121,7 +126,7 @@ if [[ "$_stacks_lists_cached_format" != "$_stacks_lists_format" ]]; then
       # -g: sourcing this file from inside a function would otherwise scope
       # every array to that function and hand the caller empty lists.
       if declare -p STACK_SENTINELS_FULL STACK_SENTINELS_PROJECT_ROOT \
-        STACK_DETECT_FILES STACK_PM_LOCKFILES STACK_PM_MANAGERS \
+        STACK_DETECT_FILES STACK_PM_LOCKFILES STACK_PM_MANAGERS STACK_PM_ECOSYSTEMS \
         _stacks_lists_cached_format |
         sed -E -e 's/^declare -- /declare -g /' -e 's/^declare -([aA])/declare -g\1/' \
           >"$_stacks_tmp" 2>/dev/null; then

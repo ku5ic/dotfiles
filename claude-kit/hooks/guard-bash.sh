@@ -67,30 +67,36 @@ if [[ "$_cmd_sq" =~ xargs[[:space:]]+((-[^[:space:]]+[[:space:]]+)*)rm[[:space:]
   block "xargs rm with recursive or force flag" "xargs-rm"
 fi
 
-# Prints "manager:lockfile" for the first lockfile match in <dir> or its git
-# toplevel, nothing if none found. Manager comes from bin/_lib.sh's
-# resolve_package_manager (already sourced); this only adds the matching
-# lockfile name for the block message.
-_resolve_pm_for_dir() {
-  local dir="${1:-.}"
-  local mgr
-  mgr="$(resolve_package_manager "$dir")"
-  [[ -z "$mgr" ]] && return 0
+# Resolves dir $2 (relative or ~-prefixed) against $1. Physical when it
+# exists, so it compares equal to git's toplevel (macOS /var -> /private/var).
+_resolve_dir() {
+  local dir="${2/#\~/$HOME}"
+  [[ "$dir" == /* ]] || dir="$1/$dir"
+  (cd -P "$dir" 2>/dev/null && pwd) || printf '%s\n' "$dir"
+}
 
-  local toplevel
-  toplevel="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
+# Directory a segment runs in: the payload cwd, moved by earlier cd segments.
+_seg_cwd="$(_resolve_dir / "${_cwd:-$PWD}")"
 
-  # Walks the cached package_managers table from bin/_lib.sh rather than
-  # re-querying _stacks.yml with yq on every package-manager command.
-  local i lf
-  for ((i = 0; i < ${#STACK_PM_MANAGERS[@]}; i++)); do
-    [[ "${STACK_PM_MANAGERS[$i]}" == "$mgr" ]] || continue
-    lf="${STACK_PM_LOCKFILES[$i]}"
-    [[ -z "$lf" || "$lf" == "null" ]] && continue
-    if [[ -f "$dir/$lf" || (-n "$toplevel" && -f "$toplevel/$lf") ]]; then
-      printf '%s:%s\n' "$mgr" "$lf"
+# Prints "manager:lockfile" for the nearest lockfile of ecosystem $2, walking
+# from dir $1 up to its git toplevel (only $1 outside a repo). Nothing when
+# that ecosystem has no lockfile on the way: greenfield. Walks the cached
+# package_managers table from bin/_lib.sh, never yq.
+_nearest_pm_lockfile() {
+  local dir="$1" eco="$2" top i
+  top="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || true)"
+  while :; do
+    for ((i = 0; i < ${#STACK_PM_LOCKFILES[@]}; i++)); do
+      [[ "${STACK_PM_ECOSYSTEMS[i]:-}" == "$eco" ]] || continue
+      if [[ -f "$dir/${STACK_PM_LOCKFILES[i]}" ]]; then
+        printf '%s:%s\n' "${STACK_PM_MANAGERS[i]}" "${STACK_PM_LOCKFILES[i]}"
+        return 0
+      fi
+    done
+    if [[ -z "$top" || "$dir" == "$top" || "$dir" == / ]]; then
       return 0
     fi
+    dir="$(dirname "$dir")"
   done
 }
 
@@ -333,6 +339,16 @@ _check_segment() {
   local lead="${seg%% *}"
 
   case "$lead" in
+  cd)
+    # Tracked so a later segment's package manager checks the right lockfile.
+    local _cd_target="${seg#cd}"
+    _cd_target="${_cd_target# }"
+    case "$_cd_target" in
+    '') _seg_cwd="$HOME" ;;
+    -*) ;;
+    *) _seg_cwd="$(_resolve_dir "$_seg_cwd" "${_cd_target%% *}")" ;;
+    esac
+    ;;
   rm)
     # Whole tokens only: rm -rf *.log and rm -rf dist/* stay allowed.
     local _rarg _rforce=0 _rbroad=0
@@ -509,9 +525,36 @@ _check_segment() {
     pip3) _invoked="pip" ;;
     *) _invoked="$lead" ;;
     esac
-    # Greenfield (no lockfile) is always allowed.
+    # Only lockfiles of the invoked manager's own ecosystem count, so uv in
+    # a pnpm monorepo's Python service isn't told to use pnpm.
+    local _eco="" _i
+    for ((_i = 0; _i < ${#STACK_PM_MANAGERS[@]}; _i++)); do
+      if [[ "${STACK_PM_MANAGERS[_i]}" == "$_invoked" ]]; then
+        _eco="${STACK_PM_ECOSYSTEMS[_i]:-}"
+        break
+      fi
+    done
+    [[ -z "$_eco" || "$_eco" == none ]] && return 0
+    # The manager's own directory flag overrides the segment's cwd.
+    local _pm_dir="$_seg_cwd" _pm_word _want_dir=0
+    local -a _pm_words
+    read -ra _pm_words <<<"$_pm_rest"
+    for _pm_word in "${_pm_words[@]}"; do
+      if ((_want_dir)); then
+        _pm_dir="$(_resolve_dir "$_seg_cwd" "$_pm_word")"
+        _want_dir=0
+        continue
+      fi
+      case "$_invoked:$_pm_word" in
+      uv:--directory | uv:--project | pnpm:--dir | pnpm:-C | yarn:--cwd | npm:--prefix) _want_dir=1 ;;
+      uv:--directory=* | uv:--project=* | pnpm:--dir=* | yarn:--cwd=* | npm:--prefix=*)
+        _pm_dir="$(_resolve_dir "$_seg_cwd" "${_pm_word#*=}")"
+        ;;
+      esac
+    done
+    # Greenfield (no lockfile in this ecosystem) is always allowed.
     local _pm_info
-    _pm_info="$(_resolve_pm_for_dir "${_cwd:-$PWD}")"
+    _pm_info="$(_nearest_pm_lockfile "$_pm_dir" "$_eco")"
     [[ -z "$_pm_info" ]] && return 0
     local _expected="${_pm_info%%:*}"
     local _lf_found="${_pm_info#*:}"

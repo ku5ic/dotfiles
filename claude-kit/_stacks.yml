@@ -131,29 +131,37 @@ skill_triggers:
   bash-patterns: "before writing or modifying shell scripts"
 
 # Ordered lockfile-to-manager table. First match wins.
-# Consumed by bin/_lib.sh resolve_package_manager and (as a hardcoded copy)
-# by hooks/guard-bash.sh for the PM mismatch guard.
-# Editing here: also update the hardcoded table in guard-bash.sh and run
-# bin/doctor.sh to verify parity.
+# Consumed through the cached arrays in bin/_lib.sh: resolve_package_manager,
+# and hooks/guard-bash.sh's PM mismatch guard, which only compares managers
+# sharing an ecosystem.
 package_managers:
   - lockfile: bun.lockb
     manager: bun
+    ecosystem: js
   - lockfile: bun.lock
     manager: bun
+    ecosystem: js
   - lockfile: pnpm-lock.yaml
     manager: pnpm
+    ecosystem: js
   - lockfile: yarn.lock
     manager: yarn
+    ecosystem: js
   - lockfile: package-lock.json
     manager: npm
+    ecosystem: js
   - lockfile: uv.lock
     manager: uv
+    ecosystem: python
   - lockfile: poetry.lock
     manager: poetry
+    ecosystem: python
   - lockfile: Pipfile.lock
     manager: pipenv
+    ecosystem: python
   - lockfile: requirements.txt
     manager: pip
+    ecosystem: python
 
 stacks:
   js:
