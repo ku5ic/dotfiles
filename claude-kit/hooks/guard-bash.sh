@@ -688,13 +688,24 @@ _check_segment() {
       --output-document) _want_doc=1 ;;
       --directory-prefix) _want_dir=1 ;;
       --*) ;;
-      -O) _want_doc=1 ;;
-      -P) _want_dir=1 ;;
-      -O?* | -P?*)
-        _targets+=("${_word#-?}")
-        _has_out=1
+      -*)
+        # A short cluster like -qO- or -qP dir: O or P takes the rest of
+        # the word as its value, or the next word when nothing follows.
+        local _j _rest
+        for ((_j = 1; _j < ${#_word}; _j++)); do
+          [[ "${_word:_j:1}" == [OP] ]] || continue
+          _rest="${_word:_j+1}"
+          if [[ -n "$_rest" ]]; then
+            _targets+=("$_rest")
+            _has_out=1
+          elif [[ "${_word:_j:1}" == O ]]; then
+            _want_doc=1
+          else
+            _want_dir=1
+          fi
+          break
+        done
         ;;
-      -*) ;;
       esac
     done
     if ((_has_out == 0)); then

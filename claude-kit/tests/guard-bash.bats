@@ -809,6 +809,8 @@ make_repo() {
     'wget https://x.example/a.js' \
     'wget -O page.html https://x.example/' \
     'wget -Opage.html https://x.example/' \
+    'wget -qO page.html https://x.example/' \
+    'wget -qP downloads https://x.example/a.js' \
     'wget -P downloads https://x.example/a.js'; do
     run run_guard_in "$BATS_TEST_TMPDIR" "$cmd"
     [ "$status" -eq 2 ] || {
@@ -829,6 +831,8 @@ make_repo() {
     'curl -o .claude/scratch/a.js https://x.example/a.js' \
     'curl -o ~/.claude/scratch/a.js https://x.example/a.js' \
     'wget -O - https://x.example/r' \
+    'wget -qO- https://x.example/r' \
+    'wget -qO - https://x.example/r' \
     'wget -P "$(scratch-dir.sh)" https://x.example/a.js'; do
     run run_guard_in "$BATS_TEST_TMPDIR" "$cmd"
     [ "$status" -eq 0 ] && [[ "$output" != *'"ask"'* ]] || {
