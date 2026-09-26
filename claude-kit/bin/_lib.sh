@@ -248,7 +248,8 @@ longest_prose_run() {
 #
 # STACK_SENTINELS_FULL: every sentinel any consumer cares about - used by
 # inject-context.sh for cache invalidation and by detect-stack.sh as the
-# canonical union.
+# canonical union. STACK_SENTINEL_STACKS[i] is the stack that declares
+# STACK_SENTINELS_FULL[i] (kit_dir_has_stack).
 # STACK_SENTINELS_PROJECT_ROOT: the anchor: true subset project-root.sh walks
 # ancestors with. Keep minimal; every entry slows the walk for repos without
 # that sentinel.
@@ -277,10 +278,11 @@ _stacks_lists_cache="$KIT_CACHE_DIR/stacks-lists.bash"
 # Bump on every change to the queries below or to the cache's shape. The
 # mtime check only sees kit.yml, so without this an existing cache
 # outlives a rewritten derivation and keeps serving the old lists.
-_stacks_lists_format=6
+_stacks_lists_format=7
 
 _reset_stacks_lists() {
   STACK_SENTINELS_FULL=()
+  STACK_SENTINEL_STACKS=()
   STACK_SENTINELS_PROJECT_ROOT=()
   STACK_DETECT_FILES=()
   STACK_PM_LOCKFILES=()
@@ -319,6 +321,7 @@ _build_stacks_lists() {
     [[ -z "$value" || "$value" == "null" ]] && continue
     case "$kind" in
     FULL) STACK_SENTINELS_FULL+=("$value") ;;
+    SENT_STACK) STACK_SENTINEL_STACKS+=("$value") ;;
     ANCHOR) STACK_SENTINELS_PROJECT_ROOT+=("$value") ;;
     DETECT) STACK_DETECT_FILES+=("$value") ;;
     LOCKFILE) STACK_PM_LOCKFILES+=("$value") ;;
@@ -348,9 +351,11 @@ _build_stacks_lists() {
     LOGMAX) KIT_LOG_MAX_LINES="$value" ;;
     esac
   done < <(
+    # shellcheck disable=SC2016  # $stack is a yq variable
     yq -r '
       [
         (.stacks[].sentinels[] | ["FULL", .name]),
+        (.stacks | to_entries[] | .key as $stack | .value.sentinels[] | ["SENT_STACK", $stack]),
         (.stacks[].sentinels[] | select(.anchor == true) | ["ANCHOR", .name]),
         (.stacks[].sentinels[] | ["DETECT", .name]),
         (.stacks[].extras[]? | select(has("file")) | ["DETECT", .file]),
@@ -440,7 +445,7 @@ kit_stacks_load() {
   [[ -n "$tmp" ]] || return 0
   # -g: the cache is sourced from inside this function, which would
   # otherwise scope every array to it and hand the caller empty lists.
-  if declare -p STACK_SENTINELS_FULL STACK_SENTINELS_PROJECT_ROOT \
+  if declare -p STACK_SENTINELS_FULL STACK_SENTINEL_STACKS STACK_SENTINELS_PROJECT_ROOT \
     STACK_DETECT_FILES STACK_PM_LOCKFILES STACK_PM_MANAGERS STACK_PM_ECOSYSTEMS \
     KIT_GUARDED_LOCKFILES KIT_PROTECTED_BRANCHES KIT_RC_FILES KIT_SENSITIVE_PATHS \
     KIT_DISABLED_RULES KIT_LOG_MAX_LINES KIT_SUBPROJECT_MAX_DEPTH \
@@ -606,23 +611,55 @@ _kit_extract() {
   esac
 }
 
+# True when dir $1 holds a sentinel of stack $2.
+kit_dir_has_stack() {
+  kit_stacks_load
+  local i
+  for ((i = 0; i < ${#STACK_SENTINELS_FULL[@]}; i++)); do
+    if [[ "${STACK_SENTINEL_STACKS[i]:-}" == "$2" && -f "$1/${STACK_SENTINELS_FULL[i]}" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Prints the manifest path task provider index $1 reads in dir $2, or nothing
+# when none of its manifests is there.
+_kit_provider_manifest() {
+  local manifest
+  local -a manifests
+  read -ra manifests <<<"${KIT_TP_MANIFESTS[$1]}"
+  for manifest in "${manifests[@]}"; do
+    if [[ -f "$2/$manifest" ]]; then
+      printf '%s\n' "$2/$manifest"
+      return 0
+    fi
+  done
+}
+
+# kit_providers [dir]
+# Prints "<provider>\t<stack>" for every task_providers entry whose manifest
+# is in <dir>, tasks or not ("-" when a provider has no stack).
+kit_providers() {
+  kit_stacks_load
+  local dir="${1:-.}" i
+  for ((i = 0; i < ${#KIT_TP_NAMES[@]}; i++)); do
+    if [[ -n "$(_kit_provider_manifest "$i" "$dir")" ]]; then
+      printf '%s\t%s\n' "${KIT_TP_NAMES[i]}" "${KIT_TP_STACKS[i]}"
+    fi
+  done
+}
+
 # kit_tasks [dir]
 # Prints "<provider>\t<stack>\t<task>\t<command>" for every task of every
 # task_providers entry whose manifest is in <dir> ("-" when a provider has no
 # stack). {pm} resolves through resolve_package_manager, npm when unresolved.
 kit_tasks() {
   kit_stacks_load
-  local dir="${1:-.}" i manifest file run pm_run task pm="" pm_resolved=0
-  local -a manifests pm_runs
+  local dir="${1:-.}" i file run pm_run task pm="" pm_resolved=0
+  local -a pm_runs
   for ((i = 0; i < ${#KIT_TP_NAMES[@]}; i++)); do
-    file=""
-    read -ra manifests <<<"${KIT_TP_MANIFESTS[i]}"
-    for manifest in "${manifests[@]}"; do
-      if [[ -f "$dir/$manifest" ]]; then
-        file="$dir/$manifest"
-        break
-      fi
-    done
+    file="$(_kit_provider_manifest "$i" "$dir")"
     [[ -n "$file" ]] || continue
 
     if ((! pm_resolved)); then
