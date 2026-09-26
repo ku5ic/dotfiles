@@ -86,7 +86,7 @@ _is_loose_write_target() {
   local p="$1"
   # shellcheck disable=SC2016  # matching a literal "$(" is the point here
   case "$p" in
-  '' | - | \$* | *'$('* | \"* | \'*) return 1 ;;
+  '' | - | \$* | *'$('* | \"* | \'* | '&'* | '('*) return 1 ;;
   scratch | scratch/* | */scratch | */scratch/*) return 1 ;;
   /* | \~*) return 1 ;;
   esac
@@ -117,15 +117,10 @@ block_download() {
   block "$1 would write '$2' outside scratch; downloads go only to scratch: $1 ${3:-} \"\$(scratch-dir.sh)/<name>\"" "download-to-repo"
 }
 
-# Every > target in words $@ that isn't scratch, printed one per line.
+# Every redirect target _shell_split found that isn't scratch, one per line.
 _non_scratch_redirects() {
-  local i word target
-  local -a words=("$@")
-  for ((i = 0; i < ${#words[@]}; i++)); do
-    word="${words[i]}"
-    [[ "$word" == *'>'* ]] || continue
-    target="${word##*>}"
-    [[ -n "$target" ]] || target="${words[i + 1]:-}"
+  local target
+  for target in "${_shell_redirects[@]}"; do
     if ! _is_scratch_target "$target"; then printf '%s\n' "$target"; fi
   done
 }
@@ -143,17 +138,25 @@ _is_protected_branch() {
   return 1
 }
 
-# Splits $1 into shell words in _shell_words: whitespace outside quotes
+# Splits the first command of $1 into shell words: whitespace outside quotes
 # separates, quotes group and are removed, a backslash escapes outside single
-# quotes. No expansion, so "$(x)" stays literal text.
+# quotes. Stops at the first unquoted |, leaving the remainder in _shell_rest.
+# An unquoted > or >> takes the next word as a redirect target, into
+# _shell_redirects rather than _shell_words; a bare fd number before it
+# (2>) is dropped. No expansion: "$(x)" stays literal text, and a | or >
+# inside an unquoted $( ) doesn't count.
 _shell_split() {
-  local s="$1" c q="" word="" has=0 i
+  local s="$1" c q="" word="" has=0 i depth=0 redirect=0
   _shell_words=()
+  _shell_redirects=()
+  _shell_rest=""
   for ((i = 0; i < ${#s}; i++)); do
     c="${s:i:1}"
     if [[ "$q" == "'" ]]; then
       if [[ "$c" == "'" ]]; then q=""; else word+="$c"; fi
-    elif [[ "$c" == "\\" && $((i + 1)) -lt ${#s} ]]; then
+      continue
+    fi
+    if [[ "$c" == "\\" && $((i + 1)) -lt ${#s} ]]; then
       i=$((i + 1))
       word+="${s:i:1}"
       has=1
@@ -162,15 +165,39 @@ _shell_split() {
     elif [[ "$c" == "'" || "$c" == '"' ]]; then
       q="$c"
       has=1
-    elif [[ "$c" == [[:space:]] ]]; then
+    elif [[ "$c" == '$' && "${s:i+1:1}" == '(' ]]; then
+      depth=$((depth + 1))
+      word+="\$("
+      has=1
+      i=$((i + 1))
+    elif ((depth > 0)) && [[ "$c" == ')' ]]; then
+      depth=$((depth - 1))
+      word+="$c"
+    elif ((depth > 0)); then
+      word+="$c"
+    elif [[ "$c" == '|' ]]; then
+      _shell_rest="${s:i+1}"
+      break
+    elif [[ "$c" == '>' ]]; then
+      # "2>" or "&>": the word so far is the fd, not an argument.
+      if ((has)) && [[ "$word" != *[!0-9\&]* ]]; then word="" has=0; fi
       if ((has)); then _shell_words+=("$word"); fi
+      word="" has=0 redirect=1
+      [[ "${s:i+1:1}" == '>' ]] && i=$((i + 1))
+    elif [[ "$c" == [[:space:]] ]]; then
+      if ((has)); then
+        if ((redirect)); then _shell_redirects+=("$word"); else _shell_words+=("$word"); fi
+        redirect=0
+      fi
       word="" has=0
     else
       word+="$c"
       has=1
     fi
   done
-  if ((has)); then _shell_words+=("$word"); fi
+  if ((has)); then
+    if ((redirect)); then _shell_redirects+=("$word"); else _shell_words+=("$word"); fi
+  fi
 }
 
 # Splits a git segment past git's global options. Sets _git_sub (the
@@ -298,11 +325,6 @@ _check_git_commit() {
   done
 }
 
-# Redirected output to a bare filename or ./name lands in cwd - the repo root,
-# in a project session. Narrower than _is_loose_write_target on purpose: a
-# subdir target (docs/report.md) is plausibly a deliverable, a bare one is not.
-# The char class drops >&2, >(...), and /dev/* before they reach the check.
-_redir_re='(^|[[:space:]])[0-9]?>>?[[:space:]]*([^[:space:]&|$"'"'"'();<>]+)'
 _OVERLAY_ASK="this writes the claude-kit overlay, which can switch the kit's own guards off; confirm the change"
 
 # True when shell word $1 (quoted, ~- or $HOME-prefixed, or relative to the
@@ -320,28 +342,23 @@ _is_overlay_arg() {
   kit_is_overlay_path "$arg"
 }
 
+# Every unquoted redirect target in every command of the pipeline $1: a > in
+# a quoted jq filter or grep pattern isn't one. Output to a bare filename or
+# ./name lands in cwd, the repo root in a project session. A subdir target
+# (docs/report.md) is plausibly a deliverable, so only bare ones ask.
 _check_redirects() {
-  local rest="$1" target word i
-  # Every redirect target, quoted or not: the regex below skips $-prefixed
-  # and quoted targets, which is fine for its own check but not this one.
-  local -a words
-  read -ra words <<<"$1"
-  for ((i = 0; i < ${#words[@]}; i++)); do
-    word="${words[i]}"
-    [[ "$word" == *'>'* ]] || continue
-    target="${word##*>}"
-    [[ -n "$target" ]] || target="${words[i + 1]:-}"
-    if _is_overlay_arg "$target"; then
-      force_ask "$_OVERLAY_ASK"
-    fi
-  done
-
-  while [[ "$rest" =~ $_redir_re ]]; do
-    target="${BASH_REMATCH[2]}"
-    rest="${rest#*"${BASH_REMATCH[0]}"}"
-    if [[ "$target" != */* || "$target" == ./* ]] && _is_loose_write_target "$target"; then
-      force_ask "'> ${target}' writes into the current directory; rules/tooling.md wants > \"\$(scratch-dir.sh)/${target##*/}\". Confirm only if this file belongs in the project tree."
-    fi
+  local rest="$1" target
+  while [[ -n "$rest" ]]; do
+    _shell_split "$rest"
+    rest="$_shell_rest"
+    for target in "${_shell_redirects[@]}"; do
+      if _is_overlay_arg "$target"; then
+        force_ask "$_OVERLAY_ASK"
+      fi
+      if [[ "$target" != */* || "$target" == ./* ]] && _is_loose_write_target "$target"; then
+        force_ask "'> ${target}' writes into the current directory; rules/tooling.md wants > \"\$(scratch-dir.sh)/${target##*/}\". Confirm only if this file belongs in the project tree."
+      fi
+    done
   done
 }
 
@@ -634,7 +651,10 @@ _check_segment() {
     # otherwise.
     local _word _remote=0 _want_target=0 _outdir="" _target
     local -a _targets=()
-    for _word in "${_words[@]}"; do
+    # Only curl's own words: quoted text and whatever follows a | aren't its
+    # arguments or its redirects.
+    _shell_split "${seg#"$lead"}"
+    for _word in "${_shell_words[@]}"; do
       if ((_want_target)); then
         _targets+=("$_word")
         [[ "$_want_target" == 2 ]] && _outdir="$_word"
@@ -667,14 +687,15 @@ _check_segment() {
     done
     while IFS= read -r _target; do
       block_download curl "$_target" -o
-    done < <(_non_scratch_redirects "${_words[@]}")
+    done < <(_non_scratch_redirects)
     ;;
   wget)
     # Hard rule: a download lands only in scratch. wget writes into cwd by
     # default, so an output flag is mandatory; -O - is stdout.
     local _word _want_doc=0 _want_dir=0 _has_out=0 _target
     local -a _targets=()
-    for _word in "${_words[@]}"; do
+    _shell_split "${seg#"$lead"}"
+    for _word in "${_shell_words[@]}"; do
       if ((_want_doc || _want_dir)); then
         _targets+=("$_word")
         _want_doc=0 _want_dir=0 _has_out=1
@@ -717,7 +738,7 @@ _check_segment() {
     done
     while IFS= read -r _target; do
       block_download wget "$_target" -O
-    done < <(_non_scratch_redirects "${_words[@]}")
+    done < <(_non_scratch_redirects)
     ;;
   cat | bat | head | tail | less | more | strings)
     local _path

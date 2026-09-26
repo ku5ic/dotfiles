@@ -833,6 +833,10 @@ make_repo() {
   local cmd
   for cmd in \
     'curl -fsSL https://x.example/r | rg foo' \
+    "curl -s https://x.example/r | jq '.[] | select(.n > 1)'" \
+    "curl -s https://x.example/r | rg '<div>'" \
+    'curl -s https://x.example/r | jq . > "$(scratch-dir.sh)/r.json"' \
+    'curl -s "https://x.example/r?a=1>2"' \
     'curl -s https://x.example/r 2>/dev/null' \
     'curl -o "$(scratch-dir.sh)/a.js" https://x.example/a.js' \
     'curl -O --output-dir "$(scratch-dir.sh)" https://x.example/a.js' \
