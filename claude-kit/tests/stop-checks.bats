@@ -317,7 +317,59 @@ one_check() {
   [ ! -e "$CALLS" ]
   touch "$REPO/.golangci.yml"
   PATH="$BATS_TEST_TMPDIR/path:$PATH" run stop
-  [ "$(cat "$CALLS")" = "$REPO/mod|golangci-lint run --fix=false ./pkg" ]
+  [ "$(cat "$CALLS")" = "$REPO/mod|golangci-lint run --fix=false --max-issues-per-linter=0 --max-same-issues=0 ./pkg" ]
+}
+
+# A linter with a findings parser blocks only on lines the tree changed.
+# The shellcheck stub reports a.sh lines 1 and 3, relative to where it runs.
+lint_lines() {
+  printf 'disabled_file_checks: [fakelint]\n' >"$FAKE_HOME/.claude/kit.yml"
+  touch "$REPO/.shellcheckrc"
+  printf '#!/usr/bin/env bash\necho "a.sh:1:1: warning: old finding [SC1]"\necho "a.sh:3:1: warning: new finding [SC3]"\nexit 1\n' \
+    >"$REPO/node_modules/.bin/shellcheck"
+  chmod +x "$REPO/node_modules/.bin/shellcheck"
+  printf 'one\ntwo\nthree\n' >"$REPO/a.sh"
+  git -C "$REPO" add a.sh
+  git -C "$REPO" -c user.email=t@t -c user.name=t commit -q -m a.sh
+}
+
+@test "a finding on a changed line blocks; one on an unchanged line doesn't" {
+  lint_lines
+  printf 'one\ntwo\nTHREE\n' >"$REPO/a.sh"
+  turn Edit "$REPO/a.sh"
+  run stop
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"a.sh:3:1: warning: new finding [SC3]"* ]]
+  [[ "$output" != *"old finding"* ]]
+  [[ "$output" == *"(1 more on unchanged lines don't block)"* ]]
+}
+
+@test "findings only on unchanged lines pass, and say so" {
+  lint_lines
+  printf 'one\nTWO\nthree\n' >"$REPO/a.sh"
+  turn Edit "$REPO/a.sh"
+  run stop
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"PASS shellcheck (1 file) (2 findings on unchanged lines)"* ]]
+}
+
+@test "every line of a file HEAD doesn't have counts as changed" {
+  lint_lines
+  git -C "$REPO" reset -q --soft HEAD~1
+  turn Edit "$REPO/a.sh"
+  run stop
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"old finding"* ]]
+}
+
+@test "a failure the parser can't read blocks with the output tail" {
+  lint_lines
+  printf '#!/usr/bin/env bash\necho "shellcheck: crashed"\nexit 1\n' >"$REPO/node_modules/.bin/shellcheck"
+  printf 'one\nTWO\nthree\n' >"$REPO/a.sh"
+  turn Edit "$REPO/a.sh"
+  run stop
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"shellcheck: crashed"* ]]
 }
 
 @test "exclude_toml drops files matching the project's exclude regexes" {

@@ -364,8 +364,10 @@ disabled_formatters: []
 # pyright, golangci-lint, go vet, rubocop, markdownlint, yamllint, tofu fmt,
 # shellcheck) live in go/internal/tools: each claims a file by its config
 # file, a pyproject table, or the tool declared as a dependency, runs from
-# that directory, and never writes. `bin/kit explain stop <file>...` shows
-# what claims a file and the exact command.
+# that directory, and never writes. Linters block only on findings on lines
+# the working tree changed against HEAD; type checkers, test runners, and
+# your own file_checks block on any failure. `bin/kit explain stop <file>...`
+# shows what claims a file, the exact command, and what blocks.
 #
 # file_checks adds your own; an entry named like a built-in replaces it.
 #   name, ext, bin, cmd   cmd: {bin} (a whole word) is the resolved binary, a

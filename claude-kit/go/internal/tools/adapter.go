@@ -56,6 +56,10 @@ type Adapter struct {
 	// whether it takes a separate value.
 	Sub   []string
 	Carry map[string]bool
+
+	// Findings parses the output so only findings on changed lines block;
+	// nil keeps the whole-file verdict (type checkers, test runners).
+	Findings *Findings
 }
 
 // Claim is why an adapter claims a file: the directory it runs from and

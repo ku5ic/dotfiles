@@ -139,11 +139,7 @@ func Plan(cfg *config.Config, root, base string, edited []string) []*Group {
 		}
 	}
 	for _, g := range groups {
-		plural := "s"
-		if len(g.Files) == 1 {
-			plural = ""
-		}
-		g.label = fmt.Sprintf("%s (%d file%s)", g.Adapter.Name, len(g.Files), plural)
+		g.label = fmt.Sprintf("%s (%d file%s)", g.Adapter.Name, len(g.Files), plural(len(g.Files)))
 		if g.Dir != root {
 			g.label += " [" + strings.TrimPrefix(g.Dir, root+"/") + "]"
 		}
@@ -172,6 +168,8 @@ func FileChecks(cfg *config.Config, root, base string, edited []string) (report,
 	}
 	var rep, fails strings.Builder
 	pass, fail, skip := 0, 0, 0
+	var changed map[string]map[int]bool
+	changedKnown := false
 	for _, g := range groups {
 		label, words := g.label, g.Words
 		if g.Skip != "" {
@@ -187,6 +185,23 @@ func FileChecks(cfg *config.Config, root, base string, edited []string) (report,
 			pass++
 			continue
 		}
+		if !changedKnown {
+			changed, changedKnown = changedLines(root, planned(groups)), true
+		}
+		if blocking, old, ok := newFindings(g, out.String(), root, changed); ok {
+			if len(blocking) == 0 {
+				fmt.Fprintf(&rep, "PASS %s (%d finding%s on unchanged lines)\n", label, old, plural(old))
+				pass++
+				continue
+			}
+			fmt.Fprintf(&rep, "FAIL %s\n", label)
+			fmt.Fprintf(&fails, "FAIL %s\n%s\n", label, strings.Join(blocking[:min(len(blocking), 30)], "\n"))
+			if old > 0 {
+				fmt.Fprintf(&fails, "(%d more on unchanged lines don't block)\n", old)
+			}
+			fail++
+			continue
+		}
 		fmt.Fprintf(&rep, "FAIL %s\n", label)
 		// The tail: linters print findings and the summary last, after
 		// preambles like rubocop's unconfigured-cops notice.
@@ -195,6 +210,75 @@ func FileChecks(cfg *config.Config, root, base string, edited []string) (report,
 		fail++
 	}
 	return rep.String(), fails.String(), fmt.Sprintf("checks: %d passed, %d failed, %d skipped", pass, fail, skip), fail > 0, true
+}
+
+// newFindings splits a failed check's parsed findings into those on lines
+// the working tree changed (their text, blocking) and a count of the rest.
+// ok is false when the output can't be trusted to list them all: no
+// parser, nothing parsed, or findings left out.
+func newFindings(g *Group, out, root string, changed map[string]map[int]bool) (blocking []string, old int, ok bool) {
+	if g.Adapter.Findings == nil {
+		return nil, 0, false
+	}
+	found, complete := g.Adapter.Findings.Parse(out)
+	if !complete || len(found) == 0 {
+		return nil, 0, false
+	}
+	for _, f := range found {
+		file := editedFile(f.File, g)
+		touched := file != "" && (f.Line == 0 || changed == nil || changed[file] == nil || changed[file][f.Line])
+		if !touched {
+			old++
+			continue
+		}
+		blocking = append(blocking, strings.ReplaceAll(f.Text, root+"/", ""))
+	}
+	return blocking, old, true
+}
+
+// editedFile is the group's edited file a tool's path names: relative to
+// where it ran, absolute, or relative to somewhere else (golangci-lint v2
+// prints paths relative to its config), matched by suffix. "" for a file
+// the turn didn't edit.
+func editedFile(path string, g *Group) string {
+	if !filepath.IsAbs(path) {
+		path = filepath.Join(g.Dir, path)
+	}
+	path = filepath.Clean(path)
+	if slices.Contains(g.Files, path) {
+		return path
+	}
+	if physical := project.PhysicalPath(path); slices.Contains(g.Files, physical) {
+		return physical
+	}
+	if isFile(path) {
+		return ""
+	}
+	for _, f := range g.Files {
+		if strings.HasSuffix(f, "/"+strings.TrimPrefix(path, g.Dir+"/")) {
+			return f
+		}
+	}
+	return ""
+}
+
+func planned(groups []*Group) []string {
+	var files []string
+	for _, g := range groups {
+		for _, f := range g.Files {
+			if !slices.Contains(files, f) {
+				files = append(files, f)
+			}
+		}
+	}
+	return files
+}
+
+func plural(n int) string {
+	if n == 1 {
+		return ""
+	}
+	return "s"
 }
 
 // gitIgnored asks git once which of the edited files it ignores, keyed by
