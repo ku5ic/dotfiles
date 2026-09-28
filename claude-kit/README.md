@@ -31,7 +31,7 @@ Requires bash 4+, `git`, `jq`, and `yq` (mikefarah). Formatters and linters (`pr
 
 - `CLAUDE_GUARD_SKILLS=1` in your settings `env` blocks the first edit of a mapped file type until its pattern skill is loaded. Off by default.
 - `CLAUDE_SANITIZE_TYPOGRAPHY=1` in your settings `env` makes the sanitizer rewrite em dashes, smart quotes, ellipses, and Unicode arrows in edited files to ASCII. Off by default; bidi control characters are always stripped.
-- The `Stop` hook runs `bin/run-checks.sh` only when the turn edited files and left them uncommitted, and blocks once on failure.
+- The `Stop` hook runs kit.yml's `file_checks` on only the files the turn edited, skipped when the tree is clean, and blocks once on failure. The full `bin/run-checks.sh` suite runs alongside `/code-review` because `rules/workflow.md` says to; the built-in doesn't run it.
 
 ## Develop
 

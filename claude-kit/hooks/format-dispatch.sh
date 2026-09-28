@@ -26,19 +26,6 @@ dir="$(cd -P "${path%/*}" 2>/dev/null && pwd)" || exit 0
 root="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || printf '%s' "$dir")"
 kit_stacks_load
 
-# Nearest project-local copy of binary $1, else PATH; nothing when absent.
-resolve_bin() {
-  local sub found
-  for sub in node_modules/.bin .venv/bin venv/bin; do
-    found="$(find_up "$dir" "$root" "$sub/$1")"
-    if [[ -n "$found" && -x "$found" ]]; then
-      printf '%s\n' "$found"
-      return 0
-    fi
-  done
-  command -v "$1" 2>/dev/null || true
-}
-
 # True when formatter index $1 has a signal for this file; binary in $2.
 has_signal() {
   local i="$1" bin="$2" toml_file cfg
@@ -69,7 +56,7 @@ hit_bins=()
 for ((i = 0; i < ${#KIT_FMT_NAMES[@]}; i++)); do
   [[ " ${KIT_DISABLED_FORMATTERS[*]:-} " == *" ${KIT_FMT_NAMES[i]} "* ]] && continue
   [[ " ${KIT_FMT_EXTS[i]} " == *" $ext "* ]] || continue
-  bin="$(resolve_bin "${KIT_FMT_BINS[i]}")"
+  bin="$(kit_resolve_bin "$dir" "$root" "${KIT_FMT_BINS[i]}")"
   has_signal "$i" "$bin" || continue
   hits+=("$i")
   hit_bins+=("$bin")

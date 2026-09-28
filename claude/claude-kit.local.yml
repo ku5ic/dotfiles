@@ -9,9 +9,10 @@ stacks:
         anchor: true
     skills: [bash-patterns]
 
-# Runs from the Stop hook. run-checks.sh splits cmd into words without glob
-# expansion, so find does the matching. bats stays in CI: the suite outlasts
-# the hook's 300s timeout.
+# Runs with run-checks.sh, alongside /code-review; the Stop hook's
+# file-scoped shellcheck comes from kit.yml. run-checks.sh splits cmd into
+# words without glob expansion, so find does the matching. bats stays in CI:
+# the suite takes minutes.
 toolchain_checks:
   - stack: dotfiles
     name: shellcheck

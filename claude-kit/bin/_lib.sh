@@ -88,6 +88,9 @@ if [ "${BASH_VERSINFO[0]}" -lt 4 ] || { [ "${BASH_VERSINFO[0]}" -eq 4 ] && [ "${
   return 0
 fi
 
+# bash 5.2+ turns & in a ${var//pat/rep} replacement into the match; paths can hold &.
+shopt -u patsub_replacement 2>/dev/null || true
+
 # This lib's own bin dir, for calling sibling scripts. Not $KIT_ROOT/bin:
 # tests point CLAUDE_PLUGIN_ROOT at a fake tree with no scripts in it.
 # Builtins only (no dirname): the statusline sources this under whatever
@@ -379,12 +382,14 @@ longest_prose_run() {
 # KIT_ORCH_*: positional columns of orchestrators (task_paths space-joined).
 # KIT_TOOLS: tools.
 # KIT_FMT_*: positional columns of formatters; KIT_DISABLED_FORMATTERS.
+# KIT_FC_*: positional columns of file_checks; KIT_DISABLED_FILE_CHECKS.
+# KIT_BL_*: positional columns of bin_lookups.
 _stacks_lists_cache="$KIT_CACHE_DIR/stacks-lists.$KIT_YML_TAG.bash"
 
 # Bump on every change to the queries below or to the cache's shape. The
 # mtime check only sees kit.yml, so without this an existing cache
 # outlives a rewritten derivation and keeps serving the old lists.
-_stacks_lists_format=10
+_stacks_lists_format=16
 
 _reset_stacks_lists() {
   STACK_SENTINELS_FULL=()
@@ -429,6 +434,22 @@ _reset_stacks_lists() {
   KIT_FMT_BINS=()
   KIT_FMT_CMDS=()
   KIT_DISABLED_FORMATTERS=()
+  KIT_FC_NAMES=()
+  KIT_FC_EXTS=()
+  KIT_FC_FILES=()
+  KIT_FC_TOMLS=()
+  KIT_BL_NAMES=()
+  KIT_BL_FILES=()
+  KIT_BL_VENVS=()
+  KIT_BL_PROBES=()
+  KIT_BL_RUNS=()
+  KIT_FC_SCRIPTS=()
+  KIT_FC_NEEDS=()
+  KIT_FC_EXCLUDES=()
+  KIT_FC_LOCALS=()
+  KIT_FC_BINS=()
+  KIT_FC_CMDS=()
+  KIT_DISABLED_FILE_CHECKS=()
 }
 
 # Each emitted row is "<list-tag>\t<value>" so one yq call fills every list.
@@ -480,6 +501,22 @@ _build_stacks_lists() {
     FMT_BIN) KIT_FMT_BINS+=("$value") ;;
     FMT_CMD) KIT_FMT_CMDS+=("$value") ;;
     FMT_DISABLED) KIT_DISABLED_FORMATTERS+=("$value") ;;
+    FC_NAME) KIT_FC_NAMES+=("$value") ;;
+    FC_EXTS) KIT_FC_EXTS+=("$value") ;;
+    FC_FILES) KIT_FC_FILES+=("$value") ;;
+    FC_TOML) KIT_FC_TOMLS+=("$value") ;;
+    BL_NAME) KIT_BL_NAMES+=("$value") ;;
+    BL_FILES) KIT_BL_FILES+=("$value") ;;
+    BL_VENV) KIT_BL_VENVS+=("$value") ;;
+    BL_PROBE) KIT_BL_PROBES+=("$value") ;;
+    BL_RUN) KIT_BL_RUNS+=("$value") ;;
+    FC_SCRIPT) KIT_FC_SCRIPTS+=("$value") ;;
+    FC_NEEDS) KIT_FC_NEEDS+=("$value") ;;
+    FC_EXCLUDE) KIT_FC_EXCLUDES+=("$value") ;;
+    FC_LOCAL) KIT_FC_LOCALS+=("$value") ;;
+    FC_BIN) KIT_FC_BINS+=("$value") ;;
+    FC_CMD) KIT_FC_CMDS+=("$value") ;;
+    FC_DISABLED) KIT_DISABLED_FILE_CHECKS+=("$value") ;;
     LOGMAX) KIT_LOG_MAX_LINES="$value" ;;
     esac
   done < <(
@@ -531,6 +568,26 @@ _build_stacks_lists() {
           ["FMT_CMD", .cmd]
         )),
         (.disabled_formatters // [] | .[] | ["FMT_DISABLED", .]),
+        (.file_checks // [] | .[] | (
+          ["FC_NAME", .name],
+          ["FC_EXTS", ((.ext // []) | join(" "))],
+          ["FC_FILES", ((.signal_files // []) | join(" ") | select(. != "") // "-")],
+          ["FC_TOML", (.signal_toml // "-")],
+          ["FC_SCRIPT", (.test_script // "-")],
+          ["FC_NEEDS", ((.needs_files // []) | join(" ") | select(. != "") // "-")],
+          ["FC_EXCLUDE", (.exclude_toml // "-")],
+          ["FC_LOCAL", ((.local_only // false) | tostring)],
+          ["FC_BIN", .bin],
+          ["FC_CMD", .cmd]
+        )),
+        (.disabled_file_checks // [] | .[] | ["FC_DISABLED", .]),
+        (.bin_lookups // [] | .[] | (
+          ["BL_NAME", .name],
+          ["BL_FILES", ((.signal_files // []) | join(" "))],
+          ["BL_VENV", (.venv_cmd // "-")],
+          ["BL_PROBE", (.probe // "-")],
+          ["BL_RUN", (.run // "-")]
+        )),
         (.orchestrators // [] | .[] | (
           ["ORCH_NAME", .name],
           ["ORCH_SIGNAL", .signal],
@@ -604,6 +661,9 @@ kit_stacks_load() {
     KIT_ORCH_NAMES KIT_ORCH_SIGNALS KIT_ORCH_TASK_PATHS KIT_ORCH_RUNS KIT_TOOLS \
     KIT_FMT_NAMES KIT_FMT_EXTS KIT_FMT_FILES KIT_FMT_TOMLS KIT_FMT_PRETTIER \
     KIT_FMT_BINS KIT_FMT_CMDS KIT_DISABLED_FORMATTERS \
+    KIT_FC_NAMES KIT_FC_EXTS KIT_FC_FILES KIT_FC_TOMLS KIT_FC_SCRIPTS KIT_FC_NEEDS KIT_FC_EXCLUDES KIT_FC_LOCALS KIT_FC_BINS KIT_FC_CMDS \
+    KIT_DISABLED_FILE_CHECKS \
+    KIT_BL_NAMES KIT_BL_FILES KIT_BL_VENVS KIT_BL_PROBES KIT_BL_RUNS \
     _stacks_lists_cached_format |
     sed -E -e 's/^declare -- /declare -g /' -e 's/^declare -([aA])/declare -g\1/' \
       >"$tmp" 2>/dev/null; then
@@ -766,6 +826,20 @@ find_up() {
     dir="${dir%/*}"
     [[ -n "$dir" ]] || dir=/
   done
+}
+
+# kit_resolve_bin <dir> <root> <name>: the nearest project-local copy of
+# <name> from <dir> up to <root>, else PATH; nothing when absent.
+kit_resolve_bin() {
+  local sub found
+  for sub in node_modules/.bin .venv/bin venv/bin; do
+    found="$(find_up "$1" "$2" "$sub/$3")"
+    if [[ -n "$found" && -x "$found" ]]; then
+      printf '%s\n' "$found"
+      return 0
+    fi
+  done
+  command -v "$3" 2>/dev/null || true
 }
 
 # make_targets <file>: explicit targets, in file order. Skips special

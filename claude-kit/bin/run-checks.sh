@@ -10,7 +10,7 @@
 # It never invokes a third-party linter binary directly off a config file. A
 # check with no declared task is skipped, not synthesized.
 #
-# Output contract, parsed by hooks/stop-checks.sh: one PASS, FAIL, or SKIP
+# Output contract, read by the checker agent: one PASS, FAIL, or SKIP
 # line per check, labeled "<stack>: <check> (<task>) [<subproject>]" (a
 # provider without a stack labels with its own name; the root has no
 # [<subproject>]), then a final "checks: N passed, N failed, N skipped" line.
@@ -173,8 +173,8 @@ check_subproject() {
   done
 }
 
-# The orchestrator only when a JS subproject is in scope: a stop hook scoped
-# to a Python service has nothing for turbo or nx to do.
+# The orchestrator only when a JS subproject is in scope: a run scoped to a
+# Python service has nothing for turbo or nx to do.
 wants_js=1
 if ((${#only[@]} > 0)); then
   wants_js=0
