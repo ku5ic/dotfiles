@@ -10,8 +10,8 @@
 #      guard-bash.sh reads the same list for what permissions cannot express
 #      (cat, cp of a key file).
 #   3. Agent-context / inject-context derivation parity: both consumers share
-#      the yq derivation queries via bin/_lib.sh instead of holding private
-#      copies.
+#      the skill derivation in go/internal/stackctx instead of holding
+#      private copies.
 #   4. Skill and agent frontmatter lint: every procedure SKILL.md and
 #      agents/*.md has a valid model field, no dated model pin, a matching
 #      effort field, and no pin that just restates the session default in
@@ -142,50 +142,40 @@ fi
 echo
 echo "== agent-context / inject-context derivation parity =="
 
-AGENT_CONTEXT="$SOURCE_ROOT/bin/agent-context.sh"
-INJECT_CONTEXT="$SOURCE_ROOT/hooks/inject-context.sh"
+# Both consumers live in one Go file and must derive skills through
+# go/internal/stackctx, never read the kit.yml fields themselves.
+CONTEXT_GO="$SOURCE_ROOT/go/internal/hooks/context.go"
 derivation_failed=0
 
-if [[ ! -f "$AGENT_CONTEXT" ]]; then
-  echo "missing        $AGENT_CONTEXT"
+if [[ ! -f "$CONTEXT_GO" ]]; then
+  echo "missing        $CONTEXT_GO"
   derivation_failed=1
-elif ! grep -qF '_lib.sh' "$AGENT_CONTEXT"; then
-  echo "no-source      agent-context.sh does not source bin/_lib.sh"
-  derivation_failed=1
-fi
-
-if [[ ! -f "$INJECT_CONTEXT" ]]; then
-  echo "missing        $INJECT_CONTEXT"
-  derivation_failed=1
-elif ! grep -qF '_lib.sh' "$INJECT_CONTEXT"; then
-  echo "no-source      inject-context.sh does not source bin/_lib.sh"
-  derivation_failed=1
-fi
-
-# Neither consumer may hold a private copy of the shared yq derivation
-# queries; those must live only in bin/_lib.sh (global_skills_list,
-# stacks_signals_from_cache, suggested_skills_from_signals).
-# These are literal grep -qF patterns: the \$ is escaped so the string holds
-# the verbatim ${stack}/${sig} text to search for, not a value to expand.
-private_copy_patterns=(
-  ".global_skills"
-  ".stacks.\${stack}.extras"
-  ".stacks.\${sig}.skills"
-)
-for pat in "${private_copy_patterns[@]}"; do
-  for f in "$AGENT_CONTEXT" "$INJECT_CONTEXT"; do
-    [[ -f "$f" ]] || continue
-    if grep -qF "$pat" "$f"; then
-      echo "private-copy   $f queries '$pat' directly instead of using bin/_lib.sh"
+else
+  for fn in InjectContext AgentContext; do
+    grep -q "^func ${fn}(" "$CONTEXT_GO" || {
+      echo "missing        $fn in context.go"
+      derivation_failed=1
+    }
+  done
+  # Each consumer calls the shared derivation once.
+  for call in 'stackctx.Required(' 'stackctx.Suggested(' 'stackctx.Signals('; do
+    if (($(grep -cF "$call" "$CONTEXT_GO") < 2)); then
+      echo "not-shared     $call is not used by both InjectContext and AgentContext"
       derivation_failed=1
     fi
   done
-done
+  for field in 'cfg.GlobalSkills' 'cfg.Stacks' 'cfg.SkillTriggers'; do
+    if grep -qF "$field" "$CONTEXT_GO"; then
+      echo "private-copy   context.go reads $field directly instead of using stackctx"
+      derivation_failed=1
+    fi
+  done
+fi
 
 if ((derivation_failed)); then
   exit_code=1
 else
-  echo "ok             agent-context.sh and inject-context.sh share derivation via bin/_lib.sh"
+  echo "ok             agent-context and inject-context share derivation via go/internal/stackctx"
 fi
 
 echo

@@ -365,6 +365,16 @@ one_check() {
   [ -e "$CALLS" ]
 }
 
+@test "a gitignored file is not checked" {
+  printf 'scratch/\n' >"$REPO/.gitignore"
+  mkdir -p "$REPO/scratch"
+  echo x >"$REPO/scratch/tmp.ts"
+  turn Edit "$REPO/scratch/tmp.ts" "$REPO/a.ts"
+  run stop
+  [ "$status" -eq 0 ]
+  [ "$(cat "$CALLS")" = "$REPO|--check $REPO/a.ts" ]
+}
+
 @test "a file no check claims runs nothing" {
   turn Write "$REPO/notes.md"
   run stop

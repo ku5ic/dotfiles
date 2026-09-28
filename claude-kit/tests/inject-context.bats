@@ -1,14 +1,10 @@
 #!/usr/bin/env bats
 # Tests for ~/.dotfiles/claude-kit/hooks/inject-context.sh.
 #
-# inject-context.sh calls project-name.sh/project-root.sh via absolute
-# $HOME-prefixed paths, so each test fakes $HOME with tiny stand-in scripts
-# for those two collaborators (echoing a fixed name/root) rather than
-# exercising the real sentinel walk -- this isolates inject-context.sh's own
-# logic, which is what this suite covers. The real bin/_lib.sh is still
-# sourced (relative to the script's own location), so
-# stack-cache and skill-derivation logic is real; only the two collaborator
-# scripts and the data files under $HOME are fixtures.
+# The project is real: a git repo named testproject, resolved from the
+# payload's cwd as Claude Code sends it. Tests that pin the <repo-context>
+# content write the stack cache themselves (after kit.yml, so it counts as
+# fresh); the rest let the hook detect the stack.
 #
 # Run with: bats tests/
 
@@ -16,43 +12,27 @@ load helper
 
 setup() {
   HOOK="$BATS_TEST_DIRNAME/../hooks/inject-context.sh"
-  LIB="$BATS_TEST_DIRNAME/../bin/_lib.sh"
   kit_test_home --plugin-root
-  FAKE_ROOT="$BATS_TEST_TMPDIR/project"
-  mkdir -p "$FAKE_HOME/.claude/bin" "$FAKE_HOME/.claude/logs" "$FAKE_HOME/.claude/scratch" "$FAKE_ROOT"
-  # Real git init: a non-git root breaks inject-context.sh entirely (see the
-  # dedicated RISK test below), which would otherwise block every other test.
-  git -C "$FAKE_ROOT" init -q
-  # check_prereqs wants the kit rules linked; without this every test would
-  # get the warning JSON instead of the context.
+  mkdir -p "$FAKE_HOME/.claude/logs" "$FAKE_HOME/.claude/scratch" "$BATS_TEST_TMPDIR/testproject"
+  git -C "$BATS_TEST_TMPDIR/testproject" init -q
+  # Physical, as git reports the root the hook resolves.
+  FAKE_ROOT="$(cd -P "$BATS_TEST_TMPDIR/testproject" && pwd)"
+  # The prerequisite check wants the kit rules linked; without this every
+  # test would get the warning JSON instead of the context.
   mkdir -p "$FAKE_HOME/.claude/rules"
   ln -s "$BATS_TEST_DIRNAME/../rules" "$FAKE_HOME/.claude/rules/kit"
   # Likewise a readable kit.yml; tests that need content overwrite it.
   touch "$FAKE_HOME/.claude/kit.yml"
 
-  set_project_name "testproject"
-  set_project_root "$FAKE_ROOT"
-
-  cache_path="$(HOME="$FAKE_HOME" bash -c "source '$LIB' >/dev/null 2>&1; stack_cache_file 'testproject' '$FAKE_ROOT'")"
+  cache_path="$(cache_for testproject "$FAKE_ROOT")"
   mkdir -p "$(dirname "$cache_path")"
 }
 
-set_project_name() {
-  local name="$1"
-  cat >"$FAKE_HOME/.claude/bin/project-name.sh" <<EOF
-#!/usr/bin/env bash
-echo "$name"
-EOF
-  chmod +x "$FAKE_HOME/.claude/bin/project-name.sh"
-}
-
-set_project_root() {
-  local root="$1"
-  cat >"$FAKE_HOME/.claude/bin/project-root.sh" <<EOF
-#!/usr/bin/env bash
-echo "$root"
-EOF
-  chmod +x "$FAKE_HOME/.claude/bin/project-root.sh"
+# cache_for <name> <root>: the stack cache file for a project, as the hook
+# names it (no overlay in the fake home, so the .base tag).
+cache_for() {
+  printf '%s/.claude/cache/stack/%s-%s.base.txt\n' "$FAKE_HOME" "$1" \
+    "$(printf '%s' "$2" | shasum -a 256 | cut -c1-8)"
 }
 
 write_kit_yml() {
@@ -110,14 +90,13 @@ YAML
   [[ "$output" == *"load javascript-patterns via the Skill tool"* ]]
 }
 
-@test "a repo with no sentinel produces no injection" {
-  set_project_name "unknown"
+@test "a non-project context (home) produces no injection" {
   write_kit_yml <<'YAML'
 global_skills:
   - fix-sizing
 YAML
 
-  run run_inject_context "s1"
+  run run_inject_context "s1" "$FAKE_HOME"
   [ "$status" -eq 0 ]
   [ -z "$output" ]
 }
@@ -155,12 +134,11 @@ YAML
 @test "a non-git project root degrades to dirty-files: unknown instead of failing open" {
   non_git_root="$BATS_TEST_TMPDIR/non-git-project"
   mkdir -p "$non_git_root"
-  set_project_root "$non_git_root"
   write_kit_yml <<'YAML'
 global_skills:
   - fix-sizing
 YAML
-  cache_path="$(HOME="$FAKE_HOME" bash -c "source '$LIB' >/dev/null 2>&1; stack_cache_file 'testproject' '$non_git_root'")"
+  cache_path="$(cache_for non-git-project "$non_git_root")"
   mkdir -p "$(dirname "$cache_path")"
   write_cache "root: $non_git_root" "js: yes"
 

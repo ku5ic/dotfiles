@@ -11,12 +11,16 @@ import (
 
 // singleChecks are hooks that run one check; dispatchers get their own case.
 var singleChecks = map[string]hook.Check{
-	"plan-mode-context": hooks.PlanModeContext,
-	"guard-edit":        hooks.GuardEdit,
-	"guard-skills":      hooks.GuardSkills,
-	"guard-commit":      hooks.GuardCommit,
-	"log-skills":        hooks.LogSkills,
-	"sanitize-output":   hooks.SanitizeOutput,
+	"plan-mode-context":       hooks.PlanModeContext,
+	"guard-edit":              hooks.GuardEdit,
+	"guard-skills":            hooks.GuardSkills,
+	"guard-commit":            hooks.GuardCommit,
+	"log-skills":              hooks.LogSkills,
+	"sanitize-output":         hooks.SanitizeOutput,
+	"inject-context":          hooks.InjectContext,
+	"inject-subagent-context": hooks.InjectSubagentContext,
+	"format-dispatch":         hooks.FormatDispatch,
+	"stop-checks":             hooks.StopChecks,
 }
 
 // cmdHook runs `kit hook <name>`: stdin is the payload, the exit status is

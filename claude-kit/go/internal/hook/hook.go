@@ -40,6 +40,12 @@ func ParsePayload(raw []byte) *Payload {
 	return p
 }
 
+// Bool is the boolean at a dotted path, false when absent or not a bool.
+func (p *Payload) Bool(path string) bool {
+	b, _ := p.value(path).(bool)
+	return b
+}
+
 func (p *Payload) value(path string) any {
 	var value any = p.data
 	for _, part := range strings.Split(path, ".") {
@@ -154,10 +160,12 @@ func (h *Hook) Decide(decision, reason string) {
 	out := struct {
 		HookSpecificOutput specific `json:"hookSpecificOutput"`
 	}{specific{"PreToolUse", decision, reason}}
-	writeJSON(h.Stdout, out)
+	WriteJSON(h.Stdout, out)
 }
 
-func writeJSON(w io.Writer, v any) {
+// WriteJSON writes v as one compact line, <, >, and & left as they are (as
+// jq -c prints them; hook output often carries <tag> blocks).
+func WriteJSON(w io.Writer, v any) {
 	var buf bytes.Buffer
 	enc := json.NewEncoder(&buf)
 	enc.SetEscapeHTML(false)

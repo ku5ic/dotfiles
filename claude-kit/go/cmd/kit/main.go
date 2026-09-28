@@ -11,9 +11,11 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
+	"github.com/ku5ic/dotfiles/claude-kit/go/internal/checks"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/config"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/detect"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/gitbase"
+	"github.com/ku5ic/dotfiles/claude-kit/go/internal/hooks"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/project"
 )
 
@@ -28,6 +30,9 @@ const usage = `usage: kit <command> [args]
   scratch-dir [kind [slug]]  scratch directory, or a report path in it
   plans-dir                  plans directory
   detect-stack               compact stack report
+  agent-context              a subagent's startup context
+  run-checks [--only sub...] every declared check, in every subproject;
+                             exits with the failure count
   git-base [--diff|--log] [base] [flags] [-- paths]
   hook <name>                run a Claude Code hook; payload on stdin
 `
@@ -102,6 +107,21 @@ func run(args []string, stdout, stderr io.Writer) int {
 		"scratch-dir":  cmdScratchDir,
 		"plans-dir":    cmdPlansDir,
 		"detect-stack": cmdDetectStack,
+		"run-checks": func(e *env, cfg *config.Config, args []string) int {
+			var only []string
+			if len(args) > 0 && args[0] == "--only" {
+				only = args[1:]
+			}
+			root := project.Toplevel(e.cwd)
+			if root == "" {
+				root = e.cwd
+			}
+			return min(checks.RunAll(cfg, root, only, e.stdout), 125)
+		},
+		"agent-context": func(e *env, cfg *config.Config, _ []string) int {
+			fmt.Fprint(e.stdout, hooks.AgentContext(e.paths, cfg, e.cwd))
+			return 0
+		},
 	}
 	cmd, ok := commands[name]
 	if !ok {
