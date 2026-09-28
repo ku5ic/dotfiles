@@ -1,1 +1,0 @@
-- [bats to Go e2e port](project_bats_to_go_port.md) - harness mapping, build tags, bats-name, HOME, rules-lookup, Unicode-escape gotchas for claude-kit/go/e2e
