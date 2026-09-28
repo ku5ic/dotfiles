@@ -36,4 +36,4 @@ Requires `git` and bash (any version, the stock macOS 3.2 included): every hook 
 
 ## Develop
 
-`bats tests/` runs the suite. The Go port lives in `go/` (`go test ./...`); `go/build.sh` rebuilds the committed `bin/kit-<os>-<arch>` binaries, and CI fails when they don't match the source. `bin/kit config` prints the effective kit.yml, and `--check` reports unknown keys. `bin/bootstrap.sh` and `bin/doctor.sh` serve the symlinked layout in [ku5ic/dotfiles](https://github.com/ku5ic/dotfiles) and are not needed for a plugin install.
+The code lives in `go/`: `go test ./...` runs the suite, with the end-to-end tests in `go/e2e`, and `bats tests/` covers the two bash scripts; `go/build.sh` rebuilds the committed `bin/kit-<os>-<arch>` binaries, and CI fails when they don't match the source. `bin/kit config` prints the effective kit.yml, and `--check` reports unknown keys. `bin/bootstrap.sh` and `bin/doctor.sh` serve the symlinked layout in [ku5ic/dotfiles](https://github.com/ku5ic/dotfiles) and are not needed for a plugin install.
