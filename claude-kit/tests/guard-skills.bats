@@ -269,24 +269,10 @@ YAML
   [ "$status" -eq 2 ]
 }
 
-# kit.yml -> skill_file_map cache ($HOME/.claude/cache/skill-map.base, or
-# .merged with an overlay)
+# kit.yml is read on every call (the Go loader parses it in under a
+# millisecond), so no skill-map cache stands between an edit and its effect.
 
-@test "the skill-map cache is created after the first invocation" {
-  write_kit_yml <<'YAML'
-skill_file_map:
-  - on: basename
-    globs: ["*.sh"]
-    skills: [bash-patterns]
-YAML
-  : >"$FAKE_HOME/.claude/logs/skills.jsonl"
-  run run_guard_skills "/tmp/project/foo.sh" "s1"
-  [ "$status" -eq 2 ]
-  [ -s "$FAKE_HOME/.claude/cache/skill-map.base" ]
-  [[ "$(cat "$FAKE_HOME/.claude/cache/skill-map.base")" == *"bash-patterns"* ]]
-}
-
-@test "a stale skill-map cache (older than kit.yml) is not reused" {
+@test "a kit.yml change takes effect on the next call" {
   write_kit_yml <<'YAML'
 skill_file_map:
   - on: basename
@@ -312,27 +298,9 @@ YAML
   [[ "$output" != *"bash-patterns"* ]]
 }
 
-@test "a fresh skill-map cache (newer than kit.yml) is reused instead of re-parsing" {
-  write_kit_yml <<'YAML'
-skill_file_map:
-  - on: basename
-    globs: ["*.sh"]
-    skills: [bash-patterns]
-YAML
+@test "an unparsable kit.yml fails open" {
+  printf 'not: [valid, yaml, skill_file_map' >"$FAKE_HOME/.claude/kit.yml"
   : >"$FAKE_HOME/.claude/logs/skills.jsonl"
   run run_guard_skills "/tmp/project/foo.sh" "s1"
-  [ "$status" -eq 2 ]
-  cache_file="$FAKE_HOME/.claude/cache/skill-map.base"
-  [ -s "$cache_file" ]
-
-  # Corrupt the on-disk kit.yml so a fresh parse would produce a
-  # different (or no) result, but leave its mtime older than the cache -
-  # the cached map should still be what guard-skills.sh reads from.
-  printf 'not: [valid, yaml, skill_file_map' >"$FAKE_HOME/.claude/kit.yml"
-  touch -t 202001010000 "$FAKE_HOME/.claude/kit.yml"
-  touch "$cache_file"
-
-  run run_guard_skills "/tmp/project/bar.sh" "s1"
-  [ "$status" -eq 2 ]
-  [[ "$output" == *"bash-patterns"* ]]
+  [ "$status" -eq 0 ]
 }

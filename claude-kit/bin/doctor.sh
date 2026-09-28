@@ -18,7 +18,7 @@
 #      settings.json.
 #   5. Skill map validation: skill_file_map and skill_triggers reference only
 #      skills that exist, and every stack/extra skill has a trigger entry.
-#   6. Skills-log field parity: log-skills.sh and skills-report.sh reference
+#   6. Skills-log field parity: the Go log-skills hook and skills-report.sh reference
 #      the same skills.jsonl field names, so a rename in the emitter cannot
 #      silently break the report.
 #   7. Audit-verify field parity: audit/references/verify.md's per-finding parser
@@ -377,14 +377,15 @@ fi
 echo
 echo "== skills-log field parity =="
 
-LOG_SKILLS="$SOURCE_ROOT/hooks/log-skills.sh"
-LIB="$SOURCE_ROOT/bin/_lib.sh"
+# The emitter is Go: hook.Log writes ts/event/session_id for every row, and
+# the log-skills hook passes the rest.
+LOG_SKILLS="$SOURCE_ROOT/go/internal/hooks/misc.go"
+LIB="$SOURCE_ROOT/go/internal/hook/hook.go"
 SKILLS_REPORT="$SOURCE_ROOT/bin/skills-report.sh"
 field_parity_failed=0
 
 # Field subset of skills.jsonl that skills-report.sh consumes for
-# classification. bin/_lib.sh's log_event emits ts/event/session_id for
-# every row; log-skills.sh passes the rest. Not the full emitted set --
+# classification. Not the full emitted set --
 # hook/cwd are emitted but never read by the report, so a rename there
 # carries no drift risk worth checking.
 # skills-report.sh must reference each field below verbatim in its jq
@@ -399,7 +400,7 @@ skills_log_fields=(
 # this check even after the real field reference was renamed away.
 for field in "${skills_log_fields[@]}"; do
   if ! cat "$LIB" "$LOG_SKILLS" 2>/dev/null | grep -qE "\\b${field}\\b"; then
-    echo "missing-field  neither _lib.sh's log_event nor log-skills.sh emits '$field' -- update the canonical list"
+    echo "missing-field  neither hook.Log nor the log-skills hook emits '$field' -- update the canonical list"
     field_parity_failed=1
   fi
   if [[ -f "$SKILLS_REPORT" ]] && ! grep -qE "\\b${field}\\b" "$SKILLS_REPORT"; then

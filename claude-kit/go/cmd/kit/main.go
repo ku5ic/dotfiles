@@ -29,6 +29,7 @@ const usage = `usage: kit <command> [args]
   plans-dir                  plans directory
   detect-stack               compact stack report
   git-base [--diff|--log] [base] [flags] [-- paths]
+  hook <name>                run a Claude Code hook; payload on stdin
 `
 
 func main() {
@@ -89,6 +90,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return cmdConfig(e, rest)
 	case "git-base":
 		return gitbase.Run(rest, stdout, stderr)
+	case "hook":
+		return cmdHook(e, rest, os.Stdin)
 	}
 
 	commands := map[string]func(*env, *config.Config, []string) int{

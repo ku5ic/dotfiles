@@ -99,11 +99,10 @@ log_line_count() {
   [ "$(log_line_count)" -eq 0 ]
 }
 
-# pre-filter short-circuits before require_jq
+# No jq dependency: the hook is Go behind a bash shim.
 
-# stub_path_no_jq builds a minimal PATH with `cat` and `dirname` (both of
-# which the hook needs before it ever reaches the jq check) but no `jq`,
-# rather than an empty PATH which would also break the hook's own plumbing.
+# stub_path_no_jq builds a minimal PATH with `cat` and `dirname` but no `jq`,
+# rather than an empty PATH.
 stub_path_no_jq() {
   local stub_dir="$BATS_TEST_TMPDIR/stub_no_jq"
   mkdir -p "$stub_dir"
@@ -122,12 +121,12 @@ stub_path_no_jq() {
   [ "$(log_line_count)" -eq 0 ]
 }
 
-@test "a loggable payload without jq on PATH fails open with the jq-not-found notice" {
+@test "a loggable payload is logged even without jq on PATH" {
   local stub_dir bash_bin
   stub_dir="$(stub_path_no_jq)"
   bash_bin="$(command -v bash)"
   run env PATH="$stub_dir" HOME="$FAKE_HOME" "$bash_bin" "$HOOK" <<<'{"hook_event_name":"PostToolUse","tool_name":"Skill","tool_input":{"skill":"bash-patterns"}}'
   [ "$status" -eq 0 ]
-  [[ "$output" == *"jq not found"* ]]
-  [ "$(log_line_count)" -eq 0 ]
+  [ -z "$output" ]
+  [ "$(log_line_count)" -eq 1 ]
 }
