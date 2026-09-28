@@ -89,8 +89,8 @@ func (p *Payload) FilePath() string {
 }
 
 // Blocked ends a check with exit 2. Returned, not panicked, so a check reads
-// top to bottom.
-type Blocked struct{ Reason string }
+// top to bottom. Rule is the slug, for kit explain.
+type Blocked struct{ Reason, Rule string }
 
 func (b *Blocked) Error() string { return b.Reason }
 
@@ -102,6 +102,9 @@ type Hook struct {
 	Stdout  io.Writer
 	Stderr  io.Writer
 	Now     func() time.Time
+	// DryRun skips every log write: kit explain evaluates without leaving
+	// a trace in guards.jsonl.
+	DryRun bool
 
 	cfg     *config.Config
 	loaded  bool
@@ -147,7 +150,7 @@ func (h *Hook) Block(reason, rule string) error {
 	if h.context != "" {
 		msg += "\n" + h.context
 	}
-	return &Blocked{msg}
+	return &Blocked{msg, rule}
 }
 
 // Decide prints a PreToolUse permission decision (allow or ask).
@@ -178,6 +181,9 @@ func WriteJSON(w io.Writer, v any) {
 // payload's session_id, then each key/value pair in order, an empty value
 // as null. Never fails its caller: a log that can't be written is skipped.
 func (h *Hook) Log(log, event string, pairs ...string) {
+	if h.DryRun {
+		return
+	}
 	fields := []string{
 		"ts", h.now().UTC().Format("2006-01-02T15:04:05Z"),
 		"hook", h.Name,

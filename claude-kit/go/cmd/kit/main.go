@@ -16,6 +16,7 @@ import (
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/checks"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/config"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/detect"
+	"github.com/ku5ic/dotfiles/claude-kit/go/internal/explain"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/gitbase"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/hooks"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/project"
@@ -39,6 +40,8 @@ const usage = `usage: kit <command> [args]
   run-checks [--only sub...] every declared check, in every subproject;
                              exits with the failure count
   git-base [--diff|--log] [base] [flags] [-- paths]
+  explain bash|edit|stop ... why a guard or the Stop hook decides what it
+                             does; logs, blocks, and runs nothing
   hook <name>                run a Claude Code hook; payload on stdin
   statusline                 the statusLine rows; payload on stdin
   subagent-statusline        subagentStatusLine JSON lines; payload on stdin
@@ -142,6 +145,9 @@ func run(args []string, stdout, stderr io.Writer) int {
 		},
 		"a11y-check": func(e *env, cfg *config.Config, args []string) int {
 			return a11y.Run(cfg, e.paths, e.cwd, args, e.stdout, e.stderr)
+		},
+		"explain": func(e *env, cfg *config.Config, args []string) int {
+			return explain.Run(e.paths, cfg, e.cwd, args, e.stdout, e.stderr)
 		},
 		"agent-context": func(e *env, cfg *config.Config, _ []string) int {
 			fmt.Fprint(e.stdout, hooks.AgentContext(e.paths, cfg, e.cwd))

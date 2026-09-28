@@ -359,151 +359,30 @@ formatters:
 
 disabled_formatters: []
 
-# Checks hooks/stop-checks.sh runs on only the files the turn edited, once per
-# check and signal directory, from that directory: a word holding {files}
-# repeats once per edited file the check claims, and {dirs} once per their
-# directories as ./<relative> paths, for per-package tools (go). Crate- or
-# project-wide tools (cargo clippy, tsc) have no scoped form and stay with
-# run-checks.sh. Checks never write: no --fix, no --write, no new snapshots;
-# stylelint and markdownlint-cli2 still apply a config's own fix setting. A
-# check claims a file when its ext lists the extension, a signal_files entry,
-# else the nearest signal_toml file holding its table, is found walking up to
-# the project root, and, with test_script, that directory's package.json test
-# script contains the word. Optional per check:
-#   needs_files   one must also exist from the signal directory up to the root
-#   exclude_toml  "<file> <dotted path>" to a regex or regex list; files whose
-#                 path relative to the signal directory matches are dropped
-#   local_only    skip the PATH fallback below
-# {bin} resolves as for formatters, and an unresolved bin skips the check.
-# disabled_file_checks in the overlay turns a
-# check off by name. Whole-project checks (typecheck, the full test suite) are
-# run-checks.sh's job, run with /code-review.
+# The Stop hook runs file-scoped checks on only the files the turn edited.
+# The built-in ones (eslint, biome, stylelint, vitest, jest, ruff, mypy,
+# pyright, golangci-lint, go vet, rubocop, markdownlint, yamllint, tofu fmt,
+# shellcheck) live in go/internal/tools: each claims a file by its config
+# file, a pyproject table, or the tool declared as a dependency, runs from
+# that directory, and never writes. `bin/kit explain stop <file>...` shows
+# what claims a file and the exact command.
 #
-# bin_lookups: where a check's {bin} comes from when the nearest
-# node_modules/.bin, .venv/bin, and venv/bin lack it, tried in order before
-# PATH. A lookup applies when one of its signal_files is found walking up from
-# the check's directory, and runs there:
-#   venv_cmd   prints the environment's directory; {bin} is its bin/<name>
-#   probe/run  probe must exit 0 with {bin} available; run replaces {bin}
-# A check's cmd names {bin} as a whole word, since run can be several words.
-# Only commands that never create an environment or install anything: poetry
-# run and uv run would, poetry env info and yarn bin don't.
-bin_lookups:
-  - name: poetry
-    signal_files: [poetry.lock]
-    venv_cmd: "poetry env info -p"
-  - name: pipenv
-    signal_files: [Pipfile.lock]
-    venv_cmd: "pipenv --venv"
-  - name: yarn-pnp
-    signal_files: [.pnp.cjs]
-    probe: "yarn bin {bin}"
-    run: "yarn run {bin}"
-  # bundle info, not `bundle exec which`: which also finds a global gem stub
-  # that bundle exec then refuses to load. Assumes gem name == bin (rubocop).
-  - name: bundler
-    signal_files: [Gemfile.lock]
-    probe: "bundle info {bin}"
-    run: "bundle exec {bin}"
+# file_checks adds your own; an entry named like a built-in replaces it.
+#   name, ext, bin, cmd   cmd: {bin} (a whole word) is the resolved binary, a
+#                         word holding {files} repeats once per edited file,
+#                         {dirs} once per their directories as ./<relative>
+#   signal_files          a config file by name, walking up to the root
+#   signal_toml           "<file> <dotted path>": a table in a TOML file
+#   exclude_toml          "<file> <dotted path>" to a regex or regex list;
+#                         matching files (relative to the run dir) are dropped
+#   local_only            don't fall back to a PATH copy
+# {bin} resolves from the project (node_modules/.bin, .venv/bin, venv/bin),
+# then its package manager's environment (poetry, pipenv, Yarn PnP,
+# bundler), then PATH. disabled_file_checks turns any check off by name.
+# Whole-project checks (typecheck, the full test suite) are run-checks.sh's
+# job, run with /code-review.
 
-file_checks:
-  - name: eslint
-    ext: [js, jsx, ts, tsx, mjs, cjs, mts, cts]
-    signal_files: [eslint.config.js, eslint.config.mjs, eslint.config.cjs, eslint.config.ts, eslint.config.mts, eslint.config.cts, .eslintrc.js, .eslintrc.cjs, .eslintrc.json, .eslintrc.yml, .eslintrc.yaml, .eslintrc]
-    bin: eslint
-    cmd: "{bin} {files}"
-  # --no-errors-on-unmatched: files biome.json ignores are otherwise an error.
-  - name: biome
-    ext: [js, jsx, ts, tsx, json, jsonc, css]
-    signal_files: [biome.json, biome.jsonc]
-    bin: biome
-    cmd: "{bin} check --no-errors-on-unmatched {files}"
-  - name: stylelint
-    ext: [css, scss]
-    signal_files: [stylelint.config.js, stylelint.config.mjs, stylelint.config.cjs, .stylelintrc, .stylelintrc.json, .stylelintrc.js, .stylelintrc.cjs, .stylelintrc.yml, .stylelintrc.yaml]
-    bin: stylelint
-    cmd: "{bin} --allow-empty-input {files}"
-  # Test runners also need the signal directory's package.json test script to
-  # name them: a vitest.config that only drives Storybook's browser suite
-  # beside a jest test script must not boot Chromium on every edit. CI=1 and
-  # --ci: outside CI both store new snapshots, inline ones in the test file.
-  - name: vitest
-    ext: [js, jsx, ts, tsx, mjs, cjs, mts, cts]
-    signal_files: [package.json]
-    test_script: vitest
-    bin: vitest
-    cmd: "env CI=1 {bin} related --run --passWithNoTests {files}"
-  - name: jest
-    ext: [js, jsx, ts, tsx, mjs, cjs, mts, cts]
-    signal_files: [package.json]
-    test_script: jest
-    bin: jest
-    cmd: "{bin} --ci --findRelatedTests --passWithNoTests {files}"
-  # --no-fix: a project's `fix = true` would otherwise rewrite the files.
-  - name: ruff
-    ext: [py]
-    signal_files: [ruff.toml, .ruff.toml]
-    signal_toml: "pyproject.toml .tool.ruff"
-    bin: ruff
-    cmd: "{bin} check --no-fix --force-exclude {files}"
-  # Type checkers are local_only: one from PATH can't see the project's
-  # packages and fails every import. mypy checks a file named on its command
-  # line even when its exclude covers it, so exclude_toml drops those first.
-  - name: mypy
-    ext: [py]
-    signal_files: [mypy.ini, .mypy.ini]
-    signal_toml: "pyproject.toml .tool.mypy"
-    exclude_toml: "pyproject.toml .tool.mypy.exclude"
-    local_only: true
-    bin: mypy
-    cmd: "{bin} {files}"
-  - name: pyright
-    ext: [py]
-    signal_files: [pyrightconfig.json]
-    signal_toml: "pyproject.toml .tool.pyright"
-    local_only: true
-    bin: pyright
-    cmd: "{bin} {files}"
-  # Runs from the Go module (go.mod), where packages load, and needs a
-  # .golangci config there or above; golangci-lint finds it by walking up.
-  # --fix=false: as ruff's --no-fix, against a config's issues.fix.
-  - name: golangci-lint
-    ext: [go]
-    signal_files: [go.mod]
-    needs_files: [.golangci.yml, .golangci.yaml, .golangci.toml, .golangci.json]
-    bin: golangci-lint
-    cmd: "{bin} run --fix=false {dirs}"
-  - name: go-vet
-    ext: [go]
-    signal_files: [go.mod]
-    bin: go
-    cmd: "{bin} vet {dirs}"
-  - name: rubocop
-    ext: [rb]
-    signal_files: [.rubocop.yml]
-    bin: rubocop
-    cmd: "{bin} --force-exclusion {files}"
-  - name: markdownlint
-    ext: [md]
-    signal_files: [.markdownlint-cli2.jsonc, .markdownlint-cli2.yaml, .markdownlint-cli2.cjs, .markdownlint-cli2.mjs, .markdownlint.json, .markdownlint.jsonc, .markdownlint.yaml, .markdownlint.yml]
-    bin: markdownlint-cli2
-    # Its arguments are globs (":" marks a literal path); --no-globs drops the config's own.
-    cmd: "{bin} --no-globs :{files}"
-  - name: yamllint
-    ext: [yml, yaml]
-    signal_files: [.yamllint, .yamllint.yml, .yamllint.yaml]
-    bin: yamllint
-    cmd: "{bin} {files}"
-  - name: tofu-fmt
-    ext: [tf, tfvars]
-    signal_files: [.terraform.lock.hcl]
-    bin: tofu
-    cmd: "{bin} fmt -check {files}"
-  - name: shellcheck
-    ext: [sh, bash]
-    signal_files: [.shellcheckrc]
-    bin: shellcheck
-    cmd: "{bin} -x {files}"
+file_checks: []
 
 disabled_file_checks: []
 

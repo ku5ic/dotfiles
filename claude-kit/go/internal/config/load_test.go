@@ -36,7 +36,6 @@ func TestRealKitYMLLoadsCleanly(t *testing.T) {
 		"orchestrators":      len(cfg.Orchestrators),
 		"tools":              len(cfg.Tools),
 		"formatters":         len(cfg.Formatters),
-		"file_checks":        len(cfg.FileChecks),
 		"stacks":             len(cfg.Stacks),
 	}
 	for name, n := range lists {

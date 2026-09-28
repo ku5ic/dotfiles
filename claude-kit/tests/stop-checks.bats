@@ -147,50 +147,41 @@ EOF
   [ "$(cat "$CALLS")" = "$REPO|--check $REPO/R&D/a.ts" ]
 }
 
-# test_script: only the runner the package.json test script names runs.
-use_test_script() {
-  cat >"$FAKE_HOME/.claude/kit.yml" <<'EOF'
-file_checks:
-  - name: fakelint
-    ext: [ts]
-    signal_files: [package.json]
-    test_script: fakelint
-    bin: fakelint
-    cmd: "{bin} {files}"
-EOF
+# Built-in test runners: claimed by the declared dependency; with both jest
+# and vitest declared, the package.json test script picks.
+
+# runner <name>: a recording stub for a built-in tool in node_modules/.bin.
+runner() {
+  printf '#!/usr/bin/env bash\necho "$PWD|%s $*" >>"%s"\n' "$1" "$CALLS" >"$REPO/node_modules/.bin/$1"
+  chmod +x "$REPO/node_modules/.bin/$1"
 }
 
-@test "test_script runs the check when the test script names the runner" {
-  use_test_script
-  printf '{"scripts":{"test":"NODE_ENV=test fakelint --ci"}}\n' >"$REPO/package.json"
-  turn Edit "$REPO/a.ts"
-  run stop
-  [ -e "$CALLS" ]
-}
-
-@test "test_script skips the check when the test script names another runner" {
-  use_test_script
-  printf '{"scripts":{"test":"notfakelint","storybook":"fakelint"}}\n' >"$REPO/package.json"
+@test "a declared test runner runs the edited file's related tests" {
+  runner vitest
+  printf '{"devDependencies":{"vitest":"^4"},"scripts":{"test":"vitest run"}}\n' >"$REPO/package.json"
   turn Edit "$REPO/a.ts"
   run stop
   [ "$status" -eq 0 ]
-  [ ! -e "$CALLS" ]
+  grep -qx "$REPO|vitest related --run --passWithNoTests $REPO/a.ts" "$CALLS"
 }
 
-@test "a malformed package.json skips its test_script check, not the others" {
-  cat >>"$FAKE_HOME/.claude/kit.yml" <<'EOF'
-  - name: faketest
-    ext: [ts]
-    signal_files: [package.json]
-    test_script: faketest
-    bin: fakelint
-    cmd: "{bin} test {files}"
-EOF
-  printf '{"scripts": {"test": "faketest",}}\n' >"$REPO/package.json"
-  touch "$REPO/fail"
+@test "with jest and vitest both declared, the test script picks the runner" {
+  runner vitest
+  runner jest
+  printf '{"devDependencies":{"vitest":"^4","jest":"^30"},"scripts":{"test":"NODE_ENV=test jest","storybook":"vitest"}}\n' >"$REPO/package.json"
   turn Edit "$REPO/a.ts"
   run stop
-  [ "$status" -eq 2 ]
+  [ "$status" -eq 0 ]
+  grep -qx "$REPO|jest --ci --findRelatedTests --passWithNoTests $REPO/a.ts" "$CALLS"
+  ! grep -q '|vitest ' "$CALLS"
+}
+
+@test "a malformed package.json drops the test runners, not the other checks" {
+  runner jest
+  printf '{"devDependencies": {"jest": "^30",}}\n' >"$REPO/package.json"
+  turn Edit "$REPO/a.ts"
+  run stop
+  [ "$status" -eq 0 ]
   [ "$(cat "$CALLS")" = "$REPO|--check $REPO/a.ts" ]
 }
 
@@ -232,25 +223,16 @@ EOF
   [ "$(cat "$CALLS")" = "$REPO|$REPO/packages/foo/c.ts" ]
 }
 
-# bin_lookups: fakepm stands in for a package manager on PATH. `fakepm venv`
-# prints $REPO/env; `fakepm has <bin>` succeeds unless $REPO/nopm exists;
-# `fakepm run <bin> ...` records the call like fakelint does.
-use_bin_lookups() {
-  cat >>"$FAKE_HOME/.claude/kit.yml" <<'EOF'
-bin_lookups:
-  - name: venvpm
-    signal_files: [venv.lock]
-    venv_cmd: "fakepm venv"
-  - name: execpm
-    signal_files: [exec.lock]
-    probe: "fakepm has {bin}"
-    run: "fakepm run {bin}"
-EOF
+# Package-manager environments: fake poetry and yarn on PATH stand in for
+# the real ones. `poetry env info -p` prints $REPO/env; `yarn bin <name>`
+# succeeds unless $REPO/nopm exists, and `yarn run <name> ...` records.
+use_pms() {
   PM_DIR="$BATS_TEST_TMPDIR/pm"
   mkdir -p "$PM_DIR"
-  printf '#!/usr/bin/env bash\ncase "$1" in\nvenv) echo "%s/env" ;;\nhas) [[ ! -e "%s/nopm" ]] ;;\nrun) echo "$PWD|pm $*" >>"%s" ;;\nesac\n' \
-    "$REPO" "$REPO" "$CALLS" >"$PM_DIR/fakepm"
-  chmod +x "$PM_DIR/fakepm"
+  printf '#!/usr/bin/env bash\n[[ "$*" == "env info -p" ]] && echo "%s/env"\n' "$REPO" >"$PM_DIR/poetry"
+  printf '#!/usr/bin/env bash\ncase "$1" in\nbin) [[ ! -e "%s/nopm" ]] ;;\nrun) shift; echo "$PWD|yarn run $*" >>"%s" ;;\nesac\n' \
+    "$REPO" "$CALLS" >"$PM_DIR/yarn"
+  chmod +x "$PM_DIR/poetry" "$PM_DIR/yarn"
   rm "$REPO/node_modules/.bin/fakelint"
 }
 
@@ -258,9 +240,9 @@ pm_stop() {
   PATH="$PM_DIR:$PATH" stop
 }
 
-@test "venv_cmd runs the bin from the environment the manager reports" {
-  use_bin_lookups
-  touch "$REPO/venv.lock"
+@test "a poetry project runs the bin from the environment poetry reports" {
+  use_pms
+  touch "$REPO/poetry.lock"
   mkdir -p "$REPO/env/bin"
   printf '#!/usr/bin/env bash\necho "$PWD|venv $*" >>"%s"\n' "$CALLS" >"$REPO/env/bin/fakelint"
   chmod +x "$REPO/env/bin/fakelint"
@@ -270,18 +252,18 @@ pm_stop() {
   [ "$(cat "$CALLS")" = "$REPO|venv --check $REPO/a.ts" ]
 }
 
-@test "probe/run wraps the bin in the manager's run command" {
-  use_bin_lookups
-  touch "$REPO/exec.lock"
+@test "a Yarn PnP project wraps the bin in yarn run" {
+  use_pms
+  touch "$REPO/.pnp.cjs"
   turn Edit "$REPO/a.ts"
   run pm_stop
   [ "$status" -eq 0 ]
-  [ "$(cat "$CALLS")" = "$REPO|pm run fakelint --check $REPO/a.ts" ]
+  [ "$(cat "$CALLS")" = "$REPO|yarn run fakelint --check $REPO/a.ts" ]
 }
 
-@test "a failing probe falls through to a skip" {
-  use_bin_lookups
-  touch "$REPO/exec.lock" "$REPO/nopm"
+@test "a package manager without the bin falls through to a skip" {
+  use_pms
+  touch "$REPO/.pnp.cjs" "$REPO/nopm"
   turn Edit "$REPO/a.ts"
   run pm_stop
   [ "$status" -eq 0 ]
@@ -289,9 +271,9 @@ pm_stop() {
   [ ! -e "$CALLS" ]
 }
 
-@test "a project-local bin wins over a lookup" {
-  use_bin_lookups
-  touch "$REPO/exec.lock"
+@test "a project-local bin wins over a package-manager environment" {
+  use_pms
+  touch "$REPO/.pnp.cjs"
   printf '#!/usr/bin/env bash\necho "$PWD|local $*" >>"%s"\n' "$CALLS" >"$REPO/node_modules/.bin/fakelint"
   chmod +x "$REPO/node_modules/.bin/fakelint"
   turn Edit "$REPO/a.ts"
@@ -313,17 +295,19 @@ one_check() {
     "$1" >"$FAKE_HOME/.claude/kit.yml"
 }
 
-@test "needs_files: runs from the signal dir only when a needed file is at or above it" {
-  one_check '    needs_files: [.needed]'
-  mkdir -p "$REPO/mod"
-  touch "$REPO/mod/.fakelintrc"
-  echo x >"$REPO/mod/c.ts"
-  turn Edit "$REPO/mod/c.ts"
-  run stop
+@test "golangci-lint runs from the Go module, only with a .golangci config at or above it" {
+  printf 'disabled_file_checks: [go-vet]\n' >"$FAKE_HOME/.claude/kit.yml"
+  mkdir -p "$REPO/mod/pkg" "$BATS_TEST_TMPDIR/path"
+  printf 'module example.com/m\n' >"$REPO/mod/go.mod"
+  echo 'package pkg' >"$REPO/mod/pkg/c.go"
+  printf '#!/usr/bin/env bash\necho "$PWD|golangci-lint $*" >>"%s"\n' "$CALLS" >"$BATS_TEST_TMPDIR/path/golangci-lint"
+  chmod +x "$BATS_TEST_TMPDIR/path/golangci-lint"
+  turn Edit "$REPO/mod/pkg/c.go"
+  PATH="$BATS_TEST_TMPDIR/path:$PATH" run stop
   [ ! -e "$CALLS" ]
-  touch "$REPO/.needed"
-  run stop
-  [ "$(cat "$CALLS")" = "$REPO/mod|$REPO/mod/c.ts" ]
+  touch "$REPO/.golangci.yml"
+  PATH="$BATS_TEST_TMPDIR/path:$PATH" run stop
+  [ "$(cat "$CALLS")" = "$REPO/mod|golangci-lint run --fix=false ./pkg" ]
 }
 
 @test "exclude_toml drops files matching the project's exclude regexes" {

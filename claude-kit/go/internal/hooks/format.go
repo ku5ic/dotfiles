@@ -12,6 +12,7 @@ import (
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/extract"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/hook"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/project"
+	"github.com/ku5ic/dotfiles/claude-kit/go/internal/tools"
 )
 
 // FormatDispatch formats an edited file with the project's own formatter
@@ -50,14 +51,14 @@ func FormatDispatch(h *hook.Hook) error {
 
 	type hit struct {
 		fmt config.Formatter
-		bin string
+		bin []string // the words that run it, nil when not installed
 	}
 	var hits []hit
 	for _, f := range cfg.Formatters {
 		if slices.Contains(cfg.DisabledFormatters, f.Name) || !slices.Contains(f.Ext, ext) {
 			continue
 		}
-		bin := project.ResolveBin(dir, root, f.Bin)
+		bin := tools.Resolve(dir, root, f.Bin, false)
 		if hasSignal(f, bin, dir, root, path) {
 			hits = append(hits, hit{f, bin})
 		}
@@ -70,13 +71,17 @@ func FormatDispatch(h *hook.Hook) error {
 			names = append(names, h.fmt.Name)
 		}
 		fmt.Fprintf(h.Stderr, "format-dispatch: left %s unformatted; %s are all configured for it here\n", base, strings.Join(names, " "))
-	case len(hits) == 1 && hits[0].bin == "":
+	case len(hits) == 1 && hits[0].bin == nil:
 		fmt.Fprintf(h.Stderr, "format-dispatch: %s is configured here but not installed; %s left unformatted\n", hits[0].fmt.Name, base)
 	case len(hits) == 1:
-		// Word by word, so a path with spaces stays one argument.
+		// Word by word, so a path with spaces stays one argument; {bin} can
+		// be several words (yarn run prettier under Yarn PnP).
 		var parts []string
 		for _, word := range strings.Fields(hits[0].fmt.Cmd) {
-			word = strings.ReplaceAll(word, "{bin}", hits[0].bin)
+			if word == "{bin}" {
+				parts = append(parts, hits[0].bin...)
+				continue
+			}
 			parts = append(parts, strings.ReplaceAll(word, "{file}", path))
 		}
 		cmd := exec.Command(parts[0], parts[1:]...)
@@ -98,7 +103,7 @@ func FormatDispatch(h *hook.Hook) error {
 // file by name or a TOML table walking up from dir to root, or Prettier's
 // own config lookup, accepted only when what it finds is inside root (it
 // also finds a ~/.prettierrc, and every repo would get Prettier).
-func hasSignal(f config.Formatter, bin, dir, root, path string) bool {
+func hasSignal(f config.Formatter, bin []string, dir, root, path string) bool {
 	if len(f.SignalFiles) > 0 && project.FindUp(dir, root, f.SignalFiles...) != "" {
 		return true
 	}
@@ -108,8 +113,8 @@ func hasSignal(f config.Formatter, bin, dir, root, path string) bool {
 			return true
 		}
 	}
-	if f.SignalPrettier && bin != "" {
-		cmd := exec.Command(bin, "--find-config-path", path)
+	if f.SignalPrettier && bin != nil {
+		cmd := exec.Command(bin[0], append(bin[1:], "--find-config-path", path)...)
 		cmd.Dir = dir
 		out, err := cmd.Output()
 		found := strings.TrimSpace(string(out))

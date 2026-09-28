@@ -25,7 +25,6 @@ type Config struct {
 	SubprojectMaxDepth int                 `yaml:"subproject_max_depth"`
 	Formatters         []Formatter         `yaml:"formatters"`
 	DisabledFormatters []string            `yaml:"disabled_formatters"`
-	BinLookups         []BinLookup         `yaml:"bin_lookups"`
 	FileChecks         []FileCheck         `yaml:"file_checks"`
 	DisabledFileChecks []string            `yaml:"disabled_file_checks"`
 	Tools              []string            `yaml:"tools"`
@@ -153,21 +152,13 @@ type Formatter struct {
 	Cmd            string   `yaml:"cmd"`
 }
 
-type BinLookup struct {
-	Name        string   `yaml:"name"`
-	SignalFiles []string `yaml:"signal_files"`
-	VenvCmd     string   `yaml:"venv_cmd"`
-	Probe       string   `yaml:"probe"`
-	Run         string   `yaml:"run"`
-}
-
+// FileCheck is a user-defined file-scoped check (kit.yml file_checks); the
+// built-in ones are go/internal/tools adapters.
 type FileCheck struct {
 	Name        string   `yaml:"name"`
 	Ext         []string `yaml:"ext"`
 	SignalFiles []string `yaml:"signal_files"`
 	SignalTOML  string   `yaml:"signal_toml"`
-	TestScript  string   `yaml:"test_script"`
-	NeedsFiles  []string `yaml:"needs_files"`
 	ExcludeTOML string   `yaml:"exclude_toml"`
 	LocalOnly   bool     `yaml:"local_only"`
 	Bin         string   `yaml:"bin"`

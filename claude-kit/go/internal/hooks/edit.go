@@ -168,7 +168,10 @@ func GuardSkills(h *hook.Hook) error {
 	if len(missing) == 0 {
 		return nil
 	}
-	return &hook.Blocked{Reason: "This edit touches " + path + ". Load the following skills via the Skill tool first, then retry the edit: " + strings.Join(missing, ", ")}
+	return &hook.Blocked{
+		Reason: "This edit touches " + path + ". Load the following skills via the Skill tool first, then retry the edit: " + strings.Join(missing, ", "),
+		Rule:   "skills-gate",
+	}
 }
 
 // loadedSkills streams skills.jsonl once for session's skill_file values,

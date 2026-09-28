@@ -1,7 +1,6 @@
 package project
 
 import (
-	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -23,26 +22,6 @@ func ResolvePackageManager(cfg *config.Config, dir string) string {
 		}
 	}
 	return ""
-}
-
-// ResolveBin is the nearest project-local copy of name (node_modules/.bin,
-// .venv/bin, or venv/bin, from dir up to root), else PATH's, else "". Never
-// npx, pnpm dlx, or uv run: those can install packages.
-func ResolveBin(dir, root, name string) string {
-	for _, sub := range []string{"node_modules/.bin", ".venv/bin", "venv/bin"} {
-		if found := FindUp(dir, root, filepath.Join(sub, name)); found != "" && isExecutable(found) {
-			return found
-		}
-	}
-	if path, err := exec.LookPath(name); err == nil {
-		return path
-	}
-	return ""
-}
-
-func isExecutable(path string) bool {
-	info, err := os.Stat(path)
-	return err == nil && !info.IsDir() && info.Mode()&0o111 != 0
 }
 
 // ToolchainCmd resolves toolchain_checks entry tc for dir: the command with
