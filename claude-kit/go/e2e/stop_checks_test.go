@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"syscall"
 	"testing"
+	"time"
 )
 
 // stopChecksEnv is one stop-checks test's fixture. kit.yml has one file
@@ -567,5 +570,43 @@ func TestStopChecks(t *testing.T) {
 		e.turn("Edit", e.path("a.ts"))
 		e.stop(false).Want(t, 0)
 		e.noCalls()
+	})
+
+	t.Run("a hung check times out as a skip, its children killed with it", func(t *testing.T) {
+		e := stopChecksSetup(t)
+		e.k.KitYML(stopChecksKitYML + "check_timeout: 1\n")
+		pid := filepath.Join(e.tmp, "child.pid")
+		e.bin("fakelint", fmt.Sprintf("sleep 30 &\necho $! >%q\nwait\n", pid))
+		e.turn("Edit", e.path("a.ts"))
+		start := time.Now()
+		r := e.stop(false)
+		r.Want(t, 0)
+		r.Has(t, "SKIP fakelint (1 file) (timed out after 1s)")
+		if took := time.Since(start); took > 10*time.Second {
+			t.Errorf("stop took %s", took)
+		}
+		child, err := strconv.Atoi(strings.TrimSpace(Read(t, pid)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if syscall.Kill(child, 0) == nil {
+			syscall.Kill(child, syscall.SIGKILL)
+			t.Error("the check's child process outlived the timeout")
+		}
+	})
+
+	t.Run("checks run in parallel", func(t *testing.T) {
+		e := stopChecksSetup(t)
+		e.k.KitYML(stopChecksKitYML + "  - name: slowlint\n    ext: [ts]\n    signal_files: [.fakelintrc]\n    bin: slowlint\n    cmd: \"{bin} {files}\"\n")
+		for _, name := range []string{"fakelint", "slowlint"} {
+			e.bin(name, "sleep 2\n")
+		}
+		e.turn("Edit", e.path("a.ts"))
+		start := time.Now()
+		r := e.stop(false)
+		r.Has(t, "PASS fakelint (1 file)", "PASS slowlint (1 file)")
+		if took := time.Since(start); took > 3500*time.Millisecond {
+			t.Errorf("two 2 s checks took %s", took)
+		}
 	})
 }

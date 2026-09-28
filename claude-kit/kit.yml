@@ -388,6 +388,10 @@ file_checks: []
 
 disabled_file_checks: []
 
+# The checks run in parallel, each killed after this many seconds and
+# reported as a SKIP, never a block. The Stop hook itself allows 300.
+check_timeout: 90
+
 # The CLIs rules/tooling.md steers toward. <tooling> reports which of them
 # are on PATH as available: and missing: lines, so a rule never sends Claude
 # to a binary this machine lacks.

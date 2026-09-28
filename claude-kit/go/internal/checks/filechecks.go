@@ -3,6 +3,8 @@ package checks
 import (
 	"bufio"
 	"bytes"
+	"cmp"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -10,6 +12,9 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"sync"
+	"syscall"
+	"time"
 
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/config"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/project"
@@ -166,21 +171,32 @@ func FileChecks(cfg *config.Config, root, base string, edited []string) (report,
 	if len(groups) == 0 {
 		return "", "", "", false, false
 	}
+	timeout := time.Duration(cmp.Or(cfg.CheckTimeout, 90)) * time.Second
+	results := make([]result, len(groups))
+	var wg sync.WaitGroup
+	for i, g := range groups {
+		if g.Skip == "" {
+			wg.Go(func() { results[i] = runGroup(g, timeout) })
+		}
+	}
+	wg.Wait()
+
 	var rep, fails strings.Builder
 	pass, fail, skip := 0, 0, 0
 	var changed map[string]map[int]bool
 	changedKnown := false
-	for _, g := range groups {
-		label, words := g.label, g.Words
+	for i, g := range groups {
+		label, res := g.label, &results[i]
+		if g.Skip == "" && res.timedOut {
+			g.Skip = fmt.Sprintf("timed out after %s", timeout)
+		}
 		if g.Skip != "" {
 			fmt.Fprintf(&rep, "SKIP %s (%s)\n", label, g.Skip)
 			skip++
 			continue
 		}
-		var out bytes.Buffer
-		cmd := exec.Command(words[0], words[1:]...)
-		cmd.Dir, cmd.Stdout, cmd.Stderr = g.Dir, &out, &out
-		if cmd.Run() == nil {
+		out := &res.out
+		if res.err == nil {
 			fmt.Fprintf(&rep, "PASS %s\n", label)
 			pass++
 			continue
@@ -210,6 +226,29 @@ func FileChecks(cfg *config.Config, root, base string, edited []string) (report,
 		fail++
 	}
 	return rep.String(), fails.String(), fmt.Sprintf("checks: %d passed, %d failed, %d skipped", pass, fail, skip), fail > 0, true
+}
+
+type result struct {
+	out      bytes.Buffer
+	err      error
+	timedOut bool
+}
+
+// runGroup runs one check in its own process group, so a timeout kills the
+// workers a test runner spawned too, not only the runner.
+func runGroup(g *Group, timeout time.Duration) result {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	var res result
+	cmd := exec.CommandContext(ctx, g.Words[0], g.Words[1:]...)
+	cmd.Dir, cmd.Stdout, cmd.Stderr = g.Dir, &res.out, &res.out
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	cmd.Cancel = func() error { return syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL) }
+	// A killed group's orphans could hold the output pipe open.
+	cmd.WaitDelay = 2 * time.Second
+	res.err = cmd.Run()
+	res.timedOut = ctx.Err() != nil
+	return res
 }
 
 // newFindings splits a failed check's parsed findings into those on lines

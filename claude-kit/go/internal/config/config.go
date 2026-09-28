@@ -27,6 +27,7 @@ type Config struct {
 	DisabledFormatters []string            `yaml:"disabled_formatters"`
 	FileChecks         []FileCheck         `yaml:"file_checks"`
 	DisabledFileChecks []string            `yaml:"disabled_file_checks"`
+	CheckTimeout       int                 `yaml:"check_timeout"`
 	Tools              []string            `yaml:"tools"`
 	Orchestrators      []Orchestrator      `yaml:"orchestrators"`
 	Versions           map[string][]string `yaml:"versions"`
