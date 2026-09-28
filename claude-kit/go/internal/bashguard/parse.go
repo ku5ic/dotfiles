@@ -27,7 +27,7 @@ type Redir struct {
 
 // Call is one simple command of a pipeline.
 type Call struct {
-	Assigns int // leading VAR=value words
+	Assigns []string // leading VAR=value words, the value's quotes removed
 	Words   []Word
 	Redirs  []Redir
 	// Heredocs are the raw bodies of this command's here-documents.
@@ -187,7 +187,17 @@ func (c *collector) stmt(src string, s *syntax.Stmt) {
 		for _, r := range p.Redirs {
 			c.inner(src, r.Word)
 		}
-		cl := Call{Assigns: len(call.Assigns)}
+		cl := Call{}
+		for _, a := range call.Assigns {
+			if a.Name == nil {
+				continue
+			}
+			value := ""
+			if a.Value != nil {
+				value = wordValue(src, a.Value)
+			}
+			cl.Assigns = append(cl.Assigns, a.Name.Value+"="+value)
+		}
 		if len(call.Args) > 0 {
 			cl.start = int(call.Args[0].Pos().Offset())
 		} else {

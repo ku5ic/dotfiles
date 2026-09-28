@@ -165,9 +165,17 @@ func stop(cfg *config.Config, cwd string, files []string, w, stderr io.Writer) i
 		}
 		if g.Skip != "" {
 			fmt.Fprintf(w, "  skip     %s\n", g.Skip)
-		} else {
-			fmt.Fprintf(w, "  command  %s\n", strings.Join(g.Words, " "))
+			continue
 		}
+		if g.Derived.Source != "" {
+			carried := append(append([]string{}, g.Derived.Env...), g.Derived.Flags...)
+			what := "no flags on the carry list"
+			if len(carried) > 0 {
+				what = "carries " + strings.Join(carried, " ")
+			}
+			fmt.Fprintf(w, "  from     %s (%s)\n", g.Derived.Source, what)
+		}
+		fmt.Fprintf(w, "  command  %s\n", strings.Join(g.Words, " "))
 	}
 	for _, f := range files {
 		abs := f

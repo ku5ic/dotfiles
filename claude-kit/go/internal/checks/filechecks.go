@@ -91,6 +91,9 @@ type Group struct {
 	Adapter tools.Adapter
 	Dir     string
 	Why     string
+	// Derived is what the project's own invocation adds (Source says where
+	// it came from); zero when none was found.
+	Derived tools.Derived
 	Files   []string
 	Words   []string
 	Skip    string
@@ -153,7 +156,8 @@ func Plan(cfg *config.Config, root, base string, edited []string) []*Group {
 			g.Skip = g.Adapter.Bin + " " + where
 			continue
 		}
-		g.Words = expand(g.Adapter.Cmd, bin, g.Files, g.Dir)
+		g.Derived, _ = g.Adapter.Derive(g.Dir, root)
+		g.Words = expand(g.Adapter.Cmd, bin, g.Files, g.Dir, g.Derived)
 	}
 	return groups
 }
@@ -228,10 +232,33 @@ func isFile(path string) bool {
 
 // expand fills a check's cmd word by word: {bin} (a whole word) becomes the
 // resolved run words, a word holding {files} repeats once per file, and a
-// word holding {dirs} once per file directory as ./<relative to dir>.
-func expand(cmd string, bin, files []string, dir string) []string {
+// word holding {dirs} once per file directory as ./<relative to dir>. The
+// project's derived env goes first (through env), and its derived flags
+// just before the files, skipping any the template already passes.
+func expand(cmd string, bin, files []string, dir string, derived tools.Derived) []string {
 	var parts []string
-	for _, word := range strings.Fields(cmd) {
+	if len(derived.Env) > 0 {
+		parts = append([]string{"env"}, derived.Env...)
+	}
+	template := strings.Fields(cmd)
+	flagsAdded := false
+	addFlags := func() {
+		if flagsAdded {
+			return
+		}
+		flagsAdded = true
+		for i := 0; i < len(derived.Flags); i++ {
+			if slices.Contains(template, derived.Flags[i]) {
+				continue
+			}
+			parts = append(parts, derived.Flags[i])
+		}
+	}
+	for _, word := range template {
+		switch {
+		case strings.Contains(word, "{files}") || strings.Contains(word, "{dirs}"):
+			addFlags()
+		}
 		switch {
 		case strings.Contains(word, "{files}"):
 			for _, f := range files {
@@ -257,5 +284,6 @@ func expand(cmd string, bin, files []string, dir string) []string {
 			parts = append(parts, word)
 		}
 	}
+	addFlags()
 	return parts
 }

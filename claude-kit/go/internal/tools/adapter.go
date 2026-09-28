@@ -49,6 +49,13 @@ type Adapter struct {
 	// packages.
 	LocalOnly bool
 	Builtin   bool
+
+	// Derivation from the project's own scripts (Derive): the subcommand
+	// the project's invocation must use (ruff check, golangci-lint run), and
+	// the flags carried into the file-scoped command, each mapped to
+	// whether it takes a separate value.
+	Sub   []string
+	Carry map[string]bool
 }
 
 // Claim is why an adapter claims a file: the directory it runs from and

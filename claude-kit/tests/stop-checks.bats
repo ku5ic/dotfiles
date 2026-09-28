@@ -176,6 +176,16 @@ runner() {
   ! grep -q '|vitest ' "$CALLS"
 }
 
+@test "the project's own test script carries its env and allow-listed flags" {
+  printf '#!/usr/bin/env bash\necho "$PWD|NODE_ENV=$NODE_ENV jest $*" >>"%s"\n' "$CALLS" >"$REPO/node_modules/.bin/jest"
+  chmod +x "$REPO/node_modules/.bin/jest"
+  printf '{"devDependencies":{"jest":"^30"},"scripts":{"test":"NODE_ENV=test jest --maxWorkers 2 --coverage src"}}\n' >"$REPO/package.json"
+  turn Edit "$REPO/a.ts"
+  run stop
+  [ "$status" -eq 0 ]
+  grep -qx "$REPO|NODE_ENV=test jest --ci --findRelatedTests --passWithNoTests --maxWorkers 2 $REPO/a.ts" "$CALLS"
+}
+
 @test "a malformed package.json drops the test runners, not the other checks" {
   runner jest
   printf '{"devDependencies": {"jest": "^30",}}\n' >"$REPO/package.json"
