@@ -1,6 +1,11 @@
 // Package config loads kit.yml and the user's overlay into one typed Config.
 package config
 
+import (
+	"os"
+	"path/filepath"
+)
+
 // Config mirrors kit.yml. Every key kit.yml may hold is a field here, so a
 // strict decode reports an unknown or misspelled key instead of dropping it.
 type Config struct {
@@ -28,6 +33,77 @@ type Config struct {
 	Versions           map[string][]string `yaml:"versions"`
 	VersionSources     map[string][]Source `yaml:"version_sources"`
 	Stacks             map[string]Stack    `yaml:"stacks"`
+
+	// Document order of the map-keyed sections, which a Go map loses:
+	// detection reports stacks, and versions, in the order kit.yml (then
+	// the overlay) lists them.
+	StackOrder   []string `yaml:"-"`
+	VersionOrder []string `yaml:"-"`
+	// Tag is "merged" when an overlay was merged in, else "base". Caches
+	// derived from the config carry it in their file name, so deleting the
+	// overlay can't leave its derived state in use.
+	Tag string `yaml:"-"`
+}
+
+// AnchorSentinels are the sentinels marked anchor: true, in stack order:
+// the files that make a directory a project root or a subproject.
+func (c *Config) AnchorSentinels() []string {
+	var out []string
+	for _, name := range c.StackOrder {
+		for _, s := range c.Stacks[name].Sentinels {
+			if s.Anchor {
+				out = append(out, s.Name)
+			}
+		}
+	}
+	return out
+}
+
+// DetectFiles are the files whose change can change detection: every
+// sentinel, every extra's file and grep target, and every lockfile, deduped
+// in first-seen order.
+func (c *Config) DetectFiles() []string {
+	seen := map[string]bool{}
+	var out []string
+	add := func(name string) {
+		if name != "" && !seen[name] {
+			seen[name] = true
+			out = append(out, name)
+		}
+	}
+	for _, name := range c.StackOrder {
+		for _, s := range c.Stacks[name].Sentinels {
+			add(s.Name)
+		}
+	}
+	for _, name := range c.StackOrder {
+		for _, e := range c.Stacks[name].Extras {
+			add(e.File)
+			for _, f := range e.In {
+				add(f)
+			}
+			for _, r := range e.AnyOf {
+				add(r.File)
+				for _, f := range r.In {
+					add(f)
+				}
+			}
+		}
+	}
+	for _, pm := range c.PackageManagers {
+		add(pm.Lockfile)
+	}
+	return out
+}
+
+// HasStack is true when dir holds a sentinel of stack.
+func (c *Config) HasStack(dir, stack string) bool {
+	for _, s := range c.Stacks[stack].Sentinels {
+		if info, err := os.Stat(filepath.Join(dir, s.Name)); err == nil && info.Mode().IsRegular() {
+			return true
+		}
+	}
+	return false
 }
 
 type SkillFileRule struct {

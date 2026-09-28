@@ -18,6 +18,11 @@ type Paths struct {
 	Overlay string // Home/claude-kit.local.yml
 }
 
+func (p Paths) LogDir() string      { return filepath.Join(p.Home, "logs") }
+func (p Paths) CacheDir() string    { return filepath.Join(p.Home, "cache") }
+func (p Paths) ScratchHome() string { return filepath.Join(p.Home, "scratch") }
+func (p Paths) PlansHome() string   { return filepath.Join(p.Home, "plans") }
+
 // ResolvePaths reads the environment. exe is the running binary's path,
 // used only when CLAUDE_PLUGIN_ROOT is unset.
 func ResolvePaths(exe string) (Paths, error) {
@@ -66,6 +71,7 @@ func Load(p Paths) (*Config, []Warning, error) {
 	warnings := validate(p.Base)
 
 	merged := base
+	tag := "base"
 	overlay, err := readNode(p.Overlay)
 	switch {
 	case errors.Is(err, os.ErrNotExist):
@@ -74,6 +80,7 @@ func Load(p Paths) (*Config, []Warning, error) {
 	default:
 		warnings = append(warnings, validate(p.Overlay)...)
 		mergeNode(merged, overlay)
+		tag = "merged"
 	}
 
 	var cfg Config
@@ -81,7 +88,21 @@ func Load(p Paths) (*Config, []Warning, error) {
 		return nil, warnings, fmt.Errorf("decode %s: %w", p.Base, err)
 	}
 	applyDefaults(&cfg)
+	cfg.StackOrder = mappingKeys(mappingValue(merged, "stacks"))
+	cfg.VersionOrder = mappingKeys(mappingValue(merged, "versions"))
+	cfg.Tag = tag
 	return &cfg, warnings, nil
+}
+
+func mappingKeys(m *yaml.Node) []string {
+	if m == nil || m.Kind != yaml.MappingNode {
+		return nil
+	}
+	keys := make([]string, 0, len(m.Content)/2)
+	for i := 0; i+1 < len(m.Content); i += 2 {
+		keys = append(keys, m.Content[i].Value)
+	}
+	return keys
 }
 
 // Merged returns the effective merged document, for `kit config`.

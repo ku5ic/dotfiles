@@ -183,12 +183,8 @@ func Subprojects(cfg *config.Config, root string) []string {
 	var found []string
 
 	var pathspecs []string
-	for _, stack := range cfg.Stacks {
-		for _, s := range stack.Sentinels {
-			if s.Anchor {
-				pathspecs = append(pathspecs, ":(glob)**/"+s.Name)
-			}
-		}
+	for _, name := range cfg.AnchorSentinels() {
+		pathspecs = append(pathspecs, ":(glob)**/"+name)
 	}
 	if len(pathspecs) > 0 {
 		args := append([]string{"-C", root, "ls-files", "--"}, pathspecs...)
