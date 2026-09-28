@@ -40,6 +40,9 @@
 #       .mcp.json, which `claude mcp list` never shows. The tool segment is
 #       not validated at all; the CLI exposes no way to enumerate a server's
 #       tools.
+#   11. Plugin hooks.json parity: hooks/hooks.json matches settings.json.
+#   12. kit.yml schema: kit.yml and the overlay hold only keys the Go
+#       loader knows (`kit config --check`).
 #
 # Adding a credential pattern: add it to kit.yml's sensitive_paths AND to
 # settings.json's deny array.
@@ -596,6 +599,20 @@ if [[ "$expected_hooks" == "$(jq -S . "$HOOKS_JSON")" ]]; then
   echo "ok             hooks/hooks.json matches settings.json hooks"
 else
   echo "drift          hooks/hooks.json differs from settings.json hooks; regenerate it"
+  exit_code=1
+fi
+
+echo
+echo "== kit.yml schema =="
+
+# The bash loader drops a key it doesn't know; the Go loader decodes
+# strictly, so a misspelled key in kit.yml or the overlay shows up here.
+if schema_warnings="$("$SCRIPT_DIR/kit" config --check 2>&1)"; then
+  echo "ok             kit.yml and the overlay hold only known keys"
+elif [[ "$schema_warnings" == *"no binary for"* ]]; then
+  echo "skip           no kit binary for this platform (claude-kit/go/build.sh)"
+else
+  printf 'unknown-key    %s\n' "${schema_warnings//kit: warning: /}"
   exit_code=1
 fi
 
