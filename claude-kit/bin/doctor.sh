@@ -55,9 +55,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 SOURCE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # Dotfiles layout: personal settings, CLAUDE.md, and rules live beside the kit.
 PERSONAL_ROOT="$(cd "$SOURCE_ROOT/../claude" && pwd)"
-# shellcheck source=_lib.sh
-source "$SCRIPT_DIR/_lib.sh"
-TARGET_ROOT="$KIT_HOME"
+# Claude Code's config dir, relocatable with CLAUDE_CONFIG_DIR.
+TARGET_ROOT="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 
 ENTRIES=(settings.json CLAUDE.md hooks skills agents rules bin kit.yml claude-kit.local.yml)
 
@@ -72,9 +71,19 @@ exit_code=0
 
 # Every check below needs these; without them, stop here instead of reporting
 # a pile of downstream failures.
+# doctor's own checks read JSON and YAML; the kit itself needs neither.
 echo "== prerequisites =="
-if ! check_prereqs; then
-  echo "missing        $KIT_PREREQ_MISSING"
+missing=()
+if ((BASH_VERSINFO[0] < 4 || (BASH_VERSINFO[0] == 4 && BASH_VERSINFO[1] < 4))); then
+  missing+=("bash 4.4+ (found ${BASH_VERSION}; brew install bash, and put it first on PATH)")
+fi
+command -v jq >/dev/null 2>&1 || missing+=("jq (brew install jq)")
+yq --version 2>/dev/null | grep -q mikefarah || missing+=("mikefarah yq (brew install yq)")
+if ((${#missing[@]})); then
+  (
+    IFS=';'
+    echo "missing        ${missing[*]//;/; }"
+  )
   exit 1
 fi
 echo "ok             bash 4.4+, jq, and mikefarah yq present"
@@ -371,7 +380,7 @@ echo "== skills-log field parity =="
 # the log-skills hook passes the rest.
 LOG_SKILLS="$SOURCE_ROOT/go/internal/hooks/misc.go"
 LIB="$SOURCE_ROOT/go/internal/hook/hook.go"
-SKILLS_REPORT="$SOURCE_ROOT/bin/skills-report.sh"
+SKILLS_REPORT="$SOURCE_ROOT/go/internal/report/skills.go"
 field_parity_failed=0
 
 # Field subset of skills.jsonl that skills-report.sh consumes for
@@ -394,7 +403,7 @@ for field in "${skills_log_fields[@]}"; do
     field_parity_failed=1
   fi
   if [[ -f "$SKILLS_REPORT" ]] && ! grep -qE "\\b${field}\\b" "$SKILLS_REPORT"; then
-    echo "missing-field  skills-report.sh: '$field'"
+    echo "missing-field  the skills-report reader: '$field'"
     field_parity_failed=1
   fi
 done

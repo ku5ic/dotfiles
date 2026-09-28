@@ -11,12 +11,17 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
+	"github.com/ku5ic/dotfiles/claude-kit/go/internal/a11y"
+	"github.com/ku5ic/dotfiles/claude-kit/go/internal/blast"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/checks"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/config"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/detect"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/gitbase"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/hooks"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/project"
+	"github.com/ku5ic/dotfiles/claude-kit/go/internal/report"
+	"github.com/ku5ic/dotfiles/claude-kit/go/internal/rotate"
+	"github.com/ku5ic/dotfiles/claude-kit/go/internal/status"
 )
 
 const usage = `usage: kit <command> [args]
@@ -35,6 +40,8 @@ const usage = `usage: kit <command> [args]
                              exits with the failure count
   git-base [--diff|--log] [base] [flags] [-- paths]
   hook <name>                run a Claude Code hook; payload on stdin
+  statusline                 the statusLine rows; payload on stdin
+  subagent-statusline        subagentStatusLine JSON lines; payload on stdin
 `
 
 func main() {
@@ -97,6 +104,12 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return gitbase.Run(rest, stdout, stderr)
 	case "hook":
 		return cmdHook(e, rest, os.Stdin)
+	case "statusline":
+		status.Statusline(os.Stdin, stdout, e.paths.Home)
+		return 0
+	case "subagent-statusline":
+		status.SubagentStatusline(os.Stdin, stdout)
+		return 0
 	}
 
 	commands := map[string]func(*env, *config.Config, []string) int{
@@ -118,6 +131,18 @@ func run(args []string, stdout, stderr io.Writer) int {
 			}
 			return min(checks.RunAll(cfg, root, only, e.stdout), 125)
 		},
+		"scratch-rotate": func(e *env, cfg *config.Config, args []string) int {
+			return rotate.Run(cfg, e.paths, args, e.stdout, e.stderr)
+		},
+		"blast-radius": func(e *env, cfg *config.Config, args []string) int {
+			return blast.Run(cfg, args, e.stdout, e.stderr)
+		},
+		"skills-report": func(e *env, cfg *config.Config, args []string) int {
+			return report.Run(cfg, e.paths, args, e.stdout)
+		},
+		"a11y-check": func(e *env, cfg *config.Config, args []string) int {
+			return a11y.Run(cfg, e.paths, e.cwd, args, e.stdout, e.stderr)
+		},
 		"agent-context": func(e *env, cfg *config.Config, _ []string) int {
 			fmt.Fprint(e.stdout, hooks.AgentContext(e.paths, cfg, e.cwd))
 			return 0
@@ -130,6 +155,11 @@ func run(args []string, stdout, stderr io.Writer) int {
 	}
 	cfg, err := e.config()
 	if err != nil {
+		// A report reads logs first; without kit.yml it skips the sections
+		// that need it rather than failing.
+		if name == "skills-report" {
+			return report.Run(nil, e.paths, rest, stdout)
+		}
 		fmt.Fprintln(stderr, "kit:", err)
 		return 1
 	}

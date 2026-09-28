@@ -12,7 +12,7 @@ claude plugin install claude-kit@ku5ic
 
 The last step links the always-on rules into `~/.claude/rules/claude-kit`; plugins cannot ship rules. Start from `templates/CLAUDE.md` for your own `~/.claude/CLAUDE.md`.
 
-Requires bash 4+, `git`, `jq`, and `yq` (mikefarah). Formatters and linters (`prettier`, `shfmt`, `shellcheck`, `stylua`, `gitleaks`) are used when installed and skipped when not.
+Requires `git` and bash (any version, the stock macOS 3.2 included): every hook and helper runs in one prebuilt Go binary, `bin/kit-<os>-<arch>` (darwin and linux, arm64 and amd64), behind same-name bash shims. `bin/doctor.sh` and `bin/bootstrap.sh`, which maintain the symlinked dotfiles layout, also need bash 4.4+, `jq`, and mikefarah `yq`. Formatters and linters (`prettier`, `shfmt`, `shellcheck`, `stylua`, `gitleaks`) are used when installed and skipped when not.
 
 ## What you get
 

@@ -153,13 +153,12 @@ content_for() {
   [ -z "$output" ]
 }
 
-@test "missing jq exits clean with no output" {
+@test "renders without jq on PATH" {
   local stub_dir="$BATS_TEST_TMPDIR/stub_no_jq"
   mkdir -p "$stub_dir"
-  ln -s "$(command -v cat)" "$stub_dir/cat"
   local bash_bin
   bash_bin="$(command -v bash)"
   run env PATH="$stub_dir" "$bash_bin" "$SCRIPT" <<<'{"columns":120,"tasks":[{"id":"t1","name":"scout"}]}'
   [ "$status" -eq 0 ]
-  [ -z "$output" ]
+  [ "$output" = '{"id":"t1","content":"scout"}' ]
 }

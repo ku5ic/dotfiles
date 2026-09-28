@@ -116,16 +116,6 @@ versions [apps/web]: react 19.1.0 (installed)"* ]]
 versions [services/api]: django 5.1.2 (locked), fastapi 0.115.0 (pinned), pydantic 2.9.0 (locked)"* ]]
 }
 
-@test "the stack-line parser still reads extras from the new format" {
-  printf '%s\n' "root: /x" "js: yes (react) [pnpm] at ., packages/a" "python: yes [uv] at services/api" "versions [packages/a]: react 19.0.0 (declared)" >"$BATS_TEST_TMPDIR/cache"
-  # shellcheck source=../bin/_lib.sh
-  source "$BATS_TEST_DIRNAME/../bin/_lib.sh"
-  run stacks_signals_from_cache "$BATS_TEST_TMPDIR/cache"
-  [ "$output" = "js
-js+react
-python" ]
-}
-
 # The user overlay at ~/.claude/claude-kit.local.yml merges over kit.yml.
 
 write_overlay() {

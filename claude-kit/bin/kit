@@ -26,9 +26,7 @@ dir=${self%/*}
 [[ $dir == "$self" ]] && dir=.
 bin="$dir/kit-$os-$arch"
 if [[ -x $bin ]]; then
-  # The bash running this, for inject-context's bash 4.4+ check: the
-  # remaining bash hooks run under the same interpreter.
-  KIT_BASH_VERSION=$BASH_VERSION exec "$bin" "$@"
+  exec "$bin" "$@"
 fi
 echo "kit: no binary for $os-$arch at $bin; build it with claude-kit/go/build.sh" >&2
 [[ ${1:-} == hook ]] && exit 0

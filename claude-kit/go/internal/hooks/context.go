@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -223,25 +222,11 @@ func tooling(cfg *config.Config, root string) string {
 	return out + "</tooling>\n"
 }
 
-var mikefarah = regexp.MustCompile(`mikefarah`)
-
-// prerequisites names what the still-bash parts of the kit need and don't
-// have, "; "-separated, "" when nothing is missing. guard-bash.sh needs bash
-// 4.4+, jq, and mikefarah yq until it is ported; every install needs the
-// kit rules linked and a readable kit.yml.
+// prerequisites names what the install is missing, "; "-separated, "" when
+// nothing is: the kit rules linked and a readable kit.yml. The kit itself
+// needs no tools beyond git and a POSIX shell.
 func prerequisites(paths config.Paths) string {
 	var missing []string
-	// The launcher exports the bash that ran the shim: the one every
-	// remaining bash hook runs under too.
-	if v := os.Getenv("KIT_BASH_VERSION"); v != "" && !bash44(v) {
-		missing = append(missing, "bash 4.4+ (found "+v+"; brew install bash, and put it first on PATH)")
-	}
-	if _, err := exec.LookPath("jq"); err != nil {
-		missing = append(missing, "jq (brew install jq)")
-	}
-	if out, err := exec.Command("yq", "--version").Output(); err != nil || !mikefarah.Match(out) {
-		missing = append(missing, "mikefarah yq (brew install yq)")
-	}
 	if !rulesLinked(paths) {
 		missing = append(missing, "the kit rules linked under ~/.claude/rules (run bootstrap.sh)")
 	}
@@ -251,16 +236,6 @@ func prerequisites(paths config.Paths) string {
 		f.Close()
 	}
 	return strings.Join(missing, "; ")
-}
-
-func bash44(version string) bool {
-	parts := strings.SplitN(version, ".", 3)
-	if len(parts) < 2 {
-		return false
-	}
-	major, err1 := strconv.Atoi(parts[0])
-	minor, err2 := strconv.Atoi(parts[1])
-	return err1 == nil && err2 == nil && (major > 4 || major == 4 && minor >= 4)
 }
 
 // rulesLinked is true when some directory under <home>/rules is the kit's

@@ -149,37 +149,22 @@ YAML
   [[ "$output" == *"dirty-files (at session start): unknown"* ]]
 }
 
-# check_prereqs: guards fail open without these, so the hook warns instead.
+# Install prerequisites: the kit rules linked and a readable kit.yml. The
+# kit itself needs no jq, yq, or bash 4.
 
-# PATH holding only what check_prereqs touches before it exits, plus $@.
-restricted_path() {
-  local dir="$BATS_TEST_TMPDIR/restricted-bin" tool
-  mkdir -p "$dir"
-  for tool in dirname grep "$@"; do
-    ln -sf "$(command -v "$tool")" "$dir/$tool"
-  done
-  printf '%s' "$dir"
-}
-
-@test "prereqs: a non-mikefarah yq on PATH gets a warning" {
-  local fake="$BATS_TEST_TMPDIR/fake-yq"
-  mkdir -p "$fake"
-  printf '#!/bin/sh\necho "yq 3.4.3"\n' >"$fake/yq"
-  chmod +x "$fake/yq"
-
-  run bash -c "echo '{}' | HOME='$FAKE_HOME' PATH='$fake:$PATH' '$HOOK'"
+@test "no tool prerequisites: stock bash with no jq or yq on PATH still gets context" {
+  write_kit_yml <<'YAML'
+global_skills:
+  - fix-sizing
+YAML
+  local bin="$BATS_TEST_TMPDIR/git-only" bash_bin=/bin/bash
+  mkdir -p "$bin"
+  ln -s "$(command -v git)" "$bin/git"
+  [[ -x "$bash_bin" ]] || bash_bin="$(command -v bash)"
+  run env HOME="$FAKE_HOME" PATH="$bin" "$bash_bin" "$HOOK" <<<"{\"session_id\":\"s1\",\"cwd\":\"$FAKE_ROOT\"}"
   [ "$status" -eq 0 ]
-  [[ "$output" == *'"systemMessage"'* ]]
-  [[ "$output" == *"mikefarah yq"* ]]
-  [[ "$output" != *"<repo-context>"* ]]
-}
-
-@test "prereqs: missing jq prints valid JSON naming jq" {
-  local bash_bin
-  bash_bin="$(command -v bash)"
-  run env HOME="$FAKE_HOME" PATH="$(restricted_path yq)" "$bash_bin" "$HOOK" </dev/null
-  [ "$status" -eq 0 ]
-  printf '%s' "$output" | jq -e '.systemMessage | test("jq \\(brew install jq\\)")'
+  [[ "$output" != *"systemMessage"* ]]
+  [[ "$output" == *"<required-skills>"* ]]
 }
 
 @test "prereqs: kit rules not linked under ~/.claude/rules gets a warning" {
@@ -231,13 +216,6 @@ YAML
 
   run run_inject_context "s1"
   [[ "$output" == *"the kit rules linked"* ]]
-}
-
-@test "prereqs: bash older than 4.4 gets a warning" {
-  [[ -x /bin/bash ]] && [[ "$(/bin/bash -c 'echo ${BASH_VERSINFO[0]}')" -lt 4 ]] || skip "no bash 3.x at /bin/bash"
-  run env HOME="$FAKE_HOME" /bin/bash "$HOOK" </dev/null
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"bash 4.4+"* ]]
 }
 
 # <tooling>: run forms from kit.yml's task_providers and toolchain_checks.

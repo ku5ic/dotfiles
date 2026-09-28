@@ -338,19 +338,16 @@ backdate_mtime() {
   [[ "$(strip_ansi "$output")" == *"+1 ~1"* ]]
 }
 
-@test "missing jq prints a notice instead of erroring or blanking" {
-  # A PATH with nothing at all also hides `cat`, which the script needs to
-  # read its own stdin before it ever gets to the jq check - so build a
-  # minimal stub PATH that has `cat` (via symlink to the real binary) but
-  # not jq, rather than an empty PATH.
+@test "renders without jq on PATH" {
+  # The status line is Go behind the shim: an empty PATH still renders.
   local stub_dir="$BATS_TEST_TMPDIR/stub_no_jq"
   mkdir -p "$stub_dir"
-  ln -s "$(command -v cat)" "$stub_dir/cat"
   local bash_bin
   bash_bin="$(command -v bash)"
-  run env PATH="$stub_dir" HOME="$FAKE_HOME" "$bash_bin" "$SCRIPT" <<<'{}'
+  run env PATH="$stub_dir" HOME="$FAKE_HOME" "$bash_bin" "$SCRIPT" <<<'{"model":{"display_name":"Opus"}}'
   [ "$status" -eq 0 ]
-  [[ "$output" == *"jq not found"* ]]
+  [[ "$output" == *"Opus"* ]]
+  [[ "$output" == *"0%"* ]]
 }
 
 # transcript-derived actual/declared model divergence
