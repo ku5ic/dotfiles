@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/ku5ic/dotfiles/claude-kit/go/internal/bashguard"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/hook"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/hooks"
 )
@@ -21,6 +22,7 @@ var singleChecks = map[string]hook.Check{
 	"inject-subagent-context": hooks.InjectSubagentContext,
 	"format-dispatch":         hooks.FormatDispatch,
 	"stop-checks":             hooks.StopChecks,
+	"guard-bash":              bashguard.Check,
 }
 
 // cmdHook runs `kit hook <name>`: stdin is the payload, the exit status is
