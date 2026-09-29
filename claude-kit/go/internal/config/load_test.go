@@ -104,6 +104,17 @@ func TestDefaultsAndMissingOverlay(t *testing.T) {
 	}
 }
 
+func TestEmptyOrCommentOnlyOverlayIsQuiet(t *testing.T) {
+	dir := t.TempDir()
+	base := write(t, dir, "kit.yml", "tools: [rg]\n")
+	for _, body := range []string{"", "# nothing yet\n"} {
+		overlay := write(t, dir, "over.yml", body)
+		if _, warnings, err := Load(Paths{Base: base, Overlay: overlay}); err != nil || len(warnings) > 0 {
+			t.Errorf("overlay %q: err=%v warnings=%v", body, err, warnings)
+		}
+	}
+}
+
 func TestBrokenOverlayIsIgnoredWithAWarning(t *testing.T) {
 	dir := t.TempDir()
 	base := write(t, dir, "kit.yml", "protected_branches: [main]\n")

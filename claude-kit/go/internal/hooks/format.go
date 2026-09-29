@@ -58,8 +58,15 @@ func FormatDispatch(h *hook.Hook) error {
 		if slices.Contains(cfg.DisabledFormatters, f.Name) || !slices.Contains(f.Ext, ext) {
 			continue
 		}
+		// Resolving can start a package manager (poetry env info, bundle
+		// info), so only a formatter with a signal, or Prettier's own lookup,
+		// which needs the binary, pays for it.
+		signaled := hasSignal(f, nil, dir, root, path)
+		if !signaled && !f.SignalPrettier {
+			continue
+		}
 		bin := tools.Resolve(dir, root, f.Bin, false)
-		if hasSignal(f, bin, dir, root, path) {
+		if signaled || hasSignal(f, bin, dir, root, path) {
 			hits = append(hits, hit{f, bin})
 		}
 	}

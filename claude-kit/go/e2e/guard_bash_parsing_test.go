@@ -54,10 +54,13 @@ func TestGuardBashParsing(t *testing.T) {
 		probe("block", "cat <<\"EOF\"\nx\nEOF\n"+R)
 		probe("block", "x=$(cat <<EOF\nit's\nEOF\n)\n"+R)
 		probe("block", "echo \"$(cat <<EOF\nhi\nEOF\n)\"; "+R)
-		// Here-strings and shifts aren't heredocs.
+		// Here-strings and shifts aren't heredocs; a here-string fed to a
+		// shell is commands, as -c is.
 		probe("block", "cat <<<\"foo\"\n"+R)
 		probe("block", "cat <<< foo\n"+R)
 		probe("block", "cat <<<foo; "+R)
+		probe("pass", `cat <<< "`+R+`"`)
+		probe("block", `bash <<< "`+R+`"`)
 		probe("block", "(( x = 1 << 2 ))\n"+R)
 		probe("block", "x=$((1<<2))\n"+R)
 		probe("block", "let \"x = 1 << 2\"\n"+R)
@@ -98,6 +101,12 @@ func TestGuardBashParsing(t *testing.T) {
 		probe("pass", `ls &>/dev/null`)
 		probe("pass", `ls |& head`)
 		probe("pass", `echo "unterminated; rm -rf ~`)
+		// Syntax bash runs but the parser rejects: what completed before it is
+		// checked, and the rest asks rather than passing unchecked.
+		probe("block", `rm -rf ~; echo $((ls) )`)
+		probe("block", `git push --force origin feat; echo ${a[x y]}`)
+		probe("ask", "if true; then\n  rm -rf ~\n  echo $((ls) )\nfi")
+		probe("ask", `echo $((ls) ); rm -rf ~`)
 		probe("block", `echo $'a\'b'; rm -rf ~`)
 		probe("pass", `echo $'it\'s fine'`)
 		// Grouping, keywords, functions, wrappers, eval.
@@ -132,6 +141,10 @@ func TestGuardBashParsing(t *testing.T) {
 		probe("block", `chmod -R +x ${HOME}`)
 		probe("block", `chmod -R 777 ~`)
 		probe("block", `rm -rf "$(echo ~)"; rm -rf ${HOME}`)
+		// Input redirects are reads; quoted rc targets are still rc files.
+		probe("block", `cat < ~/.ssh/id_rsa`)
+		probe("block", `grep x < "$HOME/.ssh/id_ed25519"`)
+		probe("block", `echo x >> "$HOME/.zshrc"`)
 		// Overlay writes by any command, not only >, sed -i, and sd.
 		Touch(t, filepath.Join(k.Claude, "claude-kit.local.yml"))
 		probe("ask", `tee -a ~/.claude/claude-kit.local.yml`)
@@ -182,6 +195,8 @@ func TestGuardBashParsing(t *testing.T) {
 		probe("allow", `git-base.sh --diff`)
 		probe("ask", `git-base.sh --diff --output=/tmp/x`)
 		probe("ask", `git-base.sh --log --ext-diff`)
+		probe("ask", `git-base.sh --diff '--output=/tmp/x'`)
+		probe("ask", `git-base.sh --diff \--output=/tmp/x`)
 		probe("block", `git-base.sh --diff --output=/tmp/x; rm -rf ~`)
 		// Ordinary commands stay quiet.
 		probe("pass", `git status`)

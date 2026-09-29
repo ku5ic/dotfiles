@@ -14,6 +14,6 @@ fi
 for target in "${targets[@]}"; do
   out="../bin/kit-${target%/*}-${target#*/}"
   CGO_ENABLED=0 GOOS="${target%/*}" GOARCH="${target#*/}" \
-    go build -trimpath -ldflags="-s -w -buildid=" -o "$out" ./cmd/kit
+    go build -trimpath -buildvcs=false -ldflags="-s -w -buildid=" -o "$out" ./cmd/kit
   echo "built $out"
 done

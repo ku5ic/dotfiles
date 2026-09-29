@@ -30,7 +30,9 @@ type Call struct {
 	Assigns []string // leading VAR=value words, the value's quotes removed
 	Words   []Word
 	Redirs  []Redir
-	// Heredocs are the raw bodies of this command's here-documents.
+	Inputs  []string // < redirect sources, quotes removed
+	// Heredocs are the raw bodies of this command's here-documents and
+	// here-strings.
 	Heredocs []string
 	start    int // source offset of the first word
 }
@@ -75,35 +77,59 @@ var shells = map[string]bool{"sh": true, "bash": true, "zsh": true, "dash": true
 
 // Segments parses src and returns every pipeline in it, substitution and
 // process-substitution bodies included (inner ones first, as they run
-// first), and heredoc bodies fed to a shell. A parse error fails closed:
-// statements before the error line are kept, and the lines after it are
-// parsed again as a script of their own, so an unterminated heredoc's body
-// is checked as commands.
+// first), and heredoc bodies fed to a shell. On a parse error, statements
+// completed before it are kept, and the lines after its line are parsed
+// again as a script of their own, so an unterminated heredoc's body is
+// checked as commands.
 func Segments(src string) []Segment {
+	segs, _ := parseAll(src)
+	return segs
+}
+
+// parseAll is Segments, also reporting whether a line failed to parse short
+// of the end of input. mvdan rejects a few constructs bash runs ($((cmd) ),
+// an unquoted associative index), and every statement on that line goes
+// unchecked, so the caller fails closed.
+func parseAll(src string) ([]Segment, bool) {
 	c := &collector{}
 	c.parse(src, 0)
-	return c.segs
+	return c.segs, c.unparsed
 }
 
 type collector struct {
-	segs  []Segment
-	depth int
+	segs     []Segment
+	depth    int // of the parse in progress: error reparses and nested heredocs
+	unparsed bool
 }
 
 func (c *collector) parse(src string, depth int) {
-	if depth > 8 || strings.TrimSpace(src) == "" {
+	if strings.TrimSpace(src) == "" {
 		return
 	}
+	if depth > 8 {
+		c.unparsed = true
+		return
+	}
+	saved := c.depth
+	c.depth = depth
+	defer func() { c.depth = saved }()
 	file, err := syntax.NewParser().Parse(strings.NewReader(src), "")
 	if err == nil {
 		c.stmts(src, file.Stmts)
 		return
 	}
-	line := errorLine(err)
+	// An incomplete command (an unclosed quote at the end) doesn't run in
+	// bash either.
+	if !syntax.IsIncomplete(err) {
+		c.unparsed = true
+	}
+	line, offset := errorPos(err)
 	if file != nil {
+		// Every statement completed before the error, same line included:
+		// rm -rf ~ in `rm -rf ~; echo $((ls) )`.
 		var before []*syntax.Stmt
 		for _, s := range file.Stmts {
-			if int(s.End().Line()) < line {
+			if int(s.End().Offset()) <= offset {
 				before = append(before, s)
 			}
 		}
@@ -114,11 +140,13 @@ func (c *collector) parse(src string, depth int) {
 	}
 }
 
-func errorLine(err error) int {
+// errorPos is the line and offset of a parse error; line 1, offset 0 when
+// the error carries no position.
+func errorPos(err error) (line, offset int) {
 	if pe, ok := errors.AsType[syntax.ParseError](err); ok {
-		return int(pe.Pos.Line())
+		return int(pe.Pos.Line()), int(pe.Pos.Offset())
 	}
-	return 1
+	return 1, 0
 }
 
 // afterLine is src from the line after line on.
@@ -218,8 +246,16 @@ func (c *collector) stmt(src string, s *syntax.Stmt) {
 				c.inner(src, r.Hdoc)
 				continue
 			}
-			if op := r.Op.String(); strings.Contains(op, ">") && r.Word != nil {
-				value := wordValue(src, r.Word)
+			if r.Word == nil {
+				continue
+			}
+			value := wordValue(src, r.Word)
+			switch op := r.Op.String(); {
+			case r.Op == syntax.WordHdoc: // bash <<< "rm -rf ~" runs its word
+				cl.Heredocs = append(cl.Heredocs, value)
+			case r.Op == syntax.RdrIn:
+				cl.Inputs = append(cl.Inputs, value)
+			case strings.Contains(op, ">"):
 				// >&2 duplicates an fd; the bash original read its target as
 				// "&2", never a file name.
 				if r.Op == syntax.DplOut {

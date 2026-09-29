@@ -43,6 +43,11 @@ src/lib/format.test.ts:1 test`
 			t.Errorf("got:\n%s\nwant:\n%s", got, want)
 		}
 	})
+	t.Run("a relative path from a subdirectory resolves against the repo", func(t *testing.T) {
+		k, _ := tsFixture(t)
+		k.Dir = filepath.Join(k.Dir, "src")
+		k.Run("", "blast-radius", "lib/format.ts").Has(t, "blast-radius: src/lib/format.ts", "consumers: 3 (source 2, test 1)")
+	})
 	t.Run("a symbol keeps only consumers that use it", func(t *testing.T) {
 		k, write := tsFixture(t)
 		write("src/app/page.ts", `import { other } from '../lib/format';`)

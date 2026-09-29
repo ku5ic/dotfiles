@@ -30,6 +30,9 @@ func answers(url string) bool {
 		_, err := os.Stat(path)
 		return err == nil
 	}
+	if !strings.Contains(url, "://") {
+		url = "http://" + url // as curl and axe read localhost:6006
+	}
 	client := http.Client{Timeout: 5 * time.Second}
 	resp, err := client.Get(url)
 	if err != nil {

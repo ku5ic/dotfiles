@@ -484,6 +484,26 @@ func TestStopChecks(t *testing.T) {
 		e.callsIs(e.repo + "|--check " + e.path("a.ts"))
 	})
 
+	t.Run("an edit outside the repo doesn't unignore the ones after it", func(t *testing.T) {
+		e := stopChecksSetup(t)
+		Write(t, e.path(".gitignore"), "scratch/\n")
+		Write(t, e.path("scratch/tmp.ts"), "x\n")
+		x := filepath.Join(e.tmp, "elsewhere/x.ts")
+		Write(t, x, "x\n")
+		e.turn("Edit", x, e.path("scratch/tmp.ts"), e.path("a.ts"))
+		e.stop(false).Want(t, 0)
+		e.callsIs(e.repo + "|--check " + e.path("a.ts"))
+	})
+
+	t.Run("a file check without a cmd is skipped, not a crash", func(t *testing.T) {
+		e := stopChecksSetup(t)
+		e.k.KitYML("file_checks:\n  - name: fakelint\n    ext: [ts]\n    signal_files: [.fakelintrc]\n    bin: fakelint\n")
+		e.turn("Edit", e.path("a.ts"))
+		r := e.stop(false)
+		r.Want(t, 0)
+		r.Has(t, "SKIP fakelint (1 file) (no cmd in kit.yml)")
+	})
+
 	t.Run("a file no check claims runs nothing", func(t *testing.T) {
 		e := stopChecksSetup(t)
 		e.turn("Write", e.path("notes.md"))

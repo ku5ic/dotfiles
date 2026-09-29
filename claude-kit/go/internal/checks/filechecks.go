@@ -148,6 +148,10 @@ func Plan(cfg *config.Config, root, base string, edited []string) []*Group {
 		if g.Dir != root {
 			g.label += " [" + strings.TrimPrefix(g.Dir, root+"/") + "]"
 		}
+		if strings.TrimSpace(g.Adapter.Cmd) == "" {
+			g.Skip = "no cmd in kit.yml"
+			continue
+		}
 		bin := tools.Resolve(g.Dir, root, g.Adapter.Bin, g.Adapter.LocalOnly)
 		if bin == nil {
 			where := "not installed"
@@ -176,7 +180,16 @@ func FileChecks(cfg *config.Config, root, base string, edited []string) (report,
 	var wg sync.WaitGroup
 	for i, g := range groups {
 		if g.Skip == "" {
-			wg.Go(func() { results[i] = runGroup(g, timeout) })
+			wg.Go(func() {
+				// A panic here would exit 2, which Claude Code reads as a
+				// block; hook.RunCheck's recover can't reach this goroutine.
+				defer func() {
+					if recover() != nil {
+						results[i] = result{skip: "crashed; failing open"}
+					}
+				}()
+				results[i] = runGroup(g, timeout)
+			})
 		}
 	}
 	wg.Wait()
@@ -189,6 +202,9 @@ func FileChecks(cfg *config.Config, root, base string, edited []string) (report,
 		label, res := g.label, &results[i]
 		if g.Skip == "" && res.timedOut {
 			g.Skip = fmt.Sprintf("timed out after %s", timeout)
+		}
+		if g.Skip == "" {
+			g.Skip = res.skip
 		}
 		if g.Skip != "" {
 			fmt.Fprintf(&rep, "SKIP %s (%s)\n", label, g.Skip)
@@ -232,6 +248,7 @@ type result struct {
 	out      bytes.Buffer
 	err      error
 	timedOut bool
+	skip     string
 }
 
 // runGroup runs one check in its own process group, so a timeout kills the
@@ -320,8 +337,8 @@ func plural(n int) string {
 	return "s"
 }
 
-// gitIgnored asks git once which of the edited files it ignores, keyed by
-// physical path. Any failure means "none ignored": check them all.
+// gitIgnored asks git once which of the edited files under root it ignores,
+// keyed by physical path. Any failure means "none ignored": check them all.
 func gitIgnored(root string, edited []string, base string) map[string]bool {
 	var paths []string
 	for _, p := range edited {
@@ -331,7 +348,11 @@ func gitIgnored(root string, edited []string, base string) map[string]bool {
 		if !filepath.IsAbs(p) {
 			p = filepath.Join(base, p)
 		}
-		paths = append(paths, project.PhysicalPath(p))
+		// A path outside the repo is fatal to check-ignore, dropping every
+		// path after it.
+		if p = project.PhysicalPath(p); strings.HasPrefix(p, root+"/") {
+			paths = append(paths, p)
+		}
 	}
 	ignored := map[string]bool{}
 	if len(paths) == 0 {

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/bashguard"
 	"github.com/ku5ic/dotfiles/claude-kit/go/internal/hook"
@@ -63,5 +62,3 @@ func cmdHook(e *env, args []string, stdin io.Reader) (status int) {
 	}
 	return hook.Run(h, hook.NamedCheck{Name: name, Check: check})
 }
-
-var _ = os.Stdin

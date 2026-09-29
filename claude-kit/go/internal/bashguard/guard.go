@@ -96,7 +96,11 @@ func Check(h *hook.Hook) error {
 	st := &state{h: h, cfg: cfg, home: home, cwd: resolveDir(home, "/", cwd)}
 	// The raw command, not norm: <<- strips tabs only, and norm would turn a
 	// tab-indented terminator into spaces that no longer close the heredoc.
-	for _, seg := range Segments(cmd) {
+	segs, unparsed := parseAll(cmd)
+	if unparsed {
+		st.ask("guard-bash could not parse part of this command, so it went unchecked; confirm it")
+	}
+	for _, seg := range segs {
 		if err := st.segment(seg); err != nil {
 			return err
 		}
@@ -181,12 +185,14 @@ func lead(words []Word) int {
 // segment runs the per-command checks on every command of a pipeline.
 func (st *state) segment(seg Segment) error {
 	for ci, call := range seg.Calls {
-		st.redirects(call)
+		if err := st.redirects(call); err != nil {
+			return err
+		}
 		start := lead(call.Words)
 		if start >= len(call.Words) {
 			continue
 		}
-		c := command{st: st, seg: seg, call: ci, name: baseName(call.Words[start].Value), args: call.Words[start+1:], redirs: call.Redirs, idx: start}
+		c := command{st: st, seg: seg, call: ci, name: baseName(call.Words[start].Value), args: call.Words[start+1:], redirs: call.Redirs, inputs: call.Inputs, idx: start}
 		c.rest = seg.Rest(ci, start)
 		c.text = c.name + c.rest
 		c.alone = len(seg.Calls) == 1
@@ -197,12 +203,19 @@ func (st *state) segment(seg Segment) error {
 	return nil
 }
 
-// redirects asks before a write to the overlay or loose into the current
-// directory: a bare name or ./name lands in the repo root in a project
-// session. A subdir target (docs/report.md) is plausibly a deliverable.
-func (st *state) redirects(call Call) {
+// redirects blocks a write to a shell rc file, and asks before a write to
+// the overlay or loose into the current directory: a bare name or ./name
+// lands in the repo root in a project session. A subdir target
+// (docs/report.md) is plausibly a deliverable.
+func (st *state) redirects(call Call) error {
 	for _, r := range call.Redirs {
 		target := r.Target.Value
+		// The quote-removed target: the whole-string regex misses >> "$HOME/.zshrc".
+		if guard.IsRCFile(st.cfg, target) {
+			if err := st.h.Block("direct write to a shell rc file. Use the dotfiles repo.", "rc-redirect"); err != nil {
+				return err
+			}
+		}
 		if st.isOverlayArg(target) {
 			st.ask(overlayAsk)
 		}
@@ -210,6 +223,7 @@ func (st *state) redirects(call Call) {
 			st.ask("'> " + target + "' writes into the current directory; rules/tooling.md wants > \"$(scratch-dir.sh)/" + baseName(target) + "\". Confirm only if this file belongs in the project tree.")
 		}
 	}
+	return nil
 }
 
 // looseWriteTarget is true for a relative target that would land loose in
@@ -333,7 +347,11 @@ func readonlyCall(cmd, norm string) bool {
 // write files (--output) or run programs (--ext-diff): only the flags the
 // kit's own skills pass go through without a prompt.
 func gitBaseFlagsSafe(words []string) bool {
+	// The shell drops quotes, backslashes, and $'': '--output=x' and
+	// \--output=x reach git as --output=x.
+	unquote := strings.NewReplacer(`'`, "", `"`, "", `\`, "", "$", "")
 	for _, w := range words {
+		w = unquote.Replace(w)
 		switch {
 		case !strings.HasPrefix(w, "-"):
 		case len(w) > 1 && w[1] >= '0' && w[1] <= '9':

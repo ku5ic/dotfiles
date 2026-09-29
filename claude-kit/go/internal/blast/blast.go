@@ -72,7 +72,10 @@ func Run(cfg *config.Config, args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "blast-radius: no such file: %s\n", target)
 		return 2
 	}
-	dir, _ := filepath.EvalSymlinks(filepath.Dir(target))
+	// Absolute before physical: a relative dir stays relative to cwd, not
+	// the repo root the rel path below is cut from.
+	dir, _ := filepath.Abs(filepath.Dir(target))
+	dir, _ = filepath.EvalSymlinks(dir)
 	abs := filepath.Join(dir, filepath.Base(target))
 	root := project.Toplevel(dir)
 	if root == "" {

@@ -2,6 +2,7 @@ package tools
 
 import (
 	"encoding/json"
+	"maps"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -276,7 +277,9 @@ func ciSteps(root, dir string) []script {
 		if yaml.Unmarshal(data, &doc) != nil {
 			continue
 		}
-		for _, job := range doc.Jobs {
+		// Sorted: a map's order would change which job's flags carry.
+		for _, name := range slices.Sorted(maps.Keys(doc.Jobs)) {
+			job := doc.Jobs[name]
 			for _, step := range job.Steps {
 				wd := step.WorkingDirectory
 				if wd == "" {

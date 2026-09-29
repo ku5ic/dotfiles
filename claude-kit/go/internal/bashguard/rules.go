@@ -17,9 +17,10 @@ type command struct {
 	name   string // basename, quotes removed: "rm", r''m, /bin/rm all read rm
 	args   []Word
 	redirs []Redir
-	rest   string // normalized source after the name, to the pipeline's end
-	text   string // name + rest: what the bash original's regexes read
-	alone  bool   // the only command of its pipeline
+	inputs []string // < redirect sources
+	rest   string   // normalized source after the name, to the pipeline's end
+	text   string   // name + rest: what the bash original's regexes read
+	alone  bool     // the only command of its pipeline
 }
 
 func (c *command) block(reason, rule string) error { return c.st.h.Block(reason, rule) }
@@ -182,7 +183,7 @@ func (c *command) check() error {
 	case "wget":
 		return c.wget()
 	case "cat", "bat", "head", "tail", "less", "more", "strings":
-		for _, p := range c.operands() {
+		for _, p := range append(c.operands(), c.inputs...) {
 			if guard.IsSensitive(c.st.cfg, p) {
 				return c.block("reading a sensitive file is not permitted", "sensitive-read")
 			}
@@ -190,8 +191,11 @@ func (c *command) check() error {
 	case "grep", "rg":
 		// The first non-option argument is the pattern, not a path.
 		ops := c.operands()
-		for i, p := range ops {
-			if i > 0 && guard.IsSensitive(c.st.cfg, p) {
+		if len(ops) > 0 {
+			ops = ops[1:]
+		}
+		for _, p := range append(ops, c.inputs...) {
+			if guard.IsSensitive(c.st.cfg, p) {
 				return c.block("reading a sensitive file is not permitted", "sensitive-read")
 			}
 		}

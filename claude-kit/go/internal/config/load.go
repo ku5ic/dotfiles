@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -157,7 +158,7 @@ func validate(path string) []Warning {
 	err = dec.Decode(&cfg)
 	var typeErr *yaml.TypeError
 	switch {
-	case err == nil:
+	case err == nil, errors.Is(err, io.EOF): // io.EOF: empty or only comments
 		return nil
 	case errors.As(err, &typeErr):
 		warnings := make([]Warning, 0, len(typeErr.Errors))

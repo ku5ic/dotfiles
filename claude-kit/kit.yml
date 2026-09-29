@@ -311,7 +311,8 @@ subproject_max_depth: 4
 #                    config it finds is inside the project root
 # Exactly one candidate formats the file; none, or two (a Biome/Prettier
 # migration mid-way), leaves it alone. {bin} is the nearest
-# node_modules/.bin, .venv/bin, or venv/bin copy inside the project, else
+# node_modules/.bin, .venv/bin, or venv/bin copy inside the project, then its
+# package manager's environment (poetry, pipenv, Yarn PnP, bundler), else
 # PATH; never npx, pnpm dlx, or uv run, which can install packages.
 # disabled_formatters in the overlay turns an entry off by name.
 formatters:
