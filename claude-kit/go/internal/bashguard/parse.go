@@ -246,6 +246,9 @@ func (c *collector) stmt(src string, s *syntax.Stmt) {
 		for _, w := range call.Args {
 			cl.Words = append(cl.Words, Word{wordValue(src, w), src[w.Pos().Offset():w.End().Offset()], int(w.End().Offset())})
 		}
+		if cmd, ok := envSplitString(cl.Words); ok {
+			c.parse(cmd, c.depth+1)
+		}
 		for _, r := range p.Redirs {
 			if r.Hdoc != nil {
 				body := src[r.Hdoc.Pos().Offset():r.Hdoc.End().Offset()]
@@ -292,6 +295,41 @@ func (c *collector) stmt(src string, s *syntax.Stmt) {
 			}
 		}
 	}
+}
+
+// envSplitString returns the command env -S/--split-string runs, the string
+// followed by env's remaining words, from a wrapper before the command:
+// env -S "rm -rf" ~ runs rm -rf ~.
+func envSplitString(words []Word) (string, bool) {
+	for i := range lead(words) {
+		if baseName(words[i].Value) != "env" {
+			continue
+		}
+		for j := i + 1; j < len(words) && strings.HasPrefix(words[j].Value, "-"); j++ {
+			opt, cmd := words[j].Value, ""
+			switch {
+			case opt == "--":
+				return "", false
+			case opt == "-S" || opt == "--split-string":
+				if j+1 >= len(words) {
+					return "", false
+				}
+				j++
+				cmd = words[j].Value
+			case strings.HasPrefix(opt, "--split-string="):
+				cmd = strings.TrimPrefix(opt, "--split-string=")
+			case strings.HasPrefix(opt, "-S"):
+				cmd = strings.TrimPrefix(opt, "-S")
+			default:
+				continue
+			}
+			for _, w := range words[j+1:] {
+				cmd += " " + w.Raw
+			}
+			return cmd, true
+		}
+	}
+	return "", false
 }
 
 // inner collects the statements nested anywhere under n: substitution

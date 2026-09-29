@@ -19,7 +19,7 @@ func TestDeriveFromPackageScripts(t *testing.T) {
 	put(t, dir, "package.json", `{"scripts":{
 		"eslint:fix": "eslint --fix --max-warnings 1 .",
 		"eslint": "eslint --cache **/{src,tests}/**/ --max-warnings 715 -o report.txt",
-		"test": "NODE_OPTIONS=\"${NODE_OPTIONS:-}\" NODE_ENV=test cross-env DEBUG=0 jest --maxWorkers 2 src"
+		"test": "NODE_OPTIONS=\"${NODE_OPTIONS:-}\" NODE_ENV=test GOFLAGS=-toolexec=./x cross-env DEBUG=0 PYTHONPATH=.hooks jest --maxWorkers 2 src"
 	}}`)
 	d, ok := adapter("eslint").Derive(dir, dir)
 	if !ok || d.Source != "package.json scripts.eslint" {
@@ -30,7 +30,7 @@ func TestDeriveFromPackageScripts(t *testing.T) {
 	}
 	d, _ = adapter("jest").Derive(dir, dir)
 	if want := []string{"NODE_ENV=test", "DEBUG=0"}; !slices.Equal(d.Env, want) {
-		t.Errorf("jest env = %q, want %q (a non-literal value is dropped)", d.Env, want)
+		t.Errorf("jest env = %q, want %q (a non-literal value or an unlisted name is dropped)", d.Env, want)
 	}
 	if want := []string{"--maxWorkers", "2"}; !slices.Equal(d.Flags, want) {
 		t.Errorf("jest flags = %q", d.Flags)

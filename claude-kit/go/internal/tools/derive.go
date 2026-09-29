@@ -44,6 +44,11 @@ var runners = map[string][][]string{
 
 var envWord = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*=`)
 
+// carriedEnv is every env name a derived check may carry. Repo scripts are
+// untrusted: GOFLAGS=-toolexec, NODE_OPTIONS=--require, or PYTHONPATH would
+// run repo code under tools that otherwise don't.
+var carriedEnv = map[string]bool{"CI": true, "TZ": true, "NODE_ENV": true, "DEBUG": true, "FORCE_COLOR": true, "NO_COLOR": true}
+
 // match finds the adapter's tool in one parsed command: past env
 // assignments, env/cross-env, and a runner (with the runner's own
 // options), the tool's name, then its required subcommand.
@@ -56,7 +61,8 @@ func (a Adapter) match(call bashguard.Call) (Derived, bool) {
 	// Only literal values: NODE_OPTIONS="${NODE_OPTIONS:-}" would reach env
 	// as that text, not its expansion.
 	addEnv := func(assign string) {
-		if !strings.ContainsAny(assign, "$`") {
+		name, _, _ := strings.Cut(assign, "=")
+		if carriedEnv[name] && !strings.ContainsAny(assign, "$`") {
 			env = append(env, assign)
 		}
 	}
