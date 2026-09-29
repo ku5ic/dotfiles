@@ -78,9 +78,9 @@ var shells = map[string]bool{"sh": true, "bash": true, "zsh": true, "dash": true
 // Segments parses src and returns every pipeline in it, substitution and
 // process-substitution bodies included (inner ones first, as they run
 // first), and heredoc bodies fed to a shell. On a parse error, statements
-// completed before it are kept, and the lines after its line are parsed
-// again as a script of their own, so an unterminated heredoc's body is
-// checked as commands.
+// completed before it are kept, the rest of its line is parsed again from
+// the next separator, and the lines after it are parsed again as a script
+// of their own, so an unterminated heredoc's body is checked as commands.
 func Segments(src string) []Segment {
 	segs, _ := parseAll(src)
 	return segs
