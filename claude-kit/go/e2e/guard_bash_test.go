@@ -202,6 +202,8 @@ func TestGuardBash(t *testing.T) {
 		{"block: env FOO=1 rm -rf ~ (assignment after the wrapper)", `env FOO=1 rm -rf ~`, 2, nil, false},
 		{"block: env -S runs its string as a command", `env -S "rm -rf ~"`, 2, nil, false},
 		{"block: env --split-string= with trailing words", `env --split-string='rm -rf' ~`, 2, nil, false},
+		{"block: env -C dir before -S still runs the split string", `env -C /tmp -S "rm -rf ~"`, 2, nil, false},
+		{"block: env -u NAME before -S still runs the split string", `env -u FOO -S "rm -rf ~"`, 2, nil, false},
 		{"allow: env -S with a harmless string", `env -S "ls -la"`, 0, nil, true},
 		{"block: backslash-escaped rm -rf /", `\rm -rf /`, 2, nil, false},
 		{"block: FOO=1 git push origin main", `FOO=1 git push origin main`, 2, nil, false},

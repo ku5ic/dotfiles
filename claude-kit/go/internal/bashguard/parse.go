@@ -320,6 +320,11 @@ func envSplitString(words []Word) (string, bool) {
 				cmd = strings.TrimPrefix(opt, "--split-string=")
 			case strings.HasPrefix(opt, "-S"):
 				cmd = strings.TrimPrefix(opt, "-S")
+			case opt == "-u" || opt == "-C":
+				// A separate-word value (env -C /tmp -S ...); skip it so the
+				// scan reaches -S instead of stopping at the non-dash value.
+				j++
+				continue
 			default:
 				continue
 			}
