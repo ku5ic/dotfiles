@@ -212,15 +212,12 @@ func TestGuardBash(t *testing.T) {
 		{"allow: rm -rf dist/*", `rm -rf dist/*`, 0, nil, false},
 		{"allow: rm -rf ./build", `rm -rf ./build`, 0, nil, false},
 		// Redirects are checked in every segment.
-		{"ask: bare redirect in a later segment", `echo a > /tmp/x; echo b > out.txt`, 0, []string{`"permissionDecision":"ask"`, `out.txt`}, false},
-		{"ask: second bare redirect within one segment", `echo a > /tmp/x 2> err.log`, 0, []string{`err.log`}, false},
 		{"block: redirect ask does not skip a later block", `echo x > out.txt; rm -rf ~`, 2, nil, false},
 		{"allow: redirect to /dev/null and >&2 stay silent", `echo hi > /dev/null; echo a >&2`, 0, nil, true},
 		// Side-effect-free kit scripts get an explicit allow decision.
 		{"auto-allow: scratch-dir.sh", `scratch-dir.sh`, 0, []string{`"permissionDecision":"allow"`}, false},
 		{"auto-allow: git-base.sh with an argument", `git-base.sh main`, 0, []string{`"permissionDecision":"allow"`}, false},
 		{"auto-allow: blast-radius.sh with a file and symbol", `blast-radius.sh src/lib/format.ts formatDate`, 0, []string{`"permissionDecision":"allow"`}, false},
-		{"ask: kit script with a redirect asks instead of allowing", `scratch-dir.sh > f`, 0, []string{`"permissionDecision":"ask"`}, false},
 		{"no decision: run-checks.sh is not auto-allowed", `run-checks.sh`, 0, nil, true},
 		{"no decision: a name that only starts with a kit script", `git-base.sh.evil`, 0, nil, true},
 		{"no decision: a pathful kit script call", `/tmp/scratch-dir.sh`, 0, nil, true},
@@ -243,6 +240,33 @@ func TestGuardBash(t *testing.T) {
 			}
 		})
 	}
+
+	// A bare > name asks only where it lands in a work tree, after any cd.
+	t.Run("loose redirects", func(t *testing.T) {
+		k := New(t)
+		k.Dir = k.Repo(filepath.Join(k.Home, "repo"))
+		Mkdir(t, filepath.Join(k.Dir, ".claude/scratch"))
+		for _, c := range []struct {
+			cmd, has string
+		}{
+			{`echo a > /tmp/x; echo b > out.txt`, `out.txt`},
+			{`echo a > /tmp/x 2> err.log`, `err.log`},
+			{`scratch-dir.sh > f`, `"permissionDecision":"ask"`},
+			{`cd /tmp; cd -; echo x > out.txt`, `out.txt`},
+		} {
+			r := guard(k, c.cmd)
+			r.Want(t, 0)
+			r.Has(t, c.has)
+		}
+		for _, cmd := range []string{
+			`cd /tmp && echo x > a.log`,
+			`cd .claude/scratch && (echo x > www.log &)`,
+		} {
+			r := guard(k, cmd)
+			r.Want(t, 0)
+			r.Empty(t)
+		}
+	})
 
 	// Several commands, one expected status each.
 	for _, c := range []struct {

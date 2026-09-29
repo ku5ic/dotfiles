@@ -24,6 +24,7 @@ type state struct {
 	cfg     *config.Config
 	home    string
 	cwd     string
+	prev    string // the cwd before the last cd, for cd -
 	pending string
 }
 
@@ -225,11 +226,21 @@ func (st *state) redirects(call Call) error {
 		if st.isOverlayArg(target) {
 			st.ask(overlayAsk)
 		}
-		if (!strings.Contains(target, "/") || strings.HasPrefix(target, "./")) && looseWriteTarget(target) {
+		if (!strings.Contains(target, "/") || strings.HasPrefix(target, "./")) && looseWriteTarget(target) && st.inWorktree() {
 			st.ask("'> " + target + "' writes into the current directory; rules/tooling.md wants > \"$(scratch-dir.sh)/" + baseName(target) + "\". Confirm only if this file belongs in the project tree.")
 		}
 	}
 	return nil
+}
+
+// inWorktree is true when the tracked cwd (after any cd) is in a git work
+// tree and not under a scratch directory: cd /tmp or cd .claude/scratch
+// makes a bare > name harmless.
+func (st *state) inWorktree() bool {
+	if st.cwd == "" || strings.Contains(st.cwd+"/", "/.claude/scratch/") {
+		return false
+	}
+	return project.Toplevel(st.cwd) != ""
 }
 
 // looseWriteTarget is true for a relative target that would land loose in

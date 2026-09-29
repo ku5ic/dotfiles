@@ -110,13 +110,21 @@ func (c *command) check() error {
 		if !c.alone {
 			return nil
 		}
+		prev := c.st.cwd
 		switch {
 		case len(c.args) == 0:
 			c.st.cwd = c.st.home
+		case c.args[0].Value == "-":
+			if c.st.prev == "" {
+				return nil
+			}
+			c.st.cwd = c.st.prev
 		case strings.HasPrefix(c.args[0].Value, "-"):
+			return nil
 		default:
 			c.st.cwd = resolveDir(c.st.home, c.st.cwd, c.args[0].Value)
 		}
+		c.st.prev = prev
 	case "rm":
 		return c.rm()
 	case "dd", "shred", "wipefs", "mkfs":
