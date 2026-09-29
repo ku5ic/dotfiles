@@ -143,12 +143,23 @@ func (a Adapter) Derive(dir, root string) (Derived, bool) {
 			return d, true
 		}
 	}
+	// CI jobs are peers, so a bare `eslint .` in one doesn't hide another
+	// job's --max-warnings: the first step carrying flags wins.
+	var first Derived
+	found := false
 	for _, s := range ciSteps(root, dir) {
-		if d, ok := a.fromScript(s.body, s.name); ok {
+		d, ok := a.fromScript(s.body, s.name)
+		if !ok {
+			continue
+		}
+		if len(d.Flags) > 0 {
 			return d, true
 		}
+		if !found {
+			first, found = d, true
+		}
 	}
-	return Derived{}, false
+	return first, found
 }
 
 type script struct{ name, body string }

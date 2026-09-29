@@ -94,6 +94,15 @@ var readers = map[string]bool{
 
 func (c *command) check() error {
 	c.overlayWrite()
+	// Any command prints what < feeds it: sort < .env reads it as well as cat.
+	for _, p := range c.inputs {
+		if guard.IsSensitive(c.st.cfg, p) {
+			return c.block("reading a sensitive file is not permitted", "sensitive-read")
+		}
+	}
+	if err := c.rcWrite(); err != nil {
+		return err
+	}
 	switch c.name {
 	case "cd":
 		// Tracked so a later command checks the right repo; a cd inside a
@@ -183,7 +192,7 @@ func (c *command) check() error {
 	case "wget":
 		return c.wget()
 	case "cat", "bat", "head", "tail", "less", "more", "strings":
-		for _, p := range append(c.operands(), c.inputs...) {
+		for _, p := range c.operands() {
 			if guard.IsSensitive(c.st.cfg, p) {
 				return c.block("reading a sensitive file is not permitted", "sensitive-read")
 			}
@@ -194,7 +203,7 @@ func (c *command) check() error {
 		if len(ops) > 0 {
 			ops = ops[1:]
 		}
-		for _, p := range append(ops, c.inputs...) {
+		for _, p := range ops {
 			if guard.IsSensitive(c.st.cfg, p) {
 				return c.block("reading a sensitive file is not permitted", "sensitive-read")
 			}
@@ -245,6 +254,26 @@ func (c *command) check() error {
 	default:
 		if strings.HasPrefix(c.name, "mkfs.") {
 			return c.block("low level disk or filesystem tool", "disk-tool")
+		}
+	}
+	return nil
+}
+
+// rcWrite blocks tee into a shell rc file and cp, mv, or install onto one;
+// ln is left alone, as symlinking the dotfiles copy in is the fix.
+func (c *command) rcWrite() error {
+	var targets []string
+	switch c.name {
+	case "tee":
+		targets = c.operands()
+	case "cp", "mv", "install":
+		if ops := c.operands(); len(ops) > 1 {
+			targets = ops[len(ops)-1:]
+		}
+	}
+	for _, p := range targets {
+		if guard.IsRCFile(c.st.cfg, p) {
+			return c.block("direct write to a shell rc file. Use the dotfiles repo.", "rc-redirect")
 		}
 	}
 	return nil

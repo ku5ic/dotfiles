@@ -61,6 +61,11 @@ func TestGuardBashParsing(t *testing.T) {
 		probe("block", "cat <<<foo; "+R)
 		probe("pass", `cat <<< "`+R+`"`)
 		probe("block", `bash <<< "`+R+`"`)
+		// A command named by a substitution is only known at runtime.
+		probe("ask", `sh <<< "$(echo rm -rf ~)"`)
+		probe("ask", "$(echo rm) -rf ~")
+		probe("ask", "`echo rm` -rf ~")
+		probe("pass", `x=$(pwd); echo "$x"`)
 		probe("block", "(( x = 1 << 2 ))\n"+R)
 		probe("block", "x=$((1<<2))\n"+R)
 		probe("block", "let \"x = 1 << 2\"\n"+R)
@@ -102,11 +107,14 @@ func TestGuardBashParsing(t *testing.T) {
 		probe("pass", `ls |& head`)
 		probe("pass", `echo "unterminated; rm -rf ~`)
 		// Syntax bash runs but the parser rejects: what completed before it is
-		// checked, and the rest asks rather than passing unchecked.
+		// checked, as is the rest of its line from the next separator, and what
+		// still can't be parsed asks rather than passing unchecked.
 		probe("block", `rm -rf ~; echo $((ls) )`)
 		probe("block", `git push --force origin feat; echo ${a[x y]}`)
 		probe("ask", "if true; then\n  rm -rf ~\n  echo $((ls) )\nfi")
-		probe("ask", `echo $((ls) ); rm -rf ~`)
+		probe("block", `echo $((ls) ); rm -rf ~`)
+		probe("block", `echo $((ls) ) && rm -rf ~`)
+		probe("ask", `echo "a;b" $((ls) )`)
 		probe("block", `echo $'a\'b'; rm -rf ~`)
 		probe("pass", `echo $'it\'s fine'`)
 		// Grouping, keywords, functions, wrappers, eval.
@@ -145,6 +153,16 @@ func TestGuardBashParsing(t *testing.T) {
 		probe("block", `cat < ~/.ssh/id_rsa`)
 		probe("block", `grep x < "$HOME/.ssh/id_ed25519"`)
 		probe("block", `echo x >> "$HOME/.zshrc"`)
+		probe("pass", `echo x >> '$HOME/.zshrc'`)
+		probe("block", `sort < .env`)
+		probe("block", `wc -l < ~/.ssh/id_rsa`)
+		probe("pass", `sort < notes.txt`)
+		// rc files written by a command, not a redirect; ln is the fix.
+		probe("block", `echo x | tee -a ~/.zshrc`)
+		probe("block", `cp x ~/.zshrc`)
+		probe("block", `mv x "$HOME/.zshrc"`)
+		probe("pass", `cp ~/.zshrc /tmp/x`)
+		probe("pass", `ln -sf ~/.dotfiles/.zshrc ~/.zshrc`)
 		// Overlay writes by any command, not only >, sed -i, and sd.
 		Touch(t, filepath.Join(k.Claude, "claude-kit.local.yml"))
 		probe("ask", `tee -a ~/.claude/claude-kit.local.yml`)

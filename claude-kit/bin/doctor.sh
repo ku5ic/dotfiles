@@ -612,7 +612,7 @@ if schema_warnings="$("$SCRIPT_DIR/kit" config --check 2>&1)"; then
 elif [[ "$schema_warnings" == *"no binary for"* ]]; then
   echo "skip           no kit binary for this platform (claude-kit/go/build.sh)"
 else
-  printf 'unknown-key    %s\n' "${schema_warnings//kit: warning: /}"
+  printf 'invalid        %s\n' "${schema_warnings//kit: warning: /}"
   exit_code=1
 fi
 

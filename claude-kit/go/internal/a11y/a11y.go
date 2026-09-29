@@ -96,7 +96,15 @@ func Run(cfg *config.Config, paths config.Paths, cwd string, args []string, stdo
 		fmt.Fprintln(stderr, "a11y-check:", err)
 		return 1
 	}
-	raw := strings.TrimSuffix(project.ReportPath(dir, "a11y-runtime", slug, time.Now().Format("20060102-1504")), ".md") + ".json"
+	stem := strings.TrimSuffix(project.ReportPath(dir, "a11y-runtime", slug, time.Now().Format("20060102-1504")), ".md")
+	raw := stem + ".json"
+	// A second run in the same minute keeps the first's results.
+	for n := 2; ; n++ {
+		if _, err := os.Stat(raw); err != nil {
+			break
+		}
+		raw = fmt.Sprintf("%s-%d.json", stem, n)
+	}
 
 	out, err := exec.Command(axe, url, "--stdout").Output()
 	if err != nil || os.WriteFile(raw, out, 0o644) != nil {

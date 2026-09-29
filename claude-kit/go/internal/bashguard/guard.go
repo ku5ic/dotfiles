@@ -192,6 +192,11 @@ func (st *state) segment(seg Segment) error {
 		if start >= len(call.Words) {
 			continue
 		}
+		// $(echo rm) -rf ~ names its command only at runtime, as does
+		// sh <<< "$(echo rm -rf ~)" once its body is parsed.
+		if raw := call.Words[start].Raw; strings.Contains(raw, "$(") || strings.Contains(raw, "`") {
+			st.ask("the command name comes from a substitution, so guard-bash can't check it; confirm it")
+		}
 		c := command{st: st, seg: seg, call: ci, name: baseName(call.Words[start].Value), args: call.Words[start+1:], redirs: call.Redirs, inputs: call.Inputs, idx: start}
 		c.rest = seg.Rest(ci, start)
 		c.text = c.name + c.rest
@@ -211,7 +216,8 @@ func (st *state) redirects(call Call) error {
 	for _, r := range call.Redirs {
 		target := r.Target.Value
 		// The quote-removed target: the whole-string regex misses >> "$HOME/.zshrc".
-		if guard.IsRCFile(st.cfg, target) {
+		// '$HOME/.zshrc' is a literal name in cwd, not the rc file.
+		if !strings.HasPrefix(r.Target.Raw, "'") && guard.IsRCFile(st.cfg, target) {
 			if err := st.h.Block("direct write to a shell rc file. Use the dotfiles repo.", "rc-redirect"); err != nil {
 				return err
 			}

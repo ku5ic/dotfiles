@@ -135,6 +135,18 @@ func (c *collector) parse(src string, depth int) {
 		}
 		c.stmts(src, before)
 	}
+	// The rest of the error line from its next separator on: rm -rf ~ in
+	// `echo $((ls) ); rm -rf ~`. A separator inside quotes can only add a
+	// false match, never hide a command.
+	if !syntax.IsIncomplete(err) && offset < len(src) {
+		tail := src[offset:]
+		if nl := strings.IndexByte(tail, '\n'); nl >= 0 {
+			tail = tail[:nl]
+		}
+		if i := strings.IndexAny(tail, ";&|"); i >= 0 {
+			c.parse(tail[i+1:], depth+1)
+		}
+	}
 	if rest := afterLine(src, line); rest != "" {
 		c.parse(rest, depth+1)
 	}

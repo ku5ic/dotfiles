@@ -207,7 +207,10 @@ func FileChecks(cfg *config.Config, root, base string, edited []string) (report,
 			g.Skip = res.skip
 		}
 		if g.Skip != "" {
-			fmt.Fprintf(&rep, "SKIP %s (%s)\n", label, g.Skip)
+			line := fmt.Sprintf("SKIP %s (%s)\n", label, g.Skip)
+			rep.WriteString(line)
+			// Also in a block's message, so the skipped count has its reasons.
+			fails.WriteString(line)
 			skip++
 			continue
 		}

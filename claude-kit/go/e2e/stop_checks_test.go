@@ -504,6 +504,16 @@ func TestStopChecks(t *testing.T) {
 		r.Has(t, "SKIP fakelint (1 file) (no cmd in kit.yml)")
 	})
 
+	t.Run("a block names why the skipped checks skipped", func(t *testing.T) {
+		e := stopChecksSetup(t)
+		e.k.KitYML(stopChecksKitYML + "  - name: nocmd\n    ext: [ts]\n    signal_files: [.fakelintrc]\n    bin: fakelint\n")
+		Touch(t, e.path("fail"))
+		e.turn("Edit", e.path("a.ts"))
+		r := e.stop(false)
+		r.Want(t, 2)
+		r.Has(t, "SKIP nocmd (1 file) (no cmd in kit.yml)")
+	})
+
 	t.Run("a file no check claims runs nothing", func(t *testing.T) {
 		e := stopChecksSetup(t)
 		e.turn("Write", e.path("notes.md"))

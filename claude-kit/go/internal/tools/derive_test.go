@@ -73,6 +73,22 @@ jobs:
 	}
 }
 
+func TestDeriveCIPrefersAStepWithFlags(t *testing.T) {
+	root := t.TempDir()
+	put(t, root, ".github/workflows/ci.yml", `
+jobs:
+  zeta:
+    steps:
+      - run: eslint --max-warnings 0 .
+  alpha:
+    steps:
+      - run: eslint --quiet .
+`)
+	if d, ok := adapter("eslint").Derive(root, root); !ok || !slices.Equal(d.Flags, []string{"--max-warnings", "0"}) {
+		t.Fatalf("%+v %v", d, ok)
+	}
+}
+
 func TestDeriveNothingFound(t *testing.T) {
 	dir := t.TempDir()
 	put(t, dir, "package.json", `{"scripts":{"lint":"biome check ."}}`)
