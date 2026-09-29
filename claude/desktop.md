@@ -208,7 +208,7 @@ My kit is `~/.dotfiles/claude-kit/`, a plugin symlinked into `~/.claude/`. Perso
 | `investigate`                                          | read-only investigation, model-invocable                                                 |
 | `*-patterns`, `wcag-audit`, `engineering-fundamentals` | stack reference skills, loaded by file type                                              |
 
-The procedural skills are `disable-model-invocation: true`: they run when typed, never on model initiative. Plan, implement, and verify use the built-ins: `/plan`, approving the plan, the `Stop` hook running `run-checks.sh`, and `/code-review`.
+The procedural skills are `disable-model-invocation: true`: they run when typed, never on model initiative. Plan, implement, and verify use the built-ins: `/plan`, approving the plan, the `Stop` hook running file-scoped checks on edited files, `/code-review` with the full `run-checks.sh` suite run alongside it (the built-in doesn't run it), and `/verify` for runtime observation.
 
 Agents at `~/.dotfiles/claude-kit/agents/`: `auditor`, `checker`, `debugger`, `plan-critic`, `researcher`, `tester` (never edits implementation).
 
