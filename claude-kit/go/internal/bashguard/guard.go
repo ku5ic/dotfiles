@@ -36,7 +36,6 @@ func (st *state) ask(reason string) {
 
 var (
 	forkBomb    = regexp.MustCompile(`:\(\)[[:space:]]*\{`)
-	pipeToShell = regexp.MustCompile(`(curl|wget)[[:space:]].*\|[[:space:]]*(sh|bash|zsh|fish|python|node|ruby|perl)`)
 	deviceWrite = regexp.MustCompile(`>[[:space:]]*/dev/(sd|nvme|disk|rdisk)`)
 	xargsRm     = regexp.MustCompile(`xargs[[:space:]]+((-[^[:space:]]+[[:space:]]+)*)rm[[:space:]]+-[a-zA-Z]*[rRfF]`)
 	sqQuoted    = regexp.MustCompile(`'[^']*'`)
@@ -60,15 +59,13 @@ func Check(h *hook.Hook) error {
 	home := os.Getenv("HOME")
 	norm := normalize(cmd)
 
-	// Whole-string checks: they need the full chain (curl and the shell sit
-	// on opposite sides of |), or are distinctive enough that quoted
-	// false positives aren't realistic.
+	// Whole-string checks, distinctive enough that quoted false positives
+	// aren't realistic.
 	full := []struct {
 		re           *regexp.Regexp
 		reason, rule string
 	}{
 		{forkBomb, "fork bomb pattern", "fork-bomb"},
-		{pipeToShell, "piping network content into an interpreter", "pipe-to-shell"},
 		{deviceWrite, "write to raw disk device", "device-write"},
 	}
 	for _, f := range full {
@@ -183,8 +180,40 @@ func lead(words []Word) int {
 	return i
 }
 
+var interpreters = map[string]bool{"sh": true, "bash": true, "zsh": true, "dash": true, "fish": true, "node": true, "ruby": true, "perl": true}
+
+// pipeToShell blocks a download piped into an interpreter later in the
+// same pipeline (curl x | sh, wget -O- x | tee log | sudo bash). Parsed
+// calls, not the raw string: "curl x | sh" as quoted text is data.
+func (st *state) pipeToShell(seg Segment) error {
+	fetched := false
+	for _, call := range seg.Calls {
+		words := call.Words[lead(call.Words):]
+		if len(words) > 0 && baseName(words[0].Value) == "sudo" {
+			words = words[1:]
+			for len(words) > 0 && strings.HasPrefix(words[0].Value, "-") {
+				words = words[1:]
+			}
+		}
+		if len(words) == 0 {
+			continue
+		}
+		name := baseName(words[0].Value)
+		if fetched && (interpreters[name] || strings.HasPrefix(name, "python")) {
+			return st.h.Block("piping network content into an interpreter", "pipe-to-shell")
+		}
+		if name == "curl" || name == "wget" {
+			fetched = true
+		}
+	}
+	return nil
+}
+
 // segment runs the per-command checks on every command of a pipeline.
 func (st *state) segment(seg Segment) error {
+	if err := st.pipeToShell(seg); err != nil {
+		return err
+	}
 	for ci, call := range seg.Calls {
 		if err := st.redirects(call); err != nil {
 			return err
