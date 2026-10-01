@@ -8,7 +8,7 @@
   <key>ProgramArguments</key>
   <array>
     <string>__BREW_BASH__</string>
-    <string>__HOME__/.claude/bin/scratch-rotate.sh</string>
+    <string>__HOME__/.claude/plugins/marketplaces/ku5ic/bin/scratch-rotate.sh</string>
   </array>
   <key>StartCalendarInterval</key>
   <dict>

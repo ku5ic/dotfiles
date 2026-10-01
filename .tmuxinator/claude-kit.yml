@@ -1,0 +1,22 @@
+name: claude-kit
+root: ~/Projects/claude-kit/
+enable_pane_titles: true
+
+windows:
+  - editor:
+      layout: main-horizontal
+      panes:
+        - nvim:
+            - nvim
+        - terminal:
+  # Loads this checkout as the plugin, rebuilding bin/kit from go/ when it changes.
+  - claude:
+      - KIT_DEV=1 CLAUDE_KIT_DEV="$PWD" claude --plugin-dir "$PWD"
+  - terminal:
+      layout: even-horizontal
+      panes:
+        - go:
+            - cd go
+            - clear
+        - shell:
+            -

@@ -87,8 +87,6 @@ create_symlinks() {
   ln -sfv "$DOTFILES_DIR/.editorconfig" ~
   ln -sfv "$DOTFILES_DIR/.hammerspoon" ~
 
-  bash "$DOTFILES_DIR/claude-kit/bin/bootstrap.sh" --non-interactive
-
   mkdir -p ~/.config
   ln -sfv "$DOTFILES_DIR/config/nvim" ~/.config/
   ln -sfv "$DOTFILES_DIR/config/wezterm" ~/.config/
@@ -97,6 +95,29 @@ create_symlinks() {
 
   mkdir -p "$HOME/Library/Application Support/upterm"
   ln -sfv "$DOTFILES_DIR/config/upterm/config.yaml" "$HOME/Library/Application Support/upterm/config.yaml"
+}
+
+# Personal Claude config is linked from claude/; claude-kit itself is a plugin
+# from ku5ic/claude-kit, whose marketplace clone also supplies the rules and
+# the bin/ scripts on PATH.
+setup_claude() {
+  mkdir -p ~/.claude
+  local entry
+  for entry in settings.json CLAUDE.md rules claude-kit.local.yml; do
+    ln -sfnv "$DOTFILES_DIR/claude/$entry" ~/.claude/"$entry"
+  done
+
+  if ! command -v claude >/dev/null 2>&1; then
+    echo "install.sh: WARN: claude CLI not found; re-run install.sh after installing Claude Code" >&2
+    return
+  fi
+  [[ -d ~/.claude/plugins/marketplaces/ku5ic ]] || claude plugin marketplace add ku5ic/claude-kit
+  claude plugin details claude-kit >/dev/null 2>&1 || claude plugin install claude-kit@ku5ic
+  ~/.claude/plugins/marketplaces/ku5ic/install-rules.sh
+
+  claude mcp get context7 >/dev/null 2>&1 || claude mcp add -s user context7 -- npx -y @upstash/context7-mcp
+  claude mcp get foxhole >/dev/null 2>&1 || claude mcp add -s user foxhole -- foxhole mcp
+  claude mcp get playwright >/dev/null 2>&1 || claude mcp add -s user playwright -- npx @playwright/mcp@latest
 }
 
 install_launchd_agents() {
@@ -116,8 +137,6 @@ install_launchd_agents() {
 fix_permissions() {
   find "$DOTFILES_DIR/scripts" \
     "$DOTFILES_DIR/completions/" \
-    "$DOTFILES_DIR/claude-kit/bin" \
-    "$DOTFILES_DIR/claude-kit/hooks" \
     "$DOTFILES_DIR/macos" \
     -type f -name '*.sh' -exec chmod +x {} +
 }
@@ -162,6 +181,8 @@ main() {
   fix_permissions
   CURRENT_STAGE="create_symlinks"
   create_symlinks
+  CURRENT_STAGE="setup_claude"
+  setup_claude
   CURRENT_STAGE="install_launchd_agents"
   install_launchd_agents
   CURRENT_STAGE="setup_asdf"

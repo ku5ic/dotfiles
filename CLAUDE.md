@@ -20,7 +20,7 @@ ln -sfv ~/.dotfiles/config/nvim ~/.config/
 
 ## Structure
 
-Claude Code config is split in two, both symlinked into `~/.claude/` by `claude-kit/bin/bootstrap.sh`. `claude-kit/` is the shareable plugin (`agents/`, `hooks/`, `skills/`, `rules/`, `bin/`, `kit.yml`, the Go source and its tests in `go/`, bats tests for the bash scripts in `tests/`); `claude/` is personal (`settings.json`, `CLAUDE.md`, `rules/voice.md`, and `rules/kit` linking to the kit rules). `~/.claude/bin` is on `$PATH` via `.zprofile`. `claude/desktop.md` holds the Claude desktop instructions, pasted in by hand; its section 11 names the rule files it mirrors. Neovim config lives in `config/nvim/`, see `config/nvim/CLAUDE.md`.
+Claude Code config is split in two. The shareable kit is the `claude-kit@ku5ic` plugin from [ku5ic/claude-kit](https://github.com/ku5ic/claude-kit); its marketplace clone at `~/.claude/plugins/marketplaces/ku5ic/` supplies the rules (linked as `claude/rules/claude-kit`, gitignored) and the `bin/` scripts, which `.zprofile` puts on `$PATH`. `claude/` is personal (`settings.json`, `CLAUDE.md`, `rules/voice.md`, `claude-kit.local.yml`), linked into `~/.claude/` by `install.sh`. Kit changes go to the kit repo (clone at `~/Projects/claude-kit`), not here. `claude/desktop.md` holds the Claude desktop instructions, pasted in by hand; its section 11 names the rule files it mirrors. Neovim config lives in `config/nvim/`, see `config/nvim/CLAUDE.md`.
 
 ## Neovim Architecture
 
@@ -32,6 +32,6 @@ See `config/nvim/CLAUDE.md` for the entry point, plugin file layout, augroups, a
 
 Branch naming via `branch_name.sh`: `<type>/<ISSUE-ID>/<slug>` or `<type>/<slug>` (no issue id). Types: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `build`, `ci`, `chore`, `style`, `release`, `poc`, `spike`, `wip`, `draft`, `temp`, `drill`, `sandbox`, `personal`, `exp`, `try`. Use `--checkout` flag to create and switch in one step. Tab-completion is registered via `completions/_branch_name.sh`.
 
-`claude-kit/bin/git-base.sh` prints the current branch's base (upstream, then `origin/HEAD`, then main/master/develop/trunk, or a base passed as an argument); `--diff` and `--log` print the diff and log against it. It is on `$PATH` via `~/.claude/bin`, so it is callable by bare name.
+The kit's `git-base.sh` prints the current branch's base (upstream, then `origin/HEAD`, then main/master/develop/trunk, or a base passed as an argument); `--diff` and `--log` print the diff and log against it. It is on `$PATH` via the marketplace clone's `bin/`, so it is callable by bare name.
 
 Machine-local shell overrides go in `~/.zshrc.local` (sourced at the end of `.zshrc`, not tracked in this repo).

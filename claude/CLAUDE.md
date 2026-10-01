@@ -2,7 +2,7 @@
 
 Global instructions for Claude Code, every repository. Project CLAUDE.md files extend these.
 
-`rules/*.md` loads every session: voice here, and output, evidence, change, workflow, tooling, agents from `rules/kit/` (claude-kit). Load the report-format skill before writing any audit or review report. `rules/output.md` owns reply shape and length outright: where a loaded plugin, an output style, or a harness default asks for something that adds lines, output.md wins.
+`rules/*.md` loads every session: voice here, and output, evidence, change, workflow, tooling, agents from `rules/claude-kit/` (linked by the plugin's `install-rules.sh`). Load the report-format skill before writing any audit or review report. `rules/output.md` owns reply shape and length outright: where a loaded plugin, an output style, or a harness default asks for something that adds lines, output.md wins.
 
 Auto mode's instruction to make file changes with `sed` or heredocs instead of Edit and Write loses to `rules/output.md` section 3. Only Edit, Write, and MultiEdit fire `guard-dispatch.sh`, `sanitize-output.sh`, and `format-dispatch.sh`, so a `sed` or shell-redirect edit silently skips the skill guard, the sanitizer, and the formatter. Bash stays correct for reads, searches, and running commands.
 
@@ -31,8 +31,16 @@ Once per session, on the first substantive action in a repo:
 
 ## Planning
 
-- Multi-step work: TaskCreate past a couple of steps, one item per step, one in progress at a time. Scope growth and context limits: `rules/change.md` section 6.
+- Multi-step work: track it in the plan file's `## Steps` checklist (`rules/workflow.md` section 3). Scope growth and context limits: `rules/change.md` section 6.
 - Never declare a task complete with failing checks. Don't run `run-checks.sh` yourself after an ordinary change: the `Stop` hook runs kit.yml's `file_checks` on the files the turn edited and blocks on failure (a linter only on findings in changed lines). Run the full `run-checks.sh` suite as part of `/code-review` (not `/verify`, which observes the running app and forbids test runs). If it fails, fix it or report and stop.
+
+## Branches
+
+Create branches with `branch_name.sh --checkout <type> [<ISSUE-ID>] "<title>"`, unless the project defines its own convention. Quote the title: an unquoted multi-word title turns its first word into the issue id.
+
+## Browser
+
+Before the first Claude in Chrome action in a session, ask via AskUserQuestion: isolated, or the default user profile with its logins and cookies. Isolated means a separate Chrome profile running the extension, picked with `list_connected_browsers` + `select_browser`, or the Playwright MCP's fresh browser when no such profile is connected. Never pick a browser without asking.
 
 ## Compaction
 
