@@ -456,7 +456,7 @@
           {
             "type": "command",
             "command": "$HOME/.claude/hooks/inject-context.sh",
-            "timeout": 15
+            "timeout": 30
           }
         ]
       }
