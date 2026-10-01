@@ -1,3 +1,6 @@
+# Linked by the claude-kit plugin's install-rules.sh (~/.claude/rules points here).
+claude/rules/claude-kit
+
 ### OSX ###
 .DS_Store
 .AppleDouble

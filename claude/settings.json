@@ -1,6 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "cleanupPeriodDays": 30,
+  "syncClaudeAiPlugins": false,
   "skillListingBudgetFraction": 0.04,
   "env": {
     "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION": "30",
@@ -350,7 +351,10 @@
       "Edit(**/.prettierrc*)"
     ],
     "defaultMode": "auto",
-    "additionalDirectories": ["~/.claude", "~/.dotfiles"]
+    "additionalDirectories": [
+      "~/.claude",
+      "~/.dotfiles"
+    ]
   },
   "model": "opus[1m]",
   "skillOverrides": {
@@ -374,156 +378,22 @@
     "typescript-patterns": "name-only",
     "vue-patterns": "name-only"
   },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/guard-bash.sh",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/guard-commit.sh",
-            "timeout": 5
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write|MultiEdit|Read",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/guard-dispatch.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/sanitize-output.sh",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/format-dispatch.sh",
-            "timeout": 15
-          }
-        ]
-      },
-      {
-        "matcher": "Read",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/log-skills.sh",
-            "timeout": 5
-          }
-        ]
-      },
-      {
-        "matcher": "Skill",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/log-skills.sh",
-            "timeout": 5
-          }
-        ]
-      },
-      {
-        "matcher": "ExitPlanMode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/plan-mode-context.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "startup|resume|compact|clear",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/inject-context.sh",
-            "timeout": 30
-          }
-        ]
-      }
-    ],
-    "UserPromptExpansion": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/log-skills.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/plan-mode-context.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/stop-checks.sh",
-            "timeout": 300
-          }
-        ]
-      }
-    ],
-    "SubagentStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/inject-subagent-context.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ]
-  },
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/bin/statusline.sh",
+    "command": "~/.claude/plugins/marketplaces/ku5ic/bin/statusline.sh",
     "padding": 0,
     "refreshInterval": 1
   },
   "subagentStatusLine": {
     "type": "command",
-    "command": "~/.claude/bin/subagent-statusline.sh"
+    "command": "~/.claude/plugins/marketplaces/ku5ic/bin/subagent-statusline.sh"
   },
   "enabledPlugins": {
     "security-guidance@claude-plugins-official": false,
     "frontend-spacelift@spacelift-engineering": true,
-    "ponytail@ponytail": true
+    "ponytail@ponytail": true,
+    "claude-kit@ku5ic": true
   },
-  "syncClaudeAiPlugins": false,
-  "plansDirectory": ".claude/plans",
   "extraKnownMarketplaces": {
     "spacelift-engineering": {
       "source": {
@@ -535,6 +405,12 @@
       "source": {
         "source": "github",
         "repo": "DietrichGebert/ponytail"
+      }
+    },
+    "ku5ic": {
+      "source": {
+        "source": "github",
+        "repo": "ku5ic/claude-kit"
       }
     }
   },
@@ -548,16 +424,21 @@
     }
   },
   "awaySummaryEnabled": false,
+  "plansDirectory": ".claude/plans",
   "autoMemoryEnabled": true,
   "theme": "auto",
   "editorMode": "vim",
   "agentPushNotifEnabled": true,
   "autoMode": {
-    "allow": ["$defaults"],
+    "allow": [
+      "$defaults"
+    ],
     "soft_deny": [
       "$defaults",
       "Never run database migrations outside the project's migration CLI, even against a dev database"
     ],
-    "hard_deny": ["$defaults"]
+    "hard_deny": [
+      "$defaults"
+    ]
   }
 }
