@@ -78,6 +78,10 @@ eval "$(atuin init zsh)"
 # 1Password-cli completions
 eval "$(op completion zsh)"; compdef _op op
 
+# Claude-kit
+eval "$(kit completion zsh)"
+
+
 # Editor: nvim for interactive shells, no-op for scripts and background contexts
 if [[ -o interactive ]]; then
   export EDITOR='nvim'
