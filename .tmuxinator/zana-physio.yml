@@ -1,6 +1,5 @@
 name: ZanaPhysio
 root: ~/Projects/ZanaKadric/Code/ZanaPhysio/
-pre_window: source ./backend/.venv/bin/activate
 enable_pane_titles: true
 
 windows:
@@ -10,15 +9,6 @@ windows:
         - nvim:
             - nvim
         - root:
-            - clear
-        - frontend:
-            - clear
-            - cd ./frontend
-            - clear
-        - backend:
-            - clear
-            - cd ./backend
-            - clear
   - claude:
       panes:
         - claude
@@ -28,7 +18,7 @@ windows:
         - backend:
             - cd backend
             - clear
-            - python manage.py runserver
+            - uv run manage.py runserver
         - frontend:
             - cd frontend
             - clear
