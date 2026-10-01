@@ -28,6 +28,34 @@ list_panes() {
   tmux list-panes -t "$session_window" -F "${session_window}.#{pane_index}"$'\t'"      #{pane_index}: #{pane_current_command} (#{pane_current_path})"
 }
 
+# Relists the target's own level, climbing when a kill took the parent with it
+# (last pane closes its window, last window closes its session).
+list_siblings() {
+  local target="$1"
+  if [[ "$target" == *.* ]]; then
+    list_panes "${target%.*}" 2>/dev/null || list_windows "${target%%:*}" 2>/dev/null || list_sessions
+  elif [[ "$target" == *:* ]]; then
+    list_windows "${target%%:*}" 2>/dev/null || list_sessions
+  else
+    list_sessions
+  fi
+}
+
+kill_target() {
+  local target="$1" kind reply
+  if [[ "$target" == *.* ]]; then
+    kind=pane
+  elif [[ "$target" == *:* ]]; then
+    kind=window
+  else
+    kind=session
+  fi
+  read -r -n 1 -p "Kill $kind $target? [y/N] " reply </dev/tty
+  if [[ "$reply" == [yY] ]]; then
+    tmux "kill-$kind" -t "$target"
+  fi
+}
+
 case "${1:-}" in
 --sessions)
   list_sessions
@@ -53,16 +81,25 @@ case "${1:-}" in
   fi
   exit 0
   ;;
+--kill)
+  kill_target "$2"
+  exit 0
+  ;;
+--siblings)
+  list_siblings "$2"
+  exit 0
+  ;;
 esac
 
 selection="$(list_sessions | fzf --reverse \
   --delimiter=$'\t' --with-nth=2 \
-  --header='enter: switch  ->: expand  <-: collapse  ctrl-/: bigger preview' \
+  --header='enter: switch  ->: expand  <-: collapse  ctrl-x: kill  ctrl-/: bigger preview' \
   --preview 'tmux capture-pane -ep -t {1}' \
   --preview-window=down,70%,nowrap \
   --bind 'ctrl-/:change-preview-window(down,90%,nowrap|down,70%,nowrap)' \
   --bind "right:reload($self --children {1})" \
-  --bind "left:reload($self --parent {1})")" || exit 0
+  --bind "left:reload($self --parent {1})" \
+  --bind "ctrl-x:execute($self --kill {1})+reload($self --siblings {1})")" || exit 0
 
 target="${selection%%$'\t'*}"
 tmux switch-client -t "$target"
