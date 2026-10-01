@@ -190,8 +190,6 @@
       "mcp__claude_ai_Figma__*search_design_system",
       "mcp__claude_ai_Figma__*whoami",
       "mcp__claude_ai_PubMed__*search_articles",
-      "mcp__codebase-memory-mcp__list_projects",
-      "mcp__codebase-memory-mcp__index_status",
       "mcp__claude-in-chrome__navigate",
       "mcp__claude-in-chrome__get_page_text",
       "mcp__claude-in-chrome__tabs_context_mcp",
