@@ -21,6 +21,10 @@ set -euo pipefail
 #   allow_force_pushes      = false
 #   allow_deletions         = false
 #   enforce_admins          = false  (repo owner bypasses all rules)
+#   required_status_checks  = the checks that ran on the repo's latest PR, or
+#                             none when it has no PR with checks. Push-only
+#                             jobs (a release on main) never run on a PR, so
+#                             they never become required and block merges.
 #
 # Requirements: gh (authenticated), jq.
 
@@ -126,49 +130,63 @@ show_diff() {
   '
 }
 
+# Prints the sorted JSON array of check names that ran on the repo's most
+# recent PR (any state), or [] when it has none.
+required_checks() {
+  local full_name="$1" sha
+  sha="$(gh pr list -R "$full_name" --state all --limit 1 --json headRefOid --jq '.[0].headRefOid // empty' 2>/dev/null)" || sha=""
+  if [[ -z "$sha" ]]; then
+    echo '[]'
+    return 0
+  fi
+  gh api "/repos/$full_name/commits/$sha/check-runs?per_page=100" \
+    --jq '[.check_runs[].name] | unique' 2>/dev/null || echo '[]'
+}
+
 # Prints one line per protection field that differs from the target.
-# Prints nothing when already matching. On 404 (no rule exists), prints all
-# four fields as needing change.
+# Prints nothing when already matching. On 404 (no rule exists), prints
+# every field as needing change.
 show_protection_diff() {
-  local full_name="$1" default_branch="$2"
+  local full_name="$1" default_branch="$2" checks="$3"
   local response
   if ! response="$(gh api "/repos/$full_name/branches/$default_branch/protection" 2>/dev/null)"; then
     printf '%s\n' \
       "required_linear_history: (none) -> true" \
       "allow_force_pushes: (none) -> false" \
       "allow_deletions: (none) -> false" \
-      "enforce_admins: (none) -> false"
+      "enforce_admins: (none) -> false" \
+      "required_status_checks: (none) -> $checks"
     return 0
   fi
-  printf '%s' "$response" | jq -r '
+  printf '%s' "$response" | jq -r --argjson checks "$checks" '
+    ((.required_status_checks.contexts // []) | sort) as $current |
     [
       if .required_linear_history.enabled != true  then "required_linear_history: \(.required_linear_history.enabled) -> true"  else empty end,
       if .allow_force_pushes.enabled      != false then "allow_force_pushes: \(.allow_force_pushes.enabled) -> false"            else empty end,
       if .allow_deletions.enabled         != false then "allow_deletions: \(.allow_deletions.enabled) -> false"                  else empty end,
-      if .enforce_admins.enabled          != false then "enforce_admins: \(.enforce_admins.enabled) -> false"                    else empty end
+      if .enforce_admins.enabled          != false then "enforce_admins: \(.enforce_admins.enabled) -> false"                    else empty end,
+      if $current != $checks then "required_status_checks: \($current | tojson) -> \($checks | tojson)" else empty end
     ] | .[]
   '
 }
 
 apply_branch_protection() {
-  local full_name="$1" default_branch="$2"
-  gh api \
+  local full_name="$1" default_branch="$2" checks="$3"
+  jq -n --argjson checks "$checks" '{
+    required_status_checks: (if $checks == [] then null else {strict: false, contexts: $checks} end),
+    enforce_admins: false,
+    required_pull_request_reviews: null,
+    restrictions: null,
+    required_linear_history: true,
+    allow_force_pushes: false,
+    allow_deletions: false,
+    block_creations: false,
+    required_conversation_resolution: false
+  }' | gh api \
     --method PUT \
     -H "Accept: application/vnd.github+json" \
     "/repos/$full_name/branches/$default_branch/protection" \
-    --input - <<'BODY' >/dev/null
-{
-  "required_status_checks": null,
-  "enforce_admins": false,
-  "required_pull_request_reviews": null,
-  "restrictions": null,
-  "required_linear_history": true,
-  "allow_force_pushes": false,
-  "allow_deletions": false,
-  "block_creations": false,
-  "required_conversation_resolution": false
-}
-BODY
+    --input - >/dev/null
 }
 
 i=0
@@ -186,7 +204,8 @@ for line in "${repos[@]}"; do
   fi
 
   merge_diff="$(show_diff "$full_name")"
-  protection_diff="$(show_protection_diff "$full_name" "$default_branch")"
+  checks="$(required_checks "$full_name")"
+  protection_diff="$(show_protection_diff "$full_name" "$default_branch" "$checks")"
 
   if [[ -z "$merge_diff" && -z "$protection_diff" ]]; then
     echo "  already up to date"
@@ -231,7 +250,7 @@ for line in "${repos[@]}"; do
         fi
       fi
       if [[ -n "$protection_diff" ]]; then
-        if apply_branch_protection "$full_name" "$default_branch"; then
+        if apply_branch_protection "$full_name" "$default_branch" "$checks"; then
           echo "  branch protection: applied"
         else
           echo "  branch protection: failed"
