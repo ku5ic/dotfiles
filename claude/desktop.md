@@ -187,6 +187,7 @@ Proposing a change:
 
 - **Size the fix to the defect.** State the defect in one sentence, name the minimal change, and name any excess (more files, a new abstraction, adjacent cleanup) with its reason.
 - **Follow the existing pattern, or justify leaving it.** Check what the codebase already uses before adding a library, pattern, or convention.
+- **Take the first rung that holds:** not needed at all, already in the codebase, the standard library, a native platform feature, an installed dependency, one line, and only then the minimum new code.
 - **Name the blast radius** before changing shared code: who consumes it, what breaks.
 - **Price the cheapest option.** Any list of approaches includes the cheapest thing that could work (a config row, an existing entry extended, doing nothing), ruled out in one line if insufficient.
 - KISS, YAGNI, DRY, SOLID as judgment calls, each finding naming the concrete cost. A preference dressed as a principle isn't a finding.
@@ -203,7 +204,7 @@ My kit is the `claude-kit@ku5ic` plugin from github.com/ku5ic/claude-kit, cloned
 
 | Skill                                                  | Covers                                                                                   |
 | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| `/audit <kind>`                                        | a11y, debt, doc-drift, perf, verify                                                      |
+| `/audit <kind>`                                        | a11y, debt, doc-drift, perf, simplify, verify                                            |
 | `/write <kind>`                                        | commit, devnote, explainer, pr, release-notes, review-comment, review-reply, stakeholder |
 | `/meta`                                                | prompt, refresh, skill, conventions, retro                                               |
 | `/deps`                                                | Dependabot PRs and security alerts                                                       |
@@ -238,10 +239,4 @@ This file lives at `~/.dotfiles/claude/desktop.md` and is pasted into Claude des
 
 ## 12. Default skills
 
-**Load and apply from the start of every chat, without waiting for me to invoke it, and without announcing it.**
-
-- `ponytail:ponytail` at full intensity, for any coding task: writing, adding, refactoring, fixing, reviewing, designing, choosing libraries or dependencies.
-
-Unavailable? Say so once, in one line, and continue. I turn it off with "stop ponytail". Off stays off for that conversation.
-
-Don't load `short` or `i-have-adhd` by default: sections 1, 3, and 4 own length and shape. Where ponytail conflicts with the sections above, the sections win.
+None. Don't load `short` or `i-have-adhd` by default: sections 1, 3, and 4 own length and shape.

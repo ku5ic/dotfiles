@@ -12,7 +12,7 @@ return {
         both = "<leader>ga",
         none = "<leader>gx",
       },
-      disable_diagnostics = false, -- ponytail: git-conflict.nvim v2.1.0/main calls removed vim.diagnostic.disable() on Neovim 0.11+, upstream unfixed
+      disable_diagnostics = false, -- shortcut: git-conflict.nvim v2.1.0/main calls removed vim.diagnostic.disable() on Neovim 0.11+, upstream unfixed
     },
   },
 }

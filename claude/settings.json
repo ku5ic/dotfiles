@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "cleanupPeriodDays": 30,
-  "syncClaudeAiPlugins": false,
   "syncClaudeAiSkills": false,
+  "syncClaudeAiPlugins": false,
   "skillListingBudgetFraction": 0.04,
   "env": {
     "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION": "30",
@@ -392,7 +392,6 @@
   "enabledPlugins": {
     "security-guidance@claude-plugins-official": false,
     "frontend-spacelift@spacelift-engineering": true,
-    "ponytail@ponytail": true,
     "claude-kit@ku5ic": true
   },
   "extraKnownMarketplaces": {
@@ -400,12 +399,6 @@
       "source": {
         "source": "github",
         "repo": "spacelift-io/engineering-agent-skills"
-      }
-    },
-    "ponytail": {
-      "source": {
-        "source": "github",
-        "repo": "DietrichGebert/ponytail"
       }
     },
     "ku5ic": {
