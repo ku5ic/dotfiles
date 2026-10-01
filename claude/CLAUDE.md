@@ -34,6 +34,14 @@ Once per session, on the first substantive action in a repo:
 - Multi-step work: TaskCreate past a couple of steps, one item per step, one in progress at a time. Scope growth and context limits: `rules/change.md` section 6.
 - Never declare a task complete with failing checks. Don't run `run-checks.sh` yourself after an ordinary change: the `Stop` hook runs kit.yml's `file_checks` on the files the turn edited and blocks on failure (a linter only on findings in changed lines). Run the full `run-checks.sh` suite as part of `/code-review` (not `/verify`, which observes the running app and forbids test runs). If it fails, fix it or report and stop.
 
+## Branches
+
+Create branches with `branch_name.sh --checkout <type> [<ISSUE-ID>] "<title>"`, unless the project defines its own convention. Quote the title: an unquoted multi-word title turns its first word into the issue id.
+
+## Browser
+
+Before the first Claude in Chrome action in a session, ask via AskUserQuestion: isolated, or the default user profile with its logins and cookies. Isolated means a separate Chrome profile running the extension, picked with `list_connected_browsers` + `select_browser`, or the Playwright MCP's fresh browser when no such profile is connected. Never pick a browser without asking.
+
 ## Compaction
 
 When compacting, preserve: the current plan file path and which step is next, every file modified this session, and the check commands run with their last result.
