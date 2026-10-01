@@ -20,7 +20,7 @@ ln -sfv ~/.dotfiles/config/nvim ~/.config/
 
 ## Structure
 
-Claude Code config is split in two. The shareable kit is the `claude-kit@ku5ic` plugin from [ku5ic/claude-kit](https://github.com/ku5ic/claude-kit); its marketplace clone at `~/.claude/plugins/marketplaces/ku5ic/` supplies the rules (linked as `claude/rules/claude-kit`, gitignored) and the `bin/` scripts, which `.zprofile` puts on `$PATH`. `claude/` is personal (`settings.json`, `CLAUDE.md`, `rules/voice.md`, `claude-kit.local.yml`), linked into `~/.claude/` by `install.sh`. Kit changes go to the kit repo's `dev` branch, not here. `claude/desktop.md` holds the Claude desktop instructions, pasted in by hand; its section 11 names the rule files it mirrors. Neovim config lives in `config/nvim/`, see `config/nvim/CLAUDE.md`.
+Claude Code config is split in two. The shareable kit is the `claude-kit@ku5ic` plugin from [ku5ic/claude-kit](https://github.com/ku5ic/claude-kit); its marketplace clone at `~/.claude/plugins/marketplaces/ku5ic/` supplies the rules (linked as `claude/rules/claude-kit`, gitignored) and the `bin/` scripts, which `.zprofile` puts on `$PATH`. `claude/` is personal (`settings.json`, `CLAUDE.md`, `rules/voice.md`, `claude-kit.local.yml`), linked into `~/.claude/` by `install.sh`. Kit changes go to the kit repo (clone at `~/Projects/claude-kit`), not here. `claude/desktop.md` holds the Claude desktop instructions, pasted in by hand; its section 11 names the rule files it mirrors. Neovim config lives in `config/nvim/`, see `config/nvim/CLAUDE.md`.
 
 ## Neovim Architecture
 
