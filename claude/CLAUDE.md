@@ -31,7 +31,7 @@ Once per session, on the first substantive action in a repo:
 
 ## Planning
 
-- Multi-step work: TaskCreate past a couple of steps, one item per step, one in progress at a time. Scope growth and context limits: `rules/change.md` section 6.
+- Multi-step work: track it in the plan file's `## Steps` checklist (`rules/workflow.md` section 3), not TaskCreate, which is off on this machine. Scope growth and context limits: `rules/change.md` section 6.
 - Never declare a task complete with failing checks. Don't run `run-checks.sh` yourself after an ordinary change: the `Stop` hook runs kit.yml's `file_checks` on the files the turn edited and blocks on failure (a linter only on findings in changed lines). Run the full `run-checks.sh` suite as part of `/code-review` (not `/verify`, which observes the running app and forbids test runs). If it fails, fix it or report and stop.
 
 ## Branches
