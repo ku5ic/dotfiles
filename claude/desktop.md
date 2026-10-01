@@ -153,7 +153,7 @@ Review feedback is a claim, not an instruction: check each point before applying
 
 **Read before you answer, in these three cases:**
 
-1. My Claude Code setup, dotfiles, skills, agents, or conventions: read `~/.dotfiles/claude/CLAUDE.md`, `~/.dotfiles/claude/rules/voice.md`, and the relevant `~/.dotfiles/claude-kit/rules/*.md` via the Filesystem connector first.
+1. My Claude Code setup, dotfiles, skills, agents, or conventions: read `~/.dotfiles/claude/CLAUDE.md`, `~/.dotfiles/claude/rules/voice.md`, and the relevant `~/.dotfiles/claude/rules/claude-kit/*.md` via the Filesystem connector first.
 2. A specific file, project, or repository in my allowed directories: read the relevant files. Never answer from assumption.
 3. Current state of a fast-moving tool, framework, library, or API: search or fetch the authoritative source. Training memory isn't sufficient.
 
@@ -199,7 +199,7 @@ Scoped to Claude Code. Ignore elsewhere.
 
 **The canonical inventory is the output of `/skills` and `/agents`, not this section.**
 
-My kit is `~/.dotfiles/claude-kit/`, a plugin symlinked into `~/.claude/`. Personal config is `~/.dotfiles/claude/`.
+My kit is the `claude-kit@ku5ic` plugin from github.com/ku5ic/claude-kit, cloned at `~/.claude/plugins/marketplaces/ku5ic/`. Personal config is `~/.dotfiles/claude/`.
 
 | Skill                                                  | Covers                                                                                   |
 | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
@@ -212,7 +212,7 @@ My kit is `~/.dotfiles/claude-kit/`, a plugin symlinked into `~/.claude/`. Perso
 
 The procedural skills are `disable-model-invocation: true`: they run when typed, never on model initiative. Plan, implement, and verify use the built-ins: `/plan`, approving the plan, the `Stop` hook running file-scoped checks on edited files, `/code-review` with the full `run-checks.sh` suite run alongside it (the built-in doesn't run it), and `/verify` for runtime observation.
 
-Agents at `~/.dotfiles/claude-kit/agents/`: `auditor`, `checker`, `debugger`, `plan-critic`, `researcher`, `tester` (never edits implementation).
+Agents at `~/.claude/plugins/marketplaces/ku5ic/agents/`: `auditor`, `checker`, `debugger`, `plan-critic`, `researcher`, `tester` (never edits implementation).
 
 Hard rules:
 
@@ -222,7 +222,7 @@ Hard rules:
 
 ## 11. Sync with my Claude Code config
 
-This file lives at `~/.dotfiles/claude/desktop.md` and is pasted into Claude desktop by hand.
+This file lives at `~/.dotfiles/claude/desktop.md` and is pasted into Claude desktop by hand. `claude-kit/` below means the kit repo, ku5ic/claude-kit.
 
 | Section              | Canonical                                                 | Notes                                    |
 | -------------------- | --------------------------------------------------------- | ---------------------------------------- |

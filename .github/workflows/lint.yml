@@ -1,38 +1,12 @@
 name: lint
 
+# claude-kit has its own CI in ku5ic/claude-kit; this covers the dotfiles' own scripts.
 on:
   push:
     branches: [main]
   pull_request:
 
 jobs:
-  go:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: claude-kit/go
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-go@v7
-        with:
-          go-version-file: claude-kit/go/go.mod
-          cache-dependency-path: claude-kit/go/go.sum
-
-      - name: gofmt
-        run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
-
-      - name: vet
-        run: go vet ./...
-
-      # Before test: the launcher tests run the real shims, which need the
-      # binary for this platform.
-      - name: build
-        run: ./build.sh
-
-      - name: test
-        run: go test ./...
-
   shell:
     runs-on: ubuntu-latest
     steps:
@@ -44,16 +18,8 @@ jobs:
           sudo apt-get install -y shellcheck bats
 
       - name: shellcheck
-        run: shellcheck -x -P SCRIPTDIR claude-kit/bin/*.sh claude-kit/bin/kit claude-kit/hooks/*.sh claude-kit/install-rules.sh claude-kit/go/build.sh
+        # completions/ are zsh, which shellcheck can't parse.
+        run: find scripts macos install.sh -name '*.sh' -exec shellcheck -S warning -x -P SCRIPTDIR {} +
 
       - name: bats
-        run: bats claude-kit/tests/ tests/
-
-      - name: doctor
-        run: CI=true bash claude-kit/bin/doctor.sh
-
-      - name: Install Claude Code CLI
-        run: npm install -g @anthropic-ai/claude-code
-
-      - name: claude plugin validate
-        run: claude plugin validate ./claude-kit
+        run: bats tests/

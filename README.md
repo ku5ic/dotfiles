@@ -25,7 +25,7 @@ This repo fixes that. Every config lives here, under git, and gets symlinked int
 
 Guardrails for Claude Code. It blocks dangerous commands like `rm -rf ~` or a force push to main, keeps Claude out of `.env` and SSH keys, and won't let it say "done" while a linter or test is still failing.
 
-It lives in `claude-kit/` and works without the rest of these dotfiles, as a Claude Code plugin. Install steps and the full rundown are in [claude-kit/README.md](claude-kit/README.md).
+It lives in its own repo, [ku5ic/claude-kit](https://github.com/ku5ic/claude-kit), as a Claude Code plugin that works without the rest of these dotfiles. `install.sh` installs it.
 
 ## Install
 
@@ -73,7 +73,6 @@ macOS system defaults are opt-in. Run them yourself:
 | Path             | Holds                                          |
 | ---------------- | ---------------------------------------------- |
 | `config/`        | Neovim, WezTerm, Starship, git                 |
-| `claude-kit/`    | The Claude Code plugin                         |
 | `claude/`        | My personal Claude Code settings on top of it  |
 | `scripts/`       | Shell helpers, each callable by its bare name  |
 | `macos/`         | System defaults script                         |

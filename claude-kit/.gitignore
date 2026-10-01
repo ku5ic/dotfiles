@@ -1,4 +1,0 @@
-# Skills the Claude desktop app syncs in; machine-local.
-skills/synced/
-# Built by go/build.sh or KIT_DEV=1, downloaded from releases otherwise.
-bin/kit-*

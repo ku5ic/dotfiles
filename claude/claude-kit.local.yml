@@ -1,5 +1,5 @@
 # Personal overlay for claude-kit's kit.yml, linked to
-# ~/.claude/claude-kit.local.yml by bootstrap.sh. Merged over kit.yml: maps
+# ~/.claude/claude-kit.local.yml by install.sh. Merged over kit.yml: maps
 # merge and arrays append, so this can add to the kit but never remove.
 
 stacks:
@@ -17,4 +17,4 @@ toolchain_checks:
   - stack: dotfiles
     name: shellcheck
     bin: [shellcheck]
-    cmd: "find claude-kit/bin claude-kit/hooks claude-kit/install-rules.sh -name *.sh -exec {bin} -x -P SCRIPTDIR {} +"
+    cmd: "find scripts macos install.sh -name *.sh -exec {bin} -S warning -x -P SCRIPTDIR {} +"
