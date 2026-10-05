@@ -200,7 +200,7 @@ Scoped to Claude Code. Ignore elsewhere.
 
 **The canonical inventory is the output of `/skills` and `/agents`, not this section.**
 
-My kit is the `claude-kit@ku5ic` plugin from github.com/ku5ic/claude-kit, cloned at `~/.claude/plugins/marketplaces/ku5ic/`. Personal config is `~/.dotfiles/claude/`.
+My kit is the `kit@ku5ic` plugin from github.com/ku5ic/claude-kit, cloned at `~/.claude/plugins/marketplaces/ku5ic/`; agents are addressed as `kit:<name>`. Personal config is `~/.dotfiles/claude/`.
 
 | Skill                                                  | Covers                                                                                   |
 | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |

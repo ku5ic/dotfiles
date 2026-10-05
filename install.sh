@@ -112,7 +112,7 @@ setup_claude() {
     return
   fi
   [[ -d ~/.claude/plugins/marketplaces/ku5ic ]] || claude plugin marketplace add ku5ic/claude-kit
-  claude plugin details claude-kit >/dev/null 2>&1 || claude plugin install claude-kit@ku5ic
+  claude plugin details kit >/dev/null 2>&1 || claude plugin install kit@ku5ic
   ~/.claude/plugins/marketplaces/ku5ic/install-rules.sh
 
   claude mcp get context7 >/dev/null 2>&1 || claude mcp add -s user context7 -- npx -y @upstash/context7-mcp

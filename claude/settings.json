@@ -390,7 +390,7 @@
   "enabledPlugins": {
     "security-guidance@claude-plugins-official": false,
     "frontend-spacelift@spacelift-engineering": true,
-    "claude-kit@ku5ic": true
+    "kit@ku5ic": true
   },
   "extraKnownMarketplaces": {
     "spacelift-engineering": {
