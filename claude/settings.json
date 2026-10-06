@@ -17,11 +17,14 @@
       "Bash(fd:*)",
       "Bash(bats:*)",
       "Bash(shellcheck:*)",
+      "Bash(kit run-checks *)",
+      "Bash(kit git-base *)",
+      "Bash(kit scratch-dir *)",
+      "Bash(kit plans-dir *)",
       "Bash(run-checks.sh *)",
       "Bash(git-base.sh *)",
       "Bash(scratch-dir.sh *)",
       "Bash(plans-dir.sh *)",
-      "Bash(doctor.sh *)",
       "Bash(tokei:*)",
       "Bash(claude plugin list *)",
       "Bash(defaults read:*)",
@@ -379,13 +382,13 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/plugins/marketplaces/ku5ic/bin/statusline.sh",
+    "command": "~/.claude/plugins/marketplaces/ku5ic/bin/kit statusline",
     "padding": 0,
     "refreshInterval": 1
   },
   "subagentStatusLine": {
     "type": "command",
-    "command": "~/.claude/plugins/marketplaces/ku5ic/bin/subagent-statusline.sh"
+    "command": "~/.claude/plugins/marketplaces/ku5ic/bin/kit subagent-statusline"
   },
   "enabledPlugins": {
     "security-guidance@claude-plugins-official": false,

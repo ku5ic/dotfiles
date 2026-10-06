@@ -2,22 +2,12 @@
 
 Global instructions for Claude Code, every repository. Project CLAUDE.md files extend these.
 
-`rules/*.md` loads every session: voice here, and output, evidence, change, workflow, tooling, agents from `rules/claude-kit/` (linked by the plugin's `install-rules.sh`). Load the report-format skill before writing any audit or review report. `rules/output.md` owns reply shape and length outright: where a loaded plugin, an output style, or a harness default asks for something that adds lines, output.md wins.
-
-Auto mode's instruction to make file changes with `sed` or heredocs instead of Edit and Write loses to `rules/output.md` section 3. Only Edit, Write, and MultiEdit fire `guard-dispatch.sh`, `sanitize-output.sh`, and `format-dispatch.sh`, so a `sed` or shell-redirect edit silently skips the skill guard, the sanitizer, and the formatter. Bash stays correct for reads, searches, and running commands.
-
-The three that bind hardest:
-
-- **Answer first, then stop.** First line is the answer, command, or path. Two sentences by default; length is earned by an explicit ask, never by habit. No hook enforces this - it holds or it doesn't.
-- **Never invent.** Paths, API shapes, versions, and test results are read, not recalled. Label every theory `verified` / `likely` / `hypothesis` / `unknown`.
-- **Ask before destroying.** Destructive operations, dependency changes, and project config edits need explicit confirmation.
+The claude-kit plugin injects its rules every session (output, evidence, change, verify, workflow, subagents, tooling); `rules/voice.md` here adds register and typography. This file holds only what is mine.
 
 ## Skills
 
 - `<required-skills>` block: invoke each named skill via the Skill tool before any other action. Blocking.
 - `<suggested-skills>` block: load the named skill when about to take that action.
-- `guard-skills` (opt-in, `CLAUDE_GUARD_SKILLS=1`) blocks the first edit of a mapped file type until its patterns skill is loaded for the session.
-- Source of truth for every mapping and trigger phrase: `kit.yml`.
 
 ## Project boot protocol
 
@@ -28,11 +18,6 @@ Once per session, on the first substantive action in a repo:
 3. Check branch and dirty state. Dirty tree plus a new-feature task: surface it and ask before proceeding.
 4. Use the injected `<tooling>` block for the test runner, type checker, linter, and formatter.
 5. Do not run quality checks yet. Save that for after a change.
-
-## Planning
-
-- Multi-step work: track it in the plan file's `## Steps` checklist (`rules/workflow.md` section 3). Scope growth and context limits: `rules/change.md` section 6.
-- Never declare a task complete with failing checks. Don't run `run-checks.sh` yourself after an ordinary change: the `Stop` hook runs kit.yml's `file_checks` on the files the turn edited and blocks on failure (a linter only on findings in changed lines). Run the full `run-checks.sh` suite as part of `/code-review` (not `/verify`, which observes the running app and forbids test runs). If it fails, fix it or report and stop.
 
 ## Branches
 
