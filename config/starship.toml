@@ -6,7 +6,7 @@
 palette = "catppuccin_mocha"
 
 # Default 30ms trips on the first prompt after boot, when the dir listing is cold.
-scan_timeout = 100
+scan_timeout = 300
 
 # Starship modules
 [character]
