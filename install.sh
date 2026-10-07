@@ -154,6 +154,8 @@ setup_asdf() {
   asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git || true
   asdf plugin add python || true
   asdf plugin add golang https://github.com/asdf-community/asdf-golang.git || true
+  # Project .tool-versions pin it; installed per project with `asdf install`
+  asdf plugin add golangci-lint https://github.com/hypnoglow/asdf-golangci-lint.git || true
 
   # Update all plugins
   asdf plugin update --all
