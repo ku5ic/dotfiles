@@ -1,5 +1,5 @@
-tap 'jesseduffield/lazygit'
-tap 'owenthereal/upterm'
+tap 'jesseduffield/lazygit', trusted: true
+tap 'owenthereal/upterm', trusted: true
 
 # CLI tools
 brew 'actionlint'                   # linter for GitHub Actions workflow files
@@ -97,13 +97,11 @@ cask 'boop'                       # scratchpad for ad-hoc text transformations
 cask 'claude'                     # Claude desktop app
 cask 'claude-code@latest'         # Claude Code CLI pinned to the latest channel
 cask 'cleanshot'                  # screenshot and screen recording tool
-cask 'dbeaver-community'          # GUI database client for SQL development
 cask 'figma'                      # design tool for UI work
 cask 'firefox@developer-edition'  # primary browser for web development with built-in devtools features
 cask 'fliqlo'                     # flip clock screensaver
 cask 'font-fira-code-nerd-font'   # Nerd Font used by WezTerm and Neovim
 cask 'google-chrome'              # browser for web development
-cask 'hammerspoon'                # desktop automation tool for macOS, configured under config/hammerspoon
 cask 'neovide-app'                # GUI frontend for Neovim
 cask 'onyx'                       # macOS system maintenance utility
 cask 'orbstack'                   # OrbStack container runtime for local development, replaces Docker Desktop
@@ -111,6 +109,7 @@ cask 'owenthereal/upterm/upterm'  # Share terminal sessions securely over the we
 cask 'postman'                    # HTTP API client for manual request building
 cask 'slack'                      # team chat client
 cask 'spotify'                    # music player
+cask 'tableplus'                  # macOS GUI for PostgreSQL, MySQL, SQLite, and other databases
 cask 'the-unarchiver'             # archive extraction utility
 cask 'transmission'               # BitTorrent client
 cask 'typora'                     # markdown editor with live preview
@@ -121,10 +120,7 @@ cask 'zoom'                       # video conferencing client
 
 # Mac App Store
 mas '1Password for Safari', id: 1_569_813_296 # 1Password browser extension for Safari
-mas 'GarageBand', id: 682_658_836 # audio workstation
-mas 'JSONPeep', id: 1_458_969_831 # Safari JSON viewer extension
 mas 'Keynote', id: 361_285_480 # presentation editor
-mas 'Marked 2', id: 890_031_187 # markdown previewer
 mas 'Numbers', id: 361_304_891 # spreadsheet editor
 mas 'Pages', id: 361_309_726 # document editor
 mas 'Speedtest', id: 1_153_157_709 # network speed test utility
