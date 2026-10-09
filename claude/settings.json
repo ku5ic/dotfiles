@@ -6,8 +6,8 @@
   "skillListingBudgetFraction": 0.04,
   "env": {
     "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION": "30",
-    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "3",
-    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "3",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "4",
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "4",
     "CLAUDE_GUARD_SKILLS": "1",
     "CLAUDE_SANITIZE_TYPOGRAPHY": "1"
   },
@@ -353,10 +353,7 @@
       "Edit(**/.prettierrc*)"
     ],
     "defaultMode": "auto",
-    "additionalDirectories": [
-      "~/.claude",
-      "~/.dotfiles"
-    ]
+    "additionalDirectories": ["~/.claude", "~/.dotfiles"]
   },
   "model": "opus[1m]",
   "skillOverrides": {
@@ -425,15 +422,11 @@
   "editorMode": "vim",
   "agentPushNotifEnabled": true,
   "autoMode": {
-    "allow": [
-      "$defaults"
-    ],
+    "allow": ["$defaults"],
     "soft_deny": [
       "$defaults",
       "Never run database migrations outside the project's migration CLI, even against a dev database"
     ],
-    "hard_deny": [
-      "$defaults"
-    ]
+    "hard_deny": ["$defaults"]
   }
 }
