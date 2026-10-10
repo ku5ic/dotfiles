@@ -407,7 +407,6 @@
   },
   "outputStyle": "Proactive",
   "spinnerTipsEnabled": false,
-  "effortLevel": "high",
   "awaySummaryEnabled": false,
   "plansDirectory": ".claude/plans",
   "autoMemoryEnabled": true,
@@ -421,5 +420,10 @@
       "Never run database migrations outside the project's migration CLI, even against a dev database"
     ],
     "hard_deny": ["$defaults"]
+  },
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
   }
 }
