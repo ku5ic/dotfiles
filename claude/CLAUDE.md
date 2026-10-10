@@ -13,7 +13,7 @@ The claude-kit plugin injects its rules every session (output, evidence, change,
 
 Once per session, on the first substantive action in a repo:
 
-1. Use the injected `<repo-context>` block for stack info. If it is absent and the project root has a stack sentinel (`anchor: true` in `kit.yml`), say so: the hook should have fired.
+1. Use the injected `<repo-context>` block for stack info. If it is absent and the project root has a language manifest (package.json, pyproject.toml, go.mod, Cargo.toml, Gemfile, composer.json), say so: the hook should have fired.
 2. Read the project root CLAUDE.md. Read README.md only if directly relevant to the task.
 3. Check branch and dirty state. Dirty tree plus a new-feature task: surface it and ask before proceeding.
 4. Use the injected `<tooling>` block for the test runner, type checker, linter, and formatter.

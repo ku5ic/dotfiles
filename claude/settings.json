@@ -20,7 +20,6 @@
       "Bash(kit run-checks *)",
       "Bash(kit git-base *)",
       "Bash(kit scratch-dir *)",
-      "Bash(kit plans-dir *)",
       "Bash(run-checks.sh *)",
       "Bash(git-base.sh *)",
       "Bash(scratch-dir.sh *)",
@@ -409,12 +408,6 @@
   "outputStyle": "Proactive",
   "spinnerTipsEnabled": false,
   "effortLevel": "high",
-  "modelSettings": {
-    "claude-fable-5-1": {},
-    "claude-opus-5": {
-      "effortLevel": "high"
-    }
-  },
   "awaySummaryEnabled": false,
   "plansDirectory": ".claude/plans",
   "autoMemoryEnabled": true,

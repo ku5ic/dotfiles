@@ -2,19 +2,5 @@
 # ~/.claude/claude-kit.local.yml by install.sh. Merged over kit.yml: maps
 # merge and arrays append, so this can add to the kit but never remove.
 
-stacks:
-  dotfiles:
-    sentinels:
-      - name: Brewfile
-        anchor: true
-    skills: [bash-patterns]
-
-# Runs with run-checks.sh, alongside /code-review; the Stop hook's
-# file-scoped shellcheck comes from kit.yml. run-checks.sh splits cmd into
-# words without glob expansion, so find does the matching. bats stays in CI:
-# the suite takes minutes.
-toolchain_checks:
-  - stack: dotfiles
-    name: shellcheck
-    bin: [shellcheck]
-    cmd: "find scripts macos install.sh -name *.sh -exec {bin} -S warning -x -P SCRIPTDIR {} +"
+# The Brewfile pins tools for every project.
+user_pins: [~/.dotfiles/Brewfile]
