@@ -387,7 +387,7 @@
     "command": "~/.claude/plugins/marketplaces/ku5ic/bin/kit subagent-statusline"
   },
   "enabledPlugins": {
-    "security-guidance@claude-plugins-official": false,
+    "security-guidance@claude-plugins-official": true,
     "frontend-spacelift@spacelift-engineering": true,
     "kit@ku5ic": true
   },
