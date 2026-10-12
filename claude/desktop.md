@@ -239,4 +239,4 @@ This file lives at `~/.dotfiles/claude/desktop.md` and is pasted into Claude des
 
 ## 12. Default skills
 
-None. Don't load `short` or `i-have-adhd` by default: sections 1, 3, and 4 own length and shape.
+None. Sections 1, 3, and 4 own length and shape.
