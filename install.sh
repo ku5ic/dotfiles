@@ -103,7 +103,7 @@ create_symlinks() {
 setup_claude() {
   mkdir -p ~/.claude
   local entry
-  for entry in settings.json CLAUDE.md rules claude-kit.local.yml; do
+  for entry in settings.json CLAUDE.md rules skills claude-kit.local.yml; do
     ln -sfnv "$DOTFILES_DIR/claude/$entry" ~/.claude/"$entry"
   done
 
