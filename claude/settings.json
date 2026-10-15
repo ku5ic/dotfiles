@@ -389,8 +389,7 @@
   "enabledPlugins": {
     "security-guidance@claude-plugins-official": true,
     "frontend-spacelift@spacelift-engineering": true,
-    "kit@ku5ic": true,
-    "diffr@devfast": true
+    "kit@ku5ic": true
   },
   "extraKnownMarketplaces": {
     "spacelift-engineering": {
@@ -403,12 +402,6 @@
       "source": {
         "source": "github",
         "repo": "ku5ic/claude-kit"
-      }
-    },
-    "devfast": {
-      "source": {
-        "source": "github",
-        "repo": "devdotfast/whiteboard"
       }
     }
   },
