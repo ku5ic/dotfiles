@@ -1,8 +1,10 @@
+tap 'devdotfast/tap', trusted: { formula: ['diffr'] }
 tap 'jesseduffield/lazygit', trusted: true
 tap 'owenthereal/upterm', trusted: true
 
 # CLI tools
 brew 'actionlint'                   # linter for GitHub Actions workflow files
+brew 'adr-tools'                    # Architecture Decision Records, run only from ~/architecture/<project> since adr init writes .adr-dir to the cwd
 brew 'asdf'                         # runtime version manager driving Node, Ruby, Python via .tool-versions
 brew 'ast-grep'                     # AST-aware structural code search and rewrite, complements ripgrep for syntax-level matches
 brew 'atuin'                        # shell history sync and search backed by SQLite
@@ -16,6 +18,7 @@ brew 'chafa'                        # terminal image renderer used by fastfetch 
 brew 'cmake'                        # build system required by Neovim plugins with native components
 brew 'coreutils'                    # GNU core utilities to override BSD versions on macOS
 brew 'ctags'                        # tag generator for code navigation
+brew 'devdotfast/tap/diffr'         # AST-aware diff viewer behind the /diffr pane, coexists with difftastic, LLM summaries kept off
 brew 'difftastic'                   # structural diff tool wired in as GIT_EXTERNAL_DIFF
 brew 'direnv'                       # per-directory environment variable loader
 brew 'doctl'                        # DigitalOcean CLI, used to bootstrap and inspect the ZanaPhysio droplet
@@ -28,6 +31,7 @@ brew 'gh'                           # GitHub CLI for PR, issue, and repo workflo
 brew 'git'                          # version control, kept current independent of the Xcode Command Line Tools
 brew 'git-absorb'                   # auto-generate fixup commits that absorb staged hunks into the right prior commit
 brew 'git-delta'                    # diff pager with syntax highlighting, set as core.pager
+brew 'git-quick-stats'              # contributor and churn stats per area, for finding who to ask
 brew 'gitleaks'                     # secret scanner for git repositories
 brew 'gnu-sed'                      # GNU sed for portable script behavior across macOS and Linux
 brew 'gnupg'                        # cryptography and signing tool for SSH and Git commit verification
@@ -62,11 +66,13 @@ brew 'reattach-to-user-namespace'   # tmux helper that fixes pasteboard access o
 brew 'redis'                        # in-memory data store for local development
 brew 'ripgrep'                      # fast recursive grep, default search backend in Neovim and shell
 brew 'rust'                         # Rust toolchain required by Neovim plugins with native components (e.g. blink.cmp)
+brew 'scc'                          # per-file size and complexity counter, ranks hotspots alongside tokei
 brew 'sd'                           # intuitive find-and-replace CLI, a safer modern sed for scripted substitutions
 brew 'shellcheck'                   # static analysis for shell scripts, used by claude-kit's format-dispatch hook and run-checks
 brew 'shfmt'                        # Formatter for shell scripts
 brew 'ssh-copy-id'                  # helper for installing public keys onto remote hosts
 brew 'starship'                     # cross-shell prompt configured via config/starship.toml
+brew 'structurizr'                  # C4 architecture models as code with a local preview server, pulls in openjdk
 brew 'stylua'                       # Formatter for Lua code
 brew 'tig'                          # terminal git history browser
 brew 'tilt'                         # tilt.dev local dev environment for Kubernetes, used by Tiltfile and Tiltfile.lock
