@@ -27,6 +27,10 @@ Create branches with `branch_name.sh --checkout <type> [<ISSUE-ID>] "<title>"`, 
 
 Before the first Claude in Chrome action in a session, ask via AskUserQuestion: isolated, or the default user profile with its logins and cookies. Isolated means a separate Chrome profile running the extension, picked with `list_connected_browsers` + `select_browser`, or the Playwright MCP's fresh browser when no such profile is connected. Never pick a browser without asking.
 
+## Diagrams
+
+Research and plan artifacts embed Mermaid. A C4 view is exported from the project's `workspace.dsl` (`structurizr export -f mermaid`), never hand-drawn; every other diagram is drawn. Directly above each fence, one provenance line: `Diagram: exported from <dsl path>, view <key>` or `Diagram: drawn, not from a model`.
+
 ## Compaction
 
 When compacting, preserve: the current plan file path and which step is next, every file modified this session, and the check commands run with their last result.
