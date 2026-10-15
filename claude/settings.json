@@ -352,7 +352,7 @@
       "Edit(**/.prettierrc*)"
     ],
     "defaultMode": "auto",
-    "additionalDirectories": ["~/.claude", "~/.dotfiles", "~/architecture"]
+    "additionalDirectories": ["~/.claude", "~/.dotfiles"]
   },
   "model": "opus[1m]",
   "skillOverrides": {
@@ -389,7 +389,8 @@
   "enabledPlugins": {
     "security-guidance@claude-plugins-official": true,
     "frontend-spacelift@spacelift-engineering": true,
-    "kit@ku5ic": true
+    "kit@ku5ic": true,
+    "diffr@devfast": true
   },
   "extraKnownMarketplaces": {
     "spacelift-engineering": {
@@ -402,6 +403,12 @@
       "source": {
         "source": "github",
         "repo": "ku5ic/claude-kit"
+      }
+    },
+    "devfast": {
+      "source": {
+        "source": "github",
+        "repo": "devdotfast/whiteboard"
       }
     }
   },
