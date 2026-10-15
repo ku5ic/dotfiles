@@ -15,6 +15,8 @@ Resolve the artifact, first match wins:
 
 If the artifact links a ticket, fetch that too; the "why" lives there. Read the project's CLAUDE.md and load the pattern skills it suggests.
 
+ADRs, when they exist: run `adr list` from the repo root if it has an `.adr-dir`, else from `~/architecture/<repo-name>`. `rg` them for the units and terms the artifact touches; a hit feeds steps 2 and 4.
+
 Mode follows the input:
 
 - **Pre-change** (plan, report, ticket): check against the files and symbols the artifact names, read from the repo.
@@ -26,7 +28,7 @@ Run in this order. Answer each from the repo first; only what the repo can't ans
 
 1. **Purpose.** Is the why stated in one human sentence? Is the change needed at all?
 2. **What changes vs before.** Compare current and proposed behavior: what's shown, hidden, or allowed, and under which conditions. `git log -S` or blame on the old behavior to learn why it existed before replacing it.
-3. **Blast radius and root cause.** Count consumers of every shared unit touched (`kit blast-radius`, `rg` as fallback). Is the fix at the root, or in a shared layer whose other callers aren't broken?
+3. **Blast radius and root cause.** Count consumers of every shared unit touched: `kit blast-radius` for JS/TS and Python, an `ast-grep` call or import pattern for other languages, `rg` as the last fallback. Is the fix at the root, or in a shared layer whose other callers aren't broken?
 4. **Domain meaning.** Which fields, states, or terms does the change assume a meaning for? Are they used that way elsewhere?
 5. **Existing solution.** Does the repo already have something that does this?
 6. **Usage.** Does every new export, option, or field have a consumer in this change?

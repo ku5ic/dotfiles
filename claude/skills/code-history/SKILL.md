@@ -18,7 +18,7 @@ Read every commit and every PR description that touches the path. Don't sample.
 1. Commit list: `git log --format='%H%x09%ad%x09%an%x09%s' --date=short -- <path>`, saved to the raw folder.
 2. PR numbers from subjects, both forms: squash `(#1234)` and older `Merge pull request #1234`.
 3. Fetch PRs with batched GraphQL, about 40 aliases per query (`pr1234: pullRequest(number: 1234) { number title body author { login } mergedAt url }`), never one `gh pr view` per PR. Save the raw JSON.
-4. Lines changed on the path per commit (`git log --numstat -- <path>`), ranked. The top entries are the structural turning points, found faster than by title.
+4. Lines changed on the path per commit (`git log --numstat -- <path>`), ranked. The top entries are the structural turning points, found faster than by title. Drop reformat-only ones first: `DFT_CHECK_ONLY=true GIT_EXTERNAL_DIFF=difft git show --ext-diff --format=%h <sha> -- <path>` prints `No syntactic changes.` for a file whose diff is only formatting. Prose files print `Has changes.` either way.
 5. For the biggest PRs with empty descriptions, read the squash commit body (it lists sub-commits) and the diffstat on the path. Label that "why" as inferred.
 
 ## Digest
@@ -27,7 +27,7 @@ Read every commit and every PR description that touches the path. Don't sample.
 2. Write a chronological digest, one heading per PR linking to it, cleaned body below.
 3. Grep the digest for promises and reversals: `temporary`, `for now`, `will be removed`, `TODO`, `in the future`, `revert`. Check each against the current code before calling it unkept.
 4. Group fixes by bug class to find the ones that keep coming back.
-5. Count commits per author on the path for "Who to ask".
+5. For "Who to ask": `_GIT_PATHSPEC=<path> _GIT_SORT_BY=commits-desc _MENU_THEME=none git-quick-stats -T` gives commits, lines changed and first and last commit per author on the path. Not `-a`: it ignores the pathspec.
 
 ## Report shape
 
