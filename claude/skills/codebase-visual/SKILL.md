@@ -46,7 +46,7 @@ Group by the source's top-level directory and the target's first path segment. C
 
 ## Diagrams
 
-Follow the Diagrams rule in CLAUDE.md: a provenance line directly above every fence. Each diagram gets a one- or two-line caption under it saying what to take away from it, never what it shows. At most about 25 nodes per diagram: group or cut before drawing.
+Follow the Diagrams rule in CLAUDE.md: a provenance line directly above every fence. Each diagram gets a one- or two-line caption under it saying what to take away from it, never what it shows. At most about 25 nodes per diagram: group or cut before drawing, and follow Readability below.
 
 1. **Context and containers (C4).** Write `<raw>/workspace.dsl` with people, systems and containers read from the code, each container citing its path in its description. Then `structurizr validate -w <raw>/workspace.dsl` (exit 1 prints the bad line) and `structurizr export -w <raw>/workspace.dsl -f mermaid -o <raw>/mermaid`. Embed `structurizr-<key>.mmd` for the context and container views, marked exported. Never pass flags to `structurizr local`: it takes `--help` as a data directory.
 2. **Shape.** A `flowchart TB` of top-level directories, each labelled with its main language and code lines.
@@ -56,6 +56,47 @@ Follow the Diagrams rule in CLAUDE.md: a provenance line directly above every fe
 6. **Activity.** An `xychart-beta` bar chart of commits per month, plus a `pie` of the language mix.
 
 Diagrams 2 to 6 are drawn. Keep to these diagram types, since the report isn't rendered before it's handed over.
+
+### Readability
+
+- Every fence starts with the init line from Colors. `useMaxWidth: false` makes a large graph render at full size with a scroll, instead of shrinking to the page width. For an exported view, that line goes above the `.mmd` content, which otherwise stays verbatim.
+- Large C4 views get split, not shrunk. In the DSL: `autolayout tb` on any view with more than 8 elements, and a container view over 12 elements gets broken into 2 or 3 views. Each one keeps a cluster of containers with `include <ids>`, plus the externals that cluster touches. Each view is embedded under its own provenance line.
+- Node labels run 1 to 4 words. Paths and detail go in the caption or the DSL description.
+- Edges carry a label only when it adds information: a count, a verb that isn't "uses".
+
+### Colors
+
+One muted palette everywhere: slate blue for the repo's own parts, sage for people, sand for external systems, terracotta for risk.
+
+In `workspace.dsl`, tag external systems `"External"` and put this in `views`. The Mermaid export carries it into each node's `style` line:
+
+```text
+styles {
+    element "Element" {
+        background #e8eef6
+        color #1f3550
+        stroke #4a6fa5
+    }
+    element "Person" {
+        background #e4efe6
+        color #23422d
+        stroke #5b8a6b
+    }
+    element "External" {
+        background #f4eee5
+        color #4a3d2c
+        stroke #a8875e
+    }
+}
+```
+
+The init line on every fence, exported or drawn. It themes edges, quadrants, pie slices and bars to match:
+
+```text
+%%{init: {"theme": "base", "flowchart": {"useMaxWidth": false, "nodeSpacing": 50, "rankSpacing": 70}, "themeVariables": {"fontSize": "18px", "fontFamily": "Inter, system-ui, sans-serif", "primaryColor": "#e8eef6", "primaryTextColor": "#1f3550", "primaryBorderColor": "#4a6fa5", "lineColor": "#7b8794", "secondaryColor": "#e4efe6", "tertiaryColor": "#f4eee5", "quadrant1Fill": "#f6e1d8", "quadrant2Fill": "#f4eee5", "quadrant3Fill": "#eef1f4", "quadrant4Fill": "#e8eef6", "quadrantPointFill": "#c8664a", "pie1": "#4a6fa5", "pie2": "#5b8a6b", "pie3": "#a8875e", "pie4": "#c8664a", "pie5": "#8a7bb0", "pie6": "#5f9ea0", "pie7": "#b0a58f", "xyChart": {"plotColorPalette": "#4a6fa5"}}}}%%
+```
+
+In drawn flowcharts, mark external nodes with `classDef ext fill:#f4eee5,stroke:#a8875e,color:#4a3d2c` and hotspot nodes with `classDef hot fill:#f6e1d8,stroke:#c8664a,color:#5a2a1c`.
 
 ## Report shape
 
