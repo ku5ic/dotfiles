@@ -41,7 +41,7 @@ ast-grep run -p '<pattern>' -l <lang> --json=compact <root> \
 
 Group by the source's top-level directory and the target's first path segment. Call `ast-grep`, never the deprecated `sg`.
 
-5. Owners: `_GIT_SINCE=<12 months ago> _MENU_THEME=none git-quick-stats -a` for the repo, and the same with `_GIT_PATHSPEC=<dir>` for each top-level directory.
+5. Owners: `_GIT_SINCE=<12 months ago> _GIT_SORT_BY=commits-desc _MENU_THEME=none git-quick-stats -T` for the repo, and the same with `_GIT_PATHSPEC=<dir>` for each top-level directory. Not `-a`: it ignores the pathspec.
 6. Activity: `git -C <root> log --since=12.months --format=%ad --date=format:%Y-%m | sort | uniq -c`.
 
 ## Diagrams
