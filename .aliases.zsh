@@ -108,7 +108,7 @@ done
 for script in "$DOTFILES_DIR/scripts"/*.sh; do
   [[ -x "$script" ]] || continue
 
-  alias_name=$(basename "$script" .sh)
+  alias_name=${script:t:r}
   alias "$alias_name"="$script"
 
   completion_fn="_${alias_name}"

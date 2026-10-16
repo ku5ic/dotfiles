@@ -38,7 +38,12 @@ fpath=("${ASDF_DATA_DIR:-$HOME/.asdf}/completions" $fpath) # asdf completions
 
 if [[ -n "$HOMEBREW_PREFIX" ]]; then
   fpath=("$HOMEBREW_PREFIX/share/zsh-completions" $fpath)
+  fpath=("$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath) # also added by brew shellenv, but only login shells run .zprofile
 fi
+fpath+=("$HOME/.orbstack/shell/completions/zsh") # same: OrbStack's init in .zprofile is login-only
+
+# Login and non-login shells must see the same fpath, or compinit rebuilds .zcompdump on every switch.
+typeset -U fpath
 
 # Unexport: an inherited FPATH grows in nested shells, which invalidates .zcompdump
 # and makes compinit rebuild it every time.
