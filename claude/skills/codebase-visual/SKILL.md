@@ -51,11 +51,11 @@ Follow the Diagrams rule in CLAUDE.md: a provenance line directly above every fe
 1. **Context and containers (C4).** Write `<raw>/workspace.dsl` with people, systems and containers read from the code, each container citing its path in its description. Then `structurizr validate -w <raw>/workspace.dsl` (exit 1 prints the bad line) and `structurizr export -w <raw>/workspace.dsl -f mermaid -o <raw>/mermaid`. Embed `structurizr-<key>.mmd` for the context and container views, marked exported. Never pass flags to `structurizr local`: it takes `--help` as a data directory.
 2. **Shape.** A `flowchart TB` of top-level directories, each labelled with its main language and code lines.
 3. **Dependencies.** A `flowchart LR` from step 4's edges, the edge label being the import count. Externals collapse into one node per package, top 5 only.
-4. **Hotspots.** A `quadrantChart`, x = complexity and y = churn, each scaled 0 to 1 against the max, top 10 files as points. The top-right quadrant is "refactor first".
+4. **Hotspots.** A `quadrantChart`, x = complexity and y = churn, each scaled 0 to 1 against the max, top 10 files as points. The top-right quadrant is "refactor first". Write the maximum as `1`: the parser rejects `1.00`.
 5. **Main flow**, when a focus is given or the entry point is obvious. A `sequenceDiagram` traced through the code from the entry point, 4 to 8 participants, each named after a real file or module.
 6. **Activity.** An `xychart-beta` bar chart of commits per month, plus a `pie` of the language mix.
 
-Diagrams 2 to 6 are drawn. Keep to these diagram types, since the report isn't rendered before it's handed over.
+Diagrams 2 to 6 are drawn. Keep to these diagram types; Render below checks each one parses.
 
 ### Readability
 
@@ -133,6 +133,10 @@ Each section is a provenance line, the diagram, then its caption. No prose betwe
 - Plain ASCII, `->` for arrows. Labels use names from the code.
 - Prose and data files (Markdown, JSON, YAML) score 0 complexity and never rank as hotspots. When the busiest area is mostly those, say so in TL;DR.
 - A skipped diagram (no clear flow, a single-module repo) gets one line saying why, not a placeholder.
+
+## Render
+
+Before replying, render every diagram: `mmdc -i <report>.md -o <raw>/render/out.md`. Each chart prints a check or an error with its line. Fix each failing fence in the report and rerun until all pass. If `mmdc` is missing, say the diagrams weren't rendered.
 
 ## Reply
 
