@@ -425,5 +425,10 @@
       "Never run database migrations outside the project's migration CLI, even against a dev database"
     ],
     "hard_deny": ["$defaults"]
+  },
+  "voiceEnabled": true,
+  "voice": {
+    "enabled": true,
+    "mode": "tap"
   }
 }
