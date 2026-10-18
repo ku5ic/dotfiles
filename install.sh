@@ -53,7 +53,7 @@ install_shells() {
   grep -qxF "$brew_prefix/bin/bash" /private/etc/shells ||
     echo "$brew_prefix/bin/bash" | sudo tee -a /private/etc/shells >/dev/null
 
-  chsh -s "$brew_prefix/bin/zsh"
+  [[ "$SHELL" == "$brew_prefix/bin/zsh" ]] || chsh -s "$brew_prefix/bin/zsh"
 }
 
 install_packages() {
@@ -170,25 +170,34 @@ setup_asdf() {
   done <"$tool_versions"
 }
 
-main() {
-  CURRENT_STAGE="update_dotfiles"
+STAGES=(
   update_dotfiles
-  CURRENT_STAGE="install_homebrew"
   install_homebrew
-  CURRENT_STAGE="install_shells"
   install_shells
-  CURRENT_STAGE="install_packages"
   install_packages
-  CURRENT_STAGE="fix_permissions"
   fix_permissions
-  CURRENT_STAGE="create_symlinks"
   create_symlinks
-  CURRENT_STAGE="setup_claude"
   setup_claude
-  CURRENT_STAGE="install_launchd_agents"
   install_launchd_agents
-  CURRENT_STAGE="setup_asdf"
   setup_asdf
+)
+
+# No arguments runs every stage; otherwise only the named ones, in the order given.
+main() {
+  local stages=("$@") stage
+  ((${#stages[@]})) || stages=("${STAGES[@]}")
+
+  for stage in "${stages[@]}"; do
+    if [[ " ${STAGES[*]} " != *" $stage "* ]]; then
+      echo "install.sh: unknown stage '$stage'. Stages: ${STAGES[*]}" >&2
+      exit 2
+    fi
+  done
+
+  for stage in "${stages[@]}"; do
+    CURRENT_STAGE="$stage"
+    "$stage"
+  done
 
   echo ""
   echo "install.sh: completed."

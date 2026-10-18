@@ -12,6 +12,8 @@ Personal macOS dotfiles managed as a git repo at `~/.dotfiles`. Files are symlin
 source ~/.dotfiles/install.sh
 ```
 
+Pass stage names to run only those, e.g. `~/.dotfiles/install.sh create_symlinks setup_claude`; an unknown name prints the full list.
+
 To re-symlink a single config without running the full installer, re-run the `ln -sfv` manually:
 
 ```sh

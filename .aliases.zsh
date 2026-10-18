@@ -89,6 +89,7 @@ alias brew_clean='brew bundle cleanup --file="$DOTFILES_DIR/Brewfile" --force' #
 alias brew_install='brew bundle --file="$DOTFILES_DIR/Brewfile"' # Install Homebrew packages from the Brewfile
 alias bat="bat --style=numbers --color=always --theme=TwoDark" # bat alias with theme
 alias dotfiles="cd $DOTFILES_DIR" # Navigate to the dotfiles directory
+alias install.sh='$DOTFILES_DIR/install.sh' # Run the dotfiles installer, optionally only named stages
 
 # Set up your preferred editor (e.g., Neovim or Vim)
 alias vim='nvim'
