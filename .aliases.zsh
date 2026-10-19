@@ -65,6 +65,7 @@ alias copy_path='pwd | pbcopy' # Copy current path to clipboard (macOS specific)
 alias cls='clear'              # Clears the terminal screen
 alias grep='grep --color=auto' # Adds color to `grep` output to highlight matches
 alias mux='tmuxinator'
+compdef mux=tmuxinator # Homebrew's _tmuxinator, first on fpath, only registers tmuxinator
 # uptmux <session-name>: host an upterm pair-programming session backed by a named tmux session.
 # Clients are forced into 'tmux attach -t <name>' so both parties share the same pane.
 # Switch to the "upterm" window inside the session to see the SSH sharing link at any time.
