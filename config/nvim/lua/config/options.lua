@@ -27,6 +27,19 @@ o.undofile = true -- modern replacement
 o.undodir = vim.fn.stdpath("state") .. "/undo"
 o.history = 1000
 
+-- A failed ShaDa write after the UI dies leaves --embed blocked on a prompt forever (neovim#42096).
+vim.api.nvim_create_autocmd("UILeave", {
+  group = vim.api.nvim_create_augroup("dotfiles_orphan_guard", { clear = true }),
+  callback = function()
+    if #vim.api.nvim_list_uis() > 0 then
+      return
+    end
+    pcall(vim.cmd.wshada)
+    vim.o.shada = ""
+    vim.cmd("silent! qall!")
+  end,
+})
+
 -- 4. UI: line numbers, columns, colours
 o.number = true
 o.relativenumber = true
