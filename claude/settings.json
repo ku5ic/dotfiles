@@ -405,7 +405,7 @@
       }
     }
   },
-  "outputStyle": "Proactive",
+  "outputStyle": "Concise",
   "spinnerTipsEnabled": false,
   "modelSettings": {
     "claude-opus-5-5": {
@@ -414,6 +414,10 @@
   },
   "awaySummaryEnabled": false,
   "plansDirectory": ".claude/plans",
+  "voice": {
+    "enabled": true,
+    "mode": "tap"
+  },
   "autoMemoryEnabled": true,
   "theme": "auto",
   "editorMode": "vim",
@@ -426,9 +430,5 @@
     ],
     "hard_deny": ["$defaults"]
   },
-  "voiceEnabled": true,
-  "voice": {
-    "enabled": true,
-    "mode": "tap"
-  }
+  "voiceEnabled": true
 }
