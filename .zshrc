@@ -13,44 +13,58 @@ _cached_init() {
   source $file
 }
 
-# Prompt
-_cached_init ${commands[starship]:A} starship init zsh
-
-# direnv
-_cached_init ${commands[direnv]:A} direnv hook zsh
-
-# zoxide
-_cached_init ${commands[zoxide]:A} zoxide init zsh
-
-# Zsh
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-
+# Environment
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
+export LC_COLLATE=C # C collation for predictable sort order
+export CLICOLOR=1
 
-setopt correct              # autocorrect command names only
+# Editor: nvim for interactive shells, no-op for scripts and background contexts
+if [[ -o interactive ]]; then
+  export EDITOR='nvim'
+  export VISUAL='nvim'
+else
+  export EDITOR='true'
+  export VISUAL='true'
+  export GIT_EDITOR='true'
+fi
+
+# History
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=100000
+SAVEHIST=$HISTSIZE
 setopt hist_ignore_all_dups # remove older duplicate entries from history
 setopt hist_reduce_blanks   # remove superfluous blanks from history items
 setopt inc_append_history   # save history entries as soon as they are entered
 setopt share_history        # share history between different instances of the shell
-setopt auto_list            # automatically list choices on ambiguous completion
-setopt auto_menu            # automatically use menu completion
-setopt always_to_end        # move cursor to end if word had one match
 
+# Options
+setopt correct       # autocorrect command names only
+setopt auto_list     # automatically list choices on ambiguous completion
+setopt auto_menu     # automatically use menu completion
+setopt always_to_end # move cursor to end if word had one match
+PROMPT_EOL_MARK=""
 
+# Prompt and hooks
+_cached_init ${commands[starship]:A} starship init zsh
+_cached_init ${commands[direnv]:A} direnv hook zsh
+_cached_init ${commands[zoxide]:A} zoxide init zsh
+
+# Plugins
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# Completion
 zstyle ':completion:*' menu select # select completions with arrow keys
 zstyle ':completion:*' group-name '' # group results by category
-zstyle ':completion:*' completer _complete # enable completion for commands, functions, and aliases
+zstyle ':completion:*' completer _complete # plain completion only, no approximate or correction completers
 zstyle ':completion:*' matcher-list 'r:|[._-]=*' # match dashes, underscores and dots interchangeably
 zstyle ':completion:*:corrections' ignored-patterns '.*' '_*' # ignore files starting with . or _ for corrections
 zstyle ':completion:*:functions' ignored-patterns '.*' '_*' # functions starting with . or _ are usually private and not useful to complete
 zstyle ':completion:*:commands' ignored-patterns '.*' '_*' # commands starting with . or _ are usually private and not useful to complete
 
-# Completion functions
 fpath=("$DOTFILES_DIR/completions" $fpath) # custom completions from the dotfiles repo
 fpath=("${ASDF_DATA_DIR:-$HOME/.asdf}/completions" $fpath) # asdf completions
-
 if [[ -n "$HOMEBREW_PREFIX" ]]; then
   fpath=("$HOMEBREW_PREFIX/share/zsh-completions" $fpath)
   fpath=("$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath) # also added by brew shellenv, but only login shells run .zprofile
@@ -66,17 +80,13 @@ typeset +x FPATH
 
 autoload -Uz compinit
 compinit
-
 setopt completealiases # enable completion for aliases
 
-# Enable vi mode
+# Key bindings
 bindkey -v
 
-# aliases
+# Aliases
 source ~/.aliases.zsh
-
-# Local config
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # fzf
 export FZF_DEFAULT_OPTS="\
@@ -89,7 +99,6 @@ export FZF_DEFAULT_OPTS="\
 "
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*" --glob "!node_modules/*" --glob "!vendor/*" 2> /dev/null'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-
 _cached_init ${commands[fzf]:A} fzf --zsh
 
 # atuin (after vi mode and fzf: both rebind Ctrl+R and would win if loaded first)
@@ -103,24 +112,7 @@ if [[ -n ${commands[kit]} && $(<${commands[kit]:A:h:h}/.claude-plugin/plugin.jso
   _cached_init kit-$match[1] kit completion zsh
 fi
 
-
-# Editor: nvim for interactive shells, no-op for scripts and background contexts
-if [[ -o interactive ]]; then
-  export EDITOR='nvim'
-  export VISUAL='nvim'
-else
-  export EDITOR='true'
-  export VISUAL='true'
-  export GIT_EDITOR='true'
+# Machine-local overrides, last so they win
+if [[ -f ~/.zshrc.local ]]; then
+  source ~/.zshrc.local
 fi
-
-HISTFILE=$HOME/.zsh_history
-HISTSIZE=100000
-SAVEHIST=$HISTSIZE
-PROMPT_EOL_MARK=""
-
-export CLICOLOR=1
-export LANG=en_US.UTF-8
-# You don't strictly need this collation, but most technical people
-# probably want C collation for sane results
-export LC_COLLATE=C
