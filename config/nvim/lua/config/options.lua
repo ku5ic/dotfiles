@@ -132,6 +132,14 @@ vim.filetype.add({
     ["Brewfile"] = "ruby",
     ["Tiltfile"] = "python",
   },
+  pattern = {
+    [".*/config/git/config"] = "gitconfig",
+    [".*/config/git/ignore"] = "gitignore",
+    [".*/config/git/message"] = "gitcommit",
+    [".*/home/editorconfig"] = "editorconfig",
+    [".*/home/gemrc"] = "yaml",
+    [".*/home/zprofile"] = "zsh",
+  },
 })
 
 -- 12. Neovide
