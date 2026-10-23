@@ -71,21 +71,11 @@ install_packages() {
 }
 
 create_symlinks() {
-  ln -sfv "$DOTFILES_DIR/.zshrc" ~
-  ln -sfv "$DOTFILES_DIR/.zprofile" ~
-  ln -sfv "$DOTFILES_DIR/.aliases.zsh" ~
-  ln -sfv "$DOTFILES_DIR/.gitconfig" ~
-  ln -sfv "$DOTFILES_DIR/.gitignore_global" ~
-  ln -sfv "$DOTFILES_DIR/.gitmessage" ~
-  ln -sfv "$DOTFILES_DIR/.gemrc" ~
-  ln -sfv "$DOTFILES_DIR/.tmux.conf" ~
-  ln -sfv "$DOTFILES_DIR/.default-python-packages" ~
-  ln -sfv "$DOTFILES_DIR/.default-npm-packages" ~
-  ln -sfv "$DOTFILES_DIR/.default-gems" ~
-  ln -sfv "$DOTFILES_DIR/.tool-versions" ~
-  ln -sfv "$DOTFILES_DIR/.tmuxinator" ~
-  ln -sfv "$DOTFILES_DIR/.editorconfig" ~
-  ln -sfv "$DOTFILES_DIR/.hammerspoon" ~
+  # home/ holds files without the leading dot so editors show them: home/zshrc -> ~/.zshrc
+  local src
+  for src in "$DOTFILES_DIR"/home/*; do
+    ln -sfnv "$src" "$HOME/.${src##*/}"
+  done
 
   mkdir -p ~/.config
   ln -sfv "$DOTFILES_DIR/config/nvim" ~/.config/
@@ -142,7 +132,7 @@ fix_permissions() {
 }
 
 setup_asdf() {
-  local tool_versions="$DOTFILES_DIR/.tool-versions"
+  local tool_versions="$DOTFILES_DIR/home/tool-versions"
 
   if [ ! -f "$tool_versions" ]; then
     echo "Missing .tool-versions at $tool_versions"
