@@ -15,8 +15,9 @@ _cached_init() {
 
 # Environment
 export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
 export LC_COLLATE=C # C collation for predictable sort order
+# LC_ALL overrides every LC_* above; unset it too when inherited (e.g. from a tmux server env).
+unset LC_ALL
 export CLICOLOR=1
 
 # Editor: nvim for interactive shells, no-op for scripts and background contexts
