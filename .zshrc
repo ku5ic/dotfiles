@@ -1,11 +1,26 @@
+# Source a cached copy of an init script instead of eval'ing the tool's output on every
+# start: after boot each binary's first exec is scanned (~0.5s). The key must change
+# when the output can, e.g. the Cellar path, which carries the version.
+# Usage: _cached_init <key> <command...>. Flush with: rm -rf ~/.cache/zsh-init
+_cached_init() {
+  [[ -n $1 ]] || return
+  local file=${XDG_CACHE_HOME:-$HOME/.cache}/zsh-init/${1//\//%}.zsh
+  if [[ ! -s $file ]]; then
+    mkdir -p ${file:h}
+    # Temp file plus mv: a shell starting in parallel never sources a half-written file.
+    "${@:2}" >| $file.$$ && mv -f $file.$$ $file || { rm -f $file.$$; return 1 }
+  fi
+  source $file
+}
+
 # Prompt
-eval "$(starship init zsh)"
+_cached_init ${commands[starship]:A} starship init zsh
 
 # direnv
-eval "$(direnv hook zsh)"
+_cached_init ${commands[direnv]:A} direnv hook zsh
 
 # zoxide
-eval "$(zoxide init zsh)"
+_cached_init ${commands[zoxide]:A} zoxide init zsh
 
 # Zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -75,16 +90,18 @@ export FZF_DEFAULT_OPTS="\
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*" --glob "!node_modules/*" --glob "!vendor/*" 2> /dev/null'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-eval "$(fzf --zsh)"
+_cached_init ${commands[fzf]:A} fzf --zsh
 
 # atuin (after vi mode and fzf: both rebind Ctrl+R and would win if loaded first)
-eval "$(atuin init zsh)"
+_cached_init ${commands[atuin]:A} atuin init zsh
 
 # 1Password-cli completions
-eval "$(op completion zsh)"; compdef _op op
+_cached_init ${commands[op]:A} op completion zsh && compdef _op op
 
-# Claude-kit
-eval "$(kit completion zsh)"
+# Claude-kit. The wrapper script's path never changes, so key on the plugin version.
+if [[ -n ${commands[kit]} && $(<${commands[kit]:A:h:h}/.claude-plugin/plugin.json) =~ '"version"[[:space:]]*:[[:space:]]*"([^"]+)"' ]]; then
+  _cached_init kit-$match[1] kit completion zsh
+fi
 
 
 # Editor: nvim for interactive shells, no-op for scripts and background contexts
