@@ -28,7 +28,7 @@ It's MIT licensed. Fork it, rip out what you don't want, and make it yours. I'm 
 
 Before you run it on your own machine, change these, or you'll end up committing as me:
 
-- **Git identity**: `name`, `email`, and `signingkey` in `home/gitconfig`.
+- **Git identity**: `name`, `email`, and `signingkey` in `config/git/config`.
 - **Apps**: prune the `Brewfile`. It installs everything I use, including Mac App Store apps.
 - **Claude Code**: `claude/` holds my personal settings and rules. Keep, edit, or drop them.
 - **Location**: `install.sh` assumes the repo lives at `~/.dotfiles`.
@@ -101,19 +101,18 @@ macOS system defaults are opt-in. Run them yourself:
 
 ## Layout
 
-| Path                         | Holds                                                       |
-| ---------------------------- | ----------------------------------------------------------- |
-| `home/`                      | Files linked into `$HOME` with a dot: `zshrc` -> `~/.zshrc` |
-| `config/`                    | Neovim, WezTerm, Starship, git                              |
-| `claude/`                    | My personal Claude Code settings on top of claude-kit       |
-| `scripts/`                   | Shell helpers, each callable by its bare name               |
-| `completions/`               | zsh tab-completion for the scripts                          |
-| `tests/`                     | bats tests for the scripts                                  |
-| `macos/`                     | System defaults script                                      |
-| `launchd/`                   | Background jobs                                             |
-| `.github/workflows/lint.yml` | CI: shellcheck and bats tests                               |
-| `Brewfile`                   | Every Homebrew package and app                              |
-| `install.sh`                 | The installer                                               |
+| Path                         | Holds                                                                     |
+| ---------------------------- | ------------------------------------------------------------------------- |
+| `home/`                      | Files linked into `$HOME` with a dot: `zshrc` -> `~/.zshrc`               |
+| `config/`                    | Linked into `~/.config`: Neovim, WezTerm, Starship, git, tmux, tmuxinator |
+| `claude/`                    | Linked into `~/.claude`: my Claude Code settings on top of claude-kit     |
+| `scripts/`                   | Shell helpers, each callable by its bare name                             |
+| `completions/`               | zsh tab-completion for the scripts                                        |
+| `tests/`                     | bats tests for the scripts                                                |
+| `macos/`                     | System defaults script and launchd background jobs                        |
+| `.github/workflows/lint.yml` | CI: shellcheck and bats tests                                             |
+| `Brewfile`                   | Every Homebrew package and app                                            |
+| `install.sh`                 | The installer                                                             |
 
 ## License
 

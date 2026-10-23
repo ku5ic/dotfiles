@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Personal macOS dotfiles managed as a git repo at `~/.dotfiles`. Files are symlinked into `$HOME`, `~/.config`, and `~/.claude/` via `install.sh`. Files for `$HOME` live in `home/` without the leading dot (`home/zshrc` -> `~/.zshrc`); dotfiles left at the repo root (`.gitignore`, `.github`, `.shellcheckrc`) configure the repo itself.
+Personal macOS dotfiles managed as a git repo at `~/.dotfiles`. Files are symlinked into `$HOME`, `~/.config`, and `~/.claude/` via `install.sh`. Top-level folders are named for where they land: `home/` -> `$HOME` without the leading dot (`home/zshrc` -> `~/.zshrc`), `config/` -> `~/.config`, `claude/` -> `~/.claude`. Anything that reads from `~/.config` goes in `config/`, not `home/`. `config/tmux/tmux.conf` pins `TMUX_PLUGIN_MANAGER_PATH` to `~/.tmux/plugins`, or tpm would clone plugins into the repo. Dotfiles left at the repo root (`.gitignore`, `.github`, `.shellcheckrc`) configure the repo itself.
 
 ## Installation
 

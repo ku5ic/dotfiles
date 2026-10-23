@@ -78,10 +78,11 @@ create_symlinks() {
   done
 
   mkdir -p ~/.config
-  ln -sfv "$DOTFILES_DIR/config/nvim" ~/.config/
-  ln -sfv "$DOTFILES_DIR/config/wezterm" ~/.config/
-  ln -sfv "$DOTFILES_DIR/config/starship.toml" ~/.config/
-  ln -sfv "$DOTFILES_DIR/config/git" ~/.config/
+  for src in "$DOTFILES_DIR"/config/*; do
+    # upterm reads its config from Application Support, linked below.
+    [[ ${src##*/} == upterm ]] && continue
+    ln -sfnv "$src" ~/.config/"${src##*/}"
+  done
 
   mkdir -p "$HOME/Library/Application Support/upterm"
   ln -sfv "$DOTFILES_DIR/config/upterm/config.yaml" "$HOME/Library/Application Support/upterm/config.yaml"
@@ -114,7 +115,7 @@ install_launchd_agents() {
   mkdir -p "$HOME/Library/LaunchAgents"
   local brew_bash
   brew_bash="$(brew --prefix)/bin/bash"
-  for template in "$DOTFILES_DIR/launchd/"*.plist; do
+  for template in "$DOTFILES_DIR/macos/launchd/"*.plist; do
     [ -f "$template" ] || continue
     local dest
     dest="$HOME/Library/LaunchAgents/$(basename "$template")"

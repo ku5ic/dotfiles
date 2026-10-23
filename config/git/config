@@ -10,7 +10,6 @@
 	pager = delta
 	editor = nvim
 	whitespace = trailing-space,space-before-tab
-	excludesfile = ~/.gitignore_global
 
 [push]
 	default = simple
@@ -69,7 +68,7 @@
 	diff = true
 
 [commit]
-	template = ~/.gitmessage
+	template = ~/.config/git/message
 	gpgsign = true
 
 [gpg]
