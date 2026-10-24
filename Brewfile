@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 tap 'devdotfast/tap', trusted: { formula: ['diffr'] }
 tap 'jesseduffield/lazygit', trusted: true
 tap 'owenthereal/upterm', trusted: true
@@ -40,7 +42,7 @@ brew 'dust'       # disk usage explorer with a tree view
 brew 'procs'      # modern ps replacement with tree and color output
 
 # Git and code review
-brew 'devdotfast/tap/diffr'  # structural diff viewer behind the /diffr pane, coexists with difftastic, LLM summaries kept off
+brew 'devdotfast/tap/diffr'  # structural diff viewer behind the /diffr pane, coexists with difftastic
 brew 'difftastic'            # structural diff tool wired in as GIT_EXTERNAL_DIFF
 brew 'gh'                    # the GitHub CLI for PR, issue, and repo workflows
 brew 'git'                   # version control, kept current independent of the Xcode Command Line Tools
@@ -50,7 +52,7 @@ brew 'lazygit'               # terminal git UI bound to the lg alias
 brew 'tig'                   # terminal git history browser
 
 # Code analysis and architecture
-brew 'adr-tools'        # architecture decision records, run only from ~/architecture/<project> since adr init writes .adr-dir to the cwd
+brew 'adr-tools'        # architecture decision records
 brew 'ast-grep'         # structural code search and rewrite, complements ripgrep for syntax-level matches
 brew 'ctags'            # tag generator for code navigation
 brew 'git-quick-stats'  # contributor and churn stats per area, for finding who to ask
@@ -162,9 +164,10 @@ cask 'vlc'           # media player
 cask 'fliqlo'          # flip clock screensaver
 cask 'onyx'            # system maintenance utility for macOS
 cask 'the-unarchiver'  # archive extraction utility
+cask 'rectangle-pro'   # window management utility with keyboard shortcuts and snapping
 
 # Fonts
-cask 'font-fira-code-nerd-font'  # the Nerd Font used by WezTerm and Neovim
+cask 'font-fira-code-nerd-font' # the Nerd Font used by WezTerm and Neovim
 
 # Mac App Store
 mas '1Password for Safari', id: 1_569_813_296  # the 1Password browser extension for Safari
