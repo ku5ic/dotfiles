@@ -9,12 +9,19 @@ palette = "catppuccin_mocha"
 scan_timeout = 300
 
 # Explicit list instead of $all, so unused modules never run.
+# The git pill sits in a ( ) group so it vanishes outside a repo.
+# Nerd Font glyphs as escapes (,  = round caps) survive ASCII-only tooling.
 format = """
-$username$hostname$directory\
+[](peach)$username$hostname[ ](bg:peach)\
+[](fg:peach bg:lavender)$directory[](lavender)\
+( [](surface1)\
 $git_branch$git_commit$git_state$git_status\
-$hg_branch$hg_state\
-$package$nodejs$python$ruby$golang$terraform$docker_context\
-$cmd_duration$jobs$line_break$character"""
+[](surface1))\
+$line_break$character"""
+
+right_format = """
+$cmd_duration$jobs\
+$package$nodejs$python$ruby$golang$terraform$docker_context"""
 
 # Starship modules
 [character]
@@ -23,19 +30,66 @@ success_symbol = "[[󰄛](green) ❯](peach)"
 error_symbol = "[[󰄛](red) ❯](peach)"
 vimcmd_symbol = "[󰄛 ❮](subtext1)" # For use with zsh-vi-mode
 
-[git_branch]
-style = "bold mauve"
-
-[directory]
-truncation_length = 4
-style = "bold lavender"
-
-[hg_branch]
-disabled = false
-
 [username]
 disabled = false
 show_always = true
+style_user = "bold bg:peach fg:crust"
+style_root = "bold bg:red fg:crust"
+format = "[ $user]($style)"
+
+[hostname]
+style = "bg:peach fg:crust"
+format = "[@$hostname]($style)"
+
+[directory]
+truncation_length = 4
+style = "bold bg:lavender fg:crust"
+read_only_style = "bg:lavender fg:red"
+format = "[ $path ]($style)[$read_only]($read_only_style)"
+
+[git_branch]
+symbol = " "
+style = "bold bg:surface1 fg:mauve"
+format = "[ $symbol$branch ]($style)"
+
+[git_commit]
+style = "bg:surface1 fg:mauve"
+format = '[\($hash$tag\) ]($style)'
+
+[git_state]
+style = "bg:surface1 fg:yellow"
+format = '[\($state( $progress_current/$progress_total)\) ]($style)'
+
+[git_status]
+ignore_submodules = true
+style = "bg:surface1 fg:red"
+format = '([$all_status$ahead_behind ]($style))'
+
+# Right prompt: drop the "via"/"took" words the defaults add.
+[cmd_duration]
+style = "yellow"
+format = "[ $duration ]($style)"
+
+[package]
+format = "[$symbol$version ]($style)"
+
+[nodejs]
+format = "[$symbol($version )]($style)"
+
+[python]
+format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+
+[ruby]
+format = "[$symbol($version )]($style)"
+
+[golang]
+format = "[$symbol($version )]($style)"
+
+[terraform]
+format = "[$symbol$workspace ]($style)"
+
+[docker_context]
+format = "[$symbol$context ]($style)"
 
 # Palette definitions
 [palettes.catppuccin_latte]
