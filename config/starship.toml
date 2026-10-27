@@ -8,6 +8,14 @@ palette = "catppuccin_mocha"
 # Default 30ms trips on the first prompt after boot, when the dir listing is cold.
 scan_timeout = 300
 
+# Explicit list instead of $all, so unused modules never run.
+format = """
+$username$hostname$directory\
+$git_branch$git_commit$git_state$git_status\
+$hg_branch$hg_state\
+$package$nodejs$python$ruby$golang$terraform$docker_context\
+$cmd_duration$jobs$line_break$character"""
+
 # Starship modules
 [character]
 # Note the use of Catppuccin color 'peach'

@@ -47,6 +47,8 @@ setopt always_to_end # move cursor to end if word had one match
 PROMPT_EOL_MARK=""
 
 # Prompt and hooks
+# scan_timeout caps the cold-cache wait in ~; hide the warning it logs when hit.
+export STARSHIP_LOG=error
 _cached_init ${commands[starship]:A} starship init zsh
 _cached_init ${commands[direnv]:A} direnv hook zsh
 _cached_init ${commands[zoxide]:A} zoxide init zsh
