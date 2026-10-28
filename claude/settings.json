@@ -405,19 +405,6 @@
       }
     }
   },
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [{ "type": "command", "command": "~/.dotfiles/claude/hooks/require-checkout-mode.sh" }]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Skill",
-        "hooks": [{ "type": "command", "command": "~/.dotfiles/claude/hooks/require-checkout-mode.sh" }]
-      }
-    ]
-  },
   "outputStyle": "Concise",
   "spinnerTipsEnabled": false,
   "modelSettings": {
