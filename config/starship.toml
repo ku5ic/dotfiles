@@ -17,7 +17,7 @@ format = """
 ( [](surface1)\
 $git_branch$git_commit$git_state$git_status\
 [](surface1))\
-$line_break$character"""
+$line_break$line_break$character"""
 
 right_format = """
 $cmd_duration$jobs\
