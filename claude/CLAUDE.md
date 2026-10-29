@@ -8,6 +8,7 @@ The claude-kit plugin injects its rules every session (output, evidence, change,
 
 - `<required-skills>` block: invoke each named skill via the Skill tool before any other action. Blocking.
 - `<suggested-skills>` block: load the named skill when about to take that action.
+- `pr` is a name Claude Code reserves, so kit's PR skill only works as `/kit:pr`. A bare `/pr` being unknown is expected, not a kit bug; don't debug it.
 
 ## Project boot protocol
 
