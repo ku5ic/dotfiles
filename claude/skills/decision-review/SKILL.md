@@ -37,7 +37,7 @@ Run in this order. Answer each from the repo first; only what the repo can't ans
 
 ## Convention pass (non-blocking)
 
-Only from the project's own rules, CLAUDE.md, and loaded pattern skills, never generic taste. One line each, prefixed "a nit", with the replacement for a rename. Pre-change, check only the paths, names, and structure the artifact proposes.
+Only from the project's own rules, CLAUDE.md, and loaded pattern skills, never generic taste. One line each, prefixed "Nit,", with the replacement for a rename. Pre-change, check only the paths, names, and structure the artifact proposes.
 
 ## Filter
 
@@ -53,31 +53,31 @@ Terminal only, no file. Blocking questions first, then nits. Anchor each to `fil
 Pre-change example:
 
 ```text
-step 2: why a new cache layer? the list endpoint already returns etag, is it enough to use it?
-step 3: the plan changes the shared formatter, 14 callers use it and only one is broken. I'd rather fix it in the caller, wdyt?
-context: the old behavior hid archived items on purpose (commit a1b2c3, "hide archived from export"). is that still wanted?
-verification: no case for an empty list or a slow upstream
+Step 2: the list endpoint already returns an etag. Is that enough instead of a new cache layer?
+Step 3: 14 callers use the shared formatter and only one is broken. Fix it in that caller instead?
+Context: the old behavior hid archived items on purpose (a1b2c3, "hide archived from export"). Still wanted?
+Verification: no case for an empty list or a slow upstream.
 
-a nit, step 2: the new module name doesn't follow the folder naming in CLAUDE.md
+Nit, step 2: the module name doesn't follow the folder naming in CLAUDE.md, so `export-cache` -> `exportCache`?
 
-let's discuss first: cache layer vs etag
+Let's discuss first: cache layer vs etag
 ```
 
 Post-change example:
 
 ```text
-report/export:42 previously the export action was hidden for read-only users, now it's shown but disabled. intended?
-report/export:88 the new include-drafts option is added but nothing passes it
-what happens with 10k rows? the old version paginated
+report/export:42 Read-only users used to not see the export action, now it's shown but disabled. Intended?
+report/export:88 Nothing passes the new include-drafts option. Drop it until a caller needs it?
+What happens with 10k rows? The old version paginated.
 
-a nit, report/export:12 the comment restates the code, I'd remove it
+Nit, report/export:12 the comment restates the code. Remove it?
 
 LGTM, but the read-only case
 ```
 
 ## Voice
 
-Lowercase, short, one concern per line. Questions over commands. "IMO", "wdyt", "I'd rather", "a nit". Concede when the artifact already answers a point ("I see, makes sense"). No lecture, no praise, no summary of the change.
+Sentence case, short, one concern per line. Lead with the evidence (a count, a commit, a `file:line`), end with the fix as a question. Say "Not a bug, just X" for a non-blocking point. No stock phrases ("wdyt", "IMO", "I'd rather"). Concede when the artifact already answers a point ("Otherwise this looks right to me"). No lecture, no praise, no summary of the change.
 
 ## Stop
 
