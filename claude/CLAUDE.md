@@ -30,7 +30,7 @@ Before the first Claude in Chrome action in a session, ask via AskUserQuestion: 
 
 ## Diagrams
 
-Research and plan artifacts embed Mermaid. A C4 view is exported from the project's `workspace.dsl` (`structurizr export -f mermaid`), never hand-drawn; every other diagram is drawn. Directly above each exported fence, one provenance line: `Diagram: exported from <dsl path>, view <key>`. Drawn diagrams carry no provenance line.
+Research and plan artifacts embed Mermaid. A C4 view comes from the project's `c4-*.mmd` file under `~/Architecture/<parent>/<project>/` (layout in the codebase-visual skill), edited in place, never drawn ad hoc; every other diagram is drawn. Directly above each C4 fence, one provenance line: `Diagram: from <mmd path>`. Drawn diagrams carry no provenance line.
 
 ## Compaction
 
