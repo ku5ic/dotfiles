@@ -48,7 +48,7 @@ When `<arch>/split.txt` names a folder that still exists (`d=$(cat <arch>/split.
 
 Follow the Diagrams rule in CLAUDE.md: a provenance line directly above every C4 fence from `<arch>`, none on drawn ones. At most about 25 nodes per diagram: group or cut before drawing, and follow Readability below. The prose under each diagram follows Report shape.
 
-1. **Context and containers (C4).** The model lives outside the run, in `<arch>` (Inputs step 5). It holds `fingerprint.txt`, `split.txt` (the split dir `deps.py` printed) and one Mermaid file per view: `c4-context.mmd`, and `c4-containers.mmd` or, when split, `c4-containers-<cluster>.mmd`. It is reused across runs.
+1. **Context and containers (C4).** The model lives outside the run, in `<arch>` (Inputs step 5). It holds `fingerprint.txt`, `split.txt` (the split dir `deps.py` printed) and one Mermaid file per view: `c4-context.mmd`, and `c4-containers.mmd` or, when split, `c4-containers-<cluster>.mmd`, each with a same-named `.svg` preview beside it (Render). It is reused across runs.
    - Fingerprint: the module list (`cut -f2,3 <raw>/deps.tsv | tr '\t' '\n' | sort -u`), then the declared external packages (`rg '\tdeclared$' <raw>/externals.tsv | cut -f2 | sort`). A stdlib import, a C header or a transitive package changes nothing; a new manifest dependency does. Without a parsed manifest (Java, C#), the fingerprint is the modules alone. Write it to `<raw>/fingerprint.txt`.
    - `c4-context.mmd` exists with either `c4-containers.mmd` or the `c4-containers-<cluster>.mmd` set, `diff <arch>/fingerprint.txt <raw>/fingerprint.txt` is empty, and every `%% path: <path>` comment still resolves: reuse them as is. Skip to the embed.
    - Fingerprint differs or a cited path is gone: edit the files in place for what the diff shows (a new module, a removed path, a new SaaS dependency). Keep everything else, since it may hold hand edits. Then copy the new fingerprint and split dir over.
@@ -67,7 +67,7 @@ Diagrams 2 to 7 are drawn. Keep to these diagram types; Render below checks each
 ### Readability
 
 - Every fence starts with the init line from Colors. `useMaxWidth: false` makes a large graph render at full size with a scroll, instead of shrinking to the page width. For a C4 view, that line goes above the file's content, which otherwise stays verbatim.
-- Large C4 views get split, not shrunk. A container view over 12 nodes becomes 2 or 3 files, each one cluster of containers plus the externals that cluster touches, and `c4-containers.mmd` is deleted. A node keeps the same id and label in every file it appears in. Each view is embedded under its own provenance line.
+- Large C4 views get split, not shrunk. A container view over 12 nodes becomes 2 or 3 files, each one cluster of containers plus the externals that cluster touches, and `c4-containers.mmd` and its `.svg` are deleted. A node keeps the same id and label in every file it appears in. Each view is embedded under its own provenance line.
 - Node labels run 1 to 4 words. Paths and detail go in the prose, the table, or a C4 file's `%% path:` comment.
 - Edges carry a label only when it adds information: a count, a verb that isn't "uses".
 
@@ -135,7 +135,7 @@ Activity takes only a Takeaway. Tricky parts holds 3 to 6 findings from the read
 
 ## Render
 
-Before replying, render every diagram: `mkdir -p <raw>/render`, then `mmdc -i <report>.md -o <raw>/render/out.md`. Each chart prints a check or an error with its line. Fix each failing fence in the report, and a failing C4 fence in its `<arch>` file too, then rerun until all pass. If `mmdc` is missing, say the diagrams weren't rendered.
+Before replying, render every diagram: `mkdir -p <raw>/render`, then `mmdc -i <report>.md -o <raw>/render/out.md`. Each chart prints a check or an error with its line. Fix each failing fence in the report, and a failing C4 fence in its `<arch>` file too, then rerun until all pass. Then refresh each `<arch>` file's preview, since editors show a bare `.mmd` as text: `{ echo '<init line>'; cat <arch>/<file>.mmd; } | mmdc -i - -o <arch>/<file>.svg`. If `mmdc` is missing, say the diagrams weren't rendered.
 
 ## Reply
 
