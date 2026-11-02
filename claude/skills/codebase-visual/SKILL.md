@@ -10,6 +10,7 @@ argument-hint: "[repo path or subdirectory] [focus: an entry point or flow to tr
 2. Report: the path `kit scratch-dir visual <repo-slug>` prints. Raw tool output goes in a sibling folder named after the report, without `.md`. Nothing is written in the repo outside scratch.
 3. Read the project CLAUDE.md and README first. Diagrams name things the way the project does.
 4. Window: the `since:` argument, any date git's `--since` takes (`6.months`, `2026-01-01`). Without one, ask with AskUserQuestion before collecting: `12.months` (Recommended), `6.months`, `3.months`, all history; "Other" takes a custom date. Every `<since>` below is this value; for all history, drop `--since` and `_GIT_SINCE`.
+5. Model folder: `<arch>` = `~/Architecture/<parent>/<project>/`, where `<parent>` is the name of the folder holding the repo root and `<project>` is the repo name from `git remote get-url origin` (the root folder name without a remote). The parent keeps two clones or forks of one repo name apart. A subdirectory run uses `<arch>/scopes/<subdirectory>/` as its `<arch>`: its fingerprint covers only that scope, so it never reads, edits or replaces the whole-repo model.
 
 ## Collect
 
@@ -32,7 +33,7 @@ jq -r --arg root "<root>/" --rawfile churn <raw>/churn.tsv '
 python3 -I <skill dir>/scripts/deps.py <root> <raw>/imports.tsv <raw> [split dir]
 ```
 
-When `<arch>/split.txt` exists (Diagrams step 1), pass its content as the split dir, so a rerun fingerprints the same modules.
+When `<arch>/split.txt` names a folder that still exists (`d=$(cat <arch>/split.txt); [ -n "$d" ] && [ -d "<root>/$d" ]`), pass it as the split dir, so a rerun fingerprints the same modules. Otherwise, a missing, empty or stale file, pass nothing: `deps.py` takes a missing split dir silently and finds no modules, which would read as every container removed.
 
 `imports.sh` lists every import as `file<TAB>import text` with ast-grep rules for JS/TS, Python, Go, Rust, Java, Kotlin, Scala, C#, PHP, C/C++, Swift, Ruby, Lua, Dart and Elixir. It works whatever the quote style. For a language it doesn't cover, append rows with `rg -n --no-heading` on that language's import keyword, as file and statement text. Call `ast-grep`, never the deprecated `sg`.
 
@@ -47,7 +48,7 @@ When `<arch>/split.txt` exists (Diagrams step 1), pass its content as the split 
 
 Follow the Diagrams rule in CLAUDE.md: a provenance line directly above every C4 fence from `<arch>`, none on drawn ones. At most about 25 nodes per diagram: group or cut before drawing, and follow Readability below. The prose under each diagram follows Report shape.
 
-1. **Context and containers (C4).** The model lives outside the run, in `<arch>` = `~/Architecture/<parent>/<project>/`, where `<parent>` is the name of the folder holding the repo root and `<project>` is the repo name from `git remote get-url origin` (the root folder name without a remote). The parent keeps two clones or forks of one repo name apart. A subdirectory run uses `<arch>/scopes/<subdirectory>/` as its `<arch>`: its fingerprint covers only that scope, so it never reads, edits or replaces the whole-repo model. It holds `fingerprint.txt`, `split.txt` (the split dir `deps.py` printed) and one Mermaid file per view: `c4-context.mmd`, and `c4-containers.mmd` or, when split, `c4-containers-<cluster>.mmd`. It is reused across runs.
+1. **Context and containers (C4).** The model lives outside the run, in `<arch>` (Inputs step 5). It holds `fingerprint.txt`, `split.txt` (the split dir `deps.py` printed) and one Mermaid file per view: `c4-context.mmd`, and `c4-containers.mmd` or, when split, `c4-containers-<cluster>.mmd`. It is reused across runs.
    - Fingerprint: the module list (`cut -f2,3 <raw>/deps.tsv | tr '\t' '\n' | sort -u`), then the declared external packages (`rg '\tdeclared$' <raw>/externals.tsv | cut -f2 | sort`). A stdlib import, a C header or a transitive package changes nothing; a new manifest dependency does. Without a parsed manifest (Java, C#), the fingerprint is the modules alone. Write it to `<raw>/fingerprint.txt`.
    - `c4-context.mmd` exists with either `c4-containers.mmd` or the `c4-containers-<cluster>.mmd` set, `diff <arch>/fingerprint.txt <raw>/fingerprint.txt` is empty, and every `%% path: <path>` comment still resolves: reuse them as is. Skip to the embed.
    - Fingerprint differs or a cited path is gone: edit the files in place for what the diff shows (a new module, a removed path, a new SaaS dependency). Keep everything else, since it may hold hand edits. Then copy the new fingerprint and split dir over.
