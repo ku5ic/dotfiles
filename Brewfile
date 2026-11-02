@@ -58,7 +58,6 @@ brew 'ctags'            # tag generator for code navigation
 brew 'git-quick-stats'  # contributor and churn stats per area, for finding who to ask
 brew 'hyperfine'        # command-line benchmarking tool
 brew 'scc'              # per-file size and complexity counter, ranks hotspots alongside tokei
-brew 'structurizr'      # architecture models as code (C4) with a local preview server, pulls in openjdk
 brew 'tokei'            # source code line counter by language
 
 # Linters, formatters and tests
