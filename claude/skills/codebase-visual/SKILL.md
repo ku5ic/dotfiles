@@ -48,7 +48,7 @@ When `<arch>/split.txt` names a folder that still exists (`d=$(cat <arch>/split.
 
 Follow the Diagrams rule in CLAUDE.md: a provenance line directly above every C4 fence from `<arch>`, none on drawn ones. At most about 25 nodes per diagram: group or cut before drawing, and follow Readability below. The prose under each diagram follows Report shape.
 
-1. **Context and containers (C4).** The model lives outside the run, in `<arch>` (Inputs step 5). It holds `fingerprint.txt`, `split.txt` (the split dir `deps.py` printed) and one Mermaid file per view: `c4-context.mmd`, and `c4-containers.mmd` or, when split, `c4-containers-<cluster>.mmd`, each with a same-named `.svg` preview beside it (Render). It is reused across runs.
+1. **Context and containers (C4).** The model lives outside the run, in `<arch>` (Inputs step 5). It holds `fingerprint.txt`, `split.txt` (the split dir `deps.py` printed) and one Mermaid file per view: `c4-context.mmd`, and `c4-containers.mmd` or, when split, `c4-containers-<cluster>.mmd`, each with a same-named `.svg` preview beside it (Render), and `README.md` (Architecture doc). It is reused across runs.
    - Fingerprint: the module list (`cut -f2,3 <raw>/deps.tsv | tr '\t' '\n' | sort -u`), then the declared external packages (`rg '\tdeclared$' <raw>/externals.tsv | cut -f2 | sort`). A stdlib import, a C header or a transitive package changes nothing; a new manifest dependency does. Without a parsed manifest (Java, C#), the fingerprint is the modules alone. Write it to `<raw>/fingerprint.txt`.
    - `c4-context.mmd` exists with either `c4-containers.mmd` or the `c4-containers-<cluster>.mmd` set, `diff <arch>/fingerprint.txt <raw>/fingerprint.txt` is empty, and every `%% path: <path>` comment still resolves: reuse them as is. Skip to the embed.
    - Fingerprint differs or a cited path is gone: edit the files in place for what the diff shows (a new module, a removed path, a new SaaS dependency). Keep everything else, since it may hold hand edits. Then copy the new fingerprint and split dir over.
@@ -137,9 +137,19 @@ Activity takes only a Takeaway. Tricky parts holds 3 to 6 findings from the read
 
 Before replying, render every diagram: `mkdir -p <raw>/render`, then `mmdc -i <report>.md -o <raw>/render/out.md`. Each chart prints a check or an error with its line. Fix each failing fence in the report, and a failing C4 fence in its `<arch>` file too, then rerun until all pass. Then refresh each `<arch>` file's preview, since editors show a bare `.mmd` as text: `{ echo '<init line>'; cat <arch>/<file>.mmd; } | mmdc -i - -o <arch>/<file>.svg`. If `mmdc` is missing, say the diagrams weren't rendered.
 
+## Architecture doc
+
+The report is a snapshot of one window; `<arch>/README.md` keeps only the structure, so it stays true between runs. Rewrite it every run, after Render passes: the header below, then the report's Context and containers, Shape, and Dependencies sections verbatim. Hotspots, coupling, activity, owners and tricky parts never go in it.
+
+```markdown
+# <project>: architecture
+
+Root: <root> at <short HEAD hash>, <date>. Written by codebase-visual from the `c4-*.mmd` files and the import graph: edit those files, not this one.
+```
+
 ## Reply
 
-Report path, the TL;DR's first bullet, one next action.
+Report path, `<arch>/README.md`, the TL;DR's first bullet, one next action.
 
 ## Stop
 
