@@ -47,10 +47,9 @@ Follow the Diagrams rule in CLAUDE.md: a provenance line directly above every C4
 
 1. **Context and containers (C4).** The model lives outside the run, in `<arch>` = `~/Architecture/<parent>/<project>/`, where `<parent>` is the name of the folder holding the repo root and `<project>` is the repo name from `git remote get-url origin` (the root folder name without a remote). The parent keeps two clones or forks of one repo name apart. A subdirectory run uses `<arch>/scopes/<subdirectory>/` as its `<arch>`: its fingerprint covers only that scope, so it never reads, edits or replaces the whole-repo model. It holds `fingerprint.txt` and one Mermaid file per view: `c4-context.mmd`, and `c4-containers.mmd` or, when split, `c4-containers-<cluster>.mmd`. It is reused across runs.
    - Fingerprint: the module list (`cut -f2,3 <raw>/deps.tsv | tr '\t' '\n' | sort -u`), then the declared external packages (`awk -F'\t' '$3 == "declared" {print $2}' <raw>/externals.tsv | sort`). A stdlib import, a C header or a transitive package changes nothing; a new manifest dependency does. Without a parsed manifest (Java, C#), the fingerprint is the modules alone. Write it to `<raw>/fingerprint.txt`.
-   - The `c4-*.mmd` files exist, `diff <arch>/fingerprint.txt <raw>/fingerprint.txt` is empty, and every `%% path: <dir>` comment still resolves: reuse them as is. Skip to the embed.
+   - `c4-context.mmd` exists with either `c4-containers.mmd` or the `c4-containers-<cluster>.mmd` set, `diff <arch>/fingerprint.txt <raw>/fingerprint.txt` is empty, and every `%% path: <dir>` comment still resolves: reuse them as is. Skip to the embed.
    - Fingerprint differs or a cited path is gone: edit the files in place for what the diff shows (a new module, a removed path, a new SaaS dependency). Keep everything else, since it may hold hand edits. Then copy the new fingerprint over.
-   - No `c4-*.mmd` files: draw them from people, systems and containers read from the code, and copy the fingerprint over. Each file is a `flowchart TB` without the init line, carrying the `person`, `ext` and `boundary` classDef lines from Colors: people `:::person`, external systems `:::ext`, the repo's containers inside one `subgraph` per system marked `class <id> boundary`, each container node followed by a `%% path: <dir>` comment.
-   - After any write, render each changed file: `mkdir -p <raw>/render`, then `mmdc -i <arch>/<file> -o <raw>/render/<file>.svg`. A nonzero exit is a parse error to fix before going on. The SVG is the preview.
+   - No `c4-*.mmd` files: draw them from people, systems and containers read from the code, and copy the fingerprint over. Each file is a `flowchart TB` without the init line, carrying the `person`, `ext` and `boundary` classDef lines from Colors: people `:::person`, external systems `:::ext`, the repo's containers inside one `subgraph` per system marked `class <id> boundary`, each container node followed by a `%% path: <dir>` comment on its own line (Mermaid rejects a trailing comment), relative to `<root>`.
    - Embed each file under the init line, with the provenance line `Diagram: from <arch>/<file>` above the fence.
    - Say in the report's header line whether the model was reused, updated (and with what), or created.
 2. **Shape.** A `flowchart TB` of the modules (the split dir's children inside a subgraph, other top-level directories beside it), each labelled with its main language and code lines.
@@ -65,7 +64,7 @@ Diagrams 2 to 7 are drawn. Keep to these diagram types; Render below checks each
 ### Readability
 
 - Every fence starts with the init line from Colors. `useMaxWidth: false` makes a large graph render at full size with a scroll, instead of shrinking to the page width. For a C4 view, that line goes above the file's content, which otherwise stays verbatim.
-- Large C4 views get split, not shrunk. A container view over 12 nodes becomes 2 or 3 files, each one cluster of containers plus the externals that cluster touches. A node keeps the same id and label in every file it appears in. Each view is embedded under its own provenance line.
+- Large C4 views get split, not shrunk. A container view over 12 nodes becomes 2 or 3 files, each one cluster of containers plus the externals that cluster touches, and `c4-containers.mmd` is deleted. A node keeps the same id and label in every file it appears in. Each view is embedded under its own provenance line.
 - Node labels run 1 to 4 words. Paths and detail go in the prose, the table, or a C4 file's `%% path:` comment.
 - Edges carry a label only when it adds information: a count, a verb that isn't "uses".
 
@@ -133,7 +132,7 @@ Activity takes only a Takeaway. Tricky parts holds 3 to 6 findings from the read
 
 ## Render
 
-Before replying, render every diagram: `mmdc -i <report>.md -o <raw>/render/out.md`. Each chart prints a check or an error with its line. Fix each failing fence in the report and rerun until all pass. If `mmdc` is missing, say the diagrams weren't rendered.
+Before replying, render every diagram: `mkdir -p <raw>/render`, then `mmdc -i <report>.md -o <raw>/render/out.md`. Each chart prints a check or an error with its line. Fix each failing fence in the report, and a failing C4 fence in its `<arch>` file too, then rerun until all pass. If `mmdc` is missing, say the diagrams weren't rendered.
 
 ## Reply
 
