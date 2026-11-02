@@ -1,6 +1,6 @@
 ---
 name: codebase-visual
-description: Explain a codebase visually - a markdown report of Mermaid diagrams built from scc, tokei, git, ast-grep and structurizr, each explained with a takeaway, the why, and what to watch out for. Shows the shape, the moving parts, the dependencies and upward imports, the hotspots and their owners, hidden change coupling, the activity, and the tricky parts. Use when asked to "explain this codebase visually", "draw the architecture", "show me how this repo fits together", "diagram the modules", or for an overview of an unfamiliar repo.
+description: Explain a codebase visually - a markdown report of Mermaid diagrams built from scc, tokei, git and ast-grep, each explained with a takeaway, the why, and what to watch out for. Shows the shape, the moving parts, the dependencies and upward imports, the hotspots and their owners, hidden change coupling, the activity, and the tricky parts. Use when asked to "explain this codebase visually", "draw the architecture", "show me how this repo fits together", "diagram the modules", or for an overview of an unfamiliar repo.
 argument-hint: "[repo path or subdirectory] [focus: an entry point or flow to trace] [since: git date, asked if omitted]"
 ---
 
@@ -10,6 +10,7 @@ argument-hint: "[repo path or subdirectory] [focus: an entry point or flow to tr
 2. Report: the path `kit scratch-dir visual <repo-slug>` prints. Raw tool output goes in a sibling folder named after the report, without `.md`. Nothing is written in the repo outside scratch.
 3. Read the project CLAUDE.md and README first. Diagrams name things the way the project does.
 4. Window: the `since:` argument, any date git's `--since` takes (`6.months`, `2026-01-01`). Without one, ask with AskUserQuestion before collecting: `12.months` (Recommended), `6.months`, `3.months`, all history; "Other" takes a custom date. Every `<since>` below is this value; for all history, drop `--since` and `_GIT_SINCE`.
+5. Model folder: `<arch>` = `~/Architecture/<parent>/<project>/`, where `<parent>` is the name of the folder holding the repo root and `<project>` is the repo name from `git remote get-url origin` (the root folder name without a remote). The parent keeps two clones or forks of one repo name apart. A subdirectory run uses `<arch>/scopes/<subdirectory>/` as its `<arch>`: its fingerprint covers only that scope, so it never reads, edits or replaces the whole-repo model.
 
 ## Collect
 
@@ -32,25 +33,27 @@ jq -r --arg root "<root>/" --rawfile churn <raw>/churn.tsv '
 python3 -I <skill dir>/scripts/deps.py <root> <raw>/imports.tsv <raw> [split dir]
 ```
 
+When `<arch>/split.txt` names a folder that still exists (`d=$(cat <arch>/split.txt); [ -n "$d" ] && [ -d "<root>/$d" ]`), pass it as the split dir, so a rerun fingerprints the same modules. Otherwise, a missing, empty or stale file, pass nothing: `deps.py` takes a missing split dir silently and finds no modules, which would read as every container removed.
+
 `imports.sh` lists every import as `file<TAB>import text` with ast-grep rules for JS/TS, Python, Go, Rust, Java, Kotlin, Scala, C#, PHP, C/C++, Swift, Ruby, Lua, Dart and Elixir. It works whatever the quote style. For a language it doesn't cover, append rows with `rg -n --no-heading` on that language's import keyword, as file and statement text. Call `ast-grep`, never the deprecated `sg`.
 
-`deps.py` is language-agnostic: it resolves relative paths, dotted names (`a.b.c`, `..x`), `from pkg import sub` to the submodule, Rust `crate::`/`super::` and grouped uses (`crate::{a, b}`), PHP namespaces, Go module paths from every `go.mod`, Dart `package:` imports of a package in this repo, Elixir modules to their snake_case files, TS `./a.js` to `a.ts`, and source roots it detects (`src` for a TS baseUrl, `src/main/java`). Whatever matches no tracked file, or names a registry dependency in a tracked manifest of the importing file's ecosystem (`package.json`, `Cargo.toml`, `pyproject.toml`, `requirements*.txt`, `Gemfile`, `go.mod`, plus the Python stdlib), is an external package. A Go import outside every module path is always external. `externals.tsv` marks each package `declared` (in a manifest) or `undeclared`. The split dir is found by descending while one directory holds over 80% of the importing files, so `src` becomes `src/views`, `src/ds`, and a Java tree becomes its feature packages; pass it to override. Rewrite path aliases with a prefix (`@/x`, `~/x`) to the directory form in `imports.tsv` first. It prints the split dir and main source root: check both. It writes `deps.tsv` (count, source, target), `externals.tsv`, `imports-resolved.tsv`, and `upward.tsv`: edges whose reverse direction carries more production imports (tests and stories don't vote), with the top production files named.
+`deps.py` is language-agnostic: it resolves relative paths, dotted names (`a.b.c`, `..x`), `from pkg import sub` to the submodule, Rust `crate::`/`super::`, grouped uses (`crate::{a, b}`), `mod x;` and `extern crate` from any Cargo target root (`[lib]`, `[[bin]]`, `src/bin`), PHP namespaces, Go module paths from every `go.mod`, Dart `package:` imports of a package in this repo, Elixir modules to their snake_case files, TS `./a.js` to `a.ts`, and source roots it detects (`src` for a TS baseUrl, `src/main/java`). Whatever matches no tracked file, or names a registry dependency in a tracked manifest of the importing file's ecosystem (`package.json`, `Cargo.toml`, `pyproject.toml`, `requirements*.txt`, `Gemfile`, `go.mod`, plus the Python stdlib), is an external package. A Go import outside every module path is always external. `externals.tsv` marks each package `declared` (in a manifest) or `undeclared`. The split dir is found by descending while one directory holds over 80% of the importing files, so `src` becomes `src/views`, `src/ds`, and a Java tree becomes its feature packages; a split dir holding only files makes each file a module. Pass it to override. Rewrite path aliases with a prefix (`@/x`, `~/x`) to the directory form in `imports.tsv` first. It prints the split dir and main source root: check both. It writes `deps.tsv` (count, source, target), `externals.tsv`, `imports-resolved.tsv`, and `upward.tsv`: edges whose reverse direction carries more production imports (tests and stories don't vote), with the top production files named.
 
 5. Owners: `_GIT_SINCE=<since> _GIT_IGNORE_AUTHORS='\[bot\]' _GIT_SORT_BY=commits-desc _MENU_THEME=none git-quick-stats -T` for the repo, and the same with `_GIT_PATHSPEC=<dir>` for each module. Not `-a`: it ignores the pathspec. The ignore pattern drops bots such as `github-actions[bot]`, so only people are listed. Per hotspot: `git -C <root> log --since=<since> --format=%an -- <file> | rg -v '\[bot\]' | sort | uniq -c | sort -rn`; a top author at 70% or more means one person carries that file.
-6. Activity: `rg -o '^--\S+ (\S+)' -r '$1' <raw>/gitlog.txt | sort | uniq -c`.
+6. Activity: `rg '^--' <raw>/gitlog.txt | cut -d' ' -f2 | sort | uniq -c`.
 7. Change coupling: `python3 -I <skill dir>/scripts/coupling.py <raw>/gitlog.txt <raw>/imports-resolved.tsv <raw>/coupling.tsv`. Each row is shared commits, degree (shared over the less-changed file's commits), `imports` or `no-import`, and both paths. A `no-import` pair at degree 0.5 or more is hidden coupling: duplicated logic, a list kept in sync by hand, or a registry like a flags file.
 8. Read before writing. For each hotspot, upward edge, hidden-coupling pair, and the main flow, read the code and `git -C <root> log --since=<since> --format='%h %s' -- <file> | head -15`. This is where the Why and Watch out prose comes from; a section without it is a chart with a label.
 
 ## Diagrams
 
-Follow the Diagrams rule in CLAUDE.md: a provenance line directly above every exported fence, none on drawn ones. At most about 25 nodes per diagram: group or cut before drawing, and follow Readability below. The prose under each diagram follows Report shape.
+Follow the Diagrams rule in CLAUDE.md: a provenance line directly above every C4 fence from `<arch>`, none on drawn ones. At most about 25 nodes per diagram: group or cut before drawing, and follow Readability below. The prose under each diagram follows Report shape.
 
-1. **Context and containers (C4).** The model lives outside the run, in `<arch>` = `~/Architecture/<parent>/<project>/`, where `<parent>` is the name of the folder holding the repo root and `<project>` is the repo name from `git remote get-url origin` (the root folder name without a remote). The parent keeps two clones or forks of one repo name apart. A subdirectory run uses `<arch>/scopes/<subdirectory>/` as its `<arch>`: its fingerprint covers only that scope, so it never reads, edits or replaces the whole-repo model. It holds `workspace.dsl`, `fingerprint.txt` and `mermaid/`, and is reused across runs.
-   - Fingerprint: the module list (`cut -f2,3 <raw>/deps.tsv | tr '\t' '\n' | sort -u`), then the declared external packages (`awk -F'\t' '$3 == "declared" {print $2}' <raw>/externals.tsv | sort`). A stdlib import, a C header or a transitive package changes nothing; a new manifest dependency does. Without a parsed manifest (Java, C#), the fingerprint is the modules alone. Write it to `<raw>/fingerprint.txt`.
-   - `<arch>/workspace.dsl` exists, `diff <arch>/fingerprint.txt <raw>/fingerprint.txt` is empty, and every path a container description cites still exists: reuse it as is. Skip to the export.
-   - Fingerprint differs or a cited path is gone: edit the DSL in place for what the diff shows (a new module, a removed path, a new SaaS dependency). Keep everything else, since it may hold hand edits. Then copy the new fingerprint over.
-   - No `<arch>/workspace.dsl`: write it with people, systems and containers read from the code, each container citing its path in its description, and copy the fingerprint over.
-   - After any write: `structurizr validate -w <arch>/workspace.dsl` (exit 1 prints the bad line). Always: `structurizr export -w <arch>/workspace.dsl -f mermaid -o <arch>/mermaid`, then embed `structurizr-<key>.mmd` for the context and container views, marked exported. Never pass flags to `structurizr local`: it takes `--help` as a data directory. Preview with `structurizr local <arch>`.
+1. **Context and containers (C4).** The model lives outside the run, in `<arch>` (Inputs step 5). It holds `fingerprint.txt`, `split.txt` (the split dir `deps.py` printed) and one Mermaid file per view: `c4-context.mmd`, and `c4-containers.mmd` or, when split, `c4-containers-<cluster>.mmd`, each with a same-named `.svg` preview beside it (Render), and `README.md` (Architecture doc). It is reused across runs.
+   - Fingerprint: the module list (`cut -f2,3 <raw>/deps.tsv | tr '\t' '\n' | sort -u`), then the declared external packages (`rg '\tdeclared$' <raw>/externals.tsv | cut -f2 | sort`). A stdlib import, a C header or a transitive package changes nothing; a new manifest dependency does. Without a parsed manifest (Java, C#), the fingerprint is the modules alone. Write it to `<raw>/fingerprint.txt`.
+   - `c4-context.mmd` exists with either `c4-containers.mmd` or the `c4-containers-<cluster>.mmd` set, `diff <arch>/fingerprint.txt <raw>/fingerprint.txt` is empty, and every `%% path: <path>` comment still resolves: reuse them as is. Skip to the embed.
+   - Fingerprint differs or a cited path is gone: edit the files in place for what the diff shows (a new module, a removed path, a new SaaS dependency). Keep everything else, since it may hold hand edits. Then copy the new fingerprint and split dir over.
+   - No `c4-*.mmd` files: draw them from people, systems and containers read from the code, and copy the fingerprint and split dir over. A `workspace.dsl` left by the old structurizr flow is a starting point: draw from its people, systems and containers, then delete it and its `mermaid/` folder. Each file is a `flowchart TB` without the init line, carrying the `person`, `ext` and `boundary` classDef lines from Colors: people `:::person`, external systems `:::ext`, the repo's containers inside one `subgraph` per system marked `class <id> boundary`, each container node followed by a `%% path: <path>` comment on its own line (Mermaid rejects a trailing comment), relative to `<root>`: its directory, or its file for a one-file container like a config.
+   - Embed each file under the init line, with the provenance line `Diagram: from <arch>/<file>` above the fence.
    - Say in the report's header line whether the model was reused, updated (and with what), or created.
 2. **Shape.** A `flowchart TB` of the modules (the split dir's children inside a subgraph, other top-level directories beside it), each labelled with its main language and code lines.
 3. **Dependencies.** A `flowchart LR` from `deps.tsv`, the edge label being the import count. Externals collapse into one node per package, top 5 only. Upward edges from `upward.tsv` are drawn in terracotta with `linkStyle <indexes> stroke:#c8664a,stroke-width:3px`. Under it, a table of upward edges with production imports: edge, production imports and files, one example file.
@@ -63,51 +66,29 @@ Diagrams 2 to 7 are drawn. Keep to these diagram types; Render below checks each
 
 ### Readability
 
-- Every fence starts with the init line from Colors. `useMaxWidth: false` makes a large graph render at full size with a scroll, instead of shrinking to the page width. For an exported view, that line goes above the `.mmd` content, which otherwise stays verbatim.
-- Large C4 views get split, not shrunk. In the DSL: `autolayout tb` on any view with more than 8 elements, and a container view over 12 elements gets broken into 2 or 3 views. Each one keeps a cluster of containers with `include <ids>`, plus the externals that cluster touches. Each view is embedded under its own provenance line.
-- Node labels run 1 to 4 words. Paths and detail go in the prose, the table, or the DSL description.
+- Every fence starts with the init line from Colors. `useMaxWidth: false` makes a large graph render at full size with a scroll, instead of shrinking to the page width. For a C4 view, that line goes above the file's content, which otherwise stays verbatim.
+- Large C4 views get split, not shrunk. A container view over 12 nodes becomes 2 or 3 files, each one cluster of containers plus the externals that cluster touches, and `c4-containers.mmd` and its `.svg` are deleted. A node keeps the same id and label in every file it appears in. Each view is embedded under its own provenance line.
+- Node labels run 1 to 4 words. Paths and detail go in the prose, the table, or a C4 file's `%% path:` comment.
 - Edges carry a label only when it adds information: a count, a verb that isn't "uses".
 
 ### Colors
 
 One muted palette everywhere: slate blue for the repo's own parts, sage for people, sand for external systems, terracotta for risk.
 
-In `workspace.dsl`, tag external systems `"External"` and put this in `views`. The Mermaid export carries it into each node's `style` line:
-
-```text
-styles {
-    element "Element" {
-        background #e8eef6
-        color #1f3550
-        stroke #4a6fa5
-    }
-    element "Person" {
-        background #e4efe6
-        color #23422d
-        stroke #5b8a6b
-    }
-    element "External" {
-        background #f4eee5
-        color #4a3d2c
-        stroke #a8875e
-    }
-}
-```
-
-The init line on every fence, exported or drawn. It themes edges, quadrants, pie slices and bars to match:
+The init line on every fence. It sets the slate blue every node gets by default, and themes edges, quadrants, pie slices and bars to match:
 
 ```text
 %%{init: {"theme": "base", "flowchart": {"useMaxWidth": false, "nodeSpacing": 50, "rankSpacing": 70}, "themeVariables": {"fontSize": "18px", "fontFamily": "Inter, system-ui, sans-serif", "primaryColor": "#e8eef6", "primaryTextColor": "#1f3550", "primaryBorderColor": "#4a6fa5", "lineColor": "#7b8794", "secondaryColor": "#e4efe6", "tertiaryColor": "#f4eee5", "quadrant1Fill": "#f6e1d8", "quadrant2Fill": "#f4eee5", "quadrant3Fill": "#eef1f4", "quadrant4Fill": "#e8eef6", "quadrantPointFill": "#c8664a", "pie1": "#4a6fa5", "pie2": "#5b8a6b", "pie3": "#a8875e", "pie4": "#c8664a", "pie5": "#8a7bb0", "pie6": "#5f9ea0", "pie7": "#b0a58f", "xyChart": {"plotColorPalette": "#4a6fa5"}}}}%%
 ```
 
-In drawn flowcharts, mark external nodes with `classDef ext fill:#f4eee5,stroke:#a8875e,color:#4a3d2c` and hotspot nodes with `classDef hot fill:#f6e1d8,stroke:#c8664a,color:#5a2a1c`.
+In C4 files and drawn flowcharts, mark people with `classDef person fill:#e4efe6,stroke:#5b8a6b,color:#23422d`, external nodes with `classDef ext fill:#f4eee5,stroke:#a8875e,color:#4a3d2c`, C4 system subgraphs with `classDef boundary fill:#ffffff,stroke:#4a6fa5,color:#4a6fa5` (otherwise they take the sand of externals), and hotspot nodes with `classDef hot fill:#f6e1d8,stroke:#c8664a,color:#5a2a1c`.
 
 ## Report shape
 
 ```markdown
 # <project>: visual tour
 
-Root: <root>. <files>, <language mix>. Window: <since> to <date>. Raw data in `<raw folder>`. Model: `<arch>/workspace.dsl`, <reused | updated: what changed | created>.
+Root: <root>. <files>, <language mix>. Window: <since> to <date>. Raw data in `<raw folder>`. Model: `<arch>/`, <reused | updated: what changed | created>.
 
 ## TL;DR
 
@@ -136,7 +117,7 @@ Root: <root>. <files>, <language mix>. Window: <since> to <date>. Raw data in `<
 - **<dir>**: <author (commits)>
 ```
 
-Each diagram section is the provenance line for an exported view, the diagram, its table if the diagram has one, then three labelled parts:
+Each diagram section is the provenance line for a C4 view, the diagram, its table if the diagram has one, then three labelled parts:
 
 - **Takeaway**: one line, what to conclude, never what the chart shows.
 - **Why**: 2 to 4 sentences on why the code is shaped this way or keeps changing, from the code and commit subjects read in Collect step 8. Cite `file:line` or a short commit hash.
@@ -154,11 +135,21 @@ Activity takes only a Takeaway. Tricky parts holds 3 to 6 findings from the read
 
 ## Render
 
-Before replying, render every diagram: `mmdc -i <report>.md -o <raw>/render/out.md`. Each chart prints a check or an error with its line. Fix each failing fence in the report and rerun until all pass. If `mmdc` is missing, say the diagrams weren't rendered.
+Before replying, render every diagram: `mkdir -p <raw>/render`, then `mmdc -i <report>.md -o <raw>/render/out.md`. Each chart prints a check or an error with its line. Fix each failing fence in the report, and a failing C4 fence in its `<arch>` file too, then rerun until all pass. Then refresh each `<arch>` file's preview, since editors show a bare `.mmd` as text: `{ echo '<init line>'; cat <arch>/<file>.mmd; } | mmdc -i - -o <arch>/<file>.svg`. If `mmdc` is missing, say the diagrams weren't rendered.
+
+## Architecture doc
+
+The report is a snapshot of one window; `<arch>/README.md` keeps only the structure, so it stays true between runs. Rewrite it every run, after Render passes: the header below, then the report's Context and containers, Shape, and Dependencies sections verbatim. Hotspots, coupling, activity, owners and tricky parts never go in it.
+
+```markdown
+# <project>: architecture
+
+Root: <root> at <short HEAD hash>, <date>. Written by codebase-visual from the `c4-*.mmd` files and the import graph: edit those files, not this one.
+```
 
 ## Reply
 
-Report path, the TL;DR's first bullet, one next action.
+Report path, `<arch>/README.md`, the TL;DR's first bullet, one next action.
 
 ## Stop
 

@@ -18,7 +18,8 @@ for language in tsx typescript javascript; do rule "$language" "$js"; done
 # Whole from-statements: deps.py joins the module with each imported name.
 rule python '{any: [{kind: dotted_name, inside: {any: [{kind: import_statement}, {kind: aliased_import, inside: {kind: import_statement}}]}}, {kind: import_from_statement}]}'
 rule go '{kind: interpreted_string_literal, inside: {kind: import_spec}}'
-rule rust '{kind: use_declaration}'
+# mod x; links a file to its child module file; a mod with a body is inline.
+rule rust '{any: [{kind: use_declaration}, {kind: extern_crate_declaration}, {kind: mod_item, not: {has: {kind: declaration_list}}}]}'
 for language in java swift scala; do rule "$language" '{kind: import_declaration}'; done
 rule kotlin '{kind: import_header}'
 rule csharp '{kind: using_directive}'

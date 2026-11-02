@@ -10,7 +10,8 @@ Whatever does not resolve to a tracked file or directory, or names a dependency
 in a tracked manifest of the importing file's ecosystem, is an external package.
 
 The split dir, unless given, is found by descending while one directory holds
-over 80% of the importing files; its children become the modules.
+over 80% of the importing files; its children become the modules, its files
+when it holds no directories.
 """
 
 import collections
@@ -31,7 +32,7 @@ root, imports_path, out_dir, *override = sys.argv[1:]
 
 KEYWORD = re.compile(
     r"^\s*(?:pub(?:\([^)]*\))?\s+)?"
-    r"(?P<kw>#\s*include|import|using|use|alias|require_relative|require|from)(?:\s+|(?=[(\"'<]))"
+    r"(?P<kw>#\s*include|import|using|use|alias|require_relative|require|from|mod|extern\s+crate)(?:\s+|(?=[(\"'<]))"
     r"(?:static\s+)?"
 )
 CUT = re.compile(r"\s+as\s+|[;,\s()]")
@@ -48,6 +49,7 @@ DOTTED_LANGUAGES = {".py", ".java", ".kt", ".kts", ".cs", ".scala", ".groovy", "
 # NodeNext imports name the emitted file: ./a.js is a.ts.
 JS_EMITTED = {".js", ".jsx", ".mjs", ".cjs"}
 PYTHON_STDLIB = {name.lower() for name in sys.stdlib_module_names}
+RUST_AUTO_TARGET = re.compile(r"^(src/bin|examples|tests|benches)/[^/]+\.rs$")
 PLATFORM_ROOTS = {"java", "javax", "jakarta", "kotlin", "kotlinx", "android", "androidx", "scala", "System", "Microsoft"}
 
 
@@ -86,6 +88,8 @@ def clean(text: str) -> list[tuple[str, bool]]:
     if match := KEYWORD.match(text):
         # The ( of require("x") would otherwise cut the spec down to nothing.
         keyword, text = match["kw"], text[match.end():].lstrip("( ")
+    if keyword == "mod":  # Rust `mod x;` names its file the way `self::x` does
+        text = "self::" + text
     if re.match(r"\w+\s*=", text):  # C# alias: using Json = Newtonsoft.Json;
         text = text.split("=", 1)[1].strip()
     quoted = text[:1] in "\"'"
@@ -196,6 +200,22 @@ def snake_case(name: str) -> str:
     return re.sub(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", "_", name).lower()
 
 
+def rust_crate_roots(files: list[str]) -> set[str]:
+    """Stems of every Cargo target root: [lib] and [[bin]]-style paths, plus auto-discovered target files."""
+    found = set()
+    for manifest_file in (f for f in files if posixpath.basename(f) == "Cargo.toml"):
+        crate = posixpath.dirname(manifest_file)
+        try:
+            manifest = tomllib.load(open(os.path.join(root, manifest_file), "rb"))
+        except (OSError, ValueError):
+            manifest = {}
+        targets = [manifest.get("lib", {})] + [t for kind in ("bin", "example", "test", "bench") for t in manifest.get(kind, [])]
+        found.update(posixpath.join(crate, t["path"]) for t in targets if isinstance(t, dict) and "path" in t)
+        prefix = crate + "/" if crate else ""
+        found.update(f for f in files if f.startswith(prefix) and RUST_AUTO_TARGET.match(f[len(prefix):]))
+    return {os.path.splitext(posixpath.normpath(path))[0] for path in found}
+
+
 def crate_src(file: str) -> str:
     """The src dir of the nearest Cargo crate above a file, else src."""
     directory = posixpath.dirname(file)
@@ -229,12 +249,19 @@ def normalize(file: str, spec: str) -> tuple[str, str]:
     if head in ("self", "super"):
         # From src/net/client.rs, self is src/net/client; from a crate root or mod.rs, it is the dir.
         base = os.path.splitext(file)[0]
-        if posixpath.basename(base) in ("lib", "main", "mod"):
+        crate_root = posixpath.basename(base) in ("lib", "main") or base in rust_roots
+        if crate_root or posixpath.basename(base) == "mod":
             base = posixpath.dirname(base)
+        if crate_root and head == "super":  # a root has no parent: its super is from an inline mod tests
+            head = "self"
         while head in ("self", "super"):
             if head == "super":
                 base = posixpath.dirname(base)
             head, _, tail = tail.partition("/")
+        if head == "*":  # super::* names the module itself
+            head = ""
+        if package_key(head) in declared.get("rust", ()):  # `extern crate clap;` puts clap at self::clap
+            return posixpath.join(head, tail).rstrip("/"), "plain"
         return posixpath.join(base, head, tail).rstrip("/"), "rooted"
     # A dot in a JS spec is part of a package name (socket.io-client), never a separator.
     may_be_dotted = ECOSYSTEM.get(language) != "npm" and (language in DOTTED_LANGUAGES or not SOURCE_FILE.search(spec))
@@ -286,6 +313,7 @@ known, parents = tracked_paths(tracked)
 declared = declared_packages(tracked)
 modules = go_modules(tracked)
 dart_libs = dart_packages(tracked)
+rust_roots = rust_crate_roots(tracked)
 if override:
     split = posixpath.normpath(override[0]).strip("/")  # src/ and ./src name the same dir
     split = "" if split == "." else split
@@ -300,7 +328,12 @@ children_of_split = {
 }
 
 
-def module_of(path: str) -> str:
+def module_of(path: str) -> str | None:
+    if split and not children_of_split:
+        # A split dir holding only files makes each file a module; the dir itself is none of them.
+        if path == split:
+            return None
+        return module_stem(path) if path.startswith(split + "/") else path.split("/")[0]
     if split and path.startswith(split + "/"):
         child = path[len(split) + 1:].split("/")[0]
         return f"{split}/{child}" if child in children_of_split else split
@@ -392,7 +425,7 @@ for file, path, kind in specs:
         continue
     resolved.append((file, target_path))
     source, target = module_of(file), module_of(target_path)
-    if source != target:
+    if source and target and source != target:
         edges[(source, target)] += 1
         if not TEST_OR_STORY.search(file):
             prod_files[(source, target)][file] += 1
