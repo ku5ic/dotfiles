@@ -406,10 +406,12 @@
     }
   },
   "outputStyle": "Concise",
+  "feedbackDrafts": "off",
   "spinnerTipsEnabled": false,
   "modelSettings": {
     "claude-opus-5-5": {
-      "effortLevel": "high"
+      "effortLevel": "high",
+      "autoCompactWindow": 400000
     }
   },
   "awaySummaryEnabled": false,
@@ -430,6 +432,5 @@
     ],
     "hard_deny": ["$defaults"]
   },
-  "voiceEnabled": true,
-  "feedbackDrafts": "off"
+  "voiceEnabled": true
 }
