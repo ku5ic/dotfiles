@@ -123,6 +123,7 @@ brew 'oxipng'  # optimizes PNG assets
 
 # Development
 cask 'claude-code@latest'         # the Claude Code CLI pinned to the latest channel
+cask 'coderabbit'                 # CodeRabbit CLI for AI code review
 cask 'neovide-app'                # graphical frontend for Neovim
 cask 'orbstack'                   # container runtime for local development, replaces Docker Desktop
 cask 'owenthereal/upterm/upterm'  # shares terminal sessions securely over the web
