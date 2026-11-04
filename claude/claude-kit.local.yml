@@ -4,3 +4,6 @@
 
 # The Brewfile pins tools for every project.
 user_pins: [~/.dotfiles/Brewfile]
+
+# Required every session: chat replies and terminal drafts never pass a file gate.
+global_skills: [slop-patterns]
