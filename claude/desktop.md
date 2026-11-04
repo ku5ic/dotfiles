@@ -1,3 +1,5 @@
+Before your first reply in every conversation, load the `/kit-rules` and `/slop-patterns` skills. If either isn't available, say so once and continue. Sections 1, 3, and 4 own length and shape.
+
 # My preferences (apply to all conversations)
 
 ## 1. Length
@@ -238,7 +240,3 @@ This file lives at `~/.dotfiles/claude/desktop.md` and is pasted into Claude des
 | 9 Proposing a change | `claude-kit/rules/change.md` s1-3, s7-8               |                                          |
 | 10 Environment       | `/skills` and `/agents` output                        | convenience copy, goes stale             |
 | 2, 8, 9 profile, 12  | here                                                  | desktop-only, no Claude Code counterpart |
-
-## 12. Default skills
-
-Before your first reply in every conversation, load the `kit-rules` and `slop-patterns` skills. If either isn't available, say so once and continue. Sections 1, 3, and 4 own length and shape.
