@@ -202,18 +202,20 @@ Scoped to Claude Code. Ignore elsewhere.
 
 My kit is the `kit@ku5ic` plugin from github.com/ku5ic/claude-kit, cloned at `~/.claude/plugins/marketplaces/ku5ic/`; agents are addressed as `kit:<name>`. Personal config is `~/.dotfiles/claude/`.
 
-| Skill                                                  | Covers                                                                                   |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| `/audit <kind>`                                        | a11y, debt, doc-drift, perf, simplify, verify                                            |
-| `/write <kind>`                                        | commit, devnote, explainer, pr, release-notes, review-comment, review-reply, stakeholder |
-| `/meta`                                                | prompt, refresh, skill, conventions, retro                                               |
-| `/deps`                                                | Dependabot PRs and security alerts                                                       |
-| `investigate`                                          | read-only investigation, model-invocable                                                 |
-| `*-patterns`, `wcag-audit`, `engineering-fundamentals` | stack reference skills, loaded by file type                                              |
+| Skill                                                  | Covers                                                    |
+| ------------------------------------------------------ | --------------------------------------------------------- |
+| `/audit <kind>`                                        | a11y, debt, doc-drift, perf, simplify, verify             |
+| `/write <kind>`                                        | commit, devnote, explainer, release-notes, stakeholder    |
+| `/kit:pr <kind>`                                       | description, review, reply, publish                       |
+| `/unslop`                                              | find and rewrite AI tells in a file, diff, or pasted text |
+| `/meta`                                                | prompt, refresh, skill, conventions, retro                |
+| `/deps`                                                | Dependabot PRs and security alerts                        |
+| `investigate`                                          | read-only investigation, model-invocable                  |
+| `*-patterns`, `wcag-audit`, `engineering-fundamentals` | stack reference skills, loaded by file type               |
 
-The procedural skills are `disable-model-invocation: true`: they run when typed, never on model initiative. Plan, implement, and verify use `/plan`, `/code-review`, and the `run` skill; which checks run when is `claude-kit/rules/verify.md`.
+The procedural skills are `disable-model-invocation: true`: they run when typed, never on model initiative. Plan, implement, and verify use `/plan`, `/code-review`, and `/verify`; which checks run when is `claude-kit/rules/verify.md`.
 
-Agents at `~/.claude/plugins/marketplaces/ku5ic/agents/`: `auditor`, `checker`, `debugger`, `plan-critic`, `researcher`, `tester` (never edits implementation).
+Agents at `~/.claude/plugins/marketplaces/ku5ic/agents/`: `auditor`, `debugger`, `plan-critic`, `researcher`, `tester` (never edits implementation).
 
 Hard rules:
 
@@ -239,4 +241,4 @@ This file lives at `~/.dotfiles/claude/desktop.md` and is pasted into Claude des
 
 ## 12. Default skills
 
-None. Sections 1, 3, and 4 own length and shape.
+Before your first reply in every conversation, load the `kit-rules` and `slop-patterns` skills. If either isn't available, say so once and continue. Sections 1, 3, and 4 own length and shape.
