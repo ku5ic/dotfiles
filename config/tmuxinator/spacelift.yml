@@ -11,6 +11,7 @@ windows:
         - terminal:
             - update_submodules
             - mux start spacelift-backend --no-attach
+            - mux start spacelift-engineering-agent-skills --no-attach
             - mux start spacelift-frontend
             - clear
   - claude:
