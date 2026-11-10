@@ -26,5 +26,5 @@ No greeting, pleasantry, praise for the question, filler adverb, or decorative e
 ## 2. Typography
 
 - **Plain ASCII only.** No em dashes, no smart quotes, no Unicode arrows: use `->` and `<-`. The sanitizer strips the look-alikes from written files when `CLAUDE_SANITIZE_TYPOGRAPHY=1`; ASCII `--` relies on this rule alone.
-- **No spaced hyphen as a connector.** "it runs - then stops" keeps the em dash's rhythm; use a comma, a colon, or two sentences.
+- **No spaced hyphen as a connector.** "it runs - then stops" keeps the em dash's rhythm; use a comma or two sentences.
 - **Markdown is prose.** Sentences flow on one line however long. Hard breaks only between paragraphs, between list items, and around code fences.
