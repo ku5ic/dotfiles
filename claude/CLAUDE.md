@@ -2,23 +2,18 @@
 
 Global instructions for Claude Code, every repository. Project CLAUDE.md files extend these.
 
-The claude-kit plugin injects its rules every session (output, evidence, change, verify, workflow, subagents, tooling); `rules/voice.md` here adds register and typography. This file holds only what is mine.
+The claude-kit plugin's rules are the `kit-rules` skill, which a gate makes load before any tool call (output, evidence, change, verify, workflow, subagents, tooling); `rules/voice.md` here adds register and typography. This file holds only what is mine.
 
 ## Skills
 
-- `<required-skills>` block: invoke each named skill via the Skill tool before any other action. Blocking.
-- `<suggested-skills>` block: load the named skill when about to take that action.
-- `pr` is a name Claude Code reserves, so kit's PR skill only works as `/kit:pr`. A bare `/pr` being unknown is expected, not a kit bug; don't debug it.
+`pr` is a name Claude Code reserves, so kit's PR skill only works as `/kit:pr`. A bare `/pr` being unknown is expected, not a kit bug; don't debug it.
 
-## Project boot protocol
+## Repo boot
 
-Once per session, on the first substantive action in a repo:
+On the first substantive action in a repo:
 
-1. Use the injected `<repo-context>` block for stack info. If it is absent and the project root has a language manifest (package.json, pyproject.toml, go.mod, Cargo.toml, Gemfile, composer.json), say so: the hook should have fired.
-2. Read the project root CLAUDE.md. Read README.md only if directly relevant to the task.
-3. Check branch and dirty state. Dirty tree plus a new-feature task: surface it and ask before proceeding.
-4. Use the injected `<tooling>` block for the test runner, type checker, linter, and formatter.
-5. Do not run quality checks yet. Save that for after a change.
+- No `<repo-context>` block while the project root has a language manifest (package.json, pyproject.toml, go.mod, Cargo.toml, Gemfile, composer.json): say so, the hook should have fired.
+- Dirty tree plus a new-feature task: surface it and ask before proceeding.
 
 ## Branches
 
