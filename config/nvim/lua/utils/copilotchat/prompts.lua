@@ -191,7 +191,7 @@ end
 local function writing(description, prompt)
   return {
     description = description,
-    model = "claude-haiku-4.5",
+    model = "claude-haiku-5.5",
     system_prompt = WRITING_SYSTEM_PROMPT,
     prompt = prompt,
   }
@@ -403,7 +403,7 @@ If no code changes are required, provide:
 
   Commit = {
     description = "Write conventional commit message",
-    model = "claude-haiku-4.5",
+    model = "claude-haiku-5.5",
     context = { "#gitdiff:staged" },
     system_prompt = COMMIT_SYSTEM_PROMPT,
     prompt = [[
