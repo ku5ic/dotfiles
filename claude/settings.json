@@ -8,7 +8,6 @@
     "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION": "30",
     "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "4",
     "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "4",
-    "CLAUDE_GUARD_SKILLS": "1",
     "CLAUDE_SANITIZE_TYPOGRAPHY": "1"
   },
   "includeCoAuthoredBy": false,
@@ -354,7 +353,7 @@
     "defaultMode": "auto",
     "additionalDirectories": ["~/.claude", "~/.dotfiles"]
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "skillOverrides": {
     "auto-mode-setup": "off",
     "fastapi-patterns": "off",
@@ -412,6 +411,9 @@
   "modelSettings": {
     "claude-opus-5-5": {
       "effortLevel": "high",
+      "autoCompactWindow": 400000
+    },
+    "claude-fable-5-2": {
       "autoCompactWindow": 400000
     }
   },
