@@ -14,7 +14,7 @@ set -euo pipefail
 #   delete_branch_on_merge      = true
 #   allow_update_branch         = true
 #   squash_merge_commit_title   = PR_TITLE
-#   squash_merge_commit_message = PR_BODY
+#   squash_merge_commit_message = COMMIT_MESSAGES
 #
 # Branch protection applied to the default branch:
 #   required_linear_history = true   (enforces squash-only at the git level)
@@ -107,7 +107,7 @@ apply_settings() {
     -F delete_branch_on_merge=true \
     -F allow_update_branch=true \
     -f squash_merge_commit_title=PR_TITLE \
-    -f squash_merge_commit_message=PR_BODY \
+    -f squash_merge_commit_message=COMMIT_MESSAGES \
     >/dev/null
 }
 
@@ -125,7 +125,7 @@ show_diff() {
       if .delete_branch_on_merge    != true      then "delete_branch_on_merge: \(.delete_branch_on_merge) -> true"       else empty end,
       if .allow_update_branch       != true      then "allow_update_branch: \(.allow_update_branch) -> true"             else empty end,
       if .squash_merge_commit_title != "PR_TITLE" then "squash_merge_commit_title: \(.squash_merge_commit_title) -> PR_TITLE" else empty end,
-      if .squash_merge_commit_message != "PR_BODY" then "squash_merge_commit_message: \(.squash_merge_commit_message) -> PR_BODY" else empty end
+      if .squash_merge_commit_message != "COMMIT_MESSAGES" then "squash_merge_commit_message: \(.squash_merge_commit_message) -> COMMIT_MESSAGES" else empty end
     ] | .[]
   '
 }
