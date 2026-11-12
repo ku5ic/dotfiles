@@ -3,7 +3,7 @@
 # merge and arrays append, so this can add to the kit but never remove.
 
 # The Brewfile pins tools for every project.
-user_pins: [~/.dotfiles/Brewfile]
+user_pins: [~/.dotfiles/Brewfile, ~/.tool-versions]
 
 # Required every session: chat replies and terminal drafts never pass a file gate.
 global_skills: [slop-patterns]
@@ -19,4 +19,3 @@ slop:
       tier: 2
       match: '\b[a-z]+ [a-z]+ [a-z]+: [a-z][^,;:\n`(]*[.!?](\s|$)'
       fix: two sentences, or a comma
-
