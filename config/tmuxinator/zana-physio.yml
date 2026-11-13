@@ -22,7 +22,7 @@ windows:
         - frontend:
             - cd frontend
             - clear
-            - npm run dev
+            - pnpm run dev
   - tests:
       layout: even-horizontal
       panes:
