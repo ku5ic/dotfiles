@@ -389,7 +389,6 @@
   },
   "enabledPlugins": {
     "security-guidance@claude-plugins-official": true,
-    "frontend-spacelift@spacelift-engineering": true,
     "kit@ku5ic": true,
     "coderabbit@claude-plugins-official": true
   },
