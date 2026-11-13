@@ -6,7 +6,7 @@
   "skillListingBudgetFraction": 0.04,
   "env": {
     "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION": "30",
-    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "4",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "6",
     "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "4",
     "CLAUDE_SANITIZE_TYPOGRAPHY": "1"
   },
@@ -14,6 +14,8 @@
   "permissions": {
     "allow": [
       "Bash(fd:*)",
+      "Bash(cat *)",
+      "Bash(sed -n *)",
       "Bash(bats:*)",
       "Bash(shellcheck:*)",
       "Bash(kit run-checks *)",
