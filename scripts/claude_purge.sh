@@ -4,12 +4,12 @@ shopt -s nullglob dotglob
 
 dry_run=false
 case "${1:-}" in
-  "") ;;
-  -n | --dry-run) dry_run=true ;;
-  *)
-    echo "usage: claude_purge [-n|--dry-run]" >&2
-    exit 2
-    ;;
+"") ;;
+-n | --dry-run) dry_run=true ;;
+*)
+  echo "usage: claude_purge [-n|--dry-run]" >&2
+  exit 2
+  ;;
 esac
 
 targets=(
@@ -19,6 +19,7 @@ targets=(
   ~/.claude/logs/*
   ~/.claude/paste-cache/*
   ~/.claude/scratch/*
+  ~/.claude/uploads/*
   ~/.claude/security/log.txt*
   ~/.claude/security/security_warnings_state_*
   ~/.claude/session-env/*
