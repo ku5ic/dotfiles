@@ -10,7 +10,11 @@
     "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "4",
     "CLAUDE_SANITIZE_TYPOGRAPHY": "1"
   },
-  "includeCoAuthoredBy": false,
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
   "permissions": {
     "allow": [
       "Bash(fd:*)",
@@ -427,7 +431,6 @@
   "autoMemoryEnabled": true,
   "theme": "auto",
   "editorMode": "vim",
-  "agentPushNotifEnabled": true,
   "autoMode": {
     "allow": ["$defaults"],
     "soft_deny": [
@@ -436,5 +439,6 @@
     ],
     "hard_deny": ["$defaults"]
   },
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "crossSessionInbound": "accept"
 }
