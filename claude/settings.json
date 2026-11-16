@@ -26,7 +26,6 @@
       "Bash(kit enforce --list *)",
       "Bash(rg *)",
       "Bash(git log *)",
-      "Bash(git -C * log *)",
       "Bash(run-checks.sh *)",
       "Bash(git-base.sh *)",
       "Bash(scratch-dir.sh *)",
