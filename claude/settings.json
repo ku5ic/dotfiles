@@ -408,7 +408,8 @@
       "source": {
         "source": "github",
         "repo": "ku5ic/claude-kit"
-      }
+      },
+      "autoUpdate": true
     }
   },
   "outputStyle": "Concise",
