@@ -17,6 +17,10 @@ path=(
   $path
 )
 
+# XDG: on macOS, tools built on adrg/xdg (lazygit, upterm) default to
+# ~/Library/Application Support unless this is set.
+export XDG_CONFIG_HOME="$HOME/.config"
+
 # Dotfiles and claude-kit
 export DOTFILES_DIR="$HOME/.dotfiles"
 export CLAUDE_KIT_PERSONAL="$DOTFILES_DIR/claude"

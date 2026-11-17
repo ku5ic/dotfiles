@@ -79,13 +79,8 @@ create_symlinks() {
 
   mkdir -p ~/.config
   for src in "$DOTFILES_DIR"/config/*; do
-    # upterm reads its config from Application Support, linked below.
-    [[ ${src##*/} == upterm ]] && continue
     ln -sfnv "$src" ~/.config/"${src##*/}"
   done
-
-  mkdir -p "$HOME/Library/Application Support/upterm"
-  ln -sfv "$DOTFILES_DIR/config/upterm/config.yaml" "$HOME/Library/Application Support/upterm/config.yaml"
 }
 
 # Personal Claude config is linked from claude/; claude-kit itself is a plugin
