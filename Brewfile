@@ -169,6 +169,7 @@ cask 'rectangle-pro'   # window management utility with keyboard shortcuts and s
 cask 'font-fira-code-nerd-font' # the Nerd Font used by WezTerm and Neovim
 
 # Mac App Store
+brew 'mas'                                     # App Store CLI that brew bundle needs to install and clean up the mas entries below
 mas '1Password for Safari', id: 1_569_813_296  # the 1Password browser extension for Safari
 mas 'Keynote', id: 361_285_480                 # presentation editor
 mas 'Numbers', id: 361_304_891                 # spreadsheet editor
