@@ -384,6 +384,7 @@
     "mode": "tap"
   },
   "autoMemoryEnabled": true,
+  "autoCompactEnabled": false,
   "theme": "auto",
   "editorMode": "vim",
   "autoMode": {
