@@ -329,6 +329,7 @@
     "additionalDirectories": ["~/.claude", "~/.dotfiles"]
   },
   "model": "opus",
+  "effortLevel": "high",
   "skillOverrides": {
     "auto-mode-setup": "off",
     "fastapi-patterns": "off",
