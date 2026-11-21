@@ -1,0 +1,5 @@
+startup-message-capture = false
+
+[font]
+normal = ["FiraCode Nerd Font Propo"]
+size = 14.0

@@ -4,6 +4,12 @@ claude/rules/claude-kit
 # Work skills with internal project IDs and links; this repo is public.
 claude/skills/fe-bugsnag-handler/
 
+# gh auth state; config/gh is linked whole, so gh writes this inside the repo.
+config/gh/hosts.yml
+
+# Homebrew's lock beside trust.json.
+config/homebrew/*.lock
+
 ### OSX ###
 .DS_Store
 .AppleDouble
