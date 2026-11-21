@@ -399,15 +399,6 @@
   "syncClaudeAiSkills": false,
   "syncClaudeAiPlugins": false,
   "feedbackDrafts": "off",
-  "modelSettings": {
-    "claude-opus-5-5": {
-      "effortLevel": "high",
-      "autoCompactWindow": 400000
-    },
-    "claude-fable-5-2": {
-      "autoCompactWindow": 400000
-    }
-  },
   "crossSessionInbound": "accept",
   "agentPushNotifEnabled": true
 }
