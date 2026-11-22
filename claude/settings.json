@@ -293,6 +293,14 @@
     }
   },
   "awaySummaryEnabled": false,
+  "pluginConfigs": {
+    "kit@ku5ic": {
+      "options": {
+        "preset": "strict",
+        "reply_length": "terse"
+      }
+    }
+  },
   "plansDirectory": ".claude/plans",
   "voice": {
     "enabled": true,
