@@ -77,4 +77,4 @@ Priorities in order: correctness, clarity, long-term maintainability. Accessibil
 
 ## 9. Sync with my Claude Code config
 
-This file lives at `~/.dotfiles/claude/desktop.md` and is pasted into Claude desktop by hand. It holds only what Claude Code doesn't already do. Rules the claude-kit plugin (`kit-rules`, `slop-patterns`, `plan-critic`) or the Concise output style cover were cut on 2026-11-22. Before adding a rule here, check it isn't already in one of them.
+This file lives at `~/.dotfiles/claude/desktop.md` and is pasted into Claude desktop by hand. It holds only what Claude Code doesn't already do.
