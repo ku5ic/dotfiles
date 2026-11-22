@@ -1,6 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "cleanupPeriodDays": 30,
+  "syncClaudeAiSkills": false,
+  "syncClaudeAiPlugins": false,
   "skillListingBudgetFraction": 0.04,
   "env": {
     "CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION": "30",
@@ -8,7 +10,11 @@
     "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "4",
     "CLAUDE_SANITIZE_TYPOGRAPHY": "0"
   },
-  "attribution": false,
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
   "permissions": {
     "allow": [
       "Bash(fd:*)",
@@ -329,7 +335,6 @@
     "additionalDirectories": ["~/.claude", "~/.dotfiles"]
   },
   "model": "opus",
-  "effortLevel": "high",
   "skillOverrides": {
     "auto-mode-setup": "off",
     "fastapi-patterns": "off",
@@ -377,7 +382,22 @@
     }
   },
   "outputStyle": "Concise",
+  "feedbackDrafts": "off",
   "spinnerTipsEnabled": false,
+  "modelSettings": {
+    "fable": {
+      "effortLevel": "high"
+    },
+    "opus": {
+      "effortLevel": "high"
+    },
+    "sonnet": {
+      "effortLevel": "high"
+    },
+    "haiku": {
+      "effortLevel": "medium"
+    }
+  },
   "awaySummaryEnabled": false,
   "plansDirectory": ".claude/plans",
   "voice": {
@@ -385,9 +405,11 @@
     "mode": "tap"
   },
   "autoMemoryEnabled": true,
-  "autoCompactEnabled": false,
   "theme": "auto",
   "editorMode": "vim",
+  "autoCompactEnabled": false,
+  "crossSessionInbound": "accept",
+  "agentPushNotifEnabled": true,
   "autoMode": {
     "allow": ["$defaults"],
     "soft_deny": [
@@ -396,10 +418,5 @@
     ],
     "hard_deny": ["$defaults"]
   },
-  "voiceEnabled": true,
-  "syncClaudeAiSkills": false,
-  "syncClaudeAiPlugins": false,
-  "feedbackDrafts": "off",
-  "crossSessionInbound": "accept",
-  "agentPushNotifEnabled": true
+  "voiceEnabled": true
 }
