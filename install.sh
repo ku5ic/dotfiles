@@ -70,16 +70,26 @@ install_packages() {
   fi
 }
 
+# ln -sfn puts the link inside a real directory instead of replacing it, which
+# happens when an app creates its ~/.config dir before the first install.
+link() {
+  local src=$1 dest=$2
+  if [[ -d "$dest" && ! -L "$dest" ]]; then
+    mv -v "$dest" "$dest.bak.$(date +%Y%m%d%H%M%S)"
+  fi
+  ln -sfnv "$src" "$dest"
+}
+
 create_symlinks() {
   # home/ holds files without the leading dot so editors show them: home/zshrc -> ~/.zshrc
   local src
   for src in "$DOTFILES_DIR"/home/*; do
-    ln -sfnv "$src" "$HOME/.${src##*/}"
+    link "$src" "$HOME/.${src##*/}"
   done
 
   mkdir -p ~/.config
   for src in "$DOTFILES_DIR"/config/*; do
-    ln -sfnv "$src" ~/.config/"${src##*/}"
+    link "$src" ~/.config/"${src##*/}"
   done
 }
 
@@ -90,7 +100,7 @@ setup_claude() {
   mkdir -p ~/.claude
   local entry
   for entry in settings.json CLAUDE.md rules claude-kit.local.yml; do
-    ln -sfnv "$DOTFILES_DIR/claude/$entry" ~/.claude/"$entry"
+    link "$DOTFILES_DIR/claude/$entry" ~/.claude/"$entry"
   done
 
   if ! command -v claude >/dev/null 2>&1; then
