@@ -296,7 +296,7 @@
   "pluginConfigs": {
     "kit@ku5ic": {
       "options": {
-        "preset": "strict",
+        "preset": "default",
         "reply_length": "terse"
       }
     }
