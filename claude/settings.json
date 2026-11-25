@@ -307,6 +307,7 @@
     "mode": "tap"
   },
   "autoMemoryEnabled": true,
+  "autoMemoryDirectory": "~/claude-memory",
   "theme": "auto",
   "editorMode": "vim",
   "autoCompactEnabled": false,

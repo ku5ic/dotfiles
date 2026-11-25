@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-# Tests for the create_symlinks stage of ~/.dotfiles/install.sh.
+# Tests for the create_symlinks and setup_claude stages of ~/.dotfiles/install.sh.
 #
 # install.sh reads everything from $HOME, so each test points HOME at a temp
 # dir holding a minimal fake ~/.dotfiles.
@@ -42,4 +42,14 @@ setup() {
 
   [ "$(readlink "$HOME/.config/app")" = "$HOME/.dotfiles/config/app" ]
   ! compgen -G "$HOME/.config/app.bak.*"
+}
+
+@test "setup_claude links the skills folder" {
+  mkdir -p "$HOME/.dotfiles/claude/skills/memory-sync"
+
+  # A bare PATH hides the claude CLI, so the stage stops after linking.
+  PATH=/usr/bin:/bin run bash "$HOME/.dotfiles/install.sh" setup_claude
+
+  [ "$status" -eq 0 ]
+  [ "$(readlink "$HOME/.claude/skills")" = "$HOME/.dotfiles/claude/skills" ]
 }
