@@ -117,6 +117,14 @@ setup_claude() {
   claude mcp get playwright >/dev/null 2>&1 || claude mcp add -s user playwright -- npx @playwright/mcp@latest
 }
 
+# The gh-stack skill is committed in claude/skills, so after setup_claude links
+# that folder the skill install only runs if the folder was deleted.
+setup_gh() {
+  gh stack --version >/dev/null 2>&1 || gh extension install github/gh-stack
+  [[ -d ~/.claude/skills/gh-stack ]] ||
+    gh skill install github/gh-stack gh-stack --agent claude-code --scope user
+}
+
 install_launchd_agents() {
   mkdir -p "$HOME/Library/LaunchAgents"
   local brew_bash
@@ -175,6 +183,7 @@ STAGES=(
   fix_permissions
   create_symlinks
   setup_claude
+  setup_gh
   install_launchd_agents
   setup_asdf
 )
