@@ -17,6 +17,18 @@ On the first substantive action in a repo:
 
 Create branches with `branch_name.sh --checkout <type> [<ISSUE-ID>] "<title>"`, unless the project defines its own convention. Quote the title: an unquoted multi-word title turns its first word into the issue id.
 
+## GitHub CLI extensions
+
+`install.sh` installs these. Prefer one over raw `gh api` calls, and read `gh <name> --help` before first use.
+
+| Command      | Use for                                     |
+| ------------ | ------------------------------------------- |
+| `gh stack`   | Stacked PRs; the `gh-stack` skill covers it |
+| `gh aw`      | GitHub Agentic Workflows                    |
+| `gh combine` | Combining several PRs into one              |
+| `gh webhook` | Webhooks from the CLI                       |
+| `gh codeql`  | Running CodeQL                              |
+
 ## Browser
 
 Before the first Claude in Chrome action in a session, ask via AskUserQuestion: the default user profile with its logins and cookies, always first and marked recommended, or isolated. Isolated means a separate Chrome profile running the extension, picked with `list_connected_browsers` + `select_browser`, or the Playwright MCP's fresh browser when no such profile is connected. Never pick a browser without asking.

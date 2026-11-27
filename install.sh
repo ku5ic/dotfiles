@@ -120,7 +120,14 @@ setup_claude() {
 # The gh-stack skill is committed in claude/skills, so after setup_claude links
 # that folder the skill install only runs if the folder was deleted.
 setup_gh() {
-  gh stack --version >/dev/null 2>&1 || gh extension install github/gh-stack
+  local extensions=(github/gh-stack github/gh-aw github/gh-combine cli/gh-webhook github/gh-codeql)
+  local installed ext
+  installed="$(gh extension list)"
+  for ext in "${extensions[@]}"; do
+    # Piped, gh lists one tab-separated row per extension; the tabs keep
+    # github/gh-aw from matching github/gh-aw-mcpg.
+    [[ "$installed" == *$'\t'"$ext"$'\t'* ]] || gh extension install "$ext"
+  done
   [[ -d ~/.claude/skills/gh-stack ]] ||
     gh skill install github/gh-stack gh-stack --agent claude-code --scope user
 }

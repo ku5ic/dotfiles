@@ -54,31 +54,54 @@ setup() {
   [ "$(readlink "$HOME/.claude/skills")" = "$HOME/.dotfiles/claude/skills" ]
 }
 
-# A fake gh logs its arguments; `gh stack --version` succeeds only once
-# $HOME/stack-installed exists, standing in for the installed extension.
+# A fake gh logs its arguments, and `gh extension list` prints
+# $HOME/extensions, one tab-separated row per installed extension.
 fake_gh() {
   mkdir -p "$HOME/bin"
+  touch "$HOME/extensions"
   cat >"$HOME/bin/gh" <<'SH'
 #!/bin/bash
 echo "$*" >>"$HOME/gh.log"
-[[ "$1 $2" != "stack --version" || -e "$HOME/stack-installed" ]]
+[[ "$1 $2" != "extension list" ]] || cat "$HOME/extensions"
 SH
   chmod +x "$HOME/bin/gh"
 }
 
-@test "setup_gh installs the gh-stack extension and skill when both are missing" {
+installed_extension() {
+  printf 'gh %s\t%s\tv1.0.0\n' "${1##*/gh-}" "$1" >>"$HOME/extensions"
+}
+
+GH_EXTENSIONS=(github/gh-stack github/gh-aw github/gh-combine cli/gh-webhook github/gh-codeql)
+
+@test "setup_gh installs every extension and the gh-stack skill when none are present" {
   fake_gh
 
   PATH="$HOME/bin:/usr/bin:/bin" run bash "$HOME/.dotfiles/install.sh" setup_gh
 
   [ "$status" -eq 0 ]
-  grep -qxF "extension install github/gh-stack" "$HOME/gh.log"
+  for ext in "${GH_EXTENSIONS[@]}"; do
+    grep -qxF "extension install $ext" "$HOME/gh.log"
+  done
   grep -qxF "skill install github/gh-stack gh-stack --agent claude-code --scope user" "$HOME/gh.log"
 }
 
-@test "setup_gh installs nothing when the extension and skill are present" {
+@test "setup_gh installs only the extensions that are missing" {
   fake_gh
-  touch "$HOME/stack-installed"
+  installed_extension github/gh-stack
+  installed_extension github/gh-aw-mcpg
+
+  PATH="$HOME/bin:/usr/bin:/bin" run bash "$HOME/.dotfiles/install.sh" setup_gh
+
+  [ "$status" -eq 0 ]
+  ! grep -qxF "extension install github/gh-stack" "$HOME/gh.log"
+  grep -qxF "extension install github/gh-aw" "$HOME/gh.log"
+}
+
+@test "setup_gh installs nothing when every extension and the skill are present" {
+  fake_gh
+  for ext in "${GH_EXTENSIONS[@]}"; do
+    installed_extension "$ext"
+  done
   mkdir -p "$HOME/.claude/skills/gh-stack"
 
   PATH="$HOME/bin:/usr/bin:/bin" run bash "$HOME/.dotfiles/install.sh" setup_gh
