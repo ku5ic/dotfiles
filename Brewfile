@@ -23,18 +23,19 @@ brew 'zsh-completions'             # extra completion definitions loaded by zsh
 brew 'zsh-syntax-highlighting'     # live command-line syntax coloring
 
 # Search, files and text
-brew 'bat'        # syntax-highlighted cat replacement, aliased as the default file viewer
-brew 'coreutils'  # the GNU core utilities, overriding the BSD versions on macOS
-brew 'eza'        # modern ls replacement with color and git status
-brew 'fd'         # simpler find replacement, used as the file backend by Telescope and fzf
-brew 'gnu-sed'    # the GNU sed, for portable script behavior across macOS and Linux
-brew 'grep'       # the GNU grep, matching Linux flag behavior on macOS
-brew 'moreutils'  # sponge, ts, vipe and other shell pipeline utilities missing from coreutils
-brew 'pandoc'     # document converter for markdown workflows
-brew 'ripgrep'    # fast recursive grep, default search backend in Neovim and shell
-brew 'sd'         # intuitive find-and-replace CLI, a safer modern sed for scripted substitutions
-brew 'tree'       # directory listing tool
-brew 'watchexec'  # filesystem-driven command runner
+brew 'bat'          # syntax-highlighted cat replacement, aliased as the default file viewer
+brew 'coreutils'    # the GNU core utilities, overriding the BSD versions on macOS
+brew 'eza'          # modern ls replacement with color and git status
+brew 'fd'           # simpler find replacement, used as the file backend by Telescope and fzf
+brew 'gnu-sed'      # the GNU sed, for portable script behavior across macOS and Linux
+brew 'grep'         # the GNU grep, matching Linux flag behavior on macOS
+brew 'mermaid-cli'  # Mermaid diagram renderer, the mmdc command
+brew 'moreutils'    # sponge, ts, vipe and other shell pipeline utilities missing from coreutils
+brew 'pandoc'       # document converter for markdown workflows
+brew 'ripgrep'      # fast recursive grep, default search backend in Neovim and shell
+brew 'sd'           # intuitive find-and-replace CLI, a safer modern sed for scripted substitutions
+brew 'tree'         # directory listing tool
+brew 'watchexec'    # filesystem-driven command runner
 
 # System monitoring
 brew 'bandwhich'  # per-process network bandwidth monitor, completes procs/dust with the network layer
