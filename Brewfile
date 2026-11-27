@@ -161,7 +161,6 @@ cask 'transmission'  # client for BitTorrent downloads
 cask 'vlc'           # media player
 
 # System utilities
-cask 'fliqlo'          # flip clock screensaver
 cask 'onyx'            # system maintenance utility for macOS
 cask 'the-unarchiver'  # archive extraction utility
 cask 'rectangle-pro'   # window management utility with keyboard shortcuts and snapping

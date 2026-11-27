@@ -2,11 +2,7 @@
   "trustedformulae": [
     "devdotfast/tap/diffr"
   ],
-  "trustedcasks": [
-    "owenthereal/upterm/upterm"
-  ],
   "trustedtaps": [
-    "devdotfast/tap",
     "jesseduffield/lazygit",
     "owenthereal/upterm"
   ]
